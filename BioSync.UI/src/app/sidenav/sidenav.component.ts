@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import {MatSelectModule} from '@angular/material/select';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
@@ -15,12 +14,11 @@ import { MatListModule } from '@angular/material/list';
     MatButtonModule,
     MatSidenavModule,
     MatListModule,
-    AsyncPipe,],
+    RouterLink],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
 })
 export class SidenavComponent {
-  schedules = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   activeButton: string | null = 'dashboard';
 
   onButtonClick(buttonName: string) {
