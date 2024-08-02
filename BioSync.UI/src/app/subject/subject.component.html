@@ -40,8 +40,9 @@
             <div class="cell">Action</div>
         </div>
         <div class="row-container">
-            <div class="row" *ngFor="let subject of filteredSubjects">
-                <div class="cell">{{ subject.subject_code }}</div>
+            @for (subject of filteredSubjects; track subject) {
+                <div class="row">
+                    <div class="cell">{{ subject.subject_code }}</div>
                 <div class="cell">{{ subject.subject_name }}</div>
                 <div class="cell">
                     <div class="action-container">
@@ -49,7 +50,8 @@
                         <button class="delete-button"><mat-icon>delete</mat-icon></button>
                     </div>
                 </div>
-            </div>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -64,7 +66,9 @@
         <div class="paginator-controls">
           <span>Page</span>
           <select [(ngModel)]="currentPage" (change)="onPageChange()">
-            <option *ngFor="let page of pages" [value]="page">{{ page }}</option>
+                @for (page of pages; track page) {
+                    <option [value]="page">{{ page }}</option>
+                }
           </select>
           <div class="paginator-button-container">
             <button (click)="previousPage()" 
