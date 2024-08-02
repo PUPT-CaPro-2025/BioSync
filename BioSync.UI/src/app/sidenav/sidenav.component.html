@@ -1,0 +1,52 @@
+<mat-toolbar class="toolbar-container">
+    <img class="biosync-logo" src="../../assets/BioSyncLogo.png" alt="Biosync Logo">
+</mat-toolbar>
+<mat-nav-list class="list-container">
+    <div class="menu-container" (click)="onButtonClick('dashboard')" [class.clicked]="activeButton === 'dashboard'">
+        <button class="menu-content">
+            <img src="../../assets/dashboard.svg" alt="Dashboard Icon">
+            <p>Dashboard</p>
+        </button>
+    </div>
+    <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
+        <button class="menu-content">
+            <img src="../../assets/visitor.svg" alt="Visitor Icon">
+            <p>Visitor</p>
+        </button>
+    </div>
+    <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
+        <button class="menu-content">
+            <img src="../../assets/schedule.svg" alt="Schedule Icon">
+            <p>Schedules</p>
+        </button>
+    </div>
+    <div class="menu-container" (click)="onButtonClick('subject')" [class.clicked]="activeButton === 'subject'">
+        <button class="menu-content">
+            <img src="../../assets/subject.svg" alt="Subject Icon">
+            <p>Subjects</p>
+        </button>
+    </div>
+    <div class="menu-container" (click)="onButtonClick('professor')" [class.clicked]="activeButton === 'professor'">
+        <button class="menu-content">
+            <img src="../../assets/professor.svg" alt="Professor Icon">
+            <p>Professor</p>
+        </button>
+    </div>
+    <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
+        <button class="menu-content">
+            <img src="../../assets/student.svg" alt="Student Icon">
+            <p>Students</p>
+        </button>
+    </div>
+</mat-nav-list>
+<div class="bottom-container">
+    <div class="line-container">
+        <img src="../../assets/line.svg">
+    </div>
+    <div class="logout-container">
+        <button class="logout-content">
+            <img src="../../assets/logout.svg" alt="Logout Icon">
+            <p>Logout</p>
+        </button>
+    </div>
+</div>
