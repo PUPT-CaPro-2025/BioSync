@@ -6,14 +6,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-schedule',
+  selector: 'app-subject',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule],
-  templateUrl: './schedule.component.html',
-  styleUrl: './schedule.component.css',
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatIconModule],
+  templateUrl: './subject.component.html',
+  styleUrl: './subject.component.css'
 })
-
-export class ScheduleComponent {
+export class SubjectComponent {
   entries: string[] = [
     '10', '20', '30', '40', '50'  
   ];
@@ -72,10 +71,6 @@ export class ScheduleComponent {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.subjects.slice(startIndex, endIndex);
-  }
-
-  createSchedule(subject: Subject): void {
-    console.log('Creating schedule for:', subject);
   }
 
   onPageChange(): void {

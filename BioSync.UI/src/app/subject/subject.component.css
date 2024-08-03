@@ -142,22 +142,47 @@
     vertical-align: top;
 }
 
-.subject-table button {
-    background-color: #E4581D;
+.action-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.edit-button {
+    background-color: #393939;
     color: white;
     border: none;
-    padding: 10px 25px;
+    padding: 10px 10px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 14px;
     margin: 4px 2px;
     cursor: pointer;
-    border-radius: 20px;
+    border-radius: 15px;
 }
 
-.subject-table button:hover {
-    background-color: #8f3813;
+.delete-button {
+    background-color: #D31119;
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 15px;
+}
+
+.edit-button:hover {
+    background-color: #949494;
+}
+
+.delete-button:hover {
+    background-color: #d44f53;
 }
 
 .line-container {
