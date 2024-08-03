@@ -1,1 +1,63 @@
-<p>add-subject works!</p>
+
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Add New Subject</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent">
+        <div class="w-[45%] flex flex-col gap-4">
+            <div class="group flex flex-col gap-1">
+                <label for="subject-code" class="text-custom-20
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Subject Code
+                </label>
+                <input matInput id="subject_code" name="subject-code"
+                    placeholder="Enter Subject Code" class="bg-transparent 
+                    border-b-2 border-darkGray focus:border-brightRed 
+                    focus:outline-none transition-colors 
+                    duration-300 w-full py-2 px-1">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="subject-name" class="text-custom-20 
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Subject Name
+                </label>
+                <input matInput id="subject_name" name="subject-name"
+                    placeholder="Enter Subject Name" class="bg-transparent 
+                    border-b-2 border-darkGray focus:border-brightRed 
+                    focus:outline-none transition-colors 
+                    duration-300 w-full py-2 px-1">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="subject-description" class="text-custom-20
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Subject Description
+                </label>
+                <input matInput id="subject_description" 
+                    name="subject-description" 
+                    placeholder="Enter Subject Description"
+                    class="bg-transparent border-b-2 border-darkGray 
+                    focus:border-brightRed focus:outline-none 
+                    transition-colors duration-300 w-full py-2 px-1">
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end">
+                    <button class="text-custom-14 text-lightGray py-2 
+                        px-20 border-2 rounded-full border-lightGray"
+                        (click)="cancelOrAddSubject()">
+                        Cancel
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19 
+                        bg-gradient-red-orange rounded-full" 
+                        (click)="cancelOrAddSubject()">
+                        Add Subject
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>  
+</div>
