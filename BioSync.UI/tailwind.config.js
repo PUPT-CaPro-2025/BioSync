@@ -13,6 +13,8 @@ module.exports = {
         f2White: 'F2E8E9',
         f4White: '#F4F4F4',
         cleanWhite: '#FFFFFF',
+        darkGray: '#393939',
+        lightGray: '#7F7F7F',
       },
       fontSize: {
         'custom-32': '32px',
