@@ -104,4 +104,8 @@ export class SubjectComponent {
   toggleAddSubject(): void {
     this.isAddSubject = !this.isAddSubject;
   }
+
+  handleBackToSubject(): void {
+    this.isAddSubject = false;
+  }
 }
