@@ -24,6 +24,23 @@ module.exports = {
         'custom-14': '14px',
         'custom-12': '12px',
       },
+      borderColor: {
+        darkRed: '#9F0303',
+        brightRed: '#D31119',
+        darkOrange: '#E4581D',
+        f2White: 'F2E8E9',
+        f4White: '#F4F4F4',
+        cleanWhite: '#FFFFFF',
+        darkGray: '#393939',
+        lightGray: '#7F7F7F',
+      },
+      backgroundImage: {
+        'gradient-red-orange': 'linear-gradient(to right, #9F0303, #D31119, #E4581D)',
+      },
+      padding: {
+        '15': '60px',
+        '19': '72px',
+      },
     },
   },
   plugins: [],
