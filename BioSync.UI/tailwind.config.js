@@ -36,6 +36,8 @@ module.exports = {
       },
       backgroundImage: {
         'gradient-red-orange': 'linear-gradient(to right, #9F0303, #D31119, #E4581D)',
+        'gradient-dark-red-orange': 'linear-gradient(to right, #860404, #ad0f14, #ac4113)',
+        lightGray: '#7F7F7F',
       },
       padding: {
         '15': '60px',
