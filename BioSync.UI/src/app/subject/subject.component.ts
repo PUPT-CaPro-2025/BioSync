@@ -4,11 +4,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { Subject } from '../../model/subject-model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AddSubjectComponent } from '../add-subject/add-subject.component';
 
 @Component({
   selector: 'app-subject',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatIconModule],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatIconModule, AddSubjectComponent],
   templateUrl: './subject.component.html',
   styleUrl: './subject.component.css'
 })
@@ -56,6 +57,7 @@ export class SubjectComponent {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  isAddSubject: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -97,5 +99,9 @@ export class SubjectComponent {
       this.currentPage++;
       this.onPageChange();
     }
+  }
+
+  toggleAddSubject(): void {
+    this.isAddSubject = !this.isAddSubject;
   }
 }
