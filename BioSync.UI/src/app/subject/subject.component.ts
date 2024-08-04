@@ -57,6 +57,10 @@ export class SubjectComponent implements OnInit{
     )
   }
 
+  onSubjectAdded(newSubject: Subject){
+    this.subjects.push(newSubject);
+  }
+
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
   }

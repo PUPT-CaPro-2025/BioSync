@@ -97,5 +97,5 @@
         </div>
     </div>
 } @else {
-    <app-add-subject (backToSubject)="handleBackToSubject()"></app-add-subject>
+    <app-add-subject (subjectAdded)="onSubjectAdded($event)" (backToSubject)="handleBackToSubject()"></app-add-subject>
 }
