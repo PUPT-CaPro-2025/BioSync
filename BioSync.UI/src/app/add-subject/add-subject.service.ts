@@ -5,12 +5,14 @@ import {environment} from "../../../environment/appsetting";
 
 @Injectable()
 export class AddSubjectService {
+  url = `${environment.apiUrl}/api/v1/subjects`;
 
   constructor(private http: HttpClient) { }
 
   createSubject(subject: Subject){
-    const url = `${environment.apiUrl}/api/v1/subjects`;
-    return this.http.post<Subject>(url, subject);
+    return this.http.post<Subject>(this.url, subject);
   }
+
+
 
 }
