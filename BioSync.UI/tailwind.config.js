@@ -10,6 +10,7 @@ module.exports = {
         darkRed: '#9F0303',
         brightRed: '#D31119',
         darkOrange: '#E4581D',
+        darkerOrange: '#8f3813',
         f2White: 'F2E8E9',
         f4White: '#F4F4F4',
         cleanWhite: '#FFFFFF',
@@ -42,7 +43,13 @@ module.exports = {
       padding: {
         '15': '60px',
         '19': '72px',
+        sixpx: '6px',
+        thirtypx: '30px',
       },
+      margin: {
+        '4px': '4px',  
+        '2px': '2px',  
+    }
     },
   },
   plugins: [],
