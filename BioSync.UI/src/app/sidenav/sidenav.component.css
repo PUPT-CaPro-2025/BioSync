@@ -10,20 +10,20 @@
 }
 
 .biosync-logo {
-    width: 180px;
-    height: 180px;
+    width: 150px;
+    height: 150px;
 }
 
 .list-container {
-    margin-top: 4.5rem; 
+    margin-top: 4.5rem;
     flex: 1;
-    height: calc(100vh - 450px);
+    height: calc(100vh - 400px);
     overflow-y: auto;
 }
 
 .menu-container {
     border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px; 
+    border-bottom-right-radius: 20px;
     width: 300px;
     height: 60px;
     display: flex;
