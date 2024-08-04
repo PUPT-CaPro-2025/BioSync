@@ -5,11 +5,12 @@ import { Schedule } from '../../model/schedule-model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -22,6 +23,12 @@ export class ScheduleComponent {
   sorting: string[] = [
     'Subject Code', 'Alphabetical', 'Date'
   ];
+
+  yearSemesters: string[] = [
+    'School Year 2324 - First Semester', 'School Year 2324 - Second Semester', 'School Year 2324 - Summer'
+  ];
+
+  selectedYearSem = 'School Year 2324 - Summer';
 
   //Temporary data
   schedule: Schedule[] = [

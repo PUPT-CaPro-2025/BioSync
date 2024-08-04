@@ -10,9 +10,16 @@
     </div>
     <div class="filter-container">
         <mat-toolbar class="filter-content">
-            <div class="search-container">
-                <mat-icon class="search-icon">search</mat-icon>
-                <input type="text" placeholder="SEARCH">
+            <div class="select-semester-container">
+                <mat-select [(value)]="selectedYearSem" id="section" 
+                        name="section" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                        @for(yearSem of yearSemesters; track yearSem) {
+                            <mat-option [value]="yearSem">{{yearSem}}</mat-option>
+                        }
+                </mat-select>
             </div>
             <div class="dropdown-container">
                 <div class="dropdown-content">

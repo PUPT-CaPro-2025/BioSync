@@ -43,26 +43,11 @@
     width: 96%;
 }
 
-.search-container {
+.select-semester-container {
     position: relative;
     display: flex;
     align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    color: gray;
-}
-
-.search-container input {
-    padding-left: 40px;
-    padding-right: 80px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    border: none;
+    width: 22%;
 }
 
 .dropdown-content {
