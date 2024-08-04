@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddSubjectComponent } from '../add-subject/add-subject.component';
 import {SubjectService} from "./subject.service";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-subject',
@@ -39,7 +41,9 @@ export class SubjectComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSubject: boolean = false;
 
-  constructor(private subjectService: SubjectService) {}
+  constructor(
+    private subjectService: SubjectService,
+    private dialog: MatDialog) {}
 
   ngOnInit() {
     this.getSubjects()
@@ -55,6 +59,31 @@ export class SubjectComponent implements OnInit{
       error: (error) => { console.error(error) }
     }
     )
+  }
+
+  onSubjectAdded(newSubject: Subject){
+    this.subjects.push(newSubject);
+  }
+
+  openDeleteDialog(subject: Subject): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteSubject(subject);
+      }
+    });
+  }
+
+  deleteSubject(subject: Subject) {
+    this.subjectService.deleteSubject(subject.id).subscribe({
+      next: () => {
+        this.subjects = this.subjects.filter(s => s.id !== subject.id);
+      },
+      error: err => console.error(err)
+    });
   }
 
   get pages(): number[] {
