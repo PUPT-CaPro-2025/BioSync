@@ -46,8 +46,8 @@
         <div class="row-container">
             @for (subject of filteredSubjects; track subject) {
                 <div class="row">
-                    <div class="cell">{{ subject.subject_code }}</div>
-                <div class="cell">{{ subject.subject_name }}</div>
+                    <div class="cell">{{ subject.code }}</div>
+                <div class="cell">{{ subject.name }}</div>
                 <div class="cell">
                     <button (click)="createSchedule(subject)">Create Schedule</button>
                   </div>
@@ -72,20 +72,20 @@
             }
           </select>
           <div class="paginator-button-container">
-            <button (click)="previousPage()" 
+            <button (click)="previousPage()"
                     [disabled]="currentPage === 1"
                     [ngClass]="{'active-button': currentPage > 1}">
-                <img src="../../assets/previous.svg" 
-                        alt="Previous Icon" 
+                <img src="../../assets/previous.svg"
+                        alt="Previous Icon"
                         [ngClass]="{'active-icon': currentPage > 1}">
                 Previous
             </button>
-            <button (click)="nextPage()" 
+            <button (click)="nextPage()"
                     [disabled]="currentPage === totalPages"
                     [ngClass]="{'active-button': currentPage < totalPages}">
                 Next
-                <img src="../../assets/next.svg" 
-                        alt="Next Icon" 
+                <img src="../../assets/next.svg"
+                        alt="Next Icon"
                         [ngClass]="{'active-icon': currentPage < totalPages}">
             </button>
           </div>
