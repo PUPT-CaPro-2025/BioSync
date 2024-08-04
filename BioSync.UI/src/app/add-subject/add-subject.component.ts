@@ -3,12 +3,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormsModule} from '@angular/forms';
-import { SubjectComponent } from '../subject/subject.component';
 
 @Component({
   selector: 'app-add-subject',
   standalone: true,
-  imports: [MatToolbarModule, MatFormFieldModule, MatInputModule, FormsModule, SubjectComponent],
+  imports: [MatToolbarModule, MatFormFieldModule, MatInputModule, FormsModule],
   templateUrl: './add-subject.component.html',
   styleUrl: './add-subject.component.css'
 })

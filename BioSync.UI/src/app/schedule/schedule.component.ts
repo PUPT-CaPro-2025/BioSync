@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
 
 export class ScheduleComponent {
   entries: string[] = [
-    '10', '20', '30', '40', '50'  
+    '10', '20', '30', '40', '50'
   ];
 
   sorting: string[] = [
@@ -24,33 +24,9 @@ export class ScheduleComponent {
 
   //Temporary data
   subjects: Subject[] = [
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing' },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I' },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals' },
+    { code: 'COMP 1103', name: 'Fundamentals of Computing' },
+    { code: 'COMP 2013', name: 'Computer Programming I' },
+    { code: 'COMP 2103', name: 'Information Technology Fundamentals' }
   ];
 
   @Input() totalItems: number = 500;
