@@ -18,14 +18,18 @@
                 <div class="entry-container">
                     <span>Show</span>
                     <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                      <option *ngFor="let entry of entries" [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                        @for(entry of entries; track entry) {
+                            <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                        }
                     </select>
                     <span>Entries</span>
                 </div>
                 <div class="sort-container">
                     <select>
                         <option>Sort by</option>
-                        <option *ngFor="let sort of sorting" [value]="sort">{{sort}}</option>
+                        @for(sort of sorting; track sort) {
+                            <option [value]="sort">{{sort}}</option>
+                        }
                     </select>
                 </div>
             </div>
