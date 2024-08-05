@@ -126,5 +126,5 @@
         <app-edit-schedule (editBackToSchedule)="handleEditBackToSchedule()"></app-edit-schedule>
     }
 } @else {
-    <app-add-schedule (backToSchedule)="handleBackToSchedule()"></app-add-schedule>
+    <app-add-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()"></app-add-schedule>
 }

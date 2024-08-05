@@ -63,6 +63,10 @@ export class ScheduleComponent implements OnInit{
     })
   }
 
+  onScheduleCreation(schedule: Schedule){
+    this.schedule.push(schedule);
+  }
+
   convertTimeFormat(time: string): string {
     const [hours, minutes] = time.split(':').map(Number);
 

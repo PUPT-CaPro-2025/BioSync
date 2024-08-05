@@ -8,6 +8,8 @@ import {SubjectService} from "../subject/subject.service";
 import {Subject} from "../../model/subject-model";
 import {AddScheduleService} from "./add-schedule.service";
 import {Schedule} from "../../model/schedule-model";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-add-schedule',
@@ -19,7 +21,7 @@ import {Schedule} from "../../model/schedule-model";
 })
 export class AddScheduleComponent implements OnInit{
   @Output() backToSchedule = new EventEmitter<void>();
-  @Output() createdSchedule!: Schedule;
+  @Output() createdSchedule = new EventEmitter<Schedule>();
 
   selectedSubject!: Subject | undefined;
 
@@ -61,7 +63,8 @@ export class AddScheduleComponent implements OnInit{
   constructor(
     private formBuilder: FormBuilder,
     private subjectService: SubjectService,
-    private addScheduleService: AddScheduleService
+    private addScheduleService: AddScheduleService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -119,12 +122,23 @@ export class AddScheduleComponent implements OnInit{
     this.backToSchedule.emit();
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(PromptOkayComponent, {
+      width: '400px'
+    })
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.backToSchedule.emit();
+    })
+  }
+
   createSchedule(schedule: Schedule){
     return this.addScheduleService
       .createSchedule(schedule)
       .subscribe({
         next: createdSchedule => {
-          this.createdSchedule = createdSchedule
+          this.openDialog()
+          this.createdSchedule.emit(createdSchedule)
         }
       })
   }
