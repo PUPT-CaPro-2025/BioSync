@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit, inject} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -8,7 +8,6 @@ import {Subject} from "../../model/subject-model";
 import {MatButtonModule} from "@angular/material/button";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-add-subject',
