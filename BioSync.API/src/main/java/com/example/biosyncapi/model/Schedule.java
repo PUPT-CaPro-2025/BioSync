@@ -3,7 +3,7 @@ package com.example.biosyncapi.model;
 import jakarta.persistence.*;
 
 import java.sql.Time;
-import java.util.Date;
+import java.sql.Date;
 
 
 @Entity

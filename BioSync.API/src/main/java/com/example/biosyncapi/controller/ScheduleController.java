@@ -2,6 +2,9 @@ package com.example.biosyncapi.controller;
 
 import com.example.biosyncapi.model.Schedule;
 import com.example.biosyncapi.service.ScheduleService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +32,9 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public Schedule createSchedule(@RequestBody Schedule schedule) {
-        return scheduleService.createSchedule(schedule);
+    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
+        Schedule createdSchedule = scheduleService.createSchedule(schedule);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedule);
     }
 
     @PutMapping
