@@ -3,16 +3,29 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, MatInput, ReactiveFormsModule],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent implements OnInit{
   @Output() backToSchedule = new EventEmitter<void>();
+
+  selectedSubject: string | null = null;
+
+  onSubjectChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.selectedSubject = target.value;
+  }
+
+  cancelOrAddSchedule(): void {
+    this.backToSchedule.emit();
+  }
+
   sections: string[] = [
     'BSIT 4-1',
     'BSIT 3-1',

@@ -8,6 +8,21 @@
     align-items: flex-start;
 }
 
+.custom-select {
+    appearance: none;
+    background-color: white;
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg"><polyline points="20 40 70 90 120 40" style="fill:none;stroke:black;stroke-width:20" /></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1rem;
+}
+
+.custom-select:focus {
+    outline: none;
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg"><polyline points="20 40 70 90 120 40" style="fill:none;stroke:%23D31119;stroke-width:20" /></svg>');
+}
+
+
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
     -webkit-appearance: none;
