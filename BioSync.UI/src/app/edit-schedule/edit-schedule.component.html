@@ -1,1 +1,216 @@
-<p>edit-schedule works!</p>
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Edit Schedule</span>
+        <p class="text-custom-16 text-lightGray">
+            Reminder! For scheduling of make-up classes, please make sure 
+            that the professor, laboratory room, section, and semester are 
+            the same as the regular class.
+        </p>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-8 flex justify-between w-[94%] 
+            bg-white py-4 px-4 rounded-2xl ">
+        <div class="flex gap-5">
+            <div class="flex flex-col gap-4">
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Subject Code:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Subject Name:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Description:
+                </p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <p class="text-darkGray text-custom-16">
+                    COMP 1103
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    Fundamentals of Computing
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+                    sed do eiusmod tempor incididunt ut labore et 
+                    dolore magna aliqua.
+                </p>
+            </div>
+        </div>
+        <div>
+            <button class="bg-darkOrange text-white border-none 
+                py-sixpx px-thirtypx text-center no-underline inline-block 
+                text-custom-14 my-4px mx-2px cursor-pointer rounded-3xl 
+                hover:bg-darkerOrange">
+                View Schedules
+            </button>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[94%] bg-transparent">
+        <div class="w-[48%] flex flex-col gap-4">
+            <div class="group flex flex-col gap-1">
+                <label for="section" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Section
+                </label>
+                <mat-select id="section" name="section"
+                        placeholder="Select Section" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                        @for(section of sections; track section) {
+                            <mat-option [value]="section">{{section}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="flex justify-between">
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="start-time" class="text-custom-16
+                        text-darkGray transition-colors duration-300 
+                        group-focus-within:text-brightRed">
+                        Start Time
+                    </label>
+                    <input matInput id="start_time" name="start-time" 
+                        value="00:00" type="time" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                </div>
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="end-time" class="text-custom-16
+                        text-darkGray transition-colors duration-300 
+                        group-focus-within:text-brightRed">
+                        End Time
+                    </label>
+                    <input matInput id="end_time" name="end-time"
+                        value="00:00" type="time" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                </div>
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="subject-date" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Schedule Date
+                </label>
+                <input matInput id="schedule_date" type="date"
+                    name="schedule-date" 
+                    placeholder="Enter Subject Description"
+                    class="bg-transparent border-b-2 border-darkGray 
+                    focus:border-brightRed focus:outline-none 
+                    transition-colors duration-300 w-full py-2 px-1">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="laboratory" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Laboratory Room
+                </label>
+                <mat-select id="laboratory" name="laboratory"
+                        placeholder="Select a laboratory room" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                        @for(lab of labs; track lab) {
+                            <mat-option [value]="lab">{{lab}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+        </div>
+        <div class="w-[48%] flex flex-col gap-4">
+            <div class="group flex flex-col gap-1">
+                <label for="professor" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Assigned Professor
+                </label>
+                <mat-select id="professor" name="professor"
+                        placeholder="Select a professor's name" 
+                        class="bg-transparent border-b-2 border-darkGray 
+                        focus:border-brightRed focus:outline-none 
+                        transition-colors duration-300 w-full py-2 px-1">
+                        @for(professor of professors; track professor) {
+                            <mat-option [value]="professor">{{professor}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="semester" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Semester
+                </label>
+                <mat-select id="semester" name="semester"
+                        placeholder="Select a semester" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                        @for(semester of semesters; track semester) {
+                            <mat-option [value]="semester">{{semester}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="flex justify-between">
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="start-year" class="text-custom-16
+                        text-darkGray transition-colors duration-300 
+                        group-focus-within:text-brightRed">
+                        Start Year
+                    </label>
+                    <input matInput id="start_year" name="start-year" 
+                        placeholder="Ex: 2023" type="number" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1 no-spinner">
+                </div>
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="end-year" class="text-custom-16
+                        text-darkGray transition-colors duration-300 
+                        group-focus-within:text-brightRed">
+                        End Year
+                    </label>
+                    <input matInput id="end_year" name="end-year"
+                        placeholder="Ex: 2024" type="number" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1 no-spinner">
+                </div>
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="remarks" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Remarks
+                </label>
+                <mat-select id="remark" name="remark"
+                        placeholder="Select a type of class" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1">
+                        @for(remark of remarks; track remark) {
+                            <mat-option [value]="remark">{{remark}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end">
+                    <button class="text-custom-14 text-lightGray py-2 
+                        px-20 border-2 rounded-full border-lightGray 
+                        hover:bg-lightGray hover:text-white">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19 
+                        bg-gradient-red-orange rounded-full 
+                        hover:bg-gradient-dark-red-orange hover:text-f4White">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>  
+</div>
