@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter, } from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
@@ -10,6 +10,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrl: './edit-schedule.component.css'
 })
 export class EditScheduleComponent {
+  @Output() editBackToSchedule = new EventEmitter<void>();
+
+  cancelOrEditSchedule(): void {
+    this.editBackToSchedule.emit();
+  }
+
   sections: string[] = [
     'BSIT 4-1',
     'BSIT 3-1',
