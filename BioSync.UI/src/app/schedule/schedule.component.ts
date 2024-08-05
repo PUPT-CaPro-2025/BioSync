@@ -6,11 +6,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
+import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
+import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -72,6 +74,8 @@ export class ScheduleComponent {
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSchedule: boolean = false;
+  isEditSchedule: boolean = false;
+  isViewSchedule: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -121,5 +125,21 @@ export class ScheduleComponent {
 
   handleBackToSchedule(): void {
     this.isAddSchedule = false;
+  }
+
+  toggleEditSchedule(): void {
+    this.isEditSchedule = !this.isEditSchedule;
+  }
+
+  handleEditBackToSchedule(): void {
+    this.isEditSchedule = false;
+  }
+
+  toggleViewSchedule(): void {
+    this.isViewSchedule = !this.isViewSchedule;
+  }
+
+  handleViewBackToSchedule(): void {
+    this.isViewSchedule = false;
   }
 }
