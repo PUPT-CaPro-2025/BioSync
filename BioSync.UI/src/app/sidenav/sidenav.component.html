@@ -14,12 +14,25 @@
             <p>Visitor</p>
         </button>
     </div>
-    <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
-        <button routerLink="/schedule" class="menu-content">
-            <img src="../../assets/schedule.svg" alt="Schedule Icon">
-            <p>Schedules</p>
-        </button>
+    <div class="menu-container" (click)="toggleDropdown()" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
+        <div class="flex justify-between items-center schedule-arrow">
+            <button class="menu-content">
+                <img src="../../assets/schedule.svg" alt="Schedule Icon">
+                <p>Schedules</p>
+            </button>
+            <mat-icon>{{ isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+        </div>
     </div>
+    @if(isDropdownOpen) {
+        <div class="dropdown-content flex flex-col">
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/schedule')">List of Schedule</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/attendance')">List of Attendance</button>
+            </div>
+        </div>
+    }
     <div class="menu-container" (click)="onButtonClick('subject')" [class.clicked]="activeButton === 'subject'">
         <button routerLink="/subject" class="menu-content">
             <img src="../../assets/subject.svg" alt="Subject Icon">

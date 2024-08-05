@@ -4,17 +4,22 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-sidenav',
   standalone: true,
-  imports: [MatSelectModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatListModule, RouterLink],
+  imports: [MatSelectModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatListModule, RouterLink, CommonModule, MatIconModule,],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css'
 })
 export class SidenavComponent implements OnInit {
   activeButton: string | null = 'dashboard';
+  isDropdownOpen = false;
+
+  constructor(private router: Router) {}
 
   ngOnInit() {
     const savedActiveButton = localStorage.getItem('activeButton');
@@ -26,5 +31,14 @@ export class SidenavComponent implements OnInit {
   onButtonClick(buttonName: string) {
     this.activeButton = buttonName;
     localStorage.setItem('activeButton', buttonName);
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  navigateTo(route: string) {
+    this.router.navigate([route]);
+    this.isDropdownOpen = false; 
   }
 }
