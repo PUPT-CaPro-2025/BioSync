@@ -4,7 +4,7 @@
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <div class="mt-2 flex justify-between w-[94%] 
+    <div class="mt-2 flex justify-between w-[94%]
             bg-white py-4 px-4 rounded-2xl ">
         <div class="flex gap-5">
             <div class="flex flex-col gap-4">
@@ -20,22 +20,20 @@
             </div>
             <div class="flex flex-col gap-4">
                 <p class="text-darkGray text-custom-16">
-                    COMP 1103
+                    {{ schedule.subject?.code }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    Fundamentals of Computing
+                    {{ schedule.subject?.name }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-                    sed do eiusmod tempor incididunt ut labore et 
-                    dolore magna aliqua.
+                    {{ schedule.subject?.description }}
                 </p>
             </div>
         </div>
     </div>
 </div>
 <div class="flex justify-center items-center">
-    <div class="mt-6 flex justify-between w-[94%] 
+    <div class="mt-6 flex justify-between w-[94%]
             bg-white py-4 px-4 rounded-2xl ">
         <div class="flex gap-5">
             <div class="flex flex-col gap-4">
@@ -69,13 +67,14 @@
                     {{schedule.section}}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{schedule.start_time}} - {{schedule.end_time}}
+                    {{scheduleComponent.convertTimeFormat(schedule.startTime)}}
+                  - {{scheduleComponent.convertTimeFormat(schedule.endTime)}}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{schedule.schedule_date}}
+                    {{schedule.scheduleDate}}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{schedule.laboratory}}
+                    {{schedule.labRoom}}
                 </p>
                 <p class="text-darkGray text-custom-16">
                     {{schedule.professor}}
@@ -84,10 +83,10 @@
                     {{schedule.semester}}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{schedule.start_year}} - {{schedule.end_year}}
+                    {{schedule.schoolYear}}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{schedule.remark}}
+                    {{schedule.remarks}}
                 </p>
             </div>
         </div>
@@ -95,8 +94,8 @@
 </div>
 <div class="flex justify-center items-center">
     <div class="mt-40 flex justify-end w-[94%]">
-        <button class="text-custom-14 text-white py-2 px-19 
-            bg-gradient-red-orange rounded-full 
+        <button class="text-custom-14 text-white py-2 px-19
+            bg-gradient-red-orange rounded-full
             hover:bg-gradient-dark-red-orange hover:text-f4White"
             (click)="backToSchedule()">
             Back
