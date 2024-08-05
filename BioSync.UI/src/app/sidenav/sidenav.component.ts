@@ -33,12 +33,15 @@ export class SidenavComponent implements OnInit {
     localStorage.setItem('activeButton', buttonName);
   }
 
-  toggleDropdown() {
+  toggleDropdown(event: Event) {
+    event.stopPropagation();
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   navigateTo(route: string) {
     this.router.navigate([route]);
+    this.activeButton = 'student';
+    localStorage.setItem('activeButton', 'student');
     this.isDropdownOpen = false; 
   }
 }
