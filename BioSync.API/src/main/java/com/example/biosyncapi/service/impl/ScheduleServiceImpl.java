@@ -5,7 +5,9 @@ import com.example.biosyncapi.model.Subject;
 import com.example.biosyncapi.repository.ScheduleRepository;
 import com.example.biosyncapi.repository.SubjectRepository;
 import com.example.biosyncapi.service.ScheduleService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +37,22 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Schedule createSchedule(Schedule schedule) {
         Subject subject = subjectRepository
                 .findById(schedule.getSubject().getId())
-                .orElseThrow(() -> new RuntimeException("Subject not found"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND)
+                );
 
         schedule.setSubject(subject);
+
+        List<Schedule> conflictingSchedule =
+                scheduleRepository.findConflictingSchedules(
+                        schedule.getScheduleDate(),
+                        schedule.getStartTime(),
+                        schedule.getEndTime()
+                );
+
+        if(!conflictingSchedule.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
 
         return scheduleRepository.save(schedule);
     }
