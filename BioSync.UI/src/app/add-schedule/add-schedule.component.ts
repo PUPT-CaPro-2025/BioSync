@@ -1,16 +1,24 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent {
   @Output() backToSchedule = new EventEmitter<void>();
+
+  selectedSubject: string | null = null;
+
+  onSubjectChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    this.selectedSubject = target.value;
+  }
 
   cancelOrAddSchedule(): void {
     this.backToSchedule.emit();
