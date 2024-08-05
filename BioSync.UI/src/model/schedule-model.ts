@@ -1,14 +1,14 @@
+import {Subject} from "./subject-model";
+
 export interface Schedule {
-    subject_code: string;
-    subject_name: string;
     section: string;
-    start_time: string;
-    end_time: string;
-    schedule_date: string;
-    laboratory: string;
+    startTime: string;
+    endTime: string;
+    scheduleDate: string;
+    labRoom: string;
     professor: string;
     semester: string;
-    start_year: number;
-    end_year: number;
+    schoolYear: string;
     remarks: string;
+    subject: Subject;
   }
