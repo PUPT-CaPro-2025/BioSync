@@ -75,7 +75,7 @@
                                 <div class="action-container">
                                     <button class="view-button" (click)="toggleViewSchedule(schedule.id)"><mat-icon>visibility</mat-icon></button>
                                     <button class="edit-button" (click)="toggleEditSchedule()"><mat-icon>edit</mat-icon></button>
-                                    <button class="delete-button"><mat-icon>delete</mat-icon></button>
+                                    <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
                                 </div>
                               </div>
                             </div>

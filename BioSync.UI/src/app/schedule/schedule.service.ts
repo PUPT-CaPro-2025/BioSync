@@ -11,4 +11,10 @@ export class ScheduleService {
   getAllSchedules(){
     return this.http.get<Schedule[]>(this.url);
   }
+
+  deleteSchedule(schedule: Schedule){
+    return this.http.delete<Schedule>(this.url, {
+      body: { "id" : schedule.id }
+    });
+  }
 }
