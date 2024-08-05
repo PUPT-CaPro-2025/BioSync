@@ -2,8 +2,8 @@
     <mat-toolbar class="toolbar-container">
         <span class="text-custom-32 text-brightRed">Add New Schedule</span>
         <p class="text-custom-16 text-lightGray">
-            Reminder! For scheduling of make-up classes, please make sure 
-            that the professor, laboratory room, section, and semester are 
+            Reminder! For scheduling of make-up classes, please make sure
+            that the professor, laboratory room, section, and semester are
             the same as the regular class.
         </p>
     </mat-toolbar>
@@ -62,7 +62,7 @@
     </div>
 }
 <div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[94%] bg-transparent">
+    <form class="mt-8 flex justify-between w-[94%] bg-transparent" [formGroup]="scheduleForm">
         @if(selectedSubject) {
             <div class="w-[48%] flex flex-col gap-4">
                 <div class="group flex flex-col gap-1">
@@ -75,7 +75,7 @@
                             placeholder="Select Section" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="section">
                             @for(section of sections; track section) {
                                 <mat-option [value]="section">{{section}}</mat-option>
                             }
@@ -92,7 +92,7 @@
                             value="00:00" type="time" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="startTime">
                     </div>
                     <div class="group flex flex-col gap-1 w-[47%]">
                         <label for="end-time" class="text-custom-16
@@ -104,7 +104,7 @@
                             value="00:00" type="time" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="endTime">
                     </div>
                 </div>
                 <div class="group flex flex-col gap-1">
@@ -118,7 +118,8 @@
                         placeholder="Enter Subject Description"
                         class="bg-transparent border-b-2 border-darkGray 
                         focus:border-brightRed focus:outline-none 
-                        transition-colors duration-300 w-full py-2 px-1">
+                        transition-colors duration-300 w-full py-2 px-1"
+                        formControlName="scheduleDate" [min]="today">
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="laboratory" class="text-custom-16
@@ -130,7 +131,7 @@
                             placeholder="Select a laboratory room" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="labRoom">
                             @for(lab of labs; track lab) {
                                 <mat-option [value]="lab">{{lab}}</mat-option>
                             }
@@ -148,7 +149,8 @@
                             placeholder="Select a professor's name" 
                             class="bg-transparent border-b-2 border-darkGray 
                             focus:border-brightRed focus:outline-none 
-                            transition-colors duration-300 w-full py-2 px-1">
+                            transition-colors duration-300 w-full py-2 px-1"
+                            formControlName="professor">
                             @for(professor of professors; track professor) {
                                 <mat-option [value]="professor">{{professor}}</mat-option>
                             }
@@ -164,7 +166,7 @@
                             placeholder="Select a semester" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="semester">
                             @for(semester of semesters; track semester) {
                                 <mat-option [value]="semester">{{semester}}</mat-option>
                             }
@@ -181,7 +183,7 @@
                             placeholder="Ex: 2023" type="number" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1 no-spinner">
+                            duration-300 w-full py-2 px-1 no-spinner" formControlName="startYear">
                     </div>
                     <div class="group flex flex-col gap-1 w-[47%]">
                         <label for="end-year" class="text-custom-16
@@ -193,7 +195,7 @@
                             placeholder="Ex: 2024" type="number" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1 no-spinner">
+                            duration-300 w-full py-2 px-1 no-spinner" formControlName="endYear">
                     </div>
                 </div>
                 <div class="group flex flex-col gap-1">
@@ -206,7 +208,7 @@
                             placeholder="Select a type of class" class="bg-transparent 
                             border-b-2 border-darkGray focus:border-brightRed 
                             focus:outline-none transition-colors 
-                            duration-300 w-full py-2 px-1">
+                            duration-300 w-full py-2 px-1" formControlName="remarks">
                             @for(remark of remarks; track remark) {
                                 <mat-option [value]="remark">{{remark}}</mat-option>
                             }
@@ -228,7 +230,7 @@
                 </button>
                 <button class="text-custom-14 text-white py-2 px-19 
                     bg-gradient-red-orange rounded-full"
-                    (click)="cancelOrAddSchedule()"
+                    (click)="submit()"></button>
                     [ngClass]="{
                         'bg-gradient-red-orange text-white hover:bg-gradient-dark-red-orange hover:text-f4White': selectedSubject,
                         'bg-gray-600 text-gray-300 cursor-not-allowed': !selectedSubject
@@ -240,5 +242,3 @@
         </div>
     </div>
 </div>
-
-
