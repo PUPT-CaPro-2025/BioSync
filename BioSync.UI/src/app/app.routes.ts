@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { VisitorComponent } from './visitor/visitor.component';
 import { ProfessorComponent } from './professor/professor.component';
 import { StudentComponent } from './student/student.component';
+import { AttendanceComponent } from './attendance/attendance.component';
 
 export const routes: Routes = [
     { path: "dashboard", component: DashboardComponent},
@@ -13,5 +14,6 @@ export const routes: Routes = [
     { path: "subject", component: SubjectComponent },
     { path: "visitor", component: VisitorComponent },
     { path: "professor", component: ProfessorComponent },
-    { path: "student", component: StudentComponent }
+    { path: "student", component: StudentComponent },
+    { path: "attendance", component: AttendanceComponent}
 ];
