@@ -10,6 +10,9 @@ import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component'
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "./schedule.service";
 import {Router} from "@angular/router";
+import {Subject} from "../../model/subject-model";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-schedule',
@@ -35,7 +38,7 @@ export class ScheduleComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
-  schedule: Schedule[] = [];
+  schedules: Schedule[] = [];
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
@@ -48,6 +51,7 @@ export class ScheduleComponent implements OnInit{
 
   constructor(
     private scheduleService: ScheduleService,
+    private dialog: MatDialog
     ) {}
 
   ngOnInit() {
@@ -57,10 +61,14 @@ export class ScheduleComponent implements OnInit{
   getAllSubjects() {
     this.scheduleService.getAllSchedules().subscribe({
       next: schedules => {
-        schedules.forEach(schedule => this.schedule.push(schedule));
+        schedules.forEach(schedule => this.schedules.push(schedule));
       },
       error: err => console.error(err)
     })
+  }
+
+  onScheduleCreation(schedule: Schedule){
+    this.schedules.push(schedule);
   }
 
   convertTimeFormat(time: string): string {
@@ -71,6 +79,29 @@ export class ScheduleComponent implements OnInit{
     const formattedMinutes = minutes.toString().padStart(2, '0');
 
     return `${formattedHours}:${formattedMinutes} ${period}`;
+  }
+
+  openDeleteDialog(schedule: Schedule): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteSchedule(schedule);
+      }
+    });
+  }
+
+  deleteSchedule(scheduleToDelete: Schedule){
+    this.scheduleService.deleteSchedule(scheduleToDelete)
+      .subscribe({
+        next: () => {
+          this.schedules = this.schedules.filter(
+            schedule => schedule.id !== scheduleToDelete.id
+          )
+        }
+      })
   }
 
   get pages(): number[] {
@@ -86,7 +117,7 @@ export class ScheduleComponent implements OnInit{
   get filteredSchedules(): Schedule[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.schedule.slice(startIndex, endIndex);
+    return this.schedules.slice(startIndex, endIndex);
   }
 
   onPageChange(): void {
