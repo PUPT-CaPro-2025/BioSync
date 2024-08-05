@@ -1,6 +1,7 @@
 import {Subject} from "./subject-model";
 
 export interface Schedule {
+    id: number
     section: string;
     startTime: string;
     endTime: string;
@@ -10,5 +11,5 @@ export interface Schedule {
     semester: string;
     schoolYear: string;
     remarks: string;
-    subject: Subject;
+    subject?: Subject;
   }

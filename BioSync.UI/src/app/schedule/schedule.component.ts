@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "./schedule.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-schedule',
@@ -43,8 +44,11 @@ export class ScheduleComponent implements OnInit{
   isAddSchedule: boolean = false;
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
+  currentSchedule: number | undefined;
 
-  constructor(private scheduleService: ScheduleService) {}
+  constructor(
+    private scheduleService: ScheduleService,
+    ) {}
 
   ngOnInit() {
     this.getAllSubjects();
@@ -53,7 +57,6 @@ export class ScheduleComponent implements OnInit{
   getAllSubjects() {
     this.scheduleService.getAllSchedules().subscribe({
       next: schedules => {
-        console.log(schedules);
         schedules.forEach(schedule => this.schedule.push(schedule));
       },
       error: err => console.error(err)
@@ -128,8 +131,16 @@ export class ScheduleComponent implements OnInit{
     this.isEditSchedule = false;
   }
 
-  toggleViewSchedule(): void {
+  toggleViewSchedule(scheduleId: number | undefined): void {
     this.isViewSchedule = !this.isViewSchedule;
+
+    if(this.isViewSchedule){
+      this.currentSchedule = scheduleId;
+    }
+  }
+
+  setViewId(){
+    return this.currentSchedule;
   }
 
   handleViewBackToSchedule(): void {
