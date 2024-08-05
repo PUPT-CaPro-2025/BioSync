@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule-model';
@@ -8,16 +8,19 @@ import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
+import {ScheduleService} from "./schedule.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
   imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
+  providers: [ScheduleService],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
 
-export class ScheduleComponent {
+export class ScheduleComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -32,42 +35,7 @@ export class ScheduleComponent {
 
   selectedYearSem = 'School Year 2324 - Summer';
 
-  //Temporary data
-  schedule: Schedule[] = [
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-    { subject_code: 'COMP 1103', subject_name: 'Fundamentals of Computing', section: "BSIT 3-1", start_time: "7:30 AM", end_time: "10:30 AM", schedule_date: "09/08/2024", laboratory: 'DOST Laboratory', professor: "Gecilie Almirañez", semester: "Summer", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2013', subject_name: 'Computer Programming I', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "10/06/2024", laboratory: 'DOST Laboratory', professor: "Steven Villarosa", semester: "2nd Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory" },
-    { subject_code: 'COMP 2103', subject_name: 'Information Technology Fundamentals', section: "BSIT 2-1", start_time: "01:00 PM", end_time: "05:00 PM", schedule_date: "24/07/2024", laboratory: 'Aboitiz Laboratory', professor: "Dustin Santos", semester: "1st Semester", start_year: 2023, end_year: 2024, remarks: "Laboratory"},
-  ];
+  schedule: Schedule[] = [];
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
@@ -76,6 +44,34 @@ export class ScheduleComponent {
   isAddSchedule: boolean = false;
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
+  currentSchedule: number | undefined;
+
+  constructor(
+    private scheduleService: ScheduleService,
+    ) {}
+
+  ngOnInit() {
+    this.getAllSubjects();
+  }
+
+  getAllSubjects() {
+    this.scheduleService.getAllSchedules().subscribe({
+      next: schedules => {
+        schedules.forEach(schedule => this.schedule.push(schedule));
+      },
+      error: err => console.error(err)
+    })
+  }
+
+  convertTimeFormat(time: string): string {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes} ${period}`;
+  }
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -135,8 +131,16 @@ export class ScheduleComponent {
     this.isEditSchedule = false;
   }
 
-  toggleViewSchedule(): void {
+  toggleViewSchedule(scheduleId: number | undefined): void {
     this.isViewSchedule = !this.isViewSchedule;
+
+    if(this.isViewSchedule){
+      this.currentSchedule = scheduleId;
+    }
+  }
+
+  setViewId(){
+    return this.currentSchedule;
   }
 
   handleViewBackToSchedule(): void {
