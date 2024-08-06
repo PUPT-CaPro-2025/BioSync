@@ -1,8 +1,18 @@
 package com.example.biosyncapi.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class Section {
+
+    @Id
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name="program_id", nullable=false)
     private Program program;
 
     private String section;

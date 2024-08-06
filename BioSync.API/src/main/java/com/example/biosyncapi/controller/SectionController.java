@@ -23,8 +23,8 @@ public class SectionController {
         return sectionService.getAllSections();
     }
 
-    @GetMapping
-    public Optional<Section> getSectionById(@RequestParam("id") Long id) {
+    @GetMapping("/{id}")
+    public Optional<Section> getSectionById(@PathVariable Long id) {
         return sectionService.getSectionById(id);
     }
 
