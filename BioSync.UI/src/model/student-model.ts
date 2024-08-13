@@ -6,6 +6,6 @@ export interface Student {
     middle_initial?: string;
     suffix?: string;
     program: string;
-    year: number;
+    year: string;
     section: number;
   }
