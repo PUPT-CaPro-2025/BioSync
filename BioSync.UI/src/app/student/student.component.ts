@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { AddStudentComponent } from '../add-student/add-student.component';
+import { EditStudentComponent } from '../edit-student/edit-student.component';
 
 @Component({
   selector: 'app-student',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule, AddStudentComponent],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule, AddStudentComponent, EditStudentComponent],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css'
 })
@@ -45,6 +46,7 @@ export class StudentComponent {
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddStudent: boolean = false;
+  isEditStudent: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -94,5 +96,13 @@ export class StudentComponent {
 
   handleBackToStudent(): void {
     this.isAddStudent = false;
+  }
+
+  toggleEditStudent(): void {
+    this.isEditStudent = !this.isEditStudent;
+  }
+
+  handleEditBackToStudent(): void {
+    this.isEditStudent = false;
   }
 }
