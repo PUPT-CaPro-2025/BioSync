@@ -1,1 +1,120 @@
-<p>edit-visitor works!</p>
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Edit Visitor's Log</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="visitorForm">
+        <div class="w-[45%] flex flex-col gap-4">
+            <div class="group flex flex-col gap-1">
+                <label for="visitor-name" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Visitor's Name
+                </label>
+                <input matInput id="visitor_name" name="visitor-name"
+                    placeholder="Enter visitor's Name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="name">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="visit" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Purpose of Visit
+                </label>
+                <input matInput id="visit" name="visit"
+                    placeholder="Enter visitor purpose of visit"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="visit">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="detail" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Other Details
+                </label>
+                <input matInput id="detail" name="detail"
+                    placeholder="Any additional details for visit"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="detail">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="event" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Event
+                </label>
+                <input matInput id="event" name="event"
+                    placeholder="Enter what event"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="event">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="laboratory" class="text-custom-16
+                    text-darkGray transition-colors duration-300 
+                    group-focus-within:text-brightRed">
+                    Laboratory Room
+                </label>
+                <mat-select id="laboratory" name="laboratory"
+                        placeholder="Select a laboratory room" class="bg-transparent 
+                        border-b-2 border-darkGray focus:border-brightRed 
+                        focus:outline-none transition-colors 
+                        duration-300 w-full py-2 px-1" formControlName="lab">
+                        @for(lab of labs; track lab) {
+                            <mat-option [value]="lab">{{lab}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="flex justify-between">
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="time-in" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Time In
+                    </label>
+                    <input matInput id="time_in" name="time-in"
+                        value="00:00" type="time" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="time_in">
+                </div>
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="time-out" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Time Out
+                    </label>
+                    <input matInput id="time_out" name="time-out"
+                        value="00:00" type="time" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="time_out">
+                </div>
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray
+                        hover:bg-lightGray hover:text-white"
+                        (click)="cancelEditVisitor()">
+                        Cancel
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White"
+                        (click)="submit()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
