@@ -6,11 +6,12 @@ import { Schedule } from '../../model/schedule-model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { AddStudentComponent } from '../add-student/add-student.component';
 
 @Component({
   selector: 'app-student',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule, AddStudentComponent],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css'
 })
@@ -43,6 +44,7 @@ export class StudentComponent {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  isAddStudent: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -84,5 +86,13 @@ export class StudentComponent {
       this.currentPage++;
       this.onPageChange();
     }
+  }
+
+  toggleAddStudent(): void {
+    this.isAddStudent = !this.isAddStudent;
+  }
+
+  handleBackToStudent(): void {
+    this.isAddStudent = false;
   }
 }
