@@ -8,6 +8,7 @@ import { AddSubjectComponent } from '../add-subject/add-subject.component';
 import {SubjectService} from "./subject.service";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
+import { EditSubjectComponent } from '../edit-subject/edit-subject.component';
 
 @Component({
   selector: 'app-subject',
@@ -19,6 +20,7 @@ import {MatDialog} from "@angular/material/dialog";
     FormsModule,
     MatIconModule,
     AddSubjectComponent,
+    EditSubjectComponent,
   ],
   providers: [SubjectService],
   templateUrl: './subject.component.html',
@@ -40,6 +42,7 @@ export class SubjectComponent implements OnInit{
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSubject: boolean = false;
+  isEditSubject: boolean = false;
 
   constructor(
     private subjectService: SubjectService,
@@ -134,5 +137,13 @@ export class SubjectComponent implements OnInit{
 
   handleBackToSubject(): void {
     this.isAddSubject = false;
+  }
+
+  toggleEditSubject(): void {
+    this.isEditSubject = !this.isEditSubject;
+  }
+
+  handleBackToEditSubject(): void {
+    this.isEditSubject = false;
   }
 }

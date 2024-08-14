@@ -6,6 +6,7 @@ import { Subject } from '../../model/subject-model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddProfessorComponent } from '../add-professor/add-professor.component';
+import { EditProfessorComponent } from '../edit-professor/edit-professor.component';
 
 @Component({
   selector: 'app-professor',
@@ -15,7 +16,8 @@ import { AddProfessorComponent } from '../add-professor/add-professor.component'
     CommonModule,
     FormsModule,
     MatIconModule,
-    AddProfessorComponent],
+    AddProfessorComponent,
+    EditProfessorComponent],
   templateUrl: './professor.component.html',
   styleUrl: './professor.component.css'
 })
@@ -40,6 +42,7 @@ export class ProfessorComponent {
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddProfessor: boolean = false;
+  isEditProfessor: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -89,5 +92,13 @@ export class ProfessorComponent {
 
   handleBackToProfessor(): void {
     this.isAddProfessor = false;
+  }
+
+  toggleEditProfessor(): void {
+    this.isEditProfessor = !this.isEditProfessor;
+  }
+
+  handleBackToEditProfessor(): void {
+    this.isEditProfessor = false;
   }
 }
