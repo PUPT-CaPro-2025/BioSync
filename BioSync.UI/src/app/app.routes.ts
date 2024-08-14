@@ -8,10 +8,13 @@ import { ProfessorComponent } from './professor/professor.component';
 import { StudentComponent } from './student/student.component';
 import { AttendanceComponent } from './attendance/attendance.component';
 import { LandingComponent } from './landing/landing.component';
+import { LoginAdminComponent } from './login-admin/login-admin.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/landing', pathMatch: 'full' },
+/*     { path: '', redirectTo: '/landing', pathMatch: 'full' }, */
     { path: "landing", component: LandingComponent },
+    { path: "admin-login", component: LoginAdminComponent },
+    { path: "admin-home", component: HomepageComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
     { path: "subject", component: SubjectComponent },
