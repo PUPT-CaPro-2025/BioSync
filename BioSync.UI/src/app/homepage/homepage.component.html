@@ -1,4 +1,6 @@
 <mat-sidenav-container class="main-container">
-  <mat-sidenav mode="side" opened><app-sidenav></app-sidenav></mat-sidenav>
+    @if(showSideNav){
+      <mat-sidenav mode="side" opened><app-sidenav></app-sidenav></mat-sidenav>
+    }
   <mat-sidenav-content><router-outlet></router-outlet></mat-sidenav-content>
 </mat-sidenav-container>

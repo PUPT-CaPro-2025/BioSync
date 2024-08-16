@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import { SidenavComponent } from '../sidenav/sidenav.component';
 import {MatSidenavModule} from '@angular/material/sidenav';
 
@@ -12,5 +12,14 @@ import {MatSidenavModule} from '@angular/material/sidenav';
   styleUrl: './homepage.component.css'
 })
 export class HomepageComponent {
-  
+  showSideNav = true;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe((event) => {
+      if(event instanceof NavigationEnd) {
+        this.showSideNav = !this.router.url.includes('/login');
+      }
+    })
+  }
+
 }

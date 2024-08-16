@@ -11,8 +11,8 @@ import { LandingComponent } from './landing/landing.component';
 import { LoginAdminComponent } from './login-admin/login-admin.component';
 
 export const routes: Routes = [
-/*     { path: '', redirectTo: '/landing', pathMatch: 'full' }, */
-    { path: "landing", component: LandingComponent },
+   { path: '', redirectTo: '/login', pathMatch: 'full' },
+    { path: "login", component: LandingComponent },
     { path: "admin-login", component: LoginAdminComponent },
     { path: "admin-home", component: HomepageComponent },
     { path: "dashboard", component: DashboardComponent },
