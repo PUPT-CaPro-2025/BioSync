@@ -13,7 +13,13 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 })
 export class HomepageComponent {
   showSideNav = true;
-  private hideSideNavRoutes = ['/login', '/admin-login'];
+  private hideSideNavRoutes = [
+    '/login', 
+    '/admin-login', 
+    'faculty-login', 
+    'student-login', 
+    'visitor-log'
+  ];
 
   constructor(private router: Router) {
     this.router.events.subscribe((event) => {
