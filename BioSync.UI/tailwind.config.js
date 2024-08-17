@@ -18,6 +18,7 @@ module.exports = {
         lightGray: '#7F7F7F',
       },
       fontSize: {
+        'custom-40': '40px',
         'custom-32': '32px',
         'custom-24': '24px',
         'custom-20': '20px',
@@ -43,6 +44,8 @@ module.exports = {
       padding: {
         '15': '60px',
         '19': '72px',
+        nintypx: '90px',
+        tenpx: '10px',
         sixpx: '6px',
         thirtypx: '30px',
       },

@@ -1,0 +1,84 @@
+<div class="main-container">
+    <div class="left-section">
+        <img src="../../assets/visitor-bg.png" alt="DOST Laboratory">
+    </div>
+    <div class="right-section">
+        <form class="mt-8 flex justify-center w-[90%] bg-transparent" [formGroup]="visitorLogForm">
+            <div class="w-[70%] flex flex-col gap-4">
+                <div class="header">
+                    <img src="../../assets/BioSyncLogo.png" alt="BioSync Logo">         
+                </div>
+                <div class="text-container">
+                    <h2 class="text-custom-40 font-semibold">Visitor's Log</h2>
+                    <p class="text-custom-16 text-lightGray">Welcome, Visitor! Please fill up the form below.</p>
+                </div>
+                <div class="group flex flex-col gap-1">
+                    <label for="visitor-name" class="text-custom-20
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Visitor's Name
+                    </label>
+                    <input matInput id="visitor_name" name="visitor-name"
+                        placeholder="Enter Visitor's Name" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1"
+                        formControlName="visitor_name">
+                </div>
+                <div class="group flex flex-col gap-1">
+                    <label for="purpose-of-visit" class="text-custom-20
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Purpose of Visit
+                    </label>
+                    <input matInput id="purpose_of_visit" name="purpose-of-visit"
+                        placeholder="Enter Visitor's purpose of visit" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1"
+                        formControlName="purpose_of_visit">
+                </div>
+                <div class="group flex flex-col gap-1">
+                    <label for="other-details" class="text-custom-20
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Other Details
+                    </label>
+                    <input matInput id="other_details" name="other-details"
+                        placeholder="Any additional details for visit" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1"
+                        formControlName="other_details">
+                </div>
+                <div class="group flex flex-col gap-1">
+                    <label for="destination" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Destination
+                    </label>
+                    <mat-select id="destination" name="destination"
+                            placeholder="Select your Destination" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1" formControlName="destination">
+                            @for(lab of labs; track lab) {
+                                <mat-option [value]="lab">{{lab}}</mat-option>
+                            }
+                    </mat-select>
+                </div>
+                <div class="flex gap-[40px] justify-end mt-4">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray
+                        hover:bg-lightGray hover:text-white">
+                        Cancel
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-20
+                        bg-gradient-red-orange rounded-full">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

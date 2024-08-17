@@ -1,0 +1,39 @@
+<div class="flex justify-center items-center relative h-[100%] z-[1]">
+    <div class="flex justify-between w-[40%] h-[55%] bg-white rounded-2xl p-10 bg-opacity-85">        
+        <div class="flex justify-center items-center w-[40%]">
+            <img class="w-[16rem] h-[16rem]" src="../../assets/BioSyncLogo.png" alt="BioSync Logo">
+        </div>
+        <div class="flex items-center flex-col gap-6">
+            <div class="flex items-center flex-col gap-1 mt-10">
+                <h1 class="text-black text-custom-40 font-medium">Welcome</h1>
+                <p class="text-lightGray text-custom-16">Please choose below to proceed</p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <button class="text-custom-16 text-white py-tenpx px-nintypx
+                    bg-gradient-red-orange rounded-2xl
+                    hover:bg-gradient-dark-red-orange hover:text-f4White"
+                    (click)="navigateTo('/student-login')">
+                    Student
+                </button>
+                <button class="text-custom-16 text-white py-tenpx px-nintypx
+                    bg-gradient-red-orange rounded-2xl
+                    hover:bg-gradient-dark-red-orange hover:text-f4White"
+                    (click)="navigateTo('/faculty-login')">
+                    Faculty
+                </button>
+                <button class="text-custom-16 text-white py-tenpx px-nintypx
+                    bg-gradient-red-orange rounded-2xl
+                    hover:bg-gradient-dark-red-orange hover:text-f4White"
+                    (click)="navigateTo('/visitor-log')">
+                    Visitor
+                </button>
+                <button class="text-custom-16 text-white py-tenpx px-nintypx
+                    bg-gradient-red-orange rounded-2xl
+                    hover:bg-gradient-dark-red-orange hover:text-f4White"
+                    (click)="navigateTo('/admin-login')">
+                    Admin In-Charge
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
