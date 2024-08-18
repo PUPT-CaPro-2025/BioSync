@@ -21,6 +21,10 @@ public class JwtServiceImpl {
     private String secretKey;
     private TokenRepository tokenRepository;
 
+    public JwtServiceImpl(TokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
+
     String generateToken(User user){
         return Jwts
                 .builder()
