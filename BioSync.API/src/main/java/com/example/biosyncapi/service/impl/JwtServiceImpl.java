@@ -1,6 +1,7 @@
 package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.User;
+import com.example.biosyncapi.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -18,6 +19,7 @@ public class JwtServiceImpl {
 
     @Value("${app.secret.key}")
     private String secretKey;
+    private TokenRepository tokenRepository;
 
     String generateToken(User user){
         return Jwts
@@ -55,8 +57,12 @@ public class JwtServiceImpl {
 
     public boolean isValid(String token, UserDetails user){
         String username = extractUsercode(token);
+        boolean isValidToken = tokenRepository
+                .findByToken(token)
+                .map(t -> !t.isLoggedOut()).orElse(false);
+
         return (username.equals(user.getUsername()))
-                && !isTokenExpired(token);
+                && !isTokenExpired(token) && isValidToken;
     }
 
     private boolean isTokenExpired(String token){
