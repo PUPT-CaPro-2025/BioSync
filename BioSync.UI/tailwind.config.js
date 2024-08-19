@@ -16,6 +16,7 @@ module.exports = {
         cleanWhite: '#FFFFFF',
         darkGray: '#393939',
         lightGray: '#7F7F7F',
+        semiGray: '#E3E3E3',
       },
       fontSize: {
         'custom-40': '40px',
@@ -36,9 +37,14 @@ module.exports = {
         darkGray: '#393939',
         lightGray: '#7F7F7F',
       },
+      borderWidth: {
+        '1': '1px',
+        '2': '2px'
+      },
       backgroundImage: {
         'gradient-red-orange': 'linear-gradient(to right, #9F0303, #D31119, #E4581D)',
         'gradient-dark-red-orange': 'linear-gradient(to right, #860404, #ad0f14, #ac4113)',
+        'gradient-orange-red-down': 'linear-gradient(to bottom, #E4581D, #D31119)',
         lightGray: '#7F7F7F',
       },
       padding: {
@@ -52,7 +58,10 @@ module.exports = {
       margin: {
         '4px': '4px',  
         '2px': '2px',  
-    }
+      },
+      fontWeight: {
+        'weight700': '700',
+      },
     },
   },
   plugins: [],
