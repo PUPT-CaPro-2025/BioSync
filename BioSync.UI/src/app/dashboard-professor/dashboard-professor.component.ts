@@ -28,10 +28,8 @@ export interface Schedule {
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardProfessorComponent {
-  totalAbsences: number =  0;
-  totalAttendance: number = 72;
-  totalTardiness: number = 1;
-  totalSubject: number = 8;
+  totalStudents: number =  500;
+  totalSubject: number = 4;
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
