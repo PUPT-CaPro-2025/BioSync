@@ -1,0 +1,113 @@
+.toolbar-container {
+    margin-top: 5rem;
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    width: 96%;
+  }
+  
+  .example-full-width {
+  width: 100%;
+  }
+  
+  .form-button button{
+    font-size: 14px;
+    padding: 12px 60px;
+    background-color: #D31119;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+  }
+  
+  .form-button button:hover {
+    background-color: #800c10;
+  }
+  
+  .calendar-container {
+      background-color: white;
+      padding: 10px;
+      width: 68%;
+      font-family: 'Roboto', sans-serif;
+      border-radius: 20px;
+      padding: 20px;
+  }
+    
+  .fc,  
+  .fc .fc-view, 
+  .fc .fc-view * {
+      border: none !important;
+      outline: none !important;
+  }
+  
+  .fc-toolbar-title {
+    color: #D31119 !important;    
+    font-size: 24px !important;
+    font: medium !important; 
+  }
+  
+  .fc-button.fc-today-button {
+    background-color: #D31119 !important;
+    color: white !important;
+  }
+  
+  .fc-button.fc-today-button:hover {
+    background-color: #800f13 !important;
+  }
+  
+  .fc-prev-button,
+  .fc-next-button {
+    background-color: transparent !important;
+    border: none !important;
+    color: #D31119 !important;
+    box-shadow: none !important; 
+    font-size: larger !important;
+  }
+  
+  .fc-prev-button:hover,
+  .fc-next-button:hover {
+    color: #800f13 !important;
+  }
+  
+  .fc-col-header-cell {
+    position: relative;
+    padding: 10px !important;
+    z-index: 1;
+    background-color: transparent !important;
+  }
+  
+  .fc-col-header-cell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-bottom: 2px solid #D31119;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+  
+  .fc-day-today {
+    position: relative;
+    z-index: 1;
+    background-color: transparent !important;
+  }
+  
+  .fc-day-today .fc-daygrid-day-number {
+    position: relative;
+    z-index: 1; 
+  }
+  
+  .fc-day-today::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid #D31119;
+    border-radius: 8px;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
