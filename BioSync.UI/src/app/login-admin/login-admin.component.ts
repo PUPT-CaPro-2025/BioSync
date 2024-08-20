@@ -13,7 +13,7 @@ import {CookieService} from "../../services/cookie.service";
   selector: 'app-login-admin',
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
-  providers: [LoginService, AuthService],
+  providers: [LoginService, AuthService, CookieService],
   templateUrl: './login-admin.component.html',
   styleUrl: './login-admin.component.css'
 })
@@ -24,7 +24,8 @@ export class LoginAdminComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private loginService: LoginService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit() {
@@ -56,8 +57,8 @@ export class LoginAdminComponent implements OnInit {
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
 
-        const expires = new Date(expiry).toUTCString();
-        document.cookie = `authToken=${token}; expires=${expires}; path=/; SameSite=Strict`;
+        this.cookieService.setCookie("authToken", token, expiry)
+        this.cookieService.setCookie("role", response.role);
 
         this.navigateTo('/dashboard');
       },

@@ -12,9 +12,13 @@ export class CookieService {
     return undefined;
   }
 
-  setCookie(name: string, value: string, days: number): void {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+  setCookie(name: string, value: string, expiry?: number): void {
+    if(expiry) {
+      const expires = new Date(expiry).toUTCString();
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+    } else {
+      document.cookie = `${name}=${encodeURIComponent(value)}; path=/`;
+    }
   }
 
   deleteCookie(name: string): void {

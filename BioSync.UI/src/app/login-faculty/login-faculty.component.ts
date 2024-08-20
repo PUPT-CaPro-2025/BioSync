@@ -13,7 +13,7 @@ import {CookieService} from "../../services/cookie.service";
   selector: 'app-login-faculty',
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
-  providers: [LoginService, LoginAdminComponent, AuthService],
+  providers: [LoginService, LoginAdminComponent, AuthService, CookieService],
   templateUrl: './login-faculty.component.html',
   styleUrl: './login-faculty.component.css'
 })
@@ -25,7 +25,8 @@ export class LoginFacultyComponent implements OnInit{
     private loginService: LoginService,
     private alComp: LoginAdminComponent,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cookieService: CookieService
   ) {}
 
   ngOnInit() {
@@ -57,9 +58,8 @@ export class LoginFacultyComponent implements OnInit{
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
 
-        const expires = new Date(expiry).toUTCString();
-        document.cookie = `authToken=${token}; expires=${expires}; path=/; SameSite=Strict`;
-        document.cookie = `role=${response.role};`
+        this.cookieService.setCookie("authToken", token, expiry)
+        this.cookieService.setCookie("role", response.role);
 
         this.alComp.navigateTo('/dashboard');
       },

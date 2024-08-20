@@ -19,7 +19,7 @@ export class AppComponent implements OnInit{
   ) {}
 
   ngOnInit() {
-    if (this.authService) {
+    if (this.authService.isAuthenticated()) {
       // Redirect to dashboard if already authenticated
       this.router.navigate(['/dashboard']).then();
     } else {
