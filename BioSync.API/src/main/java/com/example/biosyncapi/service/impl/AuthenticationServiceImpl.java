@@ -59,7 +59,9 @@ public class AuthenticationServiceImpl {
 
         saveUserToken(jwt, user);
 
-        return new AuthenticationResponse(jwt);
+        String role = String.valueOf(user.getRole());
+
+        return new AuthenticationResponse(jwt, role);
     }
 
     private void revokeAllTokenByUser(User user) {
