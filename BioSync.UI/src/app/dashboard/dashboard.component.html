@@ -1,1 +1,8 @@
-<p>dashboard works!</p>
+@if(getRole() === "FACULTY"){
+  <app-dashboard-professor/>
+} @else if (getRole() === "STUDENT"){
+  <app-dashboard-student/>
+} @else {
+  <!-- insert admin component [dont code here create new component] -->
+}
+

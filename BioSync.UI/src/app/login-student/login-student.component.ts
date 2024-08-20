@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatInput} from "@angular/material/input";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-login-student',
   standalone: true,
-  imports: [MatIconModule, ReactiveFormsModule],
+  imports: [MatIconModule, ReactiveFormsModule, MatInput],
   templateUrl: './login-student.component.html',
   styleUrl: './login-student.component.css'
 })

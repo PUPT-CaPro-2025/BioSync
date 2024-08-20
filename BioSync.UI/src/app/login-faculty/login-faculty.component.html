@@ -1,9 +1,9 @@
 <div class="main-container">
     <div class="left-section">
-        <form class="mt-8 flex justify-center w-[90%] bg-transparent" [formGroup]="facultyLoginForm">
+        <form class="mt-8 flex justify-center w-[90%] bg-transparent" (ngSubmit)="submit()" [formGroup]="facultyLoginForm">
             <div class="w-[55%] flex flex-col gap-4">
                 <div class="header">
-                    <img src="../../assets/BioSyncLogo.png" alt="BioSync Logo">         
+                    <img src="../../assets/BioSyncLogo.png" alt="BioSync Logo">
                 </div>
                 <div class="text-container">
                     <h2 class="text-custom-40 font-semibold">Faculty Login</h2>
@@ -12,11 +12,11 @@
                 <div class="group relative flex items-center">
                     <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
                     group-focus-within:text-brightRed">supervised_user_circle</mat-icon>
-                    <input matInput id="user_name" name="user-name"
+                    <input matInput id="usercode" name="usercode"
                         placeholder="Faculty Code" class="bg-transparent
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
-                        duration-300 w-full pl-12 pr-20 pt-4 pb-4" formControlName="user_name">
+                        duration-300 w-full pl-12 pr-20 pt-4 pb-4" formControlName="usercode">
                 </div>
                 <div class="group relative flex items-center">
                     <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
