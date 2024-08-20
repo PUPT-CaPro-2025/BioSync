@@ -14,6 +14,8 @@ import { LoginStudentComponent } from './login-student/login-student.component';
 import { LoginVisitorComponent } from './login-visitor/login-visitor.component';
 import { SubjectScheduleStudentComponent } from './subject-schedule-student/subject-schedule-student.component';
 import { AttendanceManagementProfessorComponent } from './attendance-management-professor/attendance-management-professor.component';
+import { DashboardStudentComponent } from './dashboard-student/dashboard-student.component';
+import { DashboardProfessorComponent } from './dashboard-professor/dashboard-professor.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -31,4 +33,6 @@ export const routes: Routes = [
     { path: "attendance", component: AttendanceComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
+    { path: "dashboard-student", component: DashboardStudentComponent },
+    { path:"dashboard-professor", component: DashboardProfessorComponent}
 ];

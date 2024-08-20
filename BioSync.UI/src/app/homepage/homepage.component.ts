@@ -18,7 +18,9 @@ export class HomepageComponent {
     '/admin-login', 
     'faculty-login', 
     'student-login', 
-    'visitor-log'
+    'visitor-log',
+    'dashboard-student',
+    'dashboard-professor'
   ];
 
   constructor(private router: Router) {

@@ -1,0 +1,51 @@
+
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Welcome, Professor</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-8 flex justify-start gap-5 w-[94%] bg-transparent">
+        <div class="flex justify-between w-[24%] p-4 items-center rounded-3xl bg-gradient-orange-red-down text-white">
+            <div class="flex flex-col">
+                <p class="text-custom-40">{{ totalStudents }}</p>
+                <p class="text-custom-16">Total of Students</p>
+            </div>
+            <img src="../../assets/total-students.svg" alt="Total Students Icon">
+        </div>
+        <div class="flex justify-between w-[24%] p-4 items-center rounded-3xl bg-gradient-orange-red-down text-white">
+            <div class="flex flex-col">
+                <p class="text-custom-40">{{ totalSubject }}</p>
+                <p class="text-custom-16">Total of Subject</p>
+            </div>
+            <img src="../../assets/total-subject-icon.svg" alt="Total Subject Icon">
+        </div>
+    </div>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-8 mb-8 flex justify-between w-[94%] bg-transparent">
+        <div class="calendar-container">
+            <full-calendar [options]="calendarOptions"></full-calendar>
+        </div>
+        <div class="flex flex-col w-[30%] p-5 rounded-3xl bg-white">
+            <p class="text-custom-24 mt-1 text-brightRed font-medium">Upcoming Classes</p>
+            <img class="mt-3" src="../../assets/red-line.svg" alt="Red line">
+            <div class="flex flex-col mt-6 gap-3">
+                @for (schedule of filteredUpcomingSchedules; track schedule) {
+                    <div class="flex justify-start gap-12 border-semiGray border-2 p-5 bg-white rounded-xl">
+                        <div class="flex flex-col justify-center items-center text-brightRed ml-3">
+                            <p class="text-custom-16">{{ schedule.month }}</p>
+                            <p class="text-custom-24 font-semibold">{{ schedule.day }}</p>
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-custom-14 font-weight700">{{ schedule.subjectName }}</p>
+                            <p class="text-custom-14">{{ schedule.labRoom }}</p>
+                            <p class="text-custom-14 italic">{{ schedule.startTime }}-{{schedule.endTime}}</p>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+        </div>
+    </div>
+</div>
