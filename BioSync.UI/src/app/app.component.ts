@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Router, RouterOutlet} from '@angular/router';
+import {NavigationStart, Router, RouterOutlet} from '@angular/router';
 import { HomepageComponent } from './homepage/homepage.component';
 import {AuthService} from "../services/auth/auth.service";
 
@@ -13,19 +13,25 @@ import {AuthService} from "../services/auth/auth.service";
 })
 export class AppComponent implements OnInit{
 
+  private publicRoutes = ['/login', '/admin-login', '/faculty-login', '/student-login', '/visitor-log'];
+
+
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    if (this.authService.isAuthenticated()) {
-      // Redirect to dashboard if already authenticated
-      this.router.navigate(['/dashboard']).then();
-    } else {
-      // Redirect to login if not authenticated
-      this.router.navigate(['/login']).then();
-    }
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        const isPublicRoute = this.publicRoutes.includes(event.url);
+        if (this.authService.isAuthenticated() && isPublicRoute) {
+          this.router.navigate(['/dashboard']).then();
+        } else if (!this.authService.isAuthenticated() && !isPublicRoute) {
+          this.router.navigate(['/login']).then();
+        }
+      }
+    });
   }
 
 
