@@ -1,13 +1,13 @@
 <div class="main-container">
     <div class="left-section">
-        <form class="mt-8 flex justify-center w-[90%] bg-transparent" (ngSubmit)="submit()" [formGroup]="studentLoginForm">
-            <div class="w-[55%] flex flex-col gap-4">
+        <form class="flex justify-center w-[90%] bg-transparent" (ngSubmit)="submit()" [formGroup]="studentLoginForm">
+            <div class="w-[50%] flex flex-col gap-4">
                 <div class="header">
                     <img src="../../assets/BioSyncLogo.png" alt="BioSync Logo">
                 </div>
                 <div class="text-container">
-                    <h2 class="text-custom-40 font-semibold">Student Login</h2>
-                    <p class="text-custom-16 text-lightGray">Welcome, Iskolar! Please log in to continue.</p>
+                    <h2 class="text-custom-40 text-darkGrey font-semibold  mb-4">Student Login</h2>
+                    <p class="text-custom-16 text-lightGray mb-6">Welcome, Iskolar! Please log in to continue.</p>
                 </div>
                 <div class="group relative flex items-center">
                     <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
@@ -27,8 +27,8 @@
                         focus:outline-none transition-colors
                         duration-300 w-full pl-12 pr-20 pt-4 pb-4" formControlName="password">
                 </div>
-                <button class="text-custom-20 text-white py-3 px-24
-                    bg-gradient-red-orange rounded-full
+                <button class="text-custom-16 text-white py-3 px-24
+                    bg-gradient-red-orange rounded-2xl
                     hover:bg-gradient-dark-red-orange hover:text-f4White mt-10">
                     Login
                 </button>
