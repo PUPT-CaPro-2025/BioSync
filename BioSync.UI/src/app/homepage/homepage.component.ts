@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./homepage.component.css']
 })
 export class HomepageComponent implements AfterViewInit {
-  showSideNav = true; // Default to showing sidenav
+  showSideNav = true;
   isMobile = false;
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -21,7 +21,7 @@ export class HomepageComponent implements AfterViewInit {
     '/login', 
     '/admin-login', 
     '/student-login', 
-    '/professor-login', 
+    '/faculty-login', 
     '/visitor-log'
   ];
 
@@ -34,26 +34,26 @@ export class HomepageComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.checkScreenSize(); // Ensure sidenav state is correct after view initialization
+    this.checkScreenSize();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.checkScreenSize();
-    this.cd.detectChanges(); // Trigger change detection
+    this.cd.detectChanges();
   }
 
   private checkScreenSize() {
     this.isMobile = window.innerWidth <= 900;
     if (this.isMobile) {
-      this.showSideNav = false; // Hide sidenav by default on mobile
+      this.showSideNav = false;
     } else {
       this.showSideNav = !this.hideSideNavRoutes.some(
         route => this.router.url.startsWith(route)
-      ); // Check if sidenav should be visible on larger screens
+      ); 
     }
     if (this.sidenav) {
-      this.sidenav.opened = !this.isMobile && this.showSideNav; // Adjust sidenav state
+      this.sidenav.opened = !this.isMobile && this.showSideNav;
     }
   }
 
@@ -62,7 +62,7 @@ export class HomepageComponent implements AfterViewInit {
       route => this.router.url.startsWith(route)
     );
     if (this.isMobile) {
-      this.sidenav.close(); // Ensure sidenav is closed on mobile
+      this.sidenav.close();
     }
   }
 
