@@ -8,7 +8,7 @@ import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
-import {ScheduleService} from "./schedule.service";
+import {ScheduleService} from "../../services/schedule.service";
 import {Router} from "@angular/router";
 import {Subject} from "../../model/subject-model";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";

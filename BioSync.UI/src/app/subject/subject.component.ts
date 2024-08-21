@@ -5,7 +5,7 @@ import { Subject } from '../../model/subject-model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddSubjectComponent } from '../add-subject/add-subject.component';
-import {SubjectService} from "./subject.service";
+import {SubjectService} from "../../services/subject.service";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 import { EditSubjectComponent } from '../edit-subject/edit-subject.component';

@@ -3,7 +3,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {Schedule} from "../../model/schedule-model";
 import {Subject} from "rxjs";
-import {ViewScheduleService} from "./view-schedule.service";
+import {ViewScheduleService} from "../../services/view-schedule.service";
 import {ScheduleComponent} from "../schedule/schedule.component";
 
 
