@@ -7,6 +7,10 @@
     background: #F4F4F4;
 }
 
+.mat-sidenav {
+    width: 325px;
+}
+
 .sidenav-toggle-button {
     position: absolute;
     top: 10px;
