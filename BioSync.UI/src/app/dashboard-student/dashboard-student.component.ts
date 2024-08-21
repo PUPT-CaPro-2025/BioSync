@@ -25,7 +25,7 @@ export interface Schedule {
   imports: [FullCalendarModule, MatToolbarModule],
   templateUrl: './dashboard-student.component.html',
   styleUrl: './dashboard-student.component.css',
-  encapsulation: ViewEncapsulation.None, // Disable view encapsulation
+  encapsulation: ViewEncapsulation.None,
 })
 export class DashboardStudentComponent {
   totalAbsences: number =  2;
@@ -43,7 +43,7 @@ export class DashboardStudentComponent {
       { title: 'Computer Programming I', date: '2024-08-16' },
       { title: 'Defense', date: '2024-08-28' },
     ],
-    eventColor: '#D31119',
+    eventColor: '#F84C42',
   };
 
   //Temporary: if the date cell was click!
