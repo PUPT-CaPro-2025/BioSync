@@ -1,6 +1,5 @@
 package com.example.biosyncapi.controller;
 
-import com.example.biosyncapi.model.AuthenticationResponse;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.service.impl.AuthenticationServiceImpl;
 import org.springframework.http.HttpStatus;

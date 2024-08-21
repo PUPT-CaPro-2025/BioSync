@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class AuthenticationServiceImpl {
@@ -84,9 +83,7 @@ public class AuthenticationServiceImpl {
         );
 
         if(!validTokenListByUser.isEmpty()){
-            validTokenListByUser.forEach(token -> {
-                token.setLoggedOut(true);
-            });
+            validTokenListByUser.forEach(token -> token.setLoggedOut(true));
         }
 
         tokenRepository.saveAll(validTokenListByUser);
