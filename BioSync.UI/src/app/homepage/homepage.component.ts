@@ -1,18 +1,21 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { SidenavComponent } from '../sidenav/sidenav.component';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [RouterOutlet, SidenavComponent, MatSidenavModule],
+  imports: [RouterOutlet, SidenavComponent, MatSidenavModule, MatIconModule],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.css']
 })
 export class HomepageComponent {
   showSideNav = true;
   isMobile = false;
+
+  @ViewChild('sidenav') sidenav!: MatSidenav;
 
   private hideSideNavRoutes = [
     '/login',
@@ -53,6 +56,13 @@ export class HomepageComponent {
   onCloseSidenav() {
     if (this.isMobile) {
       this.showSideNav = false;
+    }
+  }
+
+  handleSidenavClose() {
+    this.showSideNav = false;
+    if (this.sidenav) {
+      this.sidenav.close();
     }
   }
 }
