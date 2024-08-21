@@ -6,11 +6,14 @@ import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.TokenRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class AuthenticationServiceImpl {
@@ -30,6 +33,11 @@ public class AuthenticationServiceImpl {
     }
 
     public User register(User request){
+
+        if(userRepository.existsByUsercode(request.getUsercode())){
+            throw new IllegalArgumentException("Usercode already exists");
+        }
+
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setMiddleName(request.getMiddleName());
@@ -44,10 +52,16 @@ public class AuthenticationServiceImpl {
     }
 
     public AuthenticationResponse authenticate(User request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()));
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()));
+        } catch (AuthenticationException e) {
+            throw new BadCredentialsException("Invalid username or password", e);
+        }
+
 
         User user = userRepository
                 .findByUsercode(request.getUsercode())
