@@ -5,12 +5,9 @@
     <div class="right-section">
         <form class="mt-8 flex justify-center w-[90%] bg-transparent" [formGroup]="visitorLogForm">
             <div class="w-[70%] flex flex-col gap-4">
-                <div class="header">
-                    <img src="../../assets/BioSyncLogo.png" alt="BioSync Logo">         
-                </div>
                 <div class="text-container">
-                    <h2 class="text-custom-40 font-semibold">Visitor's Log</h2>
-                    <p class="text-custom-16 text-lightGray">Welcome, Visitor! Please fill up the form below.</p>
+                    <h2 class="text-custom-40 text-darkGrey font-semibold mb-4">Visitor's Log</h2>
+                    <p class="text-custom-16 text-lightGray mb-6">Welcome, Visitor! Please fill up the form below.</p>
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="visitor-name" class="text-custom-20
@@ -74,7 +71,8 @@
                         Cancel
                     </button>
                     <button class="text-custom-14 text-white py-2 px-20
-                        bg-gradient-red-orange rounded-full">
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White">
                         Submit
                     </button>
                 </div>
