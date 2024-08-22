@@ -70,7 +70,11 @@ export class SubjectComponent implements OnInit{
 
   openDeleteDialog(subject: Subject): void {
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: "Delete Subject",
+        message: "Are you sure you want to delete this subject?"
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
