@@ -10,6 +10,9 @@ import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
 import {LogoutService} from "../../services/auth/logout.service";
 import {CookieService} from "../../services/cookie.service";
+import {Subject} from "../../model/subject-model";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-sidenav',
@@ -28,6 +31,7 @@ export class SidenavComponent implements OnInit {
     private router: Router,
     private logoutService: LogoutService,
     private cookieService: CookieService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -79,6 +83,23 @@ export class SidenavComponent implements OnInit {
       this.activeButton = null;
       localStorage.removeItem('activeButton');
     }
+  }
+
+  openLogoutDialog(): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: "Logout",
+        message: "Are you sure you want to log out of your account?",
+        action: "Logout"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.logout();
+      }
+    });
   }
 
   logout(){

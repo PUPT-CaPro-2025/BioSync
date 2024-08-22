@@ -14,9 +14,9 @@ export class LogoutService {
   logout() {
     const url = `${environment.apiUrl}/api/v1/auth/logout`;
     const token = this.cookieService.getCookie("authToken");
-    const header = new HttpHeaders({'Authorization': 'Bearer ' + token});
+    const header = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.get(url, {
+    return this.http.post(url, {}, {
       headers: header,
       withCredentials: true
     });
