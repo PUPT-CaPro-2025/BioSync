@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Authentication} from "../../model/authentication.model";
-import {LoginService} from "../../services/login.service";
+import {LoginService} from "../../services/auth/login.service";
 import {LoginAdminComponent} from "../login-admin/login-admin.component";
 import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../services/auth/auth.service";

@@ -9,8 +9,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
 import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
-import {Router} from "@angular/router";
-import {Subject} from "../../model/subject-model";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -83,7 +81,11 @@ export class ScheduleComponent implements OnInit{
 
   openDeleteDialog(schedule: Schedule): void {
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: 'Delete Schedule',
+        message: 'Are you sure you want to delete this schedule?',
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
