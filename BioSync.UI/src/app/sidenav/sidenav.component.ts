@@ -10,7 +10,6 @@ import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
 import {LogoutService} from "../../services/auth/logout.service";
 import {CookieService} from "../../services/cookie.service";
-import {Subject} from "../../model/subject-model";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 
