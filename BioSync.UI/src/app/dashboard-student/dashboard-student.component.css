@@ -156,7 +156,55 @@ width: 100%;
 }
 
 @media (max-width: 999px) {
+  .group-total {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .data-row {
+    width: 225px;
+  }
+
   .classes-header {
     font-size: 20px;
+  }
+
+  .fc-toolbar-title {
+    font-size: 20px !important;
+  }
+
+  .calendar-upcoming-class {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .calendar-container {
+    width: 100%;
+  }
+
+  .upcoming-class {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .fc-toolbar-chunk {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fc-toolbar-title {
+    text-align: center;
+    width: 100%;
+  }
+
+  .fc .fc-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
   }
 }
