@@ -1,12 +1,13 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
-import { RouterLink, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sidenav',
@@ -18,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class SidenavComponent implements OnInit {
   activeButton: string | null = 'dashboard';
   isDropdownOpen = false;
+  @Output() sidenavClose = new EventEmitter<void>();
 
   constructor(private router: Router) {}
 
@@ -57,10 +59,14 @@ export class SidenavComponent implements OnInit {
     }
   }
 
+  closeSidenav() {
+    this.sidenavClose.emit();
+  }
+
   @HostListener('document:click', ['$event'])
   closeDropdownOnClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (this.isDropdownOpen && !target.closest('.menu-container') && 
+    if (this.isDropdownOpen && !target.closest('.menu-container') &&
         !target.closest('.dropdown-content')) {
       this.isDropdownOpen = false;
       this.activeButton = null;

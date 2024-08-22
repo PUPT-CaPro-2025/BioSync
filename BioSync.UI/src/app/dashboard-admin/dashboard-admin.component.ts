@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit  } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
@@ -20,18 +20,51 @@ export interface Schedule {
 }
 
 @Component({
-  selector: 'app-dashboard-student',
+  selector: 'app-dashboard-admin',
   standalone: true,
   imports: [FullCalendarModule, MatToolbarModule],
-  templateUrl: './dashboard-student.component.html',
-  styleUrl: './dashboard-student.component.css',
+  templateUrl: './dashboard-admin.component.html',
+  styleUrl: './dashboard-admin.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class DashboardStudentComponent {
-  totalAbsences: number =  2;
-  totalAttendance: number = 50;
-  totalTardiness: number = 0;
+export class DashboardAdminComponent implements OnInit {
+  currentTime!: string;
+  currentDate!: string;
   totalSubject: number = 8;
+  totalStudents: number = 300;
+  totalProfessors: number = 32;
+
+  ngOnInit(): void {
+    this.updateTimeAndDate();
+    setInterval(() => this.updateTimeAndDate(), 1000);
+  }
+
+  updateTimeAndDate(): void {
+    const now = new Date();
+    this.currentTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+
+    const formattedDate = now.toLocaleDateString('en-US', options);
+
+    const match = formattedDate.match(/^(.*?), (\w+ \d{1,2}, \d{4})$/);
+    if (match) {
+      const [_, weekday, monthDayYear] = match;
+      const [month, day, year] = monthDayYear.split(' ');
+      this.currentDate = `${weekday.toUpperCase()}, ${month.charAt(0).toUpperCase()}${month.slice(1).toLowerCase()} ${day} ${year}`;
+    } else {
+      this.currentDate = formattedDate;
+    }
+  }
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',

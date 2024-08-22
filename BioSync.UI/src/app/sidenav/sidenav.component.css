@@ -49,7 +49,7 @@
 }
 
 .menu-container.clicked {
-    background: linear-gradient(90deg, #9F0303, #D31119, #E4581D);
+    background: linear-gradient(90deg, #F84C42, #F9653F, #FB7E3C);
 }
 
 .menu-container.clicked p {
@@ -122,5 +122,33 @@
 
 .logout-content p {
     font-size: 24px;
-    color: #A20704;
+    color: #F84C42;
+}
+
+.close-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px; 
+    border-radius: 50%; 
+    background-color: #f0f0f0; 
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 8px;
+}
+  
+.close-icon:hover {
+  background-color: #d0d0d0;
+  transform: scale(1.1);
+}
+
+@media (min-width: 901px) {
+    .close-icon {
+      display: none;
+    }
 }

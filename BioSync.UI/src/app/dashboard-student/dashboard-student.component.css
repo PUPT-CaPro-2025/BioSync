@@ -41,32 +41,32 @@ width: 100%;
 }
 
 .fc-toolbar-title {
-  color: #D31119 !important;    
+  color: #F84C42 !important;    
   font-size: 24px !important;
   font: medium !important; 
 }
 
 .fc-button.fc-today-button {
-  background-color: #D31119 !important;
+  background-color: #F84C42 !important;
   color: white !important;
 }
 
 .fc-button.fc-today-button:hover {
-  background-color: #800f13 !important;
+  background-color: #942f2a !important;
 }
 
 .fc-prev-button,
 .fc-next-button {
   background-color: transparent !important;
   border: none !important;
-  color: #D31119 !important;
+  color: #F84C42 !important;
   box-shadow: none !important; 
   font-size: larger !important;
 }
 
 .fc-prev-button:hover,
 .fc-next-button:hover {
-  color: #800f13 !important;
+  color: #942f2a !important;
 }
 
 .fc-col-header-cell {
@@ -83,7 +83,7 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border-bottom: 2px solid #D31119;
+  border-bottom: 2px solid #F84C42;
   pointer-events: none;
   box-sizing: border-box;
 }
@@ -106,8 +106,105 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border: 2px solid #D31119;
+  border: 2px solid #F84C42;
   border-radius: 8px;
   pointer-events: none;
   box-sizing: border-box;
+}
+
+@media (min-width: 1000px) and (max-width: 1325px) {
+  .classes-header {
+    font-size: 20px;
+  }
+
+  .row-classes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .month-day {
+    margin-left: 0;
+  }
+
+  .subject-name {
+    font-size: 12px;
+  }
+
+  .lab-room {
+    font-size: 12px;
+  }
+
+  .time {
+    font-size: 12px;
+  }
+
+  .calendar-container {
+    height: max-content;
+  }
+
+  .group-total {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .data-row {
+    width: 225px;
+  }
+}
+
+@media (max-width: 999px) {
+  .group-total {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  .data-row {
+    width: 225px;
+  }
+
+  .classes-header {
+    font-size: 20px;
+  }
+
+  .fc-toolbar-title {
+    font-size: 20px !important;
+  }
+
+  .calendar-upcoming-class {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .calendar-container {
+    width: 100%;
+  }
+
+  .upcoming-class {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .fc-toolbar-chunk {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fc-toolbar-title {
+    text-align: center;
+    width: 100%;
+  }
+
+  .fc .fc-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 }
