@@ -23,3 +23,37 @@
 .form-button button:hover {
     background-color: #800c10;
 }
+
+@media (max-width: 1260px) {
+    .column-container {
+        width: 60%;
+    }
+}
+
+@media (max-width: 1030px) {
+    .column-container {
+        width: 80%;
+    }
+}
+
+@media (max-width: 700px) {
+    .button-container {
+        justify-content: center;
+        flex-direction: column-reverse;
+        gap: 20px;
+    }
+
+    .cancel-button {
+        width: 100%;
+    }
+
+    .save-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 425px) {
+    .column-container {
+        width: 100%;
+    }
+}
