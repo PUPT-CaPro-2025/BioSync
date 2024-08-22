@@ -42,6 +42,7 @@ public class AuthenticationServiceImpl {
         user.setMiddleName(request.getMiddleName());
         user.setLastName(request.getLastName());
         user.setUsercode(request.getUsercode());
+        user.setSuffix(request.getSuffix());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 

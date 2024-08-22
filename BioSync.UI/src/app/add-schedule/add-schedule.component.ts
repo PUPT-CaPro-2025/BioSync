@@ -10,12 +10,14 @@ import {AddScheduleService} from "../../services/add-schedule.service";
 import {Schedule} from "../../model/schedule-model";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import {User} from "../../model/user.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
   imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule],
-  providers: [SubjectService, AddScheduleService],
+  providers: [SubjectService, AddScheduleService, UserService],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
@@ -24,6 +26,7 @@ export class AddScheduleComponent implements OnInit{
   @Output() createdSchedule = new EventEmitter<Schedule>();
 
   selectedSubject!: Subject | undefined;
+  selectedProfessor!: User | undefined;
 
   sections: string[] = [
     'BSIT 4-1',
@@ -37,14 +40,7 @@ export class AddScheduleComponent implements OnInit{
     'Aboitiz Laboratory',
   ];
 
-  professors: string[] = [
-    'Gecilie Almirañez',
-    'Dustin Santos',
-    'Jhean Galope',
-    'Steven Villarosa',
-    'Nikki Dela Rosa',
-    'Lady Minette Modesto'
-  ];
+  professors: User[] = [];
 
   semesters: string[] = [
     '1st Semester',
@@ -64,13 +60,15 @@ export class AddScheduleComponent implements OnInit{
     private formBuilder: FormBuilder,
     private subjectService: SubjectService,
     private addScheduleService: AddScheduleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private userService: UserService,
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.getCurrentDate();
     this.getSubjects();
+    this.getProfessors();
   }
 
   initForm(): void{
@@ -104,6 +102,12 @@ export class AddScheduleComponent implements OnInit{
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
   }
 
+  onProfessorChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedId = Number(target.value)
+    console.log(selectedId);
+  }
+
   cancelOrAddSchedule(): void {
     this.backToSchedule.emit();
   }
@@ -127,8 +131,17 @@ export class AddScheduleComponent implements OnInit{
       width: '400px'
     })
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       this.backToSchedule.emit();
+    })
+  }
+
+  getProfessors(): void {
+    this.userService.getUsersByRole("FACULTY").subscribe({
+      next: users => {
+        this.professors = users;
+      },
+      error: error => { console.error(error); }
     })
   }
 
@@ -145,7 +158,11 @@ export class AddScheduleComponent implements OnInit{
 
   submit() {
     this.scheduleForm.patchValue({
-      subject: this.selectedSubject
+      subject: this.selectedSubject,
+      professor: {
+        id: this.scheduleForm.get('professor')?.value,
+        role: 'FACULTY'
+      }
     })
     let newSchedule = this.scheduleForm.value;
 
@@ -160,8 +177,6 @@ export class AddScheduleComponent implements OnInit{
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
     }
-
-    console.log(newSchedule);
 
     this.createSchedule(newSchedule);
   }
