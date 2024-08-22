@@ -26,6 +26,7 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class AddProfessorComponent implements OnInit{
   @Output() backToProfessor = new EventEmitter<void>();
+  @Output() professorAdded = new EventEmitter<User>();
 
   allSuffix: string[] = [
     'N/A',
@@ -80,6 +81,7 @@ export class AddProfessorComponent implements OnInit{
       next: (userCreated: User) => {
         if(!userCreated.id) return;
         this.displaySuccess()
+        this.professorAdded.emit(userCreated);
       },
       error: error => { console.log(error); }
     });
@@ -90,7 +92,7 @@ export class AddProfessorComponent implements OnInit{
       width: '400px'
     })
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
        this.backToProfessor.emit();
     })
   }
