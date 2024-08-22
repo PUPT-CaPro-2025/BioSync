@@ -1,10 +1,12 @@
 <mat-sidenav-container class="main-container">
-  <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'"
-        [opened]="!isMobile && showSideNav">
-    <app-sidenav (sidenavClose)="handleSidenavClose()"></app-sidenav>
-  </mat-sidenav>
+  @if(showSideNav) {
+    <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'"
+        [opened]="!isMobile && displaySideNav">
+      <app-sidenav (sidenavClose)="handleSidenavClose()"></app-sidenav>
+    </mat-sidenav>
+  }
   <mat-sidenav-content>
-    @if(showSideNav && isMobile) {
+    @if(displaySideNav && isMobile && showSideNav) {
       <button (click)="sidenav.toggle()" class="sidenav-toggle-button">
         <mat-icon>menu</mat-icon>
       </button>
@@ -12,4 +14,3 @@
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
-

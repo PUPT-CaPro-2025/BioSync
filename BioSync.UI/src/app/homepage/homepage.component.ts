@@ -12,7 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./homepage.component.css']
 })
 export class HomepageComponent implements AfterViewInit {
-  showSideNav = true; // Default to showing sidenav
+  showSideNav = true;
+  displaySideNav = true;
   isMobile = false;
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -20,60 +21,52 @@ export class HomepageComponent implements AfterViewInit {
   private hideSideNavRoutes = [
     '/login', 
     '/admin-login', 
-    '/student-login', 
-    '/professor-login', 
-    '/visitor-log'
+    'faculty-login', 
+    'student-login', 
+    'visitor-log',
+    'dashboard-student',
+    'dashboard-professor'
   ];
 
   constructor(private router: Router, private cd: ChangeDetectorRef) {
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateSideNavVisibility();
+      if(event instanceof NavigationEnd) {
+        this.showSideNav = !this.hideSideNavRoutes.some(
+          route => this.router.url.includes(route)
+        );
+        this.updateDisplaySideNav();
       }
     });
   }
 
   ngAfterViewInit() {
-    this.checkScreenSize(); // Ensure sidenav state is correct after view initialization
+    this.checkScreenSize();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     this.checkScreenSize();
-    this.cd.detectChanges(); // Trigger change detection
+    this.cd.detectChanges();
   }
 
   private checkScreenSize() {
     this.isMobile = window.innerWidth <= 900;
+    this.updateDisplaySideNav();
+  }
+
+  private updateDisplaySideNav() {
     if (this.isMobile) {
-      this.showSideNav = false; // Hide sidenav by default on mobile
+      this.displaySideNav = true;
     } else {
-      this.showSideNav = !this.hideSideNavRoutes.some(
-        route => this.router.url.startsWith(route)
-      ); // Check if sidenav should be visible on larger screens
+      this.displaySideNav = this.showSideNav;
     }
     if (this.sidenav) {
-      this.sidenav.opened = !this.isMobile && this.showSideNav; // Adjust sidenav state
-    }
-  }
-
-  private updateSideNavVisibility() {
-    this.showSideNav = !this.hideSideNavRoutes.some(
-      route => this.router.url.startsWith(route)
-    );
-    if (this.isMobile) {
-      this.sidenav.close(); // Ensure sidenav is closed on mobile
-    }
-  }
-
-  onCloseSidenav() {
-    if (this.isMobile) {
-      this.showSideNav = false;
+      this.sidenav.opened = !this.isMobile && this.displaySideNav;
     }
   }
 
   handleSidenavClose() {
-    this.showSideNav = false;
+    this.displaySideNav = true;
     if (this.sidenav) {
       this.sidenav.close();
     }
