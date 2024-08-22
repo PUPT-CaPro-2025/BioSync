@@ -4,8 +4,8 @@
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center mb-16">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-container form-container" [formGroup]="visitorForm">
-        <div class="w-[45%] flex flex-col gap-4 column-container column-container">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-container" [formGroup]="visitorForm">
+        <div class="w-[45%] flex flex-col gap-4 column-container">
             <div class="group flex flex-col gap-1">
                 <label for="visitor-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
@@ -61,11 +61,8 @@
                 </mat-select>
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
-                <div class="flex gap-[40px] justify-end button-container button-container">
+                <div class="flex gap-[40px] justify-end button-container">
                     <button class="text-custom-14 text-lightGray py-2
-                        px-15 border-2 rounded-full border-lightGray
-                        hover:bg-lightGray hover:text-white cancel-button"
-                        (click)="returnToVisitorPage()">
                         px-15 border-2 rounded-full border-lightGray
                         hover:bg-lightGray hover:text-white cancel-button"
                         (click)="cancelEditVisitor()">
