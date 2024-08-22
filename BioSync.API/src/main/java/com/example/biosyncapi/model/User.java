@@ -27,6 +27,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String suffix;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
@@ -79,6 +81,14 @@ public class User implements UserDetails {
 
     public void setUsercode(String usercode) {
         this.usercode = usercode;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
     }
 
     @Override
