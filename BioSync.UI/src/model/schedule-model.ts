@@ -1,4 +1,5 @@
 import {Subject} from "./subject-model";
+import {User} from "./user.model";
 
 export interface Schedule {
     id: number
@@ -7,7 +8,7 @@ export interface Schedule {
     endTime: string;
     scheduleDate: string;
     labRoom: string;
-    professor: string;
+    professor?: User;
     semester: string;
     schoolYear: string;
     remarks: string;

@@ -67,7 +67,9 @@
                                           [{{convertTimeFormat(schedule.startTime)}}-{{convertTimeFormat(schedule.endTime)}}
                                           / {{schedule.scheduleDate}}]</span>
                                     </div>
-                                    <div class="italic">Faculty: {{schedule.professor}}</div>
+                                    <div class="italic">
+                                      Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                                    </div>
                                 </div>
                             </div>
                             <div class="cell">{{schedule.labRoom}}</div>
