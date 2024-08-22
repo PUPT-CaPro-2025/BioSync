@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../services/auth/auth.service";
 import {Authentication} from "../../model/authentication.model";
-import {LoginService} from "../../services/login.service";
+import {LoginService} from "../../services/auth/login.service";
 import {CookieService} from "../../services/cookie.service";
 import {LoginAdminComponent} from "../login-admin/login-admin.component";
 

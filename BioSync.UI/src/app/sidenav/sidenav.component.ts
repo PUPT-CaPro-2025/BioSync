@@ -8,11 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
+import {LogoutService} from "../../services/auth/logout.service";
+import {CookieService} from "../../services/cookie.service";
 
 @Component({
   selector: 'app-sidenav',
   standalone: true,
   imports: [MatSelectModule, MatToolbarModule, MatButtonModule, MatSidenavModule, MatListModule, RouterLink, CommonModule, MatIconModule],
+  providers: [LogoutService, CookieService],
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.css']
 })
@@ -21,7 +24,11 @@ export class SidenavComponent implements OnInit {
   isDropdownOpen = false;
   @Output() sidenavClose = new EventEmitter<void>();
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private logoutService: LogoutService,
+    private cookieService: CookieService,
+  ) {}
 
   ngOnInit() {
     const savedActiveButton = localStorage.getItem('activeButton');
@@ -72,5 +79,15 @@ export class SidenavComponent implements OnInit {
       this.activeButton = null;
       localStorage.removeItem('activeButton');
     }
+  }
+
+  logout(){
+    this.logoutService.logout().subscribe({
+      next: () => {
+        this.cookieService.deleteCookie("authToken");
+        this.cookieService.deleteCookie("role");
+        this.router.navigate(['/login']).then();
+      }, error: err => { console.log(err); }
+    })
   }
 }
