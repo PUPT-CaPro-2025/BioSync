@@ -58,7 +58,9 @@
                             <div class="cell">{{professor.suffix}}</div>
                             <div class="cell">
                                 <div class="action-container">
-                                    <button class="edit-button" (click)="toggleEditProfessor()"><mat-icon>edit</mat-icon></button>
+                                    <button class="edit-button" (click)="toggleEditProfessor(professor)">
+                                      <mat-icon>edit</mat-icon>
+                                    </button>
                                     <button class="delete-button"><mat-icon>delete</mat-icon></button>
                                 </div>
                             </div>
@@ -104,7 +106,10 @@
             </div>
         </div>
     } @else {
-        <app-edit-professor (backToEditProfessor)="handleBackToEditProfessor()"></app-edit-professor>
+        <app-edit-professor
+          [professorToBeUpdated]="professorToUpdate"
+          (editedProfessor)="onProfessorUpdate($event)"
+          (backToEditProfessor)="handleBackToEditProfessor()"/>
     }
 } @else {
     <app-add-professor (professorAdded)="onProfessorAdded($event)" (backToProfessor)="handleBackToProfessor()"></app-add-professor>

@@ -18,7 +18,7 @@
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="code">
+                    formControlName="usercode">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="first-name" class="text-custom-20
@@ -30,7 +30,7 @@
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="first_name">
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="last-name" class="text-custom-20
@@ -42,7 +42,7 @@
                     placeholder="Enter professor's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="last_name">
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="middle-initial" class="text-custom-20
@@ -54,7 +54,7 @@
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="middle_initial">
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="suffix" class="text-custom-20
@@ -77,7 +77,7 @@
                     <button class="text-custom-14 text-lightGray py-2
                         px-20 border-2 rounded-full border-lightGray
                         hover:bg-lightGray hover:text-white"
-                        (click)="cancelEditProfessor()">
+                        (click)="returnToProfessorView()">
                         Cancel
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19

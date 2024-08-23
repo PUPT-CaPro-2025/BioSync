@@ -6,4 +6,5 @@ export interface User {
   usercode: string;
   suffix: string;
   role: string;
+  password?: string;
 }
