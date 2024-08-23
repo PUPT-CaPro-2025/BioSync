@@ -3,7 +3,7 @@
         <img class="w-full h-[45vh] md:h-screen object-cover object-center" src="../../assets/visitor-bg.png" alt="DOST Laboratory">
     </div>
     <div class="right-section flex flex-1 flex-col items-center w-full md:w-[50%] mt-5 md:mt-12">
-        <form class="mt-8 flex justify-center w-[90%] bg-transparent" [formGroup]="visitorLogForm">
+        <form class="mt-8 flex justify-center w-[90%] bg-transparent" (ngSubmit)="submit()" [formGroup]="visitorLogForm">
             <div class="w-[80%] md:w-[70%] flex flex-col gap-4">
                 <div class="text-container">
                     <h2 class="text-custom-20 md:text-custom-40 text-darkGrey font-semibold mb-0 md:mb-4">Visitor's Log</h2>
@@ -20,7 +20,7 @@
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 md:py-2 px-1"
-                        formControlName="visitor_name">
+                        formControlName="name">
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="purpose-of-visit" class="text-custom-16 md:text-custom-20
@@ -33,7 +33,7 @@
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 md:py-2 px-1"
-                        formControlName="purpose_of_visit">
+                        formControlName="purposeOfVisit">
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="other-details" class="text-custom-16 md:text-custom-20
@@ -46,7 +46,7 @@
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 md:py-2 px-1"
-                        formControlName="other_details">
+                        formControlName="otherDetails">
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="destination" class="text-custom-16 md:text-custom-20
