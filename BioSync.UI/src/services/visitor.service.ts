@@ -23,7 +23,7 @@ export class VisitorService {
     return this.http.post<Visitor>(this.url, visitor);
   }
 
-  getVisitors(visitors: Visitor[]): Observable<Visitor[]> {
+  getVisitors(): Observable<Visitor[]> {
     return this.http.get<Visitor[]>(this.url, {
       headers: this.headers,
       withCredentials: true
