@@ -81,12 +81,15 @@ export class AddStudentComponent implements OnInit{
     });
   }
 
-  getAllPrograms(){
+  getAllPrograms() : Program[] {
     this.programService.getAllPrograms().subscribe({
       next: (programs: Program[]) => {
         this.allPrograms = programs;
-      }
+      },
+      error: error => { console.error(error); }
     })
+
+    return this.allPrograms;
   }
 
   returnToStudentView(): void {

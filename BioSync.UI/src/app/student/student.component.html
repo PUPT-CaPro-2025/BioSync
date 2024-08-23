@@ -64,7 +64,7 @@
                             <div class="cell">{{ student.section }}</div>
                             <div class="cell">
                                 <div class="action-container">
-                                    <button class="edit-button" (click)="toggleEditStudent()"><mat-icon>edit</mat-icon></button>
+                                    <button class="edit-button" (click)="toggleEditStudent(student)"><mat-icon>edit</mat-icon></button>
                                     <button class="delete-button" (click)="openConfirmationDialog(student)"><mat-icon>delete</mat-icon></button>
                                 </div>
                             </div>
@@ -110,7 +110,10 @@
             </div>
         </div>
     } @else {
-        <app-edit-student (backToEditStudent)="handleEditBackToStudent()"></app-edit-student>
+        <app-edit-student
+          [selectedStudent]="studentToEdit"
+          (editedStudent)="onStudentUpdate($event)"
+          (backToEditStudent)="handleEditBackToStudent()"/>
     }
 } @else {
     <app-add-student
