@@ -4,5 +4,5 @@ export interface Visitor {
     name: string
     purposeOfVisit: string
     otherDetails: string
-    visitDate: Date
+    visitDate: string
 }

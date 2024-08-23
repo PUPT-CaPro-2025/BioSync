@@ -41,8 +41,8 @@
             <div class="attributes">
                 <div class="cell">VISITOR'S NAME</div>
                 <div class="cell">PURPOSE OF VISIT</div>
-                <div class="cell">DATE OF VISITATION</div>
-                <div class="cell">TIME IN</div>
+                <div class="cell">DATE</div>
+                <div class="cell">TIME</div>
                 <DIV class="cell">DESTINATION</DIV>
                 <div class="cell">ACTION</div>
             </div>
@@ -51,8 +51,8 @@
                     <div class="row">
                         <div class="cell">{{visitor.name}}</div>
                         <div class="cell">{{visitor.purposeOfVisit}}</div>
-                        <div class="cell">{{visitor.visitDate}}</div>
-                        <div class="cell">{{visitor.visitDate}}</div>
+                        <div class="cell">{{getDate(visitor.visitDate)}}</div>
+                        <div class="cell">{{getTime(visitor.visitDate)}}</div>
                         <div class="cell">{{visitor.destination}}</div>
                         <div class="cell">
                             <div class="action-container">

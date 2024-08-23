@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
+import {VisitorService} from "../../services/visitor.service";
 
 @Component({
   selector: 'app-visitor',
@@ -15,10 +16,11 @@ import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
     FormsModule,
     MatIconModule,
     EditVisitorComponent],
+  providers: [VisitorService],
   templateUrl: './visitor.component.html',
   styleUrl: './visitor.component.css'
 })
-export class VisitorComponent {
+export class VisitorComponent implements OnInit{
   //Temporary Data
   visitors: Visitor[] = [];
 
@@ -35,6 +37,43 @@ export class VisitorComponent {
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isEditVisitor: boolean = false;
+
+  constructor(
+    private visitorService: VisitorService,
+  ){}
+
+  ngOnInit() {
+    this.initializeVisitors();
+  }
+
+  initializeVisitors(){
+    this.visitorService.getVisitors().subscribe({
+      next: (visitors: Visitor[]) => {
+        this.visitors = visitors;
+      }
+    })
+  }
+
+  getDate(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  getTime(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    return `${hours}:${minutes}:${seconds} ${ampm}`;
+  }
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
