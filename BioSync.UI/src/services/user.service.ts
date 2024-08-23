@@ -36,4 +36,12 @@ export class UserService {
       withCredentials: true
     })
   }
+
+  deleteUser(user: User){
+    return this.http.delete<User>(`${this.url}/users`, {
+      body: { id: user.id },
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
 }

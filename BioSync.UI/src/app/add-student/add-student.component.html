@@ -18,7 +18,7 @@
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="student_name">
+                    formControlName="usercode">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="first-name" class="text-custom-20
@@ -30,7 +30,7 @@
                     placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="first_name">
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="last-name" class="text-custom-20
@@ -42,19 +42,19 @@
                     placeholder="Enter student's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="last_name">
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="middle-initial" class="text-custom-20
+                <label for="middle-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Middle Initial
+                    Middle Name
                 </label>
-                <input matInput id="middle_initial" name="middle-initial"
+                <input matInput id="middle_name" name="middle-name"
                     placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="middle_initial">
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="suffix" class="text-custom-20
@@ -84,7 +84,7 @@
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="program">
                             @for(program of allPrograms; track program) {
-                                <mat-option [value]="program">{{program}}</mat-option>
+                                <mat-option [value]="program.id">{{program.programAbbreviation}}</mat-option>
                             }
                 </mat-select>
             </div>
@@ -115,7 +115,7 @@
                             placeholder="Choose a student's section" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="program">
+                            duration-300 w-full py-2 px-1" formControlName="section">
                             @for(section of allSections; track section) {
                                 <mat-option [value]="section">{{section}}</mat-option>
                             }
@@ -127,7 +127,7 @@
                     <button class="text-custom-14 text-lightGray py-2
                         px-20 border-2 rounded-full border-lightGray
                         hover:bg-lightGray hover:text-white"
-                        (click)="cancelAddStudent()">
+                        (click)="returnToStudentView()">
                         Cancel
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19

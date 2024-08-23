@@ -70,7 +70,6 @@ export class EditSubjectComponent implements OnInit{
         if(!subjectUpdated.id) return;
         this.updatedSubject.emit(subjectUpdated);
         this.openSuccessDialog();
-        this.returnToSubjectView();
       }
 
     })
@@ -78,11 +77,17 @@ export class EditSubjectComponent implements OnInit{
   }
 
   openSuccessDialog(){
-    this.dialog.open(PromptOkayComponent, {
+    const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Subject Updated!',
         message: 'Subject details has been updated successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToSubjectView();
       }
     })
   }
