@@ -1,4 +1,4 @@
-import { Visitor } from '../../model/visitor-model';
+import { Visitor } from '../../model/visitor.model';
 import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,11 +20,7 @@ import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
 })
 export class VisitorComponent {
   //Temporary Data
-  visitors: Visitor[] = [
-    { id: 1, visitor_name: "John Doe", visit: "Speaker", visit_date: "04/08/2024", details: "N/A", event: "Knights of Honor", destination: "DOST Laboratory", time_in: "7:30 AM", time_out: "10:30 AM" },
-    { id: 2, visitor_name: "Rence Tenorio", visit: "Speaker", visit_date: "07/29/2024", details: "N/A", event: "Seminar", destination: "DOST Laboratory", time_in: "1:00 PM", time_out: "5:00 PM" },
-    { id: 3, visitor_name: "Stan Smith", visit: "Speaker", visit_date: "02/16/2024", details: "N/A", event: "Seminar", destination: "Aboitiz Laboratory", time_in: "10:00 AM", time_out: "2:00 PM" }
-  ];
+  visitors: Visitor[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
