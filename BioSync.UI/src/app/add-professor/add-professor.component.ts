@@ -89,7 +89,11 @@ export class AddProfessorComponent implements OnInit{
 
   displaySuccess() {
     const dialogRef = this.dialog.open(PromptOkayComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: 'Professor Successfully Added!',
+        message: 'Professor has been added to the system successfully.'
+      }
     })
 
     dialogRef.afterClosed().subscribe(() => {

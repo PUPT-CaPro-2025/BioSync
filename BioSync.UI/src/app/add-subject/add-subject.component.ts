@@ -70,10 +70,14 @@ export class AddSubjectComponent implements OnInit{
 
   openDialog(): void {
     const dialogRef = this.dialog.open(PromptOkayComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: 'Subject Successfully Added!',
+        message: 'Subject has been added to the system successfully.'
+      }
     })
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
       this.backToSubject.emit();
     })
   }

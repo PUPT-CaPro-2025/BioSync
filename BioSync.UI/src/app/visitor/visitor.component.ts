@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
 import {VisitorService} from "../../services/visitor.service";
 import {MatDialog} from "@angular/material/dialog";
-import {Schedule} from "../../model/schedule-model";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
@@ -40,6 +39,7 @@ export class VisitorComponent implements OnInit{
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isEditVisitor: boolean = false;
+  visitorToEdit!: Visitor;
 
   constructor(
     private visitorService: VisitorService,
@@ -77,6 +77,16 @@ export class VisitorComponent implements OnInit{
     hours = hours ? hours : 12;
 
     return `${hours}:${minutes}:${seconds} ${ampm}`;
+  }
+
+  onVisitorUpdate(updatedVisitor: Visitor){
+    const index = this.visitors.findIndex(
+      visitor => visitor.id === updatedVisitor.id
+    );
+
+    if(index === -1) return;
+
+    this.visitors[index] = updatedVisitor;
   }
 
   openDeleteDialog(visitor: Visitor): void {
@@ -146,8 +156,9 @@ export class VisitorComponent implements OnInit{
     }
   }
 
-  toggleEditVisitor(): void {
+  toggleEditVisitor(visitor: Visitor) {
     this.isEditVisitor = !this.isEditVisitor;
+    this.visitorToEdit = visitor;
   }
 
   handleBackToEditVisitor(): void {

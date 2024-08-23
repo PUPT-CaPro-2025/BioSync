@@ -128,7 +128,11 @@ export class AddScheduleComponent implements OnInit{
 
   openDialog(): void {
     const dialogRef = this.dialog.open(PromptOkayComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: 'Schedule Successfully Added!',
+        message: 'Schedule has been set successfully.'
+      }
     })
 
     dialogRef.afterClosed().subscribe(() => {
