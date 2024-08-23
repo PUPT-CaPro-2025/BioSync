@@ -1,3 +1,5 @@
+import {Program} from "./program.model";
+
 export interface User {
   id: number
   firstName: string;
@@ -7,4 +9,7 @@ export interface User {
   suffix: string;
   role: string;
   password?: string;
+  program?: Program;
+  year?: string;
+  section?: string
 }
