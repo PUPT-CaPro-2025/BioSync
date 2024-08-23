@@ -39,6 +39,7 @@ export class ProfessorComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
+  professorToUpdate!: User
 
 
   constructor(
@@ -52,7 +53,6 @@ export class ProfessorComponent implements OnInit{
   getProfessors(): void {
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: (professors: User[]) => {
-        console.log(professors)
         this.professors = professors;
       }
     })
@@ -60,6 +60,15 @@ export class ProfessorComponent implements OnInit{
 
   onProfessorAdded(newProfessor: User){
     this.professors.push(newProfessor);
+  }
+
+  onProfessorUpdate(updatedProfessor: User){
+    const index = this.professors.findIndex(
+      professor => professor.id === updatedProfessor.id);
+
+    if(index === -1) return;
+
+    this.professors[index] = updatedProfessor;
   }
 
   get pages(): number[] {
@@ -112,8 +121,9 @@ export class ProfessorComponent implements OnInit{
     this.isAddProfessor = false;
   }
 
-  toggleEditProfessor(): void {
+  toggleEditProfessor(professor: User): void {
     this.isEditProfessor = !this.isEditProfessor;
+    this.professorToUpdate = professor;
   }
 
   handleBackToEditProfessor(): void {
