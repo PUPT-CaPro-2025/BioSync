@@ -29,7 +29,7 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="visit">
+                    formControlName="purposeOfVisit">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="detail" class="text-custom-20
@@ -42,69 +42,30 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="detail">
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="event" class="text-custom-20
-                    text-darkGray transition-colors duration-300
-                    group-focus-within:text-brightRed">
-                    Event
-                </label>
-                <input matInput id="event" name="event"
-                    placeholder="Enter what event"
-                    class="bg-transparent border-b-2 border-darkGray
-                    focus:border-brightRed focus:outline-none
-                    transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="event">
+                    formControlName="otherDetails">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="laboratory" class="text-custom-16
-                    text-darkGray transition-colors duration-300 
+                    text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
                     Laboratory Room
                 </label>
                 <mat-select id="laboratory" name="laboratory"
-                        placeholder="Select a laboratory room" class="bg-transparent 
-                        border-b-2 border-darkGray focus:border-brightRed 
-                        focus:outline-none transition-colors 
-                        duration-300 w-full py-2 px-1" formControlName="lab">
+                        placeholder="Select a laboratory room" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="destination">
                         @for(lab of labs; track lab) {
                             <mat-option [value]="lab">{{lab}}</mat-option>
                         }
                 </mat-select>
-            </div>
-            <div class="flex justify-between">
-                <div class="group flex flex-col gap-1 w-[47%]">
-                    <label for="time-in" class="text-custom-16
-                        text-darkGray transition-colors duration-300
-                        group-focus-within:text-brightRed">
-                        Time In
-                    </label>
-                    <input matInput id="time_in" name="time-in"
-                        value="00:00" type="time" class="bg-transparent
-                        border-b-2 border-darkGray focus:border-brightRed
-                        focus:outline-none transition-colors
-                        duration-300 w-full py-2 px-1" formControlName="time_in">
-                </div>
-                <div class="group flex flex-col gap-1 w-[47%]">
-                    <label for="time-out" class="text-custom-16
-                        text-darkGray transition-colors duration-300
-                        group-focus-within:text-brightRed">
-                        Time Out
-                    </label>
-                    <input matInput id="time_out" name="time-out"
-                        value="00:00" type="time" class="bg-transparent
-                        border-b-2 border-darkGray focus:border-brightRed
-                        focus:outline-none transition-colors
-                        duration-300 w-full py-2 px-1" formControlName="time_out">
-                </div>
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end">
                     <button class="text-custom-14 text-lightGray py-2
                         px-20 border-2 rounded-full border-lightGray
                         hover:bg-lightGray hover:text-white"
-                        (click)="cancelEditVisitor()">
+                        (click)="returnToVisitorPage()">
                         Cancel
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19

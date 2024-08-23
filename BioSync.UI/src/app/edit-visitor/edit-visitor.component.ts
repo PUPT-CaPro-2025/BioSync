@@ -1,10 +1,14 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import {VisitorService} from "../../services/visitor.service";
+import {Visitor} from "../../model/visitor.model";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-edit-visitor',
@@ -14,13 +18,16 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
-    MatButtonModule, 
+    MatButtonModule,
     MatSelectModule],
+  providers: [VisitorService],
   templateUrl: './edit-visitor.component.html',
   styleUrl: './edit-visitor.component.css'
 })
-export class EditVisitorComponent {
+export class EditVisitorComponent implements OnInit{
   @Output() backToEditVisitor = new EventEmitter<void>();
+  @Output() editedVisitor: EventEmitter<Visitor> = new EventEmitter<Visitor>();
+  @Input() visitor!: Visitor;
   visitorForm!: FormGroup;
 
   labs: string[] = [
@@ -28,30 +35,67 @@ export class EditVisitorComponent {
     'Aboitiz Laboratory',
   ];
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private visitorService: VisitorService,
+    private dialog: MatDialog,
+  ) {}
 
   ngOnInit() {
-    this.initForm();
+    this.initEditForm();
+    this.setFormValues();
   }
 
-  initForm(){
+  initEditForm(){
     this.visitorForm = this.formBuilder.group({
+      id: ['', [Validators.required]],
       name: ['', [Validators.required]],
-      visit: ['', Validators.required],
-      details: ['', [Validators.required]],
-      event: ['', Validators.required],
-      lab: ['', [Validators.required]],
-      time_in: ['', Validators.required],
-      time_out: ['', [Validators.required]],
+      purposeOfVisit: ['', Validators.required],
+      otherDetails: ['', [Validators.required]],
+      destination: ['', Validators.required],
+      visitDate: ['', [Validators.required]],
     });
   }
 
-  cancelEditVisitor(): void {
+  setFormValues(){
+    this.visitorForm.patchValue({
+      id: this.visitor.id,
+      name: this.visitor.name,
+      purposeOfVisit: this.visitor.purposeOfVisit,
+      otherDetails: this.visitor.otherDetails,
+      destination: this.visitor.destination,
+      visitDate: this.visitor.visitDate,
+    })
+  }
+
+  returnToVisitorPage(): void {
     this.backToEditVisitor.emit();
   }
 
   submit() {
-    console.log("Click Submit!");
+    if(!this.visitorForm.valid) return;
+
+    const updatedVisitor = this.visitorForm.value;
+
+    this.visitorService.updateVisitor(updatedVisitor).subscribe({
+      next: value => {
+        if(!value.id) return;
+        this.openSuccessDialog();
+        this.editedVisitor.emit(value);
+        this.returnToVisitorPage();
+      }
+    });
+
     return;
+  }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Visitor Updated!',
+        message: 'Visitor has been updated successfully.'
+      }
+    })
   }
 }
