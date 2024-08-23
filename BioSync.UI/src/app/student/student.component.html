@@ -54,12 +54,12 @@
                 <div class="row-container text-custom-12">
                     @for (student of filteredStudents; track student) {
                         <div class="row">
-                            <div class="cell">{{ student.student_number }}</div>
-                            <div class="cell">{{ student.first_name }}</div>
-                            <div class="cell">{{ student.last_name }}</div>
-                            <div class="cell">{{ student.middle_initial }}</div>
+                            <div class="cell">{{ student.usercode }}</div>
+                            <div class="cell">{{ student.firstName }}</div>
+                            <div class="cell">{{ student.lastName }}</div>
+                            <div class="cell">{{ student.middleName }}</div>
                             <div class="cell">{{ student.suffix }}</div>
-                            <div class="cell">{{ student.program }}</div>
+                            <div class="cell">{{ student.program?.programAbbreviation }}</div>
                             <div class="cell">{{ student.year }}</div>
                             <div class="cell">{{ student.section }}</div>
                             <div class="cell">
@@ -89,29 +89,31 @@
                     }
                   </select>
                   <div class="paginator-button-container">
-                    <button (click)="previousPage()" 
+                    <button (click)="previousPage()"
                             [disabled]="currentPage === 1"
                             [ngClass]="{'active-button': currentPage > 1}">
-                        <img src="../../assets/previous.svg" 
-                                alt="Previous Icon" 
+                        <img src="../../assets/previous.svg"
+                                alt="Previous Icon"
                                 [ngClass]="{'active-icon': currentPage > 1}">
                         Previous
                     </button>
-                    <button (click)="nextPage()" 
+                    <button (click)="nextPage()"
                             [disabled]="currentPage === totalPages"
                             [ngClass]="{'active-button': currentPage < totalPages}">
                         Next
-                        <img src="../../assets/next.svg" 
-                                alt="Next Icon" 
+                        <img src="../../assets/next.svg"
+                                alt="Next Icon"
                                 [ngClass]="{'active-icon': currentPage < totalPages}">
                     </button>
                   </div>
                 </div>
             </div>
-        </div>    
+        </div>
     } @else {
         <app-edit-student (backToEditStudent)="handleEditBackToStudent()"></app-edit-student>
     }
 } @else {
-    <app-add-student (backToStudent)="handleBackToStudent()"></app-add-student>
+    <app-add-student
+      (addedStudent)="onStudentAdded($event)"
+      (backToStudent)="handleBackToStudent()"/>
 }

@@ -19,11 +19,11 @@ import { MatSelectModule } from '@angular/material/select';
   templateUrl: './edit-student.component.html',
   styleUrl: './edit-student.component.css'
 })
-export class EditStudentComponent {
+export class EditStudentComponent implements OnInit{
   @Output() backToEditStudent = new EventEmitter<void>();
 
-  //Temporary Suffixes
   allSuffix: string[] = [
+    'N/A',
     'Ph.D.',
     'Ed.D.',
     'D.Phil.',
@@ -47,14 +47,14 @@ export class EditStudentComponent {
   ];
 
   allYears: string[] = [
-    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2" 
+    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2"
   ];
 
   allSections: number[] = [
     1, 2, 3, 4
   ];
 
-  studentForm!: FormGroup;
+  editStudentForm!: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder) {}
@@ -64,7 +64,7 @@ export class EditStudentComponent {
   }
 
   initForm(){
-    this.studentForm = this.formBuilder.group({
+    this.editStudentForm = this.formBuilder.group({
       student_name: ['', [Validators.required]],
       first_name: ['', [Validators.required]],
       last_name: ['', [Validators.required]],
