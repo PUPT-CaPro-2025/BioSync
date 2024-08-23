@@ -82,7 +82,6 @@ export class EditVisitorComponent implements OnInit{
         if(!value.id) return;
         this.openSuccessDialog();
         this.editedVisitor.emit(value);
-        this.returnToVisitorPage();
       }
     });
 
@@ -90,11 +89,17 @@ export class EditVisitorComponent implements OnInit{
   }
 
   openSuccessDialog(){
-    this.dialog.open(PromptOkayComponent, {
+    const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Visitor Updated!',
         message: 'Visitor has been updated successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToVisitorPage();
       }
     })
   }

@@ -9,10 +9,8 @@ import {User} from "../../model/user.model";
 import { Program } from '../../model/program.model';
 import {ProgramService} from "../../services/program.service";
 import {UserService} from "../../services/user.service";
-import {AddStudentComponent} from "../add-student/add-student.component";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
-import {ThisReceiver} from "@angular/compiler";
 
 @Component({
   selector: 'app-edit-student',
@@ -147,7 +145,7 @@ export class EditStudentComponent implements OnInit{
     })
 
     ref.afterClosed().subscribe({
-      next: value => {
+      next: () => {
         this.returnToStudentView();
       }
     })
