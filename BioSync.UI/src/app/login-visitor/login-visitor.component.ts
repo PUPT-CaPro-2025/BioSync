@@ -6,7 +6,6 @@ import {MatInput} from "@angular/material/input";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {VisitorService} from "../../services/visitor.service";
-import {Authentication} from "../../model/authentication.model";
 import {Visitor} from "../../model/visitor.model";
 
 @Component({
@@ -47,7 +46,11 @@ export class LoginVisitorComponent implements OnInit {
 
   displaySuccess() {
     this.dialog.open(PromptOkayComponent, {
-      width: '400px'
+      width: '400px',
+      data: {
+        title: 'Visitor Successfully Logged!',
+        message: "Visitor has been successfully recorded in the system."
+      }
     })
   }
 
