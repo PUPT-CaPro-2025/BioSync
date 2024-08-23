@@ -97,18 +97,23 @@ export class EditProfessorComponent implements OnInit{
         if(!updatedProfessor.id) return;
         this.editedProfessor.emit(updatedProfessor);
         this.openSuccessDialog();
-        this.returnToProfessorView();
       }
     })
     return;
   }
 
   openSuccessDialog(){
-    this.dialog.open(PromptOkayComponent, {
+    const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Professor Updated!',
         message: 'Professor details has been updated successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToProfessorView();
       }
     })
   }
