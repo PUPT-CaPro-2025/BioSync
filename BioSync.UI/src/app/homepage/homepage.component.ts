@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class HomepageComponent implements AfterViewInit {
   showSideNav = true;
+  displaySideNav = true;
   isMobile = false;
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -21,14 +22,17 @@ export class HomepageComponent implements AfterViewInit {
     '/login', 
     '/admin-login', 
     '/student-login', 
-    '/faculty-login', 
+    '/professor-login', 
     '/visitor-log'
   ];
 
   constructor(private router: Router, private cd: ChangeDetectorRef) {
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateSideNavVisibility();
+      if(event instanceof NavigationEnd) {
+        this.showSideNav = !this.hideSideNavRoutes.some(
+          route => this.router.url.includes(route)
+        );
+        this.updateDisplaySideNav();
       }
     });
   }
@@ -45,15 +49,19 @@ export class HomepageComponent implements AfterViewInit {
 
   private checkScreenSize() {
     this.isMobile = window.innerWidth <= 900;
+    this.updateDisplaySideNav();
+  }
+
+  private updateDisplaySideNav() {
     if (this.isMobile) {
-      this.showSideNav = false;
+      this.showSideNav = false; // Hide sidenav by default on mobile
     } else {
       this.showSideNav = !this.hideSideNavRoutes.some(
         route => this.router.url.startsWith(route)
-      ); 
+      ); // Check if sidenav should be visible on larger screens
     }
     if (this.sidenav) {
-      this.sidenav.opened = !this.isMobile && this.showSideNav;
+      this.sidenav.opened = !this.isMobile && this.showSideNav; // Adjust sidenav state
     }
   }
 
@@ -62,7 +70,7 @@ export class HomepageComponent implements AfterViewInit {
       route => this.router.url.startsWith(route)
     );
     if (this.isMobile) {
-      this.sidenav.close();
+      this.sidenav.close(); // Ensure sidenav is closed on mobile
     }
   }
 
@@ -73,7 +81,7 @@ export class HomepageComponent implements AfterViewInit {
   }
 
   handleSidenavClose() {
-    this.showSideNav = false;
+    this.displaySideNav = true;
     if (this.sidenav) {
       this.sidenav.close();
     }

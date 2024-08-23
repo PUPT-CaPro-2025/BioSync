@@ -51,10 +51,10 @@
                 <div class="row-container">
                     @for (professor of filteredProfessors; track professor) {
                         <div class="row">
-                            <div class="cell">{{professor.faculty_code}}</div>
-                            <div class="cell">{{professor.first_name}}</div>
-                            <div class="cell">{{professor.last_name}}</div>
-                            <div class="cell">{{professor.middle_initial}}</div>
+                            <div class="cell">{{professor.usercode}}</div>
+                            <div class="cell">{{professor.firstName}}</div>
+                            <div class="cell">{{professor.lastName}}</div>
+                            <div class="cell">{{professor.middleName}}</div>
                             <div class="cell">{{professor.suffix}}</div>
                             <div class="cell">
                                 <div class="action-container">
@@ -107,5 +107,5 @@
         <app-edit-professor (backToEditProfessor)="handleBackToEditProfessor()"></app-edit-professor>
     }
 } @else {
-    <app-add-professor (backToProfessor)="handleBackToProfessor()"></app-add-professor>
+    <app-add-professor (professorAdded)="onProfessorAdded($event)" (backToProfessor)="handleBackToProfessor()"></app-add-professor>
 }

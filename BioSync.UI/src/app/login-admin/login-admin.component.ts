@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { Router } from '@angular/router';
-import {LoginService} from "../../services/login.service";
+import {LoginService} from "../../services/auth/login.service";
 import {Authentication} from "../../model/authentication.model";
 import {ex} from "@fullcalendar/core/internal-common";
 import {MatInput} from "@angular/material/input";

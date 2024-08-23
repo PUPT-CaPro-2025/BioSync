@@ -2,7 +2,6 @@ import {Component, Output, EventEmitter, Input, OnInit,} from '@angular/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {Schedule} from "../../model/schedule-model";
-import {Subject} from "rxjs";
 import {ViewScheduleService} from "../../services/view-schedule.service";
 import {ScheduleComponent} from "../schedule/schedule.component";
 
@@ -21,7 +20,6 @@ export class ViewScheduleComponent implements OnInit{
     endTime: "",
     id: 0,
     labRoom: "",
-    professor: "",
     remarks: "",
     scheduleDate: "",
     schoolYear: "",

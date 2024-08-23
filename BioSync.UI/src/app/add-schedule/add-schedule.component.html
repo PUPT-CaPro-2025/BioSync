@@ -148,7 +148,9 @@
                             transition-colors duration-300 w-full py-2 px-1"
                             formControlName="professor">
                             @for(professor of professors; track professor) {
-                                <mat-option [value]="professor">{{professor}}</mat-option>
+                                <mat-option [value]="professor.id">
+                                  {{professor.firstName}} {{professor.lastName}}
+                                </mat-option>
                             }
                     </mat-select>
                 </div>
