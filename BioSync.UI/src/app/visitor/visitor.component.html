@@ -1,7 +1,7 @@
 @if(!isEditVisitor) {
     <div class="header">
         <mat-toolbar class="toolbar-container">
-            <span>List of Visitors - ALL</span>
+            <span>Visitor Logs</span>
             <div class="toolbar-button">
                 <button>Print Visitor Report</button>
             </div>
@@ -57,7 +57,7 @@
                         <div class="cell">
                             <div class="action-container">
                                 <button class="edit-button" (click)="toggleEditVisitor()"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button"><mat-icon>delete</mat-icon></button>
+                                <button class="delete-button" (click)="openDeleteDialog(visitor)"><mat-icon>delete</mat-icon></button>
                             </div>
                         </div>
                     </div>

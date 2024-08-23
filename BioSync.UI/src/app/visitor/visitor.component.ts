@@ -6,6 +6,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
 import {VisitorService} from "../../services/visitor.service";
+import {MatDialog} from "@angular/material/dialog";
+import {Schedule} from "../../model/schedule-model";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-visitor',
@@ -40,6 +43,7 @@ export class VisitorComponent implements OnInit{
 
   constructor(
     private visitorService: VisitorService,
+    private dialog: MatDialog
   ){}
 
   ngOnInit() {
@@ -73,6 +77,31 @@ export class VisitorComponent implements OnInit{
     hours = hours ? hours : 12;
 
     return `${hours}:${minutes}:${seconds} ${ampm}`;
+  }
+
+  openDeleteDialog(visitor: Visitor): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Visitor',
+        message: 'Are you sure you want to delete this visitor?',
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!result) return;
+
+      this.deleteVisitorLog(visitor);
+    })
+  }
+
+  deleteVisitorLog(visitor: Visitor): void {
+    this.visitorService.deleteVisitor(visitor).subscribe({
+      next: () => {
+        this.visitors = this.visitors.filter(v => v.id !== visitor.id);
+      },
+      error: err => console.error(err)
+    })
   }
 
   get pages(): number[] {
@@ -124,4 +153,6 @@ export class VisitorComponent implements OnInit{
   handleBackToEditVisitor(): void {
     this.isEditVisitor = false;
   }
+
+  protected readonly open = open;
 }
