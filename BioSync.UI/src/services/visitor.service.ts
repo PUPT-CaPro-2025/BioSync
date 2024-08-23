@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Schedule} from "../model/schedule-model";
 import {environment} from "../../environment/appsetting";
 import {CookieService} from "./cookie.service";
 import {Visitor} from "../model/visitor.model";
@@ -31,7 +30,7 @@ export class VisitorService {
   }
 
   updateVisitor(visitor: Visitor) {
-    return this.http.put<Visitor>(this.url, {
+    return this.http.put<Visitor>(this.url, visitor,{
       headers: this.headers,
       withCredentials: true
     })
@@ -39,6 +38,7 @@ export class VisitorService {
 
   deleteVisitor(visitor: Visitor) {
     return this.http.delete<Visitor>(this.url, {
+      body: { id: visitor.id },
       headers: this.headers,
       withCredentials: true
     })
