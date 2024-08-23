@@ -5,6 +5,7 @@ import com.example.biosyncapi.filter.JwtAuthenticationFilter;
 import com.example.biosyncapi.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -53,6 +54,8 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                         req->req.requestMatchers("/api/v1/auth/**")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/visitors")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
