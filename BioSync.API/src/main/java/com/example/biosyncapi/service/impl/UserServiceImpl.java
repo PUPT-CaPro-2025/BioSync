@@ -2,6 +2,7 @@ package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.User;
+import com.example.biosyncapi.repository.TokenRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.UserService;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository) {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -45,6 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        this.tokenRepository.deleteByUserId(id);
         this.userRepository.deleteById(id);
     }
 }
