@@ -8,53 +8,53 @@
     <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="professorForm">
         <div class="w-[45%] flex flex-col gap-4">
             <div class="group flex flex-col gap-1">
-                <label for="faculty-code" class="text-custom-20
+                <label for="usercode" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
                     Faculty Code
                 </label>
-                <input matInput id="faculty_code" name="faculty-code"
+                <input matInput id="usercode" name="usercode"
                     placeholder="Enter Faculty number" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="code">
+                    formControlName="usercode">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="first-name" class="text-custom-20
+                <label for="firstName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
                     First Name
                 </label>
-                <input matInput id="first_name" name="first-name"
+                <input matInput id="firstName" name="firstName"
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="first_name">
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="last-name" class="text-custom-20
+                <label for="lastName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
                     Last Name
                 </label>
-                <input matInput id="last_name" name="last-name"
+                <input matInput id="lastName" name="lastName"
                     placeholder="Enter professor's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="last_name">
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="middle-initial" class="text-custom-20
+                <label for="middleName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Middle Initial
+                    Middle Name
                 </label>
-                <input matInput id="middle_initial" name="middle-initial"
+                <input matInput id="middleName" name="middleName"
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="middle_initial">
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="suffix" class="text-custom-20
