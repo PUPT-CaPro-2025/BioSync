@@ -1,0 +1,50 @@
+package com.example.biosyncapi.controller;
+
+import com.example.biosyncapi.model.Visitor;
+import com.example.biosyncapi.service.VisitorService;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("api/v1/visitors")
+public class VisitorController {
+
+    private final VisitorService visitorService;
+
+    public VisitorController(VisitorService visitorService) {
+        this.visitorService = visitorService;
+    }
+
+    @GetMapping
+    public List<Visitor> getVisitors() {
+        return visitorService.getVisitors();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Visitor> getVisitorById(@PathVariable Long id) {
+        Optional<Visitor> visitor = visitorService.getVisitorById(id);
+
+        return visitor.map(value -> ResponseEntity.ok().body(value))
+                .orElseGet(() -> ResponseEntity.status(404).body(null));
+    }
+
+    @PostMapping
+    public Visitor createVisitor(@RequestBody Visitor visitor) {
+        return visitorService.createVisitor(visitor);
+    }
+
+    @PutMapping
+    public Visitor updateVisitor(@RequestBody Visitor visitor) {
+        return visitorService.updateVisitor(visitor);
+    }
+
+    @DeleteMapping
+    public void deleteVisitorById(@RequestBody Visitor visitor) {
+        visitorService.deleteVisitor(visitor.getId());
+    }
+
+}
