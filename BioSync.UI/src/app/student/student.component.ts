@@ -50,6 +50,7 @@ export class StudentComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
+  studentToEdit!:User;
 
   constructor(
     private userService: UserService,
@@ -70,6 +71,16 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.students.push(newStudent);
+  }
+
+  onStudentUpdate(updatedStudent: User){
+    const index = this.students.findIndex(
+      student => student.id === updatedStudent.id
+    );
+
+    if(index === -1) return;
+
+    this.students[index] = updatedStudent;
   }
 
   openConfirmationDialog(student: User){
@@ -138,8 +149,9 @@ export class StudentComponent implements OnInit{
     this.isAddStudent = false;
   }
 
-  toggleEditStudent(): void {
+  toggleEditStudent(studentToEdit: User): void {
     this.isEditStudent = !this.isEditStudent;
+    this.studentToEdit = studentToEdit;
   }
 
   handleEditBackToStudent(): void {
