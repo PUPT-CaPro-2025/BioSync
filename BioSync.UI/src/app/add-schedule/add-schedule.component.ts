@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, ChangeDetectorRef} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
@@ -35,6 +35,12 @@ export class AddScheduleComponent implements OnInit{
     'BSIT 1-1',
   ];
 
+  dateRecurrence: string[] = [
+    'Does not Repeat',
+    'Daily',
+    'Weekly'
+  ];
+
   labs: string[] = [
     'DOST Laboratory',
     'Aboitiz Laboratory',
@@ -62,6 +68,7 @@ export class AddScheduleComponent implements OnInit{
     private addScheduleService: AddScheduleService,
     private dialog: MatDialog,
     private userService: UserService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -181,4 +188,119 @@ export class AddScheduleComponent implements OnInit{
     this.createSchedule(newSchedule);
   }
 
+  selectedRecurrence = 'none';
+  previousRecurrence = 'none';
+  currentDayOfWeek = this.getDayOfWeek(new Date());
+  currentDate = this.getFormattedDate(new Date());
+  currentWeekOfMonth = this.getWeekOfMonth(new Date());
+  isCustomRecurrenceVisible = false;
+
+  customRecurrence = {
+    repeatEvery: 1,
+    period: 'week',
+    days: [] as string[],
+    specificDay: null as number | string | null
+  };
+
+  weekDays: string[] = ['SU', 'M', 'T', 'W', 'Th', 'F', 'S'];
+
+  customOption: { value: string, display: string } | null = null;
+
+  todayDay: number = new Date().getDate();
+  todayDayText: string = `Monthly on day ${this.todayDay}`;
+  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
+  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
+
+  onRecurrenceChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    this.selectedRecurrence = selectedValue;
+
+    if (selectedValue === 'custom') {
+      this.openCustomModal();
+    } else {
+      this.previousRecurrence = selectedValue;
+      if (selectedValue === 'none') {
+        this.customOption = null;
+      }
+    }
+  }
+
+  openCustomModal() {
+    this.isCustomRecurrenceVisible = true;
+  }
+
+  closeModal() {
+    this.isCustomRecurrenceVisible = false;
+    this.selectedRecurrence = this.previousRecurrence;
+  }
+
+  setCustomRecurrence() {
+    const newOptionValue = `custom-${Date.now()}`;
+    const newOptionDisplay = this.formatCustomRecurrence();
+
+    this.customOption = { value: newOptionValue, display: newOptionDisplay };
+
+    // Use ChangeDetectorRef to ensure the change is detected
+    this.cdr.detectChanges();
+
+    this.selectedRecurrence = newOptionValue;
+
+    this.isCustomRecurrenceVisible = false;
+  }
+
+  onRepeatEveryChange(event: Event) {
+    this.customRecurrence.repeatEvery = parseInt((event.target as HTMLInputElement).value, 10);
+  }
+
+  onPeriodChange(event: Event) {
+    this.customRecurrence.period = (event.target as HTMLSelectElement).value;
+  }
+
+  onSpecificDayChange(event: Event) {
+    this.customRecurrence.specificDay = (event.target as HTMLSelectElement).value;
+  }
+
+  toggleDaySelection(day: string) {
+    const index = this.customRecurrence.days.indexOf(day);
+    if (index === -1) {
+      this.customRecurrence.days.push(day);
+    } else {
+      this.customRecurrence.days.splice(index, 1);
+    }
+  }
+
+  formatCustomRecurrence(): string {
+    let formatted = `Every ${this.customRecurrence.repeatEvery} ${this.customRecurrence.period}(s)`;
+    if (this.customRecurrence.period === 'week') {
+      const daysFormatted = this.customRecurrence.days.length > 0
+        ? this.customRecurrence.days.join(', ')
+        : 'No specific days';
+      formatted += ` on ${daysFormatted}`;
+    } else if (this.customRecurrence.period === 'month') {
+      if (this.customRecurrence.specificDay) {
+        if (this.customRecurrence.specificDay === `${this.weekAndDay}`) {
+          formatted += ` on the ${this.weekAndDay}`;
+        } else {
+          formatted += ` on day ${this.customRecurrence.specificDay}`;
+        }
+      }
+    }
+    return formatted;
+  }
+
+  getDayOfWeek(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+  }
+
+  getFormattedDate(date: Date): string {
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  }
+
+  getWeekOfMonth(date: Date): string {
+    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+    const weekNumber = Math.ceil((date.getDate() + startOfMonth.getDay()) / 7);
+    const weekNames = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+    return weekNames[Math.min(weekNumber - 1, weekNames.length - 1)] || 'Unknown';
+  }
 }
