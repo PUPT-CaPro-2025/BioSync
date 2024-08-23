@@ -1,10 +1,13 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Subject} from "../../model/subject-model";
 import {MatButtonModule} from "@angular/material/button";
+import {MatDialog} from "@angular/material/dialog";
+import {SubjectService} from "../../services/subject.service";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-edit-subject',
@@ -18,30 +21,69 @@ import {MatButtonModule} from "@angular/material/button";
   templateUrl: './edit-subject.component.html',
   styleUrl: './edit-subject.component.css'
 })
-export class EditSubjectComponent {
+export class EditSubjectComponent implements OnInit{
   @Output() backToEditSubject = new EventEmitter<void>();
+  @Output() updatedSubject = new EventEmitter<Subject>();
+  @Input() selectedSubject!: Subject;
   subjectForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private dialog: MatDialog,
+    private subjectService: SubjectService
+  ) {}
 
   ngOnInit() {
     this.initForm();
+    this.setFormValue();
   }
 
   initForm(){
     this.subjectForm = this.formBuilder.group({
+      id: [],
       code: ['', [Validators.required]],
       name: ['', [Validators.required]],
       description: ['', Validators.required]
     });
   }
 
-  cancelEditSubject(): void {
+  setFormValue(){
+    this.subjectForm.patchValue({
+      id: this.selectedSubject.id,
+      code: this.selectedSubject.code,
+      name: this.selectedSubject.name,
+      description: this.selectedSubject.description,
+    })
+  }
+
+  returnToSubjectView(): void {
     this.backToEditSubject.emit();
   }
 
   submit() {
-    console.log("Click Submit!");
+    if(!this.subjectForm.touched || !this.subjectForm.valid) return;
+
+    const subjectToUpdate = this.subjectForm.value;
+
+    this.subjectService.updateSubject(subjectToUpdate).subscribe({
+      next: (subjectUpdated: Subject) => {
+        if(!subjectUpdated.id) return;
+        this.updatedSubject.emit(subjectUpdated);
+        this.openSuccessDialog();
+        this.returnToSubjectView();
+      }
+
+    })
     return;
+  }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Subject Updated!',
+        message: 'Subject details has been updated successfully.'
+      }
+    })
   }
 }
