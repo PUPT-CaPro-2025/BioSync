@@ -43,6 +43,7 @@ export class SubjectComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSubject: boolean = false;
   isEditSubject: boolean = false;
+  subjectToEdit!: Subject;
 
   constructor(
     private subjectService: SubjectService,
@@ -66,6 +67,16 @@ export class SubjectComponent implements OnInit{
 
   onSubjectAdded(newSubject: Subject){
     this.subjects.push(newSubject);
+  }
+
+  onSubjectUpdate(updatedSubject: Subject) {
+    const index = this.subjects.findIndex(
+      subject => subject.id === updatedSubject.id
+    );
+
+    if(index === -1) return;
+
+    this.subjects[index] = updatedSubject;
   }
 
   openDeleteDialog(subject: Subject): void {
@@ -143,8 +154,9 @@ export class SubjectComponent implements OnInit{
     this.isAddSubject = false;
   }
 
-  toggleEditSubject(): void {
+  toggleEditSubject(subject: Subject): void {
     this.isEditSubject = !this.isEditSubject;
+    this.subjectToEdit = subject;
   }
 
   handleBackToEditSubject(): void {

@@ -24,7 +24,7 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
   templateUrl: './edit-professor.component.html',
   styleUrl: './edit-professor.component.css'
 })
-export class EditProfessorComponent {
+export class EditProfessorComponent implements OnInit{
   @Output() backToEditProfessor = new EventEmitter<void>();
   @Output() editedProfessor = new EventEmitter<User>();
   @Input() professorToBeUpdated!: User;
@@ -81,6 +81,8 @@ export class EditProfessorComponent {
   }
 
   submit(){
+    if(!this.professorForm.touched || !this.professorForm.valid) return;
+
     const updatedValues = this.professorForm.value;
 
     this.professorToBeUpdated = {
