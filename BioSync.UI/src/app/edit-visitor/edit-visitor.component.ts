@@ -73,7 +73,7 @@ export class EditVisitorComponent implements OnInit{
   }
 
   submit() {
-    if(!this.visitorForm.valid) return;
+    if(!this.visitorForm.valid ||!this.visitorForm.touched) return;
 
     const updatedVisitor = this.visitorForm.value;
 
