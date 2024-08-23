@@ -1,7 +1,9 @@
 package com.example.biosyncapi.repository;
 
 import com.example.biosyncapi.model.Token;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -17,4 +19,9 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     List<Token> findAllTokenByUser(Long userId);
 
     Optional<Token> findByToken(String token);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Token t WHERE t.user.id = :userId")
+    void deleteByUserId(Long userId);
 }
