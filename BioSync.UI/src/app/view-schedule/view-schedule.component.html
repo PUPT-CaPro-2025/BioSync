@@ -1,0 +1,104 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">View Schedule</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-2 flex justify-between w-[94%]
+            bg-white py-4 px-4 rounded-2xl ">
+        <div class="flex gap-5">
+            <div class="flex flex-col gap-4">
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Subject Code:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Subject Name:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Description:
+                </p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <p class="text-darkGray text-custom-16">
+                    {{ schedule.subject?.code }}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{ schedule.subject?.name }}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{ schedule.subject?.description }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-6 flex justify-between w-[94%]
+            bg-white py-4 px-4 rounded-2xl ">
+        <div class="flex gap-5">
+            <div class="flex flex-col gap-4">
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Section:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Scheduled Time:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Scheduled Date/s:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Laboratory Room:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Assigned Professor:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Semester
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    School Year:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Remarks
+                </p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.section}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{scheduleComponent.convertTimeFormat(schedule.startTime)}}
+                  - {{scheduleComponent.convertTimeFormat(schedule.endTime)}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.scheduleDate}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.labRoom}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.semester}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.schoolYear}}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{schedule.remarks}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-40 flex justify-end w-[94%]">
+        <button class="text-custom-14 text-white py-2 px-19
+            bg-gradient-red-orange rounded-full
+            hover:bg-gradient-dark-red-orange hover:text-f4White"
+            (click)="backToSchedule()">
+            Back
+        </button>
+    </div>
+</div>

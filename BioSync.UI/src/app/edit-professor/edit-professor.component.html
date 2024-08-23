@@ -1,0 +1,93 @@
+
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Edit Professor's Data</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="professorForm">
+        <div class="w-[45%] flex flex-col gap-4">
+            <div class="group flex flex-col gap-1">
+                <label for="faculty-code" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Faculty Code
+                </label>
+                <input matInput id="faculty_code" name="faculty-code"
+                    placeholder="Enter Faculty number" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1"
+                    formControlName="code">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="first-name" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    First Name
+                </label>
+                <input matInput id="first_name" name="first-name"
+                    placeholder="Enter professor's first name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="first_name">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="last-name" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Last Name
+                </label>
+                <input matInput id="last_name" name="last-name"
+                    placeholder="Enter professor's last name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="last_name">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="middle-initial" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Middle Initial
+                </label>
+                <input matInput id="middle_initial" name="middle-initial"
+                    placeholder="Enter professor's first name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="middle_initial">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="suffix" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Suffix
+                </label>
+                <mat-select id="suffix" name="suffix"
+                            placeholder="Choose a professor's suffix" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1" formControlName="suffix">
+                            @for(suffix of allSuffix; track suffix) {
+                                <mat-option [value]="suffix">{{suffix}}</mat-option>
+                            }
+                    </mat-select>
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray
+                        hover:bg-lightGray hover:text-white"
+                        (click)="cancelEditProfessor()">
+                        Cancel
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White"
+                        (click)="submit()">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

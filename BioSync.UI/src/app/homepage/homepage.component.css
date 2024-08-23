@@ -7,3 +7,25 @@
     background: #F4F4F4;
 }
 
+.mat-sidenav {
+    width: 325px;
+}
+
+.sidenav-toggle-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+@media (min-width: 901px) {
+    .sidenav-toggle-button {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .sidenav-toggle-button {
+        display: block;
+    }
+}

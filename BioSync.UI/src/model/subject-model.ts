@@ -1,4 +1,6 @@
 export interface Subject {
-    subject_code: string;
-    subject_name: string;
+    id: number;
+    code: string;
+    name: string;
+    description?: string;
   }

@@ -1,0 +1,41 @@
+<div class="main-container flex flex-col-reverse justify-between md:flex-row h-full w-full">
+    <div class="left-section flex flex-1 flex-col items-center w-full md:w-[50%] mt-5 md:mt-12">
+        <form class="flex justify-center w-[90%] bg-transparent" (ngSubmit)="submit()" [formGroup]="studentLoginForm">
+            <div class="w-[80%] md:w-[50%] flex flex-col gap-4">
+                <div class="header flex flex-col items-center h-full">
+                    <img class="w-auto h-28 md:w-auto md:h-44" src="../../assets/BioSyncLogo.png" alt="BioSync Logo">
+                </div>
+                <div class="text-container">
+                    <h2 class="text-custom-20 md:text-custom-40 text-darkGrey font-semibold mb-0 md:mb-4">Student Login</h2>
+                    <p class="text-custom-12 md:text-custom-16 text-lightGray mb-0 md:mb-6">Welcome, Iskolar! Please log in to continue.</p>
+                </div>
+                <div class="group relative flex items-center">
+                    <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
+                    group-focus-within:text-brightRed">supervised_user_circle</mat-icon>
+                    <input matInput id="usercode" name="usercode"
+                        placeholder="Student Number" class="bg-transparent
+                        border-b-2 border-lightGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="usercode">
+                </div>
+                <div class="group relative flex items-center">
+                    <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
+                    group-focus-within:text-brightRed">key</mat-icon>
+                    <input matInput id="password" type="password" name="password"
+                        placeholder="Password" class="bg-transparent
+                        border-b-2 border-lightGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="password">
+                </div>
+                <button class="text-custom-12 md:text-custom-16 text-white py-3 px-24
+                    bg-gradient-red-orange rounded-2xl
+                    hover:bg-gradient-dark-red-orange hover:text-f4White mt-4 md:mt-10 mb-10 md:mb-0">
+                    Login
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="right-section w-full md:w-[50%] flex-1 flex-end justify-end items-center">
+        <img class="w-full h-screen" src="../../assets/student-bg.png" alt="DOST Laboratory">
+    </div>
+</div>
