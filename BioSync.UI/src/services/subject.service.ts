@@ -19,6 +19,13 @@ export class SubjectService {
     });
   }
 
+  updateSubject(subject: Subject){
+    return this.http.put<Subject>(this.url, subject,{
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deleteSubject(id: number | undefined) {
     return this.http.delete(this.url, {
       body: { id },
