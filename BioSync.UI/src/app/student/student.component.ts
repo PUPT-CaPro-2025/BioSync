@@ -8,6 +8,8 @@ import { AddStudentComponent } from '../add-student/add-student.component';
 import { EditStudentComponent } from '../edit-student/edit-student.component';
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-student',
@@ -49,7 +51,10 @@ export class StudentComponent implements OnInit{
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.getStudents();
@@ -65,6 +70,22 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.students.push(newStudent);
+  }
+
+  openConfirmationDialog(student: User){
+    const dialog = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Deleting Student',
+        message: 'Are you sure you want to delete this student?'
+      }
+    })
+
+    dialog.afterClosed().subscribe( result => {
+      if (!result) return;
+
+      this.deleteStudent(student)
+    })
   }
 
   get pages(): number[] {
@@ -123,5 +144,13 @@ export class StudentComponent implements OnInit{
 
   handleEditBackToStudent(): void {
     this.isEditStudent = false;
+  }
+
+  private deleteStudent(studentToDelete: User) {
+    this.userService.deleteUser(studentToDelete).subscribe({
+      next: () => {
+        this.students = this.students.filter(student => studentToDelete.id !== student.id);
+      }
+    })
   }
 }
