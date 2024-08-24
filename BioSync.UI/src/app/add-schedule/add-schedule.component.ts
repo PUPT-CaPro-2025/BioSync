@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import { CommonModule } from '@angular/common';
+import {CommonModule, DatePipe} from '@angular/common';
 import {SubjectService} from "../../services/subject.service";
 import {Subject} from "../../model/subject-model";
 import {AddScheduleService} from "../../services/add-schedule.service";
@@ -13,12 +13,16 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
+import {MatDatepicker, MatDatepickerInput} from "@angular/material/datepicker";
+import {MatButton} from "@angular/material/button";
+import {provideNativeDateAdapter} from "@angular/material/core";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent],
-  providers: [SubjectService, AddScheduleService, UserService],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent, MatDatepicker, MatDatepickerInput, MatButton, MatIcon],
+  providers: [SubjectService, AddScheduleService, UserService, provideNativeDateAdapter(), DatePipe],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
@@ -29,7 +33,8 @@ export class AddScheduleComponent implements OnInit{
     private addScheduleService: AddScheduleService,
     private dialog: MatDialog,
     private userService: UserService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe
   ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
@@ -70,12 +75,15 @@ export class AddScheduleComponent implements OnInit{
   scheduleForm!: FormGroup;
   today!: string;
   subjects: Subject[] = [];
+  selectedDayOfWeek!: string;
+  formattedDateString!: string;
 
   ngOnInit() {
     this.initForm();
     this.getCurrentDate();
     this.getSubjects();
     this.getProfessors();
+    this.updateSelectedDayOfWeek();
   }
 
   initForm(): void{
@@ -228,6 +236,22 @@ export class AddScheduleComponent implements OnInit{
   weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
   weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
 
+  onDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    const formattedDayOfWeek = this.getDayOfWeek(selectedDate);
+    const formattedDate = this.datePipe.transform(selectedDate, 'MM/dd/yy')!;
+    this.selectedDayOfWeek = formattedDayOfWeek;
+    this.formattedDateString = `${formattedDayOfWeek}, ${formattedDate}`;
+    this.scheduleForm.patchValue({
+      scheduleDate: this.datePipe.transform(selectedDate, 'yyyy-MM-dd') // raw value for form control
+    });
+  }
+
+  updateSelectedDayOfWeek() {
+    const selectedDate = new Date(this.scheduleForm.get('scheduleDate')?.value);
+    this.selectedDayOfWeek = this.getDayOfWeek(selectedDate);
+  }
+
   onRecurrenceChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedRecurrence = selectedValue;
@@ -265,7 +289,7 @@ export class AddScheduleComponent implements OnInit{
   }
 
   onRepeatEveryChange(event: Event) {
-    this.customRecurrence.repeatEvery = 
+    this.customRecurrence.repeatEvery =
     parseInt((event.target as HTMLInputElement).value, 10);
   }
 
@@ -275,7 +299,7 @@ export class AddScheduleComponent implements OnInit{
   }
 
   onSpecificDayChange(event: Event) {
-    this.customRecurrence.specificDay = 
+    this.customRecurrence.specificDay =
       (event.target as HTMLSelectElement).value;
   }
 
@@ -286,13 +310,13 @@ export class AddScheduleComponent implements OnInit{
     } else {
       this.customRecurrence.days.splice(index, 1);
     }
-    
-    this.customRecurrence.days.sort((a, b) => 
+
+    this.customRecurrence.days.sort((a, b) =>
       this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
   }
 
   formatCustomRecurrence(): string {
-    let formatted = `Every ${this.customRecurrence.repeatEvery} 
+    let formatted = `Every ${this.customRecurrence.repeatEvery}
       ${this.customRecurrence.period}(s)`;
     if (this.customRecurrence.period === 'week') {
       const daysFormatted = this.customRecurrence.days.length > 0
@@ -313,13 +337,13 @@ export class AddScheduleComponent implements OnInit{
   }
 
   getDayOfWeek(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
       'Thursday', 'Friday', 'Saturday'];
     return days[date.getDay()];
   }
 
   getFormattedDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = 
+    const options: Intl.DateTimeFormatOptions =
       { month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
