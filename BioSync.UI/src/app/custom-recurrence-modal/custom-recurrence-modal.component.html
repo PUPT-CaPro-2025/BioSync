@@ -1,0 +1,67 @@
+<div class="modal-overlay">
+    <div class=" bg-white p-4 flex flex-col justify-center align-center rounded-tl-lg rounded-tr-lg w-[350px]">
+        <h3 class="text-brightRed text-custom-20 font-weight400 mb-6">Custom Recurrence</h3>
+        <div class="mb-4">
+                <label class="text-lightGray text-custom-14 mr-2">Repeat every: </label>
+                <input class="bg-f2White text-darkGray w-10 align-center border-b-2 py-1 px-1
+                    border-darkGray focus:border-brightRed focus:outline-none 
+                    transition-colors duration-300 rounded-tl-lg rounded-tr-lg mr-5" 
+                    type="number" [value]="customRecurrence.repeatEvery" 
+                    (input)="onRepeatEveryChange($event)" min="1">
+                <select class="bg-f2White text-darkGray w-28 align-center 
+                    border-b-2 py-1 px-1 border-darkGray focus:border-brightRed 
+                    focus:outline-none transition-colors duration-300 rounded-tl-lg 
+                    rounded-tr-lg" [value]="customRecurrence.period" 
+                    (change)="onPeriodChange($event)">
+                    <option value="day">Day/s</option>
+                    <option value="week">Week/s</option>
+                    <option value="month">Month/s</option>
+                    <option value="year">Year/s</option>
+                </select>
+        </div>
+        @if(customRecurrence.period === 'week') {
+            <div class="mb-4">
+                <label class="text-lightGray text-custom-14 mr-4">
+                    Repeat on: </label>
+                @for(day of weekDays; track day) {
+                    <div class="inline-block w-7 h-7 leading-30px text-center 
+                        text-custom-14 rounded-full bg-semiGray text-darkGray 
+                        mr-1 cursor-pointer bubble"
+                        [class.selected]="customRecurrence.days.includes(day)"
+                        (click)="toggleDaySelection(day)">
+                        {{ day }}
+                    </div>
+                }
+              </div>
+        } @else if (customRecurrence.period === 'month') {
+            <div class="mb-4">
+                <label class="text-lightGray text-custom-14 mr-4">
+                    Repeat every: </label>
+                <select class="bg-f2White text-darkGray w-44 align-center 
+                    border-b-2 py-1 px-1 border-darkGray 
+                    focus:border-brightRed focus:outline-none transition-colors 
+                    duration-300 rounded-tl-lg rounded-tr-lg" 
+                    [value]="customRecurrence.specificDay" 
+                    (change)="onSpecificDayChange($event)">
+                    <option [value]="todayDay">{{ todayDayText }}</option>
+                    <option [value]="weekAndDay">{{ weekAndDayText }}</option>
+                </select>
+              </div>
+        }
+    </div>
+    <div class="flex justify-end gap-[20px] w-[350px] p-fifthteenpx bg-white 
+            relative z-2 rounded-bl-lg rounded-br-lg actions">
+        <button class="text-custom-14 text-lightGray py-1 px-8 border-2 
+            rounded-full border-lightGray z-2 relative hover:bg-lightGray 
+          hover:text-white" (click)="closeModal()">
+            Back
+        </button>
+        <button class="text-custom-14 text-white py-1 px-8 
+            bg-gradient-red-orange rounded-full z-2 relative
+            hover:bg-gradient-dark-red-orange hover:text-f4White" 
+            (click)="setCustomRecurrence()">
+            Done
+        </button>
+    </div>
+</div>
+  

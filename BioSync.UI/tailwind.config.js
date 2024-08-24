@@ -50,6 +50,7 @@ module.exports = {
       padding: {
         '15': '60px',
         '19': '72px',
+        fifthteenpx: '15px',
         nintypx: '90px',
         tenpx: '10px',
         sixpx: '6px',
@@ -60,7 +61,17 @@ module.exports = {
         '2px': '2px',  
       },
       fontWeight: {
+        'weight400': '400',
         'weight700': '700',
+      },
+      lineHeight: {
+        '30px': '30px',
+      },
+      opacity: {
+        '1': '0.1',
+      },
+      zIndex: {
+        '2': '2',
       },
     },
   },
