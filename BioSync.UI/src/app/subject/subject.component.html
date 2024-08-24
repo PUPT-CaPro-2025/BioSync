@@ -52,7 +52,7 @@
                         <div class="cell">{{ subject.name }}</div>
                         <div class="cell">
                             <div class="action-container">
-                                <button class="edit-button" (click)="toggleEditSubject()"><mat-icon>edit</mat-icon></button>
+                                <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
                                 <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
                             </div>
                         </div>
@@ -98,9 +98,12 @@
             </div>
         </div>
     } @else {
-        <app-edit-subject (backToEditSubject)="handleBackToEditSubject()"></app-edit-subject>
+        <app-edit-subject
+          [selectedSubject]="subjectToEdit"
+          (updatedSubject)="onSubjectUpdate($event)"
+          (backToEditSubject)="handleBackToEditSubject()"/>
     }
-    
+
 } @else {
     <app-add-subject (subjectAdded)="onSubjectAdded($event)" (backToSubject)="handleBackToSubject()"></app-add-subject>
 }

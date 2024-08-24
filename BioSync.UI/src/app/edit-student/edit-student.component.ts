@@ -1,10 +1,16 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import {User} from "../../model/user.model";
+import { Program } from '../../model/program.model';
+import {ProgramService} from "../../services/program.service";
+import {UserService} from "../../services/user.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-edit-student',
@@ -16,14 +22,17 @@ import { MatSelectModule } from '@angular/material/select';
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule],
+  providers: [UserService, ProgramService],
   templateUrl: './edit-student.component.html',
   styleUrl: './edit-student.component.css'
 })
-export class EditStudentComponent {
+export class EditStudentComponent implements OnInit{
   @Output() backToEditStudent = new EventEmitter<void>();
+  @Output() editedStudent = new EventEmitter<User>();
+  @Input() selectedStudent!: User;
 
-  //Temporary Suffixes
   allSuffix: string[] = [
+    'N/A',
     'Ph.D.',
     'Ed.D.',
     'D.Phil.',
@@ -36,39 +45,37 @@ export class EditStudentComponent {
     '3rd'
   ];
 
-  //Temporary Programs
-  allPrograms: string[] = [
-    'BSIT',
-    'DIT',
-    'BSOA',
-    'BSECE',
-    'BSBA-MM',
-    'BSBA-HRM'
-  ];
+  allPrograms: Program[] = []
 
   allYears: string[] = [
-    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2" 
+    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2"
   ];
 
   allSections: number[] = [
     1, 2, 3, 4
   ];
 
-  studentForm!: FormGroup;
+  editStudentForm!: FormGroup;
 
   constructor(
-    private formBuilder: FormBuilder) {}
+    private formBuilder: FormBuilder,
+    private userService: UserService,
+    private programService: ProgramService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit() {
     this.initForm();
+    this.getAllPrograms();
+    this.setFormValues();
   }
 
   initForm(){
-    this.studentForm = this.formBuilder.group({
-      student_name: ['', [Validators.required]],
-      first_name: ['', [Validators.required]],
-      last_name: ['', [Validators.required]],
-      middle_initial: ['', [Validators.required]],
+    this.editStudentForm = this.formBuilder.group({
+      usercode: ['', [Validators.required]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      middleName: ['', [Validators.required]],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
       year: ['', [Validators.required]],
@@ -76,12 +83,71 @@ export class EditStudentComponent {
     });
   }
 
-  cancelEditStudent(): void {
+  getAllPrograms(){
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.allPrograms = programs;
+      }
+    })
+  }
+
+  setFormValues(){
+    this.editStudentForm.patchValue({
+      usercode: this.selectedStudent.usercode,
+      firstName: this.selectedStudent.firstName,
+      lastName: this.selectedStudent.lastName,
+      middleName: this.selectedStudent.middleName,
+      suffix: this.selectedStudent.suffix,
+      program: this.selectedStudent.program?.id,
+      year: this.selectedStudent.year,
+      section: +<string>this.selectedStudent.section,
+    })
+  }
+
+  returnToStudentView(): void {
     this.backToEditStudent.emit();
   }
 
   submit(){
-    console.log("Click Submit!")
+    if(!this.editStudentForm.valid || !this.editStudentForm.touched) return;
+
+    const updatedValues = this.editStudentForm.value;
+
+    let selectedProgram = this.allPrograms.find(
+      (program: Program) => program.id === this.selectedStudent.program?.id);
+
+    const studentToUpdate = {
+      ...updatedValues,
+      program: selectedProgram,
+      id: this.selectedStudent.id,
+      password: this.selectedStudent.password,
+      role: this.selectedStudent.role,
+    }
+
+    this.userService.updateUser(studentToUpdate).subscribe({
+      next: (updatedUser: User) => {
+        if(!updatedUser.id) return;
+        this.editedStudent.emit(updatedUser);
+        this.openSuccessDialog();
+      }
+    })
+
     return;
+  }
+
+  openSuccessDialog(){
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Student Updated!',
+        message: 'Students record has been updated successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToStudentView();
+      }
+    })
   }
 }

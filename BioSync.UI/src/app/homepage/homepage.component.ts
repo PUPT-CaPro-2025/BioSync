@@ -19,13 +19,11 @@ export class HomepageComponent implements AfterViewInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
 
   private hideSideNavRoutes = [
-    '/login', 
-    '/admin-login', 
-    'faculty-login', 
-    'student-login', 
-    'visitor-log',
-    'dashboard-student',
-    'dashboard-professor'
+    '/login',
+    '/admin-login',
+    '/student-login',
+    '/professor-login',
+    '/visitor-log'
   ];
 
   constructor(private router: Router, private cd: ChangeDetectorRef) {
@@ -44,7 +42,7 @@ export class HomepageComponent implements AfterViewInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: Event) {
+  onResize() {
     this.checkScreenSize();
     this.cd.detectChanges();
   }
@@ -56,19 +54,27 @@ export class HomepageComponent implements AfterViewInit {
 
   private updateDisplaySideNav() {
     if (this.isMobile) {
-      this.displaySideNav = true;
+      this.showSideNav = false;
     } else {
-      this.displaySideNav = this.showSideNav;
+      this.showSideNav = !this.hideSideNavRoutes.some(
+        route => this.router.url.startsWith(route)
+      );
     }
     if (this.sidenav) {
-      this.sidenav.opened = !this.isMobile && this.displaySideNav;
+      this.sidenav.opened = !this.isMobile && this.showSideNav;
+    }
+  }
+
+  onCloseSidenav() {
+    if (this.isMobile) {
+      this.showSideNav = false;
     }
   }
 
   handleSidenavClose() {
     this.displaySideNav = true;
     if (this.sidenav) {
-      this.sidenav.close();
+      this.sidenav.close().then();
     }
   }
 }
