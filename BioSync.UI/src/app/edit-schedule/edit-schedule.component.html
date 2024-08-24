@@ -84,19 +84,44 @@
                         duration-300 w-full py-2 px-1">
                 </div>
             </div>
-            <div class="group flex flex-col gap-1">
-                <label for="subject-date" class="text-custom-16
-                    text-darkGray transition-colors duration-300 
-                    group-focus-within:text-brightRed">
-                    Schedule Date
-                </label>
-                <input matInput id="schedule_date" type="date"
-                    name="schedule-date" 
-                    placeholder="Enter Subject Description"
-                    class="bg-transparent border-b-2 border-darkGray 
-                    focus:border-brightRed focus:outline-none 
-                    transition-colors duration-300 w-full py-2 px-1">
-            </div>
+            <div class="flex justify-between">
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="subject-date" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Schedule Date
+                    </label>
+                    <input matInput id="schedule_date" type="date"
+                        name="schedule-date"
+                        placeholder="Enter Subject Description"
+                        class="bg-transparent border-b-2 border-darkGray
+                        focus:border-brightRed focus:outline-none
+                        transition-colors duration-300 w-full py-2 px-1"
+                        formControlName="scheduleDate">
+                </div>
+                <div class="group flex flex-col gap-1 w-[47%]">
+                    <label for="recurrence" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Date Recurrence
+                    </label>
+                    <select id="recurrence" name="recurrence" 
+                        [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
+                        placeholder="Select the date's recurrence" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="recurrence">
+                        <option value="none">Does not repeat</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly on '{{ currentDayOfWeek }}'</option>
+                        <option value="monthly">Monthly on the '{{ currentWeekOfMonth }} {{currentDayOfWeek}}'</option>
+                        <option value="annually">Annually on '{{ currentDate }}'</option>
+                        <option value="weekday">Every Weekday (Monday to Friday)</option>
+                        <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>
+                        <option value="custom">Custom</option>
+                    </select>              
+                </div>
+            </div>        
             <div class="group flex flex-col gap-1">
                 <label for="laboratory" class="text-custom-16
                     text-darkGray transition-colors duration-300 
@@ -147,32 +172,6 @@
                         }
                 </mat-select>
             </div>
-            <div class="flex justify-between">
-                <div class="group flex flex-col gap-1 w-[47%]">
-                    <label for="start-year" class="text-custom-16
-                        text-darkGray transition-colors duration-300 
-                        group-focus-within:text-brightRed">
-                        Start Year
-                    </label>
-                    <input matInput id="start_year" name="start-year" 
-                        placeholder="Ex: 2023" type="number" class="bg-transparent 
-                        border-b-2 border-darkGray focus:border-brightRed 
-                        focus:outline-none transition-colors 
-                        duration-300 w-full py-2 px-1 no-spinner">
-                </div>
-                <div class="group flex flex-col gap-1 w-[47%]">
-                    <label for="end-year" class="text-custom-16
-                        text-darkGray transition-colors duration-300 
-                        group-focus-within:text-brightRed">
-                        End Year
-                    </label>
-                    <input matInput id="end_year" name="end-year"
-                        placeholder="Ex: 2024" type="number" class="bg-transparent 
-                        border-b-2 border-darkGray focus:border-brightRed 
-                        focus:outline-none transition-colors 
-                        duration-300 w-full py-2 px-1 no-spinner">
-                </div>
-            </div>
             <div class="group flex flex-col gap-1">
                 <label for="remarks" class="text-custom-16
                     text-darkGray transition-colors duration-300 
@@ -208,3 +207,19 @@
         </div>
     </form>  
 </div>
+
+@if(isCustomRecurrenceVisible) {
+    <app-custom-recurrence-modal [customRecurrence]="customRecurrence"
+                  [weekDays]="weekDays"
+                  [todayDay]="todayDay"
+                  [weekAndDay]="weekAndDay"
+                  [todayDayText]="todayDayText"
+                  [weekAndDayText]="weekAndDayText"
+                  (close)="closeModal()"
+                  (save)="setCustomRecurrence()"
+                  (repeatEveryChange)="onRepeatEveryChange($event)"
+                  (periodChange)="onPeriodChange($event)"
+                  (specificDayChange)="onSpecificDayChange($event)"
+                  (dayToggle)="toggleDaySelection($event)">
+    </app-custom-recurrence-modal>
+}
