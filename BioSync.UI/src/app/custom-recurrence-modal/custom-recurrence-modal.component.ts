@@ -2,6 +2,12 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+export interface Recurrence {
+  repeatEvery: number;
+  period: string;
+  days: string[];
+  specificDay: number | string | null;
+}
 
 @Component({
   selector: 'app-custom-recurrence-modal',
@@ -11,7 +17,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './custom-recurrence-modal.component.css'
 })
 export class CustomRecurrenceModalComponent {
-  @Input() customRecurrence: any;
+  @Input() customRecurrence!: Recurrence;
   @Input() weekDays: string[] = [];
   @Input() todayDay!: number;
   @Input() weekAndDay: string = '';
