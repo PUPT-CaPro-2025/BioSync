@@ -123,7 +123,8 @@
                             group-focus-within:text-brightRed">
                             Date Recurrence
                         </label>
-                        <select id="recurrence" name="recurrence" [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
+                        <select id="recurrence" name="recurrence" 
+                            [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
                             placeholder="Select the date's recurrence" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
@@ -192,32 +193,6 @@
                             }
                     </mat-select>
                 </div>
-                <div class="flex justify-between">
-                    <div class="group flex flex-col gap-1 w-[47%]">
-                        <label for="start-year" class="text-custom-16
-                            text-darkGray transition-colors duration-300
-                            group-focus-within:text-brightRed">
-                            Start Year
-                        </label>
-                        <input matInput id="start_year" name="start-year"
-                            placeholder="Ex: 2023" type="number" class="bg-transparent
-                            border-b-2 border-darkGray focus:border-brightRed
-                            focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1 no-spinner" formControlName="startYear">
-                    </div>
-                    <div class="group flex flex-col gap-1 w-[47%]">
-                        <label for="end-year" class="text-custom-16
-                            text-darkGray transition-colors duration-300
-                            group-focus-within:text-brightRed">
-                            End Year
-                        </label>
-                        <input matInput id="end_year" name="end-year"
-                            placeholder="Ex: 2024" type="number" class="bg-transparent
-                            border-b-2 border-darkGray focus:border-brightRed
-                            focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1 no-spinner" formControlName="endYear">
-                    </div>
-                </div>
                 <div class="group flex flex-col gap-1">
                     <label for="remarks" class="text-custom-16
                         text-darkGray transition-colors duration-300
@@ -264,41 +239,18 @@
     </div>
 </div>
 
-<div *ngIf="isCustomRecurrenceVisible" class="modal-overlay">
-    <div class="modal">
-      <h3>Custom Recurrence</h3>
-      
-      <div class="row">
-        <label>Repeat every:</label>
-        <input type="number" [value]="customRecurrence.repeatEvery" (input)="onRepeatEveryChange($event)" min="1">
-        <select [value]="customRecurrence.period" (change)="onPeriodChange($event)">
-          <option value="day">Day/s</option>
-          <option value="week">Week/s</option>
-          <option value="month">Month/s</option>
-          <option value="year">Year/s</option>
-        </select>
-      </div>
-  
-      <div class="row" *ngIf="customRecurrence.period === 'week'">
-        <label>Repeat on:</label>
-        <div class="bubble" *ngFor="let day of weekDays" 
-             [class.selected]="customRecurrence.days.includes(day)"
-             (click)="toggleDaySelection(day)">
-          {{ day }}
-        </div>
-      </div>
-  
-      <div class="row" *ngIf="customRecurrence.period === 'month'">
-        <label>Select input:</label>
-        <select [value]="customRecurrence.specificDay" (change)="onSpecificDayChange($event)">
-          <option [value]="todayDay">{{ todayDayText }}</option>
-          <option [value]="weekAndDay">{{weekAndDayText}}</option>
-        </select>
-      </div>
-  
-      <div class="row">
-        <button (click)="closeModal()">Back</button>
-        <button (click)="setCustomRecurrence()">Done</button>
-      </div>
-    </div>
-  </div>
+@if(isCustomRecurrenceVisible) {
+    <app-custom-recurrence-modal [customRecurrence]="customRecurrence"
+                  [weekDays]="weekDays"
+                  [todayDay]="todayDay"
+                  [weekAndDay]="weekAndDay"
+                  [todayDayText]="todayDayText"
+                  [weekAndDayText]="weekAndDayText"
+                  (close)="closeModal()"
+                  (save)="setCustomRecurrence()"
+                  (repeatEveryChange)="onRepeatEveryChange($event)"
+                  (periodChange)="onPeriodChange($event)"
+                  (specificDayChange)="onSpecificDayChange($event)"
+                  (dayToggle)="toggleDaySelection($event)">
+    </app-custom-recurrence-modal>
+}

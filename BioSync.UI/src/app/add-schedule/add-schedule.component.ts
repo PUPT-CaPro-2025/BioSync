@@ -12,16 +12,25 @@ import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
+import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent],
   providers: [SubjectService, AddScheduleService, UserService],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent implements OnInit{
+  constructor(
+    private formBuilder: FormBuilder,
+    private subjectService: SubjectService,
+    private addScheduleService: AddScheduleService,
+    private dialog: MatDialog,
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
+  ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
 
@@ -61,15 +70,6 @@ export class AddScheduleComponent implements OnInit{
   scheduleForm!: FormGroup;
   today!: string;
   subjects: Subject[] = [];
-
-  constructor(
-    private formBuilder: FormBuilder,
-    private subjectService: SubjectService,
-    private addScheduleService: AddScheduleService,
-    private dialog: MatDialog,
-    private userService: UserService,
-    private cdr: ChangeDetectorRef,
-  ) {}
 
   ngOnInit() {
     this.initForm();
@@ -202,7 +202,20 @@ export class AddScheduleComponent implements OnInit{
     specificDay: null as number | string | null
   };
 
-  weekDays: string[] = ['SU', 'M', 'T', 'W', 'Th', 'F', 'S'];
+  weekDays: string[] = ['SU', 'M', 'T', 'W', 'TH', 'F', 'S'];
+
+  getFullWeekDayName(abbreviation: string): string {
+    const weekDaysMap: { [key: string]: string } = {
+      'SU': 'Sunday',
+      'M': 'Monday',
+      'T': 'Tuesday',
+      'W': 'Wednesday',
+      'TH': 'Thursday',
+      'F': 'Friday',
+      'S': 'Saturday'
+    };
+    return weekDaysMap[abbreviation] || abbreviation;
+  }
 
   customOption: { value: string, display: string } | null = null;
 
@@ -240,7 +253,6 @@ export class AddScheduleComponent implements OnInit{
 
     this.customOption = { value: newOptionValue, display: newOptionDisplay };
 
-    // Use ChangeDetectorRef to ensure the change is detected
     this.cdr.detectChanges();
 
     this.selectedRecurrence = newOptionValue;
@@ -249,15 +261,18 @@ export class AddScheduleComponent implements OnInit{
   }
 
   onRepeatEveryChange(event: Event) {
-    this.customRecurrence.repeatEvery = parseInt((event.target as HTMLInputElement).value, 10);
+    this.customRecurrence.repeatEvery = 
+    parseInt((event.target as HTMLInputElement).value, 10);
   }
 
   onPeriodChange(event: Event) {
-    this.customRecurrence.period = (event.target as HTMLSelectElement).value;
+    this.customRecurrence.period = (
+      event.target as HTMLSelectElement).value;
   }
 
   onSpecificDayChange(event: Event) {
-    this.customRecurrence.specificDay = (event.target as HTMLSelectElement).value;
+    this.customRecurrence.specificDay = 
+      (event.target as HTMLSelectElement).value;
   }
 
   toggleDaySelection(day: string) {
@@ -267,13 +282,18 @@ export class AddScheduleComponent implements OnInit{
     } else {
       this.customRecurrence.days.splice(index, 1);
     }
+    
+    this.customRecurrence.days.sort((a, b) => 
+      this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
   }
 
   formatCustomRecurrence(): string {
-    let formatted = `Every ${this.customRecurrence.repeatEvery} ${this.customRecurrence.period}(s)`;
+    let formatted = `Every ${this.customRecurrence.repeatEvery} 
+      ${this.customRecurrence.period}(s)`;
     if (this.customRecurrence.period === 'week') {
       const daysFormatted = this.customRecurrence.days.length > 0
-        ? this.customRecurrence.days.join(', ')
+        ? this.customRecurrence.days
+            .map(day => this.getFullWeekDayName(day)).join(', ')
         : 'No specific days';
       formatted += ` on ${daysFormatted}`;
     } else if (this.customRecurrence.period === 'month') {
@@ -289,12 +309,15 @@ export class AddScheduleComponent implements OnInit{
   }
 
   getDayOfWeek(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+      'Thursday', 'Friday', 'Saturday'];
     return days[date.getDay()];
   }
 
   getFormattedDate(date: Date): string {
-    return `${date.getMonth() + 1}/${date.getDate()}`;
+    const options: Intl.DateTimeFormatOptions = 
+      { month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
   }
 
   getWeekOfMonth(date: Date): string {
