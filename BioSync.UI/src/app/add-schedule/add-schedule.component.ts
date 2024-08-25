@@ -22,6 +22,8 @@ import {Section} from "../../model/section.model";
 import {SchoolYearService} from "../../services/school.year.service";
 import {SchoolYear} from "../../model/school.year.model";
 import {Semester} from "../../model/semester.model";
+import {Laboratory} from "../../model/laboratory.model";
+import {LaboratoryService} from "../../services/laboratory.service";
 
 @Component({
   selector: 'app-add-schedule',
@@ -45,7 +47,8 @@ import {Semester} from "../../model/semester.model";
     provideNativeDateAdapter(),
     DatePipe,
     SectionService,
-    SchoolYearService
+    SchoolYearService,
+    LaboratoryService
   ],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
@@ -61,6 +64,7 @@ export class AddScheduleComponent implements OnInit{
     private datePipe: DatePipe,
     private sectionService: SectionService,
     private schoolYearService: SchoolYearService,
+    private laboratoryService: LaboratoryService
   ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
@@ -76,10 +80,7 @@ export class AddScheduleComponent implements OnInit{
     'Weekly'
   ];
 
-  labs: string[] = [
-    'DOST Laboratory',
-    'Aboitiz Laboratory',
-  ];
+  labs: Laboratory[] = [];
 
   professors: User[] = [];
 
@@ -127,6 +128,7 @@ export class AddScheduleComponent implements OnInit{
     this.getProfessors();
     this.updateSelectedDayOfWeek();
     this.getSections();
+    this.getLaboratories();
     this.getSchoolYear();
   }
 
@@ -191,8 +193,13 @@ export class AddScheduleComponent implements OnInit{
     })
   }
 
-  cancelAddSchedule(): void {
-    this.backToSchedule.emit();
+  getLaboratories() {
+    this.laboratoryService.getLaboratories().subscribe({
+      next: (laboratories: Laboratory[]) => {
+        if(!laboratories) return;
+        this.labs = laboratories;
+      }
+    })
   }
 
   openDialog(): void {
@@ -222,7 +229,6 @@ export class AddScheduleComponent implements OnInit{
     this.schoolYearService.getSchoolYears().subscribe({
       next: (schoolYear: SchoolYear[]) => {
         if(!schoolYear) return;
-        console.log(schoolYear);
         this.schoolYear = schoolYear;
       }
     })
