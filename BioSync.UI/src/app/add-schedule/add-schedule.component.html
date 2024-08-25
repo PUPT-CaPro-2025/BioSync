@@ -123,7 +123,7 @@
                                name="schedule-date"
                                [matDatepicker]="picker"
                                [ngClass]="formattedDateString ?
-                                'opacity-0 w-0' : ''"
+                                'opacity-0 w-1/12' : ''"
                                class="bg-transparent placeholder-darkGray
                             focus:border-brightRed focus:outline-none
                             transition-colors duration-300 w-full py-2 px-1"
@@ -138,7 +138,6 @@
                             class="text-black text-xl"></mat-icon>
                         </button>
                         <mat-datepicker #picker></mat-datepicker>
-
                       </div>
                     </div>
                     <div class="group flex flex-col gap-1 w-[47%]">
@@ -153,7 +152,7 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="recurrence">
-                            <option value="none">Does not repeat</option>
+                            <option value="">Does not repeat</option>
                             <option value="daily">Daily</option>
                             <option value="weekly">Weekly on '{{ selectedDayOfWeek }}'</option>
                             <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>

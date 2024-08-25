@@ -54,18 +54,6 @@ import {LaboratoryService} from "../../services/laboratory.service";
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent implements OnInit{
-  constructor(
-    private formBuilder: FormBuilder,
-    private subjectService: SubjectService,
-    private addScheduleService: AddScheduleService,
-    private dialog: MatDialog,
-    private userService: UserService,
-    private cdr: ChangeDetectorRef,
-    private datePipe: DatePipe,
-    private sectionService: SectionService,
-    private schoolYearService: SchoolYearService,
-    private laboratoryService: LaboratoryService
-  ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
 
@@ -119,6 +107,19 @@ export class AddScheduleComponent implements OnInit{
   formattedDateString!: string;
   schoolYear: SchoolYear[] = [];
   selectedSY: SchoolYear | undefined;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private subjectService: SubjectService,
+    private addScheduleService: AddScheduleService,
+    private dialog: MatDialog,
+    private userService: UserService,
+    private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe,
+    private sectionService: SectionService,
+    private schoolYearService: SchoolYearService,
+    private laboratoryService: LaboratoryService
+  ) {}
 
   ngOnInit() {
     this.initForm();
