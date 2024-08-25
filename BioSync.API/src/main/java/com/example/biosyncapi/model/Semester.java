@@ -13,13 +13,17 @@ public class Semester {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private Date startDate;
 
     private Date endDate;
 
     public Semester() {}
 
-    public Semester(Date startDate, Date endDate) {
+    public Semester(Long id, String name, Date startDate, Date endDate) {
+        this.id = id;
+        this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -30,6 +34,14 @@ public class Semester {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getStartDate() {

@@ -37,12 +37,15 @@ public class Schedule {
     @JoinColumn(name = "school_year_id", nullable = false)
     private SchoolYear schoolYear;
 
+    @ManyToOne
+    private Semester semester;
+
     private String remarks;
 
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, String remarks) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -52,6 +55,7 @@ public class Schedule {
         this.laboratory = laboratory;
         this.professor = professor;
         this.schoolYear = schoolYear;
+        this.semester = semester;
         this.remarks = remarks;
     }
 
@@ -103,20 +107,28 @@ public class Schedule {
         this.scheduleDate = scheduleDate;
     }
 
-    public Laboratory getLabRoom() {
-        return laboratory;
-    }
-
-    public void setLabRoom(Laboratory labRoom) {
-        this.laboratory = labRoom;
-    }
-
     public User getProfessor() {
         return professor;
     }
 
     public void setProfessor(User professor) {
         this.professor = professor;
+    }
+
+    public Laboratory getLaboratory() {
+        return laboratory;
+    }
+
+    public void setLaboratory(Laboratory laboratory) {
+        this.laboratory = laboratory;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
     }
 
     public SchoolYear getSchoolYear() {
