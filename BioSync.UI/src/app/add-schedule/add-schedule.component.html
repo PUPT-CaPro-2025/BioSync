@@ -199,20 +199,42 @@
                     </mat-select>
                 </div>
                 <div class="group flex flex-col gap-1">
+                  <label for="school-year" class="text-custom-16
+                          text-darkGray transition-colors duration-300
+                          group-focus-within:text-brightRed">
+                    School Year
+                  </label>
+                  <mat-select id="school-year" name="school-year"
+                              placeholder="Select a semester" class="bg-transparent
+                              border-b-2 border-darkGray focus:border-brightRed
+                              focus:outline-none transition-colors
+                              duration-300 w-full py-2 px-1"
+                              (selectionChange)="onSchoolYearChange($event)"
+                              formControlName="schoolYear">
+                    @for(schoolYear of schoolYear; track schoolYear) {
+                      <mat-option [value]="schoolYear.id">
+                        {{schoolYear.startYear}} - {{schoolYear.endYear}}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </div>
+                <div class="group flex flex-col gap-1">
                     <label for="semester" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Semester
                     </label>
+                  @if(semesters){
                     <mat-select id="semester" name="semester"
                             placeholder="Select a semester" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="semester">
                             @for(semester of semesters; track semester) {
-                                <mat-option [value]="semester">{{semester}}</mat-option>
+                                <mat-option [value]="semester.id">{{semester.name}}</mat-option>
                             }
                     </mat-select>
+                  }
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="remarks" class="text-custom-16

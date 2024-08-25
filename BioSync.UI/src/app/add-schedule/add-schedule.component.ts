@@ -1,6 +1,6 @@
 import {Component, Output, EventEmitter, OnInit, ChangeDetectorRef} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import {MatSelectModule} from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule, DatePipe} from '@angular/common';
@@ -19,6 +19,9 @@ import {provideNativeDateAdapter} from "@angular/material/core";
 import {MatIcon} from "@angular/material/icon";
 import {SectionService} from "../../services/section.service";
 import {Section} from "../../model/section.model";
+import {SchoolYearService} from "../../services/school.year.service";
+import {SchoolYear} from "../../model/school.year.model";
+import {Semester} from "../../model/semester.model";
 
 @Component({
   selector: 'app-add-schedule',
@@ -41,7 +44,8 @@ import {Section} from "../../model/section.model";
     UserService,
     provideNativeDateAdapter(),
     DatePipe,
-    SectionService
+    SectionService,
+    SchoolYearService
   ],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
@@ -55,7 +59,8 @@ export class AddScheduleComponent implements OnInit{
     private userService: UserService,
     private cdr: ChangeDetectorRef,
     private datePipe: DatePipe,
-    private sectionService: SectionService
+    private sectionService: SectionService,
+    private schoolYearService: SchoolYearService,
   ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
@@ -78,11 +83,7 @@ export class AddScheduleComponent implements OnInit{
 
   professors: User[] = [];
 
-  semesters: string[] = [
-    '1st Semester',
-    '2nd Semester',
-    'Summer'
-  ];
+  semesters: Semester[] = [];
 
   remarks: string[] = [
     'Laboratory'
@@ -93,6 +94,8 @@ export class AddScheduleComponent implements OnInit{
   subjects: Subject[] = [];
   selectedDayOfWeek!: string;
   formattedDateString!: string;
+  schoolYear: SchoolYear[] = [];
+  selectedSY: SchoolYear | undefined;
 
   ngOnInit() {
     this.initForm();
@@ -101,6 +104,7 @@ export class AddScheduleComponent implements OnInit{
     this.getProfessors();
     this.updateSelectedDayOfWeek();
     this.getSections();
+    this.getSchoolYear();
   }
 
   initForm(): void{
@@ -117,6 +121,7 @@ export class AddScheduleComponent implements OnInit{
         endYear: [new Date().getFullYear() + 1, [Validators.required]],
         remarks: ['', [Validators.required]],
         recurrence: ['', [Validators.required]],
+        schoolYear: ['', [Validators.required]]
       }
     )
   }
@@ -135,6 +140,12 @@ export class AddScheduleComponent implements OnInit{
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
   }
 
+  onSchoolYearChange(event: MatSelectChange){
+    const selectedId = Number(event.value)
+    this.selectedSY = this.schoolYear.find(s => s.id === selectedId);
+    this.setSemester();
+  }
+
   getSections(){
     this.sectionService.getSections().subscribe({
       next: (sections: Section[]) => {
@@ -143,7 +154,7 @@ export class AddScheduleComponent implements OnInit{
       }
     })
   }
-  
+
   cancelOrAddSchedule(): void {
     this.backToSchedule.emit();
   }
@@ -184,6 +195,24 @@ export class AddScheduleComponent implements OnInit{
     })
   }
 
+  getSchoolYear(): void {
+    this.schoolYearService.getSchoolYears().subscribe({
+      next: (schoolYear: SchoolYear[]) => {
+        if(!schoolYear) return;
+        console.log(schoolYear);
+        this.schoolYear = schoolYear;
+      }
+    })
+  }
+
+  setSemester(){
+    this.semesters.push(<Semester>this.selectedSY?.firstSemester);
+    this.semesters.push(<Semester>this.selectedSY?.secondSemester);
+    this.semesters.push(<Semester>this.selectedSY?.summerSemester);
+
+  }
+
+
   createSchedule(schedule: Schedule){
     return this.addScheduleService
       .createSchedule(schedule)
@@ -196,6 +225,10 @@ export class AddScheduleComponent implements OnInit{
   }
 
   submit() {
+    console.log(this.scheduleForm.value);
+
+    return;
+
     this.scheduleForm.patchValue({
       subject: this.selectedSubject,
       professor: {
