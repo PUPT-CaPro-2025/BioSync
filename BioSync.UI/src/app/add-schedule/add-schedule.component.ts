@@ -86,7 +86,7 @@ export class AddScheduleComponent implements OnInit{
 
   customRecurrence = {
     repeatEvery: 1,
-    period: 'week',
+    period: 'day',
     days: [] as string[],
     specificDay: null as number | string | null
   };
@@ -143,7 +143,7 @@ export class AddScheduleComponent implements OnInit{
         professor: ['', [Validators.required]],
         semester: ['', [Validators.required]],
         remarks: ['', [Validators.required]],
-        recurrence: ['', [Validators.required]],
+        recurrence: ['NONE', [Validators.required]],
         schoolYear: ['', [Validators.required]]
       }
     )
@@ -277,8 +277,33 @@ export class AddScheduleComponent implements OnInit{
     newSchedule = {
       ...newSchedule,
       startTime: `${startTime}:00`,
-      endTime: `${endTime}:00`,
+      endTime: `${endTime}:00`
     }
+
+    if(this.scheduleForm.get('recurrence')?.value === "NONE"){
+      newSchedule = {
+        ...newSchedule,
+        recurrenceDays:  [],
+        recurrenceInterval: 0
+      }
+    } else if(this.scheduleForm.get('recurrence')?.value === "DAILY"){
+      newSchedule = {
+        ...newSchedule,
+        recurrenceDays: ["MON", "TUE", "WED", "THU", "FRI", "SAT"],
+        recurrenceInterval: 1
+      }
+    } else if(this.scheduleForm.get('recurrence')?.value === "WEEKLY"){
+      const selectedDay = this.selectedDayOfWeek.substring(0,3).toUpperCase()
+      newSchedule = {
+        ...newSchedule,
+        recurrenceDays: [selectedDay],
+        recurrenceInterval: 1
+      }
+    }
+
+    //TODO: CUSTOM SELECTION
+
+    console.log(newSchedule);
 
     this.createSchedule(newSchedule);
   }
