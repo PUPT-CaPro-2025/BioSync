@@ -1,0 +1,152 @@
+
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Edit School Year</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 w-[90%] bg-transparent" [formGroup]="schoolYearForm">
+        <div class="w-[60%] flex flex-col gap-4">
+            <div class="flex justify-between w-[68%]">
+                <div class="group flex flex-col gap-1 w-[45%]">
+                    <label for="year-start" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Year Start
+                    </label>
+                    <mat-select id="year_start" name="year-start"
+                            placeholder="Select the year start" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1" formControlName="yearStart">
+                            @for(year of years; track year) {
+                                <mat-option [value]="year">{{year}}</mat-option>
+                            }
+                    </mat-select>
+                </div>
+                <div class="group flex flex-col gap-1 w-[45%]">
+                    <label for="year-end" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Year End
+                    </label>
+                    <mat-select id="year_end" name="year-end"
+                            placeholder="Select the year end" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1" formControlName="yearEnd">
+                            @for(year of years; track year) {
+                                <mat-option [value]="year">{{year}}</mat-option>
+                            }
+                    </mat-select>
+                </div>
+            </div>    
+            <div class="flex flex-col mt-4 gap-[10px]">
+                <h6 class="text-custom-20 text-lightGray font-weight400">First Semester</h6>
+                <div class="flex justify-between w-[68%]">
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="one-start-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            Start Date
+                        </label>
+                        <input matInput id="one_start_date" type="date"
+                            name="one-start-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="oneStartDate">
+                    </div>
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="one-end-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            End Date
+                        </label>
+                        <input matInput id="one_end_date" type="date"
+                            name="one-end-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="oneEndDate">
+                    </div>
+                </div>    
+            </div>
+            <div class="flex flex-col mt-4 gap-[10px]">
+                <h6 class="text-custom-20 text-lightGray font-weight400">Second Semester</h6>
+                <div class="flex justify-between w-[68%]">
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="two-start-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            Start Date
+                        </label>
+                        <input matInput id="two_start_date" type="date"
+                            name="two-start-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="twoStartDate">
+                    </div>
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="two-end-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            End Date
+                        </label>
+                        <input matInput id="two_end_date" type="date"
+                            name="two-end-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="twoEndDate">
+                    </div>
+                </div>    
+            </div>
+            <div class="flex flex-col mt-4 gap-[10px]">
+                <h6 class="text-custom-20 text-lightGray font-weight400">Summer Semester</h6>
+                <div class="flex justify-between w-[68%]">
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="summer-start-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            Start Date
+                        </label>
+                        <input matInput id="summer_start_date" type="date"
+                            name="summer-start-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="summerStartDate">
+                    </div>
+                    <div class="group flex flex-col gap-1 w-[45%]">
+                        <label for="summer-end-date" class="text-custom-16
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            End Date
+                        </label>
+                        <input matInput id="summer_end_date" type="date"
+                            name="summer-end-date" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1"
+                            formControlName="summerEndDate">
+                    </div>
+                </div>    
+            </div>
+        </div>
+        <div class="flex justify-end gap-[30px] mt-20">
+            <button class="text-custom-14 text-lightGray py-2
+                px-20 border-2 rounded-full border-lightGray
+                hover:bg-lightGray hover:text-white">
+                Back
+            </button>
+            <button class="text-custom-14 text-white py-2 px-19
+                bg-gradient-red-orange rounded-full
+                hover:bg-gradient-dark-red-orange hover:text-f4White"
+                (click)="submit()">
+                Add School Year
+            </button>
+        </div>
+    </form>
+</div>
