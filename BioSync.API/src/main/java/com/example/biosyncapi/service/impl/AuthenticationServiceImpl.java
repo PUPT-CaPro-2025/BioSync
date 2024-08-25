@@ -48,7 +48,6 @@ public class AuthenticationServiceImpl {
         user.setRole(request.getRole());
 
         if(user.getRole() == Role.STUDENT){
-            user.setYear(request.getYear());
             user.setSection(request.getSection());
             user.setProgram(request.getProgram());
         }

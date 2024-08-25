@@ -37,9 +37,8 @@ public class User implements UserDetails {
     @JoinColumn(name = "program_id")
     private Program Program;
 
-    private String year;
-
-    private String section;
+    @ManyToOne
+    private Section section;
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
@@ -93,12 +92,12 @@ public class User implements UserDetails {
         this.suffix = suffix;
     }
 
-    public String getYear() {
-        return year;
+    public Section getSection() {
+        return section;
     }
 
-    public void setYear(String year) {
-        this.year = year;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     public com.example.biosyncapi.model.Program getProgram() {
@@ -107,14 +106,6 @@ public class User implements UserDetails {
 
     public void setProgram(com.example.biosyncapi.model.Program program) {
         Program = program;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public void setSection(String section) {
-        this.section = section;
     }
 
     @Override
