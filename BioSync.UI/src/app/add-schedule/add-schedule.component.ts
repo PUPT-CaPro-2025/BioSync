@@ -17,12 +17,32 @@ import {MatDatepicker, MatDatepickerInput} from "@angular/material/datepicker";
 import {MatButton} from "@angular/material/button";
 import {provideNativeDateAdapter} from "@angular/material/core";
 import {MatIcon} from "@angular/material/icon";
+import {SectionService} from "../../services/section.service";
+import {Section} from "../../model/section.model";
 
 @Component({
   selector: 'app-add-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent, MatDatepicker, MatDatepickerInput, MatButton, MatIcon],
-  providers: [SubjectService, AddScheduleService, UserService, provideNativeDateAdapter(), DatePipe],
+  imports: [
+    MatToolbarModule,
+    MatSelectModule,
+    CommonModule,
+    MatInput,
+    ReactiveFormsModule,
+    CustomRecurrenceModalComponent,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatButton,
+    MatIcon
+  ],
+  providers: [
+    SubjectService,
+    AddScheduleService,
+    UserService,
+    provideNativeDateAdapter(),
+    DatePipe,
+    SectionService
+  ],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
@@ -34,7 +54,8 @@ export class AddScheduleComponent implements OnInit{
     private dialog: MatDialog,
     private userService: UserService,
     private cdr: ChangeDetectorRef,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private sectionService: SectionService
   ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
@@ -42,12 +63,7 @@ export class AddScheduleComponent implements OnInit{
   selectedSubject!: Subject | undefined;
   selectedProfessor!: User | undefined;
 
-  sections: string[] = [
-    'BSIT 4-1',
-    'BSIT 3-1',
-    'BSIT 2-1',
-    'BSIT 1-1',
-  ];
+  sections: Section[] = [];
 
   dateRecurrence: string[] = [
     'Does not Repeat',
@@ -84,6 +100,7 @@ export class AddScheduleComponent implements OnInit{
     this.getSubjects();
     this.getProfessors();
     this.updateSelectedDayOfWeek();
+    this.getSections();
   }
 
   initForm(): void{
@@ -98,7 +115,8 @@ export class AddScheduleComponent implements OnInit{
         semester: ['', [Validators.required]],
         startYear: [new Date().getFullYear(), [Validators.required]],
         endYear: [new Date().getFullYear() + 1, [Validators.required]],
-        remarks: ['', [Validators.required]]
+        remarks: ['', [Validators.required]],
+        recurrence: ['', [Validators.required]],
       }
     )
   }
@@ -117,12 +135,15 @@ export class AddScheduleComponent implements OnInit{
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
   }
 
-  onProfessorChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const selectedId = Number(target.value)
-    console.log(selectedId);
+  getSections(){
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        if(!sections) return;
+        this.sections = sections;
+      }
+    })
   }
-
+  
   cancelOrAddSchedule(): void {
     this.backToSchedule.emit();
   }
@@ -131,7 +152,6 @@ export class AddScheduleComponent implements OnInit{
   getSubjects() {
     this.subjectService.getSubjects().subscribe({
       next: subjects => {
-        console.log(subjects);
         this.subjects = subjects;
       }
     })
