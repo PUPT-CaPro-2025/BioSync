@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.sql.Time;
 import java.sql.Date;
+import java.util.List;
 
 
 @Entity
@@ -42,10 +43,19 @@ public class Schedule {
 
     private String remarks;
 
+    @Enumerated(EnumType.STRING)
+    private Recurrence recurrence;
+
+    private int recurrenceInterval;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+    public List<String> recurrenceDays;
+
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, Recurrence recurrence, int recurrenceInterval, List<String> recurrenceDays) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -57,6 +67,9 @@ public class Schedule {
         this.schoolYear = schoolYear;
         this.semester = semester;
         this.remarks = remarks;
+        this.recurrence = recurrence;
+        this.recurrenceInterval = recurrenceInterval;
+        this.recurrenceDays = recurrenceDays;
     }
 
     public Long getId() {
@@ -145,5 +158,29 @@ public class Schedule {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public int getRecurrenceInterval() {
+        return recurrenceInterval;
+    }
+
+    public void setRecurrenceInterval(int recurrenceInterval) {
+        this.recurrenceInterval = recurrenceInterval;
+    }
+
+    public List<String> getRecurrenceDays() {
+        return recurrenceDays;
+    }
+
+    public void setRecurrenceDays(List<String> recurrenceDays) {
+        this.recurrenceDays = recurrenceDays;
     }
 }
