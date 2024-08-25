@@ -1,4 +1,5 @@
 import {Program} from "./program.model";
+import {Section} from "./section.model";
 
 export interface User {
   id: number
@@ -10,6 +11,5 @@ export interface User {
   role: string;
   password?: string;
   program?: Program;
-  year?: string;
-  section?: string
+  section?: Section;
 }

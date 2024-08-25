@@ -4,13 +4,15 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
-import { MatSelectModule } from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {User} from "../../model/user.model";
 import { Program } from '../../model/program.model';
 import {ProgramService} from "../../services/program.service";
 import {UserService} from "../../services/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import {Section} from "../../model/section.model";
+import {SectionService} from "../../services/section.service";
 
 @Component({
   selector: 'app-edit-student',
@@ -22,7 +24,11 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule],
-  providers: [UserService, ProgramService],
+  providers: [
+    UserService,
+    ProgramService,
+    SectionService
+  ],
   templateUrl: './edit-student.component.html',
   styleUrl: './edit-student.component.css'
 })
@@ -46,28 +52,23 @@ export class EditStudentComponent implements OnInit{
   ];
 
   allPrograms: Program[] = []
-
-  allYears: string[] = [
-    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2"
-  ];
-
-  allSections: number[] = [
-    1, 2, 3, 4
-  ];
-
+  sections: Section[] = [];
+  filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
     private programService: ProgramService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sectionService: SectionService,
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.getAllPrograms();
     this.setFormValues();
+    this.getAllSections();
   }
 
   initForm(){
@@ -78,7 +79,6 @@ export class EditStudentComponent implements OnInit{
       middleName: ['', [Validators.required]],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
-      year: ['', [Validators.required]],
       section: [0, [Validators.required]]
     });
   }
@@ -99,8 +99,7 @@ export class EditStudentComponent implements OnInit{
       middleName: this.selectedStudent.middleName,
       suffix: this.selectedStudent.suffix,
       program: this.selectedStudent.program?.id,
-      year: this.selectedStudent.year,
-      section: +<string>this.selectedStudent.section,
+      section: this.selectedStudent.section?.id,
     })
   }
 
@@ -116,9 +115,13 @@ export class EditStudentComponent implements OnInit{
     let selectedProgram = this.allPrograms.find(
       (program: Program) => program.id === this.selectedStudent.program?.id);
 
+    let selectedSection = this.sections.find((section: Section) =>
+      section.id === this.editStudentForm.get('section')?.value);
+
     const studentToUpdate = {
       ...updatedValues,
       program: selectedProgram,
+      section: selectedSection,
       id: this.selectedStudent.id,
       password: this.selectedStudent.password,
       role: this.selectedStudent.role,
@@ -133,6 +136,22 @@ export class EditStudentComponent implements OnInit{
     })
 
     return;
+  }
+
+  onProgramChange(event: MatSelectChange){
+    this.filteredSections = this.sections.filter(section =>
+      section.program.id === event.value);
+  }
+
+  getAllSections(){
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+        this.filteredSections = this.sections.filter(section =>
+          section.program.id === this.selectedStudent.section?.program.id
+        )
+      }
+    })
   }
 
   openSuccessDialog(){

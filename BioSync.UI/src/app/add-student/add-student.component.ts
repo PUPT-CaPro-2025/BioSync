@@ -121,20 +121,20 @@ export class AddStudentComponent implements OnInit{
     studentToAdd = {
       ...studentToAdd,
       section: this.sections.find((section: Section) =>
-        section.id === this.studentForm.value.section.id),
+        section.id === this.studentForm.get('section')?.value),
       program: selectedProgram,
       role: 'STUDENT',
       password: 'student123'
     }
-    //
-    // this.userService.createUser(studentToAdd).subscribe({
-    //   next: (student: User) => {
-    //     if(!student.id) return;
-    //     this.openSuccessDialog();
-    //     this.addedStudent.emit(student);
-    //     this.returnToStudentView();
-    //   }
-    // })
+
+    this.userService.createUser(studentToAdd).subscribe({
+      next: (student: User) => {
+        if(!student.id) return;
+        this.openSuccessDialog();
+        this.addedStudent.emit(student);
+        this.returnToStudentView();
+      }
+    })
 
     return;
   }
