@@ -89,6 +89,29 @@ export class AddScheduleComponent implements OnInit{
     'Laboratory'
   ];
 
+  selectedRecurrence = 'none';
+  previousRecurrence = 'none';
+  currentDayOfWeek = this.getDayOfWeek(new Date());
+  currentDate = this.getFormattedDate(new Date());
+  currentWeekOfMonth = this.getWeekOfMonth(new Date());
+  isCustomRecurrenceVisible = false;
+
+  customRecurrence = {
+    repeatEvery: 1,
+    period: 'week',
+    days: [] as string[],
+    specificDay: null as number | string | null
+  };
+
+  weekDays: string[] = ['SU', 'M', 'T', 'W', 'TH', 'F', 'S'];
+
+  customOption: { value: string, display: string } | null = null;
+
+  todayDay: number = new Date().getDate();
+  todayDayText: string = `Monthly on day ${this.todayDay}`;
+  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
+  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
+
   scheduleForm!: FormGroup;
   today!: string;
   subjects: Subject[] = [];
@@ -225,10 +248,6 @@ export class AddScheduleComponent implements OnInit{
   }
 
   submit() {
-    console.log(this.scheduleForm.value);
-
-    return;
-
     this.scheduleForm.patchValue({
       subject: this.selectedSubject,
       professor: {
@@ -253,22 +272,6 @@ export class AddScheduleComponent implements OnInit{
     this.createSchedule(newSchedule);
   }
 
-  selectedRecurrence = 'none';
-  previousRecurrence = 'none';
-  currentDayOfWeek = this.getDayOfWeek(new Date());
-  currentDate = this.getFormattedDate(new Date());
-  currentWeekOfMonth = this.getWeekOfMonth(new Date());
-  isCustomRecurrenceVisible = false;
-
-  customRecurrence = {
-    repeatEvery: 1,
-    period: 'week',
-    days: [] as string[],
-    specificDay: null as number | string | null
-  };
-
-  weekDays: string[] = ['SU', 'M', 'T', 'W', 'TH', 'F', 'S'];
-
   getFullWeekDayName(abbreviation: string): string {
     const weekDaysMap: { [key: string]: string } = {
       'SU': 'Sunday',
@@ -282,12 +285,7 @@ export class AddScheduleComponent implements OnInit{
     return weekDaysMap[abbreviation] || abbreviation;
   }
 
-  customOption: { value: string, display: string } | null = null;
 
-  todayDay: number = new Date().getDate();
-  todayDayText: string = `Monthly on day ${this.todayDay}`;
-  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
-  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
 
   onDateChange(event: any): void {
     const selectedDate = new Date(event.value);

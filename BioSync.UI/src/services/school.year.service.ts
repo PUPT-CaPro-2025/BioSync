@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environment/appsetting";
 import {CookieService} from "./cookie.service";
-import {Section} from "../model/section.model";
 import {SchoolYear} from "../model/school.year.model";
 
 @Injectable()
