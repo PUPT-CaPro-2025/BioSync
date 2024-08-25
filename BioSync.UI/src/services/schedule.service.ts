@@ -19,6 +19,13 @@ export class ScheduleService {
     });
   }
 
+  updateSchedule(schedule: Schedule){
+    return this.http.put<Schedule>(this.url, schedule,{
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deleteSchedule(schedule: Schedule){
     return this.http.delete<Schedule>(this.url, {
       body: { "id" : schedule.id },

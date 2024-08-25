@@ -18,6 +18,9 @@ import {LaboratoryService} from "../../services/laboratory.service";
 import {UserService} from "../../services/user.service";
 import {SchoolYear} from "../../model/school.year.model";
 import {SchoolYearService} from "../../services/school.year.service";
+import {ScheduleService} from "../../services/schedule.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-edit-schedule',
@@ -30,6 +33,7 @@ import {SchoolYearService} from "../../services/school.year.service";
     LaboratoryService,
     UserService,
     SchoolYearService,
+    ScheduleService,
   ],
   templateUrl: './edit-schedule.component.html',
   styleUrl: './edit-schedule.component.css'
@@ -37,6 +41,7 @@ import {SchoolYearService} from "../../services/school.year.service";
 export class EditScheduleComponent implements OnInit{
 
   @Output() editBackToSchedule = new EventEmitter<void>();
+  @Output() editedSchedule = new EventEmitter<Schedule>();
   @Input() scheduleToEdit!: Schedule;
 
   editScheduleForm!: FormGroup;
@@ -85,6 +90,8 @@ export class EditScheduleComponent implements OnInit{
     private laboratoryService: LaboratoryService,
     private userService: UserService,
     private schoolYearService: SchoolYearService,
+    private scheduleService: ScheduleService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -128,6 +135,42 @@ export class EditScheduleComponent implements OnInit{
       remarks: this.scheduleToEdit.remarks,
       recurrence: ''
     })
+  }
+
+  submit(){
+    const selectedProfessor = this.professors.find(professor =>
+      professor.id === this.editScheduleForm.get('professor')?.value)
+
+    this.editScheduleForm.patchValue({
+      schoolYear: this.selectedSY,
+      section: this.sections.find(section =>
+        section.id === this.editScheduleForm.get('section')?.value),
+      semester: this.semesters.find(semesters =>
+        semesters.id === this.editScheduleForm.get('semester')?.value),
+      professor: {
+        id: selectedProfessor?.id,
+        firstName: selectedProfessor?.firstName,
+        lastName: selectedProfessor?.lastName,
+        role: selectedProfessor?.role,
+      },
+      laboratory: this.labs.find(laboratory =>
+        laboratory.id === this.editScheduleForm.get('laboratory')?.value),
+    })
+
+    let newSchedule = this.editScheduleForm.value;
+
+    const startTime = this.editScheduleForm.get('startTime')?.value;
+    const endTime = this.editScheduleForm.get('endTime')?.value;
+
+    newSchedule = {
+      ...newSchedule,
+      subject: this.scheduleToEdit.subject,
+      startTime: `${startTime}:00`,
+      endTime: `${endTime}:00`,
+      id: this.scheduleToEdit.id
+    }
+
+    this.updateSchedule(newSchedule);
   }
 
   getSections(){
@@ -332,5 +375,31 @@ export class EditScheduleComponent implements OnInit{
 
   cancelOrEditSchedule(): void {
     this.editBackToSchedule.emit();
+  }
+
+  updateSchedule(schedule: Schedule) {
+    this.scheduleService.updateSchedule(schedule).subscribe({
+      next: updatedSchedule => {
+        if(updatedSchedule.id !== this.scheduleToEdit.id) return;
+        this.editedSchedule.emit(updatedSchedule);
+        this.openSuccessDialog();
+      }
+    })
+  }
+
+  openSuccessDialog(){
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Schedule Updated!',
+        message: 'Schedule details has been updated successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.cancelOrEditSchedule();
+      }
+    })
   }
 }

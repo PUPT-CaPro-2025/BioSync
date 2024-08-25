@@ -70,6 +70,13 @@ export class ScheduleComponent implements OnInit{
     this.schedules.push(schedule);
   }
 
+  onScheduleUpdate(updatedSchedule: Schedule) {
+    const index = this.schedules.findIndex(schedule =>
+      schedule.id === updatedSchedule.id);
+
+    this.schedules[index] = updatedSchedule;
+  }
+
   convertTimeFormat(time: string): string {
     const [hours, minutes] = time.split(':').map(Number);
 
