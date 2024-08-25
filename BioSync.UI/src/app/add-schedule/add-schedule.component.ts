@@ -139,11 +139,9 @@ export class AddScheduleComponent implements OnInit{
         startTime: ['', Validators.required],
         endTime: ['', [Validators.required]],
         scheduleDate: ['', [Validators.required]],
-        labRoom: ['', [Validators.required]],
+        laboratory: ['', [Validators.required]],
         professor: ['', [Validators.required]],
         semester: ['', [Validators.required]],
-        startYear: [new Date().getFullYear(), [Validators.required]],
-        endYear: [new Date().getFullYear() + 1, [Validators.required]],
         remarks: ['', [Validators.required]],
         recurrence: ['', [Validators.required]],
         schoolYear: ['', [Validators.required]]
@@ -256,20 +254,24 @@ export class AddScheduleComponent implements OnInit{
   submit() {
     this.scheduleForm.patchValue({
       subject: this.selectedSubject,
+      schoolYear: this.selectedSY,
+      section: this.sections.find(section =>
+        section.id === this.scheduleForm.get('section')?.value),
+      semester: this.semesters.find(semesters =>
+        semesters.id === this.scheduleForm.get('semester')?.value),
       professor: {
         id: this.scheduleForm.get('professor')?.value,
         role: 'FACULTY'
-      }
+      },
+      laboratory: this.labs.find(laboratory =>
+        laboratory.id !== this.scheduleForm.get('laboratory')?.value),
     })
     let newSchedule = this.scheduleForm.value;
 
-    const startYear = this.scheduleForm.get('startYear')?.value;
-    const endYear = this.scheduleForm.get('endYear')?.value;
     const startTime = this.scheduleForm.get('startTime')?.value;
     const endTime = this.scheduleForm.get('endTime')?.value;
 
     newSchedule = {
-      schoolYear: `${startYear}-${endYear}`,
       ...newSchedule,
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
