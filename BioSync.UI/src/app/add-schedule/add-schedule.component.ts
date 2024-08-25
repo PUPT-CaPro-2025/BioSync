@@ -7,7 +7,7 @@ import {CommonModule, DatePipe} from '@angular/common';
 import {SubjectService} from "../../services/subject.service";
 import {Subject} from "../../model/subject-model";
 import {AddScheduleService} from "../../services/add-schedule.service";
-import {Schedule} from "../../model/schedule-model";
+import {Schedule} from "../../model/schedule.model";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {User} from "../../model/user.model";

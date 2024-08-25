@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environment/appsetting";
-import {Schedule} from "../model/schedule-model";
+import {Schedule} from "../model/schedule.model";
 import {CookieService} from "./cookie.service";
 
 @Injectable()

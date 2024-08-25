@@ -2,16 +2,8 @@ import {Component, Output, EventEmitter, ChangeDetectorRef} from '@angular/core'
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {ReactiveFormsModule} from "@angular/forms";
 import { CommonModule } from '@angular/common';
-import {SubjectService} from "../../services/subject.service";
-import {Subject} from "../../model/subject-model";
-import {AddScheduleService} from "../../services/add-schedule.service";
-import {Schedule} from "../../model/schedule-model";
-import {MatDialog} from "@angular/material/dialog";
-import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
-import {User} from "../../model/user.model";
-import {UserService} from "../../services/user.service";
 import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
 
 @Component({
@@ -136,7 +128,7 @@ export class EditScheduleComponent {
   }
 
   onRepeatEveryChange(event: Event) {
-    this.customRecurrence.repeatEvery = 
+    this.customRecurrence.repeatEvery =
     parseInt((event.target as HTMLInputElement).value, 10);
   }
 
@@ -146,7 +138,7 @@ export class EditScheduleComponent {
   }
 
   onSpecificDayChange(event: Event) {
-    this.customRecurrence.specificDay = 
+    this.customRecurrence.specificDay =
       (event.target as HTMLSelectElement).value;
   }
 
@@ -157,13 +149,13 @@ export class EditScheduleComponent {
     } else {
       this.customRecurrence.days.splice(index, 1);
     }
-    
-    this.customRecurrence.days.sort((a, b) => 
+
+    this.customRecurrence.days.sort((a, b) =>
       this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
   }
 
   formatCustomRecurrence(): string {
-    let formatted = `Every ${this.customRecurrence.repeatEvery} 
+    let formatted = `Every ${this.customRecurrence.repeatEvery}
       ${this.customRecurrence.period}(s)`;
     if (this.customRecurrence.period === 'week') {
       const daysFormatted = this.customRecurrence.days.length > 0
@@ -184,13 +176,13 @@ export class EditScheduleComponent {
   }
 
   getDayOfWeek(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
       'Thursday', 'Friday', 'Saturday'];
     return days[date.getDay()];
   }
 
   getFormattedDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = 
+    const options: Intl.DateTimeFormatOptions =
       { month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
   }
