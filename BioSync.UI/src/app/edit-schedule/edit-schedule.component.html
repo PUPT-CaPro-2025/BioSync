@@ -106,10 +106,10 @@
                          name="schedule-date"
                          [matDatepicker]="picker"
                          [ngClass]="formattedDateString ?
-                                'opacity-0 w-1/12' : ''"
+                                'opacity-0 w-1/12' : 'w-full'"
                          class="bg-transparent placeholder-darkGray
                             focus:border-brightRed focus:outline-none
-                            transition-colors duration-300 w-full py-2 px-1"
+                            transition-colors duration-300 py-2 px-1"
                          formControlName="scheduleDate" [min]="today"
                          (dateChange)="onDateChange($event)"
                          readonly>
@@ -245,7 +245,7 @@
                     <button class="text-custom-14 text-white py-2 px-19
                         bg-gradient-red-orange rounded-full
                         hover:bg-gradient-dark-red-orange hover:text-f4White"
-                        (click)="cancelOrEditSchedule()">
+                        (click)="submit()">
                         Save
                     </button>
                 </div>
