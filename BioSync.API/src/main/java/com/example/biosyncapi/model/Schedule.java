@@ -17,7 +17,8 @@ public class Schedule {
     @JoinColumn(name="subject_id", nullable=false)
     private Subject subject;
 
-    private String section;
+    @ManyToOne
+    private Section section;
 
     private Time startTime;
 
@@ -40,7 +41,7 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, String section, Time startTime, Time endTime, Date scheduleDate, String labRoom, User professor, SchoolYear schoolYear, String remarks) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, String labRoom, User professor, SchoolYear schoolYear, String remarks) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -69,11 +70,11 @@ public class Schedule {
         this.subject = subject;
     }
 
-    public String getSection() {
+    public Section getSection() {
         return section;
     }
 
-    public void setSection(String section) {
+    public void setSection(Section section) {
         this.section = section;
     }
 
