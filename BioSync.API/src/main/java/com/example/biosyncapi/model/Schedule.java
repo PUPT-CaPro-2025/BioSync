@@ -31,16 +31,16 @@ public class Schedule {
     @JoinColumn(name = "professor_id", nullable = false)
     private User professor;
 
-    private String semester;
-
-    private String schoolYear;
+    @ManyToOne
+    @JoinColumn(name = "school_year_id", nullable = false)
+    private SchoolYear schoolYear;
 
     private String remarks;
 
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, String section, Time startTime, Time endTime, Date scheduleDate, String labRoom, User professor, String semester, String schoolYear, String remarks) {
+    public Schedule(Long id, Subject subject, String section, Time startTime, Time endTime, Date scheduleDate, String labRoom, User professor, SchoolYear schoolYear, String remarks) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -49,7 +49,6 @@ public class Schedule {
         this.scheduleDate = scheduleDate;
         this.labRoom = labRoom;
         this.professor = professor;
-        this.semester = semester;
         this.schoolYear = schoolYear;
         this.remarks = remarks;
     }
@@ -118,19 +117,11 @@ public class Schedule {
         this.professor = professor;
     }
 
-    public String getSemester() {
-        return semester;
-    }
-
-    public void setSemester(String semester) {
-        this.semester = semester;
-    }
-
-    public String getSchoolYear() {
+    public SchoolYear getSchoolYear() {
         return schoolYear;
     }
 
-    public void setSchoolYear(String schoolYear) {
+    public void setSchoolYear(SchoolYear schoolYear) {
         this.schoolYear = schoolYear;
     }
 
