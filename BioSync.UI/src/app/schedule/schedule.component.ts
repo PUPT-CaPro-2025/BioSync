@@ -46,6 +46,7 @@ export class ScheduleComponent implements OnInit{
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
   currentSchedule: number | undefined;
+  selectedSchedule!: Schedule;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -164,8 +165,9 @@ export class ScheduleComponent implements OnInit{
     this.isAddSchedule = false;
   }
 
-  toggleEditSchedule(): void {
+  toggleEditSchedule(schedule: Schedule): void {
     this.isEditSchedule = !this.isEditSchedule;
+    this.selectedSchedule = schedule;
   }
 
   handleEditBackToSchedule(): void {

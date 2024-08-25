@@ -1,55 +1,54 @@
-import {Component, Output, EventEmitter, ChangeDetectorRef} from '@angular/core';
+import {Component, Output, EventEmitter, ChangeDetectorRef, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import {MatSelectModule} from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
-import {ReactiveFormsModule} from "@angular/forms";
-import { CommonModule } from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {CommonModule, DatePipe} from '@angular/common';
 import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
+import {Schedule} from "../../model/schedule.model";
+import {Section} from "../../model/section.model";
+import {Laboratory} from "../../model/laboratory.model";
+import {User} from "../../model/user.model";
+import {Semester} from "../../model/semester.model";
+import {SectionService} from "../../services/section.service";
+import {MatDatepicker, MatDatepickerInput, MatDatepickerInputEvent} from "@angular/material/datepicker";
+import {MatIcon} from "@angular/material/icon";
+import {provideNativeDateAdapter} from "@angular/material/core";
+import {LaboratoryService} from "../../services/laboratory.service";
+import {UserService} from "../../services/user.service";
+import {SchoolYear} from "../../model/school.year.model";
+import {SchoolYearService} from "../../services/school.year.service";
 
 @Component({
   selector: 'app-edit-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent, MatDatepicker, MatDatepickerInput, MatIcon],
+  providers: [
+    SectionService,
+    DatePipe,
+    provideNativeDateAdapter(),
+    LaboratoryService,
+    UserService,
+    SchoolYearService,
+  ],
   templateUrl: './edit-schedule.component.html',
   styleUrl: './edit-schedule.component.css'
 })
-export class EditScheduleComponent {
-  constructor(
-    private cdr: ChangeDetectorRef
-  ) {}
+export class EditScheduleComponent implements OnInit{
 
   @Output() editBackToSchedule = new EventEmitter<void>();
+  @Input() scheduleToEdit!: Schedule;
 
-  cancelOrEditSchedule(): void {
-    this.editBackToSchedule.emit();
-  }
-
-  sections: string[] = [
-    'BSIT 4-1',
-    'BSIT 3-1',
-    'BSIT 2-1',
-    'BSIT 1-1',
-  ];
-
-  labs: string[] = [
-    'DOST Laboratory',
-    'Aboitiz Laboratory',
-  ];
-
-  professors: string[] = [
-    'Gecilie Almirañez',
-    'Dustin Santos',
-    'Jhean Galope',
-    'Steven Villarosa',
-    'Nikki Dela Rosa',
-    'Lady Minette Modesto'
-  ];
-
-  semesters: string[] = [
-    '1st Semester',
-    '2nd Semster',
-    'Summer'
-  ];
+  editScheduleForm!: FormGroup;
+  sections: Section[] = [];
+  labs: Laboratory[] = [];
+  professors: User[] = [];
+  semesters: Semester[] = [];
+  schoolYear: SchoolYear[] = [];
+  formattedDateString!: string;
+  today!: string;
+  selectedSY = this.scheduleToEdit?.schoolYear;
+  selectedDayOfWeek!: string;
 
   remarks: string[] = [
     'Laboratory'
@@ -71,6 +70,122 @@ export class EditScheduleComponent {
 
   weekDays: string[] = ['SU', 'M', 'T', 'W', 'TH', 'F', 'S'];
 
+  customOption: { value: string, display: string } | null = null;
+
+  todayDay: number = new Date().getDate();
+  todayDayText: string = `Monthly on day ${this.todayDay}`;
+  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
+  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private formBuilder: FormBuilder,
+    private sectionService: SectionService,
+    private datePipe: DatePipe,
+    private laboratoryService: LaboratoryService,
+    private userService: UserService,
+    private schoolYearService: SchoolYearService,
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+    this.getCurrentDate();
+    this.initScheduleDate(this.scheduleToEdit.scheduleDate);
+    this.getSections();
+    this.getLaboratories();
+    this.getProfessors();
+    this.getSchoolYear();
+    this.initSemester();
+    this.setFormValues();
+  }
+
+  initForm(): void{
+    this.editScheduleForm = this.formBuilder.group({
+        section: ['', [Validators.required]],
+        startTime: ['', Validators.required],
+        endTime: ['', [Validators.required]],
+        scheduleDate: ['', [Validators.required]],
+        laboratory: ['', [Validators.required]],
+        professor: ['', [Validators.required]],
+        semester: ['', [Validators.required]],
+        remarks: ['', [Validators.required]],
+        recurrence: ['', [Validators.required]],
+        schoolYear: ['', [Validators.required]]
+      }
+    )
+  }
+
+  setFormValues(){
+    this.editScheduleForm.patchValue({
+      section: this.scheduleToEdit.section?.id,
+      startTime: this.scheduleToEdit.startTime.substring(0,5),
+      endTime: this.scheduleToEdit.endTime.substring(0,5),
+      scheduleDate: this.scheduleToEdit.scheduleDate,
+      laboratory: this.scheduleToEdit.laboratory?.id,
+      professor: this.scheduleToEdit.professor?.id,
+      schoolYear: this.scheduleToEdit.schoolYear?.id,
+      semester: this.scheduleToEdit.semester?.id,
+      remarks: this.scheduleToEdit.remarks,
+      recurrence: ''
+    })
+  }
+
+  getSections(){
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        if(!sections) return;
+        this.sections = sections;
+      }
+    })
+  }
+
+  getLaboratories() {
+    this.laboratoryService.getLaboratories().subscribe({
+      next: (laboratories: Laboratory[]) => {
+        if(!laboratories) return;
+        this.labs = laboratories;
+      }
+    })
+  }
+
+  getProfessors(): void {
+    this.userService.getUsersByRole("FACULTY").subscribe({
+      next: users => {
+        this.professors = users;
+      },
+      error: error => { console.error(error); }
+    })
+  }
+
+  getSchoolYear(): void {
+    this.schoolYearService.getSchoolYears().subscribe({
+      next: (schoolYear: SchoolYear[]) => {
+        if(!schoolYear) return;
+        this.schoolYear = schoolYear;
+      }
+    })
+  }
+
+  private initSemester() {
+    this.selectedSY = this.scheduleToEdit?.schoolYear;
+    if (this.selectedSY) {
+      this.setSemester()
+    }
+  }
+
+  onSchoolYearChange(event: MatSelectChange){
+    const selectedId = Number(event.value)
+    this.selectedSY = this.schoolYear.find(s => s.id === selectedId);
+    this.setSemester();
+  }
+
+  setSemester(){
+    this.semesters.push(<Semester>this.selectedSY?.firstSemester);
+    this.semesters.push(<Semester>this.selectedSY?.secondSemester);
+    this.semesters.push(<Semester>this.selectedSY?.summerSemester);
+  }
+
+
   getFullWeekDayName(abbreviation: string): string {
     const weekDaysMap: { [key: string]: string } = {
       'SU': 'Sunday',
@@ -84,12 +199,33 @@ export class EditScheduleComponent {
     return weekDaysMap[abbreviation] || abbreviation;
   }
 
-  customOption: { value: string, display: string } | null = null;
+  getCurrentDate () {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    this.today = `${year}-${month}-${day}`;
+  }
 
-  todayDay: number = new Date().getDate();
-  todayDayText: string = `Monthly on day ${this.todayDay}`;
-  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
-  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
+  onDateChange(event: MatDatepickerInputEvent<Date>): void {
+    const selectedDate = event.value;
+    const formattedDayOfWeek = this.getDayOfWeek(selectedDate!);
+    const formattedDate = this.datePipe.transform(selectedDate, 'MM/dd/yy')!;
+    this.selectedDayOfWeek = formattedDayOfWeek;
+    this.formattedDateString = `${formattedDayOfWeek}, ${formattedDate}`;
+    this.editScheduleForm.patchValue({
+      scheduleDate: this.datePipe.transform(selectedDate, 'yyyy-MM-dd') // raw value for form control
+    });
+  }
+
+  initScheduleDate(selectedDate: string): void {
+    const date = new Date(selectedDate);
+    const formattedDayOfWeek = this.getDayOfWeek(date);
+    const formattedDate = this.datePipe.transform(date, 'MM/dd/yy')!;
+    this.selectedDayOfWeek = formattedDayOfWeek;
+    this.formattedDateString = `${formattedDayOfWeek}, ${formattedDate}`;
+  }
+
 
   onRecurrenceChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
@@ -192,5 +328,9 @@ export class EditScheduleComponent {
     const weekNumber = Math.ceil((date.getDate() + startOfMonth.getDay()) / 7);
     const weekNames = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
     return weekNames[Math.min(weekNumber - 1, weekNames.length - 1)] || 'Unknown';
+  }
+
+  cancelOrEditSchedule(): void {
+    this.editBackToSchedule.emit();
   }
 }
