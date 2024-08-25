@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
-import { Schedule } from '../../model/schedule-model';
+import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
@@ -49,7 +49,7 @@ export class ScheduleComponent implements OnInit{
 
   constructor(
     private scheduleService: ScheduleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
     ) {}
 
   ngOnInit() {
@@ -94,6 +94,14 @@ export class ScheduleComponent implements OnInit{
       }
     });
   }
+
+  getDayOfWeek(date: string | Date): string {
+    const newDate = new Date(date);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+      'Thursday', 'Friday', 'Saturday'];
+    return days[newDate.getDay()];
+  }
+
 
   deleteSchedule(scheduleToDelete: Schedule){
     this.scheduleService.deleteSchedule(scheduleToDelete)

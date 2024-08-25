@@ -52,6 +52,7 @@
                         <div class="cell">Subject Code</div>
                         <div class="cell">Subject Name</div>
                         <div class="cell">Schedule</div>
+                        <div class="cell">Time</div>
                         <div class="cell">Laboratory</div>
                         <div class="cell">Action</div>
                     </div>
@@ -63,16 +64,21 @@
                             <div class="cell">
                                 <div class="flex flex-col">
                                     <div class="flex gap-1 text-xs">
-                                        <p>{{schedule.section}}</p> <span class="font-semibold">
-                                          [{{convertTimeFormat(schedule.startTime)}}-{{convertTimeFormat(schedule.endTime)}}
-                                          / {{schedule.scheduleDate}}]</span>
+                                        <p>
+                                          {{schedule.section?.program?.programAbbreviation}}
+                                          {{schedule.section?.year}}-{{schedule.section?.section}}
+                                        </p>
+                                      <span class="font-semibold">
+                                         [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]</span>
                                     </div>
                                     <div class="italic">
                                       Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
                                     </div>
                                 </div>
                             </div>
-                            <div class="cell">{{schedule.labRoom}}</div>
+                              <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
+                                {{convertTimeFormat(schedule.endTime)}}</div>
+                            <div class="cell">{{schedule.laboratory?.name}}</div>
                             <div class="cell">
                                 <div class="action-container">
                                     <button class="view-button" (click)="toggleViewSchedule(schedule.id)"><mat-icon>visibility</mat-icon></button>
