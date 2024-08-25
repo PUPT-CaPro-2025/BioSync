@@ -70,7 +70,6 @@ export class AddScheduleComponent implements OnInit{
   @Output() createdSchedule = new EventEmitter<Schedule>();
 
   selectedSubject!: Subject | undefined;
-  selectedProfessor!: User | undefined;
 
   sections: Section[] = [];
 
@@ -236,9 +235,7 @@ export class AddScheduleComponent implements OnInit{
     this.semesters.push(<Semester>this.selectedSY?.firstSemester);
     this.semesters.push(<Semester>this.selectedSY?.secondSemester);
     this.semesters.push(<Semester>this.selectedSY?.summerSemester);
-
   }
-
 
   createSchedule(schedule: Schedule){
     return this.addScheduleService
@@ -252,6 +249,9 @@ export class AddScheduleComponent implements OnInit{
   }
 
   submit() {
+    const selectedProfessor = this.professors.find(professor =>
+    professor.id === this.scheduleForm.get('professor')?.value)
+
     this.scheduleForm.patchValue({
       subject: this.selectedSubject,
       schoolYear: this.selectedSY,
@@ -260,8 +260,10 @@ export class AddScheduleComponent implements OnInit{
       semester: this.semesters.find(semesters =>
         semesters.id === this.scheduleForm.get('semester')?.value),
       professor: {
-        id: this.scheduleForm.get('professor')?.value,
-        role: 'FACULTY'
+        id: selectedProfessor?.id,
+        firstName: selectedProfessor?.firstName,
+        lastName: selectedProfessor?.lastName,
+        role: selectedProfessor?.role,
       },
       laboratory: this.labs.find(laboratory =>
         laboratory.id !== this.scheduleForm.get('laboratory')?.value),
