@@ -267,7 +267,7 @@ export class AddScheduleComponent implements OnInit{
         role: selectedProfessor?.role,
       },
       laboratory: this.labs.find(laboratory =>
-        laboratory.id !== this.scheduleForm.get('laboratory')?.value),
+        laboratory.id === this.scheduleForm.get('laboratory')?.value),
     })
     let newSchedule = this.scheduleForm.value;
 
