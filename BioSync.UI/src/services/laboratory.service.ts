@@ -1,21 +1,22 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environment/appsetting";
-import {Schedule} from "../model/schedule.model";
 import {CookieService} from "./cookie.service";
+import {SchoolYear} from "../model/school.year.model";
+import {Laboratory} from "../model/laboratory.model";
 
 @Injectable()
-export class AddScheduleService {
+export class LaboratoryService {
   accessToken = this.cookieService.getCookie("authToken");
   headers = new HttpHeaders().set('Authorization', `Bearer ${this.accessToken}`);
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
-  createSchedule(schedule: Schedule){
-    const url = `${environment.apiUrl}/api/v1/schedules`;
-    return this.http.post<Schedule>(url, schedule, {
+  getLaboratories() {
+    const url = `${environment.apiUrl}/api/v1/laboratories`;
+    return this.http.get<Laboratory[]>(url, {
       headers: this.headers,
-      withCredentials: true
+      withCredentials: true,
     });
   }
 }

@@ -1,32 +1,30 @@
 package com.example.biosyncapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Section {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name="program_id", nullable=false)
     private Program program;
 
-    private String section;
+    private int year;
 
-    private String description;
+    private int section;
 
     public Section() {
     }
 
-    public Section(Long id, Program program, String section, String description) {
+    public Section(Long id, Program program, int year, int section) {
         this.id = id;
         this.program = program;
+        this.year = year;
         this.section = section;
-        this.description = description;
     }
 
     public Long getId() {
@@ -45,19 +43,20 @@ public class Section {
         this.program = program;
     }
 
-    public String getSection() {
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getSection() {
         return section;
     }
 
-    public void setSection(String section) {
+    public void setSection(int section) {
         this.section = section;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

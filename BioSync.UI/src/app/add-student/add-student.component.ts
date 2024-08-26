@@ -4,13 +4,15 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
-import { MatSelectModule } from '@angular/material/select';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {ProgramService} from "../../services/program.service";
 import {Program} from "../../model/program.model";
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import {Section} from "../../model/section.model";
+import {SectionService} from "../../services/section.service";
 
 @Component({
   selector: 'app-add-student',
@@ -22,7 +24,11 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule],
-  providers: [ProgramService, UserService],
+  providers: [
+    ProgramService,
+    UserService,
+    SectionService
+  ],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css'
 })
@@ -46,26 +52,22 @@ export class AddStudentComponent implements OnInit{
 
   allPrograms: Program[] = [];
 
-  allYears: string[] = [
-    "1", "2", "3", "4", "Ladderized 1", "Ladderized 2"
-  ];
-
-  allSections: number[] = [
-    1, 2, 3, 4
-  ];
-
+  sections: Section[] = [];
+  filteredSections: Section[] = [];
   studentForm!: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
     private programService: ProgramService,
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sectionService: SectionService,
   ) {}
 
   ngOnInit() {
     this.getAllPrograms();
     this.initForm();
+    this.getAllSections();
   }
 
   initForm(){
@@ -76,9 +78,13 @@ export class AddStudentComponent implements OnInit{
       middleName: ['', [Validators.required]],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
-      year: ['', [Validators.required]],
-      section: [null, [Validators.required]]
+      section: ['',Validators.required]
     });
+  }
+
+  onProgramChange(event: MatSelectChange){
+    this.filteredSections = this.sections.filter(section =>
+      section.program.id === event.value);
   }
 
   getAllPrograms() : Program[] {
@@ -90,6 +96,14 @@ export class AddStudentComponent implements OnInit{
     })
 
     return this.allPrograms;
+  }
+
+  getAllSections(){
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+      }
+    })
   }
 
   returnToStudentView(): void {
@@ -106,6 +120,8 @@ export class AddStudentComponent implements OnInit{
 
     studentToAdd = {
       ...studentToAdd,
+      section: this.sections.find((section: Section) =>
+        section.id === this.studentForm.get('section')?.value),
       program: selectedProgram,
       role: 'STUDENT',
       password: 'student123'

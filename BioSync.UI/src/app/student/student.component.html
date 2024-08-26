@@ -60,8 +60,8 @@
                             <div class="cell">{{ student.middleName }}</div>
                             <div class="cell">{{ student.suffix }}</div>
                             <div class="cell">{{ student.program?.programAbbreviation }}</div>
-                            <div class="cell">{{ student.year }}</div>
-                            <div class="cell">{{ student.section }}</div>
+                            <div class="cell">{{ student.section?.year }}</div>
+                            <div class="cell">{{ student.section?.section }}</div>
                             <div class="cell">
                                 <div class="action-container">
                                     <button class="edit-button" (click)="toggleEditStudent(student)"><mat-icon>edit</mat-icon></button>

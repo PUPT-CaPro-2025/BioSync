@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
-import { Schedule } from '../../model/schedule-model';
+import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
@@ -46,10 +46,11 @@ export class ScheduleComponent implements OnInit{
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
   currentSchedule: number | undefined;
+  selectedSchedule!: Schedule;
 
   constructor(
     private scheduleService: ScheduleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
     ) {}
 
   ngOnInit() {
@@ -67,6 +68,13 @@ export class ScheduleComponent implements OnInit{
 
   onScheduleCreation(schedule: Schedule){
     this.schedules.push(schedule);
+  }
+
+  onScheduleUpdate(updatedSchedule: Schedule) {
+    const index = this.schedules.findIndex(schedule =>
+      schedule.id === updatedSchedule.id);
+
+    this.schedules[index] = updatedSchedule;
   }
 
   convertTimeFormat(time: string): string {
@@ -94,6 +102,14 @@ export class ScheduleComponent implements OnInit{
       }
     });
   }
+
+  getDayOfWeek(date: string | Date): string {
+    const newDate = new Date(date);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
+      'Thursday', 'Friday', 'Saturday'];
+    return days[newDate.getDay()];
+  }
+
 
   deleteSchedule(scheduleToDelete: Schedule){
     this.scheduleService.deleteSchedule(scheduleToDelete)
@@ -156,8 +172,9 @@ export class ScheduleComponent implements OnInit{
     this.isAddSchedule = false;
   }
 
-  toggleEditSchedule(): void {
+  toggleEditSchedule(schedule: Schedule): void {
     this.isEditSchedule = !this.isEditSchedule;
+    this.selectedSchedule = schedule;
   }
 
   handleEditBackToSchedule(): void {

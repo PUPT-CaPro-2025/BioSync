@@ -55,10 +55,8 @@
             </div>
         </div>
     </div>
-}
       <div class="flex justify-center items-center">
         <div class="mt-8 flex justify-between w-[94%] bg-transparent">
-          @if(selectedSubject) {
             <div class="w-[48%] flex flex-col gap-4">
                 <div class="group flex flex-col gap-1">
                     <label for="section" class="text-custom-16
@@ -72,7 +70,9 @@
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="section">
                             @for(section of sections; track section) {
-                                <mat-option [value]="section">{{section}}</mat-option>
+                                <mat-option [value]="section.id">
+                                  {{section.program.programAbbreviation}} {{section.year}}-{{section.section}}
+                                </mat-option>
                             }
                     </mat-select>
                 </div>
@@ -123,10 +123,10 @@
                                name="schedule-date"
                                [matDatepicker]="picker"
                                [ngClass]="formattedDateString ?
-                                'opacity-0 w-1/4' : ''"
+                                'opacity-0 w-1/12' : 'w-full'"
                                class="bg-transparent placeholder-darkGray
                             focus:border-brightRed focus:outline-none
-                            transition-colors duration-300 w-full py-2 px-1"
+                            transition-colors duration-300 py-2 px-1"
                                formControlName="scheduleDate" [min]="today"
                                (dateChange)="onDateChange($event)"
                         readonly>
@@ -138,7 +138,6 @@
                             class="text-black text-xl"></mat-icon>
                         </button>
                         <mat-datepicker #picker></mat-datepicker>
-
                       </div>
                     </div>
                     <div class="group flex flex-col gap-1 w-[47%]">
@@ -153,9 +152,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="recurrence">
-                            <option value="none">Does not repeat</option>
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly on '{{ selectedDayOfWeek }}'</option>
+                            <option value="NONE" selected>Does not repeat</option>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly on '{{ selectedDayOfWeek }}'</option>
                             <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>
                             <option value="custom">Custom</option>
                         </select>
@@ -171,9 +170,9 @@
                             placeholder="Select a laboratory room" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="labRoom">
+                            duration-300 w-full py-2 px-1" formControlName="laboratory">
                             @for(lab of labs; track lab) {
-                                <mat-option [value]="lab">{{lab}}</mat-option>
+                                <mat-option [value]="lab.id">{{lab.name}}</mat-option>
                             }
                     </mat-select>
                 </div>
@@ -199,20 +198,42 @@
                     </mat-select>
                 </div>
                 <div class="group flex flex-col gap-1">
+                  <label for="school-year" class="text-custom-16
+                          text-darkGray transition-colors duration-300
+                          group-focus-within:text-brightRed">
+                    School Year
+                  </label>
+                  <mat-select id="school-year" name="school-year"
+                              placeholder="Select a semester" class="bg-transparent
+                              border-b-2 border-darkGray focus:border-brightRed
+                              focus:outline-none transition-colors
+                              duration-300 w-full py-2 px-1"
+                              (selectionChange)="onSchoolYearChange($event)"
+                              formControlName="schoolYear">
+                    @for(schoolYear of schoolYear; track schoolYear) {
+                      <mat-option [value]="schoolYear.id">
+                        {{schoolYear.startYear}} - {{schoolYear.endYear}}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </div>
+                <div class="group flex flex-col gap-1">
                     <label for="semester" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Semester
                     </label>
+                  @if(semesters){
                     <mat-select id="semester" name="semester"
                             placeholder="Select a semester" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="semester">
                             @for(semester of semesters; track semester) {
-                                <mat-option [value]="semester">{{semester}}</mat-option>
+                                <mat-option [value]="semester.id">{{semester.name}}</mat-option>
                             }
                     </mat-select>
+                  }
                 </div>
                 <div class="group flex flex-col gap-1">
                     <label for="remarks" class="text-custom-16
@@ -231,9 +252,10 @@
                     </mat-select>
                 </div>
             </div>
-        }
+
         </div>
       </div>
+}
     </form>
 <div class="flex justify-center items-center">
     <div class="mt-8 flex justify-end w-[94%] bg-transparent">
