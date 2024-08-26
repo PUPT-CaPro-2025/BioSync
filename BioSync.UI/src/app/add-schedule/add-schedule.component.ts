@@ -54,6 +54,15 @@ import {LaboratoryService} from "../../services/laboratory.service";
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent implements OnInit{
+  constructor(
+    private formBuilder: FormBuilder,
+    private subjectService: SubjectService,
+    private addScheduleService: AddScheduleService,
+    private dialog: MatDialog,
+    private userService: UserService,
+    private cdr: ChangeDetectorRef,
+    private datePipe: DatePipe
+  ) {}
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule>();
 
@@ -321,8 +330,6 @@ export class AddScheduleComponent implements OnInit{
     return weekDaysMap[abbreviation] || abbreviation;
   }
 
-
-
   onDateChange(event: any): void {
     const selectedDate = new Date(event.value);
     const formattedDayOfWeek = this.getDayOfWeek(selectedDate);
@@ -343,7 +350,8 @@ export class AddScheduleComponent implements OnInit{
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedRecurrence = selectedValue;
 
-    if (selectedValue === 'custom') {
+    if (selectedValue === '
+        ') {
       this.openCustomModal();
     } else {
       this.previousRecurrence = selectedValue;

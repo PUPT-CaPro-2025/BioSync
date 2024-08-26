@@ -40,6 +40,7 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 })
 export class EditScheduleComponent implements OnInit{
 
+
   @Output() editBackToSchedule = new EventEmitter<void>();
   @Output() editedSchedule = new EventEmitter<Schedule>();
   @Input() scheduleToEdit!: Schedule;
@@ -228,7 +229,6 @@ export class EditScheduleComponent implements OnInit{
     this.semesters.push(<Semester>this.selectedSY?.summerSemester);
   }
 
-
   getFullWeekDayName(abbreviation: string): string {
     const weekDaysMap: { [key: string]: string } = {
       'SU': 'Sunday',
@@ -268,7 +268,6 @@ export class EditScheduleComponent implements OnInit{
     this.selectedDayOfWeek = formattedDayOfWeek;
     this.formattedDateString = `${formattedDayOfWeek}, ${formattedDate}`;
   }
-
 
   onRecurrenceChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
@@ -402,4 +401,5 @@ export class EditScheduleComponent implements OnInit{
       }
     })
   }
+
 }
