@@ -14,6 +14,8 @@ import { LoginStudentComponent } from './login-student/login-student.component';
 import { LoginVisitorComponent } from './login-visitor/login-visitor.component';
 import { SubjectScheduleStudentComponent } from './subject-schedule-student/subject-schedule-student.component';
 import { AttendanceManagementProfessorComponent } from './attendance-management-professor/attendance-management-professor.component';
+import { AddSchoolYearComponent } from './add-school-year/add-school-year.component';
+import { AddProgramComponent } from './add-program/add-program.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -28,6 +30,8 @@ export const routes: Routes = [
     { path: "professor", component: ProfessorComponent },
     { path: "student", component: StudentComponent },
     { path: "attendance", component: AttendanceComponent },
+    { path: "school-year", component: AddSchoolYearComponent },
+    { path: "program", component: AddProgramComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },

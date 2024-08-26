@@ -54,14 +54,12 @@ export class HomepageComponent implements AfterViewInit {
 
   private updateDisplaySideNav() {
     if (this.isMobile) {
-      this.showSideNav = false;
+      this.displaySideNav = true;
     } else {
-      this.showSideNav = !this.hideSideNavRoutes.some(
-        route => this.router.url.startsWith(route)
-      );
+      this.displaySideNav = this.showSideNav;
     }
     if (this.sidenav) {
-      this.sidenav.opened = !this.isMobile && this.showSideNav;
+      this.sidenav.opened = !this.isMobile && this.displaySideNav;
     }
   }
 

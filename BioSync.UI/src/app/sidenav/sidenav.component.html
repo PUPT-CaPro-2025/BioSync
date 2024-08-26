@@ -34,21 +34,40 @@
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
-        <div class="flex justify-between items-center schedule-arrow" (click)="toggleDropdown($event)">
+        <div class="flex justify-between items-center schedule-arrow" (click)="toggleStudentDropdown($event)">
             <button class="menu-content">
                 <img src="../../assets/student.svg" alt="Schedule Icon">
                 <p>Student</p>
             </button>
-            <mat-icon>{{ isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+            <mat-icon>{{ isDropdownOpenStudent ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
         </div>
     </div>
-    @if(isDropdownOpen) {
+    @if(isDropdownOpenStudent) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
                 <button (click)="navigateTo('/student')">List of Student</button>
             </div>
             <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
                 <button (click)="navigateTo('/attendance')">List of Attendance</button>
+            </div>
+        </div>
+    }
+    <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
+        <div class="flex justify-between items-center schedule-arrow" (click)="toggleMaintenanceDropdown($event)">
+            <button class="menu-content">
+                <img src="../../assets/maintenance.svg" alt="Maintenance Icon">
+                <p>Maintenance</p>
+            </button>
+            <mat-icon>{{ isDropdownOpenMaintenance ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+        </div>
+    </div>
+    @if(isDropdownOpenMaintenance) {
+        <div class="dropdown-content flex flex-col">
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/school-year')">School Year</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/program')">Program</button>
             </div>
         </div>
     }
