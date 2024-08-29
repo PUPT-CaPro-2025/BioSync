@@ -9,6 +9,7 @@
             <p>Dashboard</p>
         </button>
     </div>
+  @if(getRole() === "ADMIN") {
     <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
         <button routerLink="/visitor" class="menu-content">
             <img src="../../assets/visitor.svg" alt="Visitor Icon">
@@ -77,6 +78,23 @@
             </div>
         </div>
     }
+  }
+  @if(getRole() === "FACULTY"){
+    <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+      <button routerLink="/faculty-attendance" class="menu-content">
+        <img src="../../assets/schedule.svg" alt="Attendance Icon">
+        <p>Attendance</p>
+      </button>
+    </div>
+  }
+  @if(getRole() === "STUDENT"){
+    <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
+      <button routerLink="/student-schedule" class="menu-content">
+        <img src="../../assets/schedule.svg" alt="Schedule Icon">
+        <p>Schedule</p>
+      </button>
+    </div>
+  }
 </mat-nav-list>
 <div class="bottom-container">
     <div class="line-container">
