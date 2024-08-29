@@ -66,8 +66,10 @@ export class ScheduleComponent implements OnInit{
     })
   }
 
-  onScheduleCreation(schedule: Schedule){
-    this.schedules.push(schedule);
+  onScheduleCreation(schedule: Schedule[]){
+    schedule.forEach((schedule: Schedule) => {
+      this.schedules.push(schedule);
+    })
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {

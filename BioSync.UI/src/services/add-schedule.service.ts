@@ -11,9 +11,9 @@ export class AddScheduleService {
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
-  createSchedule(schedule: Schedule){
+  createSchedule(schedule: Schedule[]){
     const url = `${environment.apiUrl}/api/v1/schedules`;
-    return this.http.post<Schedule>(url, schedule, {
+    return this.http.post<Schedule[]>(url, schedule, {
       headers: this.headers,
       withCredentials: true
     });
