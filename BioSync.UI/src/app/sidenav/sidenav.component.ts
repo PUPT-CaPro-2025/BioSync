@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter, Output, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,6 +25,7 @@ import { MatDialog } from '@angular/material/dialog';
     RouterLink,
     CommonModule,
     MatIconModule,
+    NgOptimizedImage,
   ],
   providers: [LogoutService, CookieService],
   templateUrl: './sidenav.component.html',
@@ -41,7 +42,7 @@ export class SidenavComponent implements OnInit {
     private router: Router,
     private logoutService: LogoutService,
     private cookieService: CookieService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -81,13 +82,13 @@ export class SidenavComponent implements OnInit {
   }
 
   navigateTo(route: string) {
-    this.router.navigate([route]);
+    this.router.navigate([route]).then();
     this.isDropdownOpenStudent = false;
     this.isDropdownOpenMaintenance = false;
     if (route === '/student' || route === '/attendance') {
       this.activeButton = 'student';
       localStorage.setItem('activeButton', 'student');
-    } else if (route === '/school-year' || route === '/program' 
+    } else if (route === '/school-year' || route === '/program'
           || route === '/section' || route === '/laboratory') {
       this.activeButton = 'maintenance';
       localStorage.setItem('activeButton', 'maintenance');
@@ -145,11 +146,16 @@ export class SidenavComponent implements OnInit {
       next: () => {
         this.cookieService.deleteCookie('authToken');
         this.cookieService.deleteCookie('role');
+        localStorage.removeItem('activeButton');
         this.router.navigate(['/login']).then();
       },
       error: (err) => {
         console.log(err);
       },
     });
+  }
+
+  getRole(): string{
+    return <string>this.cookieService.getCookie('role');
   }
 }
