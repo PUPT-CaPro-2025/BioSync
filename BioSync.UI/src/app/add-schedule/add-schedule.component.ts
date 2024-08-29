@@ -24,6 +24,8 @@ import {SchoolYear} from "../../model/school.year.model";
 import {Semester} from "../../model/semester.model";
 import {Laboratory} from "../../model/laboratory.model";
 import {LaboratoryService} from "../../services/laboratory.service";
+import {catchError, of} from "rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-add-schedule',
@@ -241,10 +243,21 @@ export class AddScheduleComponent implements OnInit{
   createSchedule(schedule: Schedule){
     return this.addScheduleService
       .createSchedule(schedule)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          if(error.status === 409){
+            this.openSomethingWentWrong();
+          }
+
+          return of(null)
+        })
+      )
       .subscribe({
         next: createdSchedule => {
-          this.openDialog()
-          this.createdSchedule.emit(createdSchedule)
+          if(createdSchedule){
+            this.openDialog()
+            this.createdSchedule.emit(createdSchedule)
+          }
         }
       })
   }
@@ -306,6 +319,16 @@ export class AddScheduleComponent implements OnInit{
     console.log(newSchedule);
 
     this.createSchedule(newSchedule);
+  }
+
+  openSomethingWentWrong(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Something Went Wrong!',
+        message: 'Schedule conflict detected.'
+      }
+    })
   }
 
   getFullWeekDayName(abbreviation: string): string {
