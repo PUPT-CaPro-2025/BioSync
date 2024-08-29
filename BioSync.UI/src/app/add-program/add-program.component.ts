@@ -5,6 +5,10 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import { AddProgramService } from '../../services/add-program.service';
+import { Program } from '../../model/program.model';
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-add-program',
@@ -17,38 +21,18 @@ import { MatSelectModule } from '@angular/material/select';
     MatButtonModule,
     MatSelectModule,
   ],
+  providers: [AddProgramService],
   templateUrl: './add-program.component.html',
   styleUrl: './add-program.component.css'
 })
 export class AddProgramComponent implements OnInit {
   programForm!: FormGroup;
+  @Output() backToProgram = new EventEmitter<void>();
+  @Output() programAdded = new EventEmitter<Program>();
 
-  constructor(private formBuilder: FormBuilder) {}
-
-  programs: string[] = [
-    'BSIT',
-    'DIT',
-    'BSOA',
-    'BSBA-MM',
-    'BSBA-HRM',
-    'BSA',
-  ]; 
-
-  years: string[] = [
-    '1',
-    '2',
-    '3',
-    '4',
-    'Ladderized 1',
-    'Ladderized 2',
-  ];
-
-  sections: string[] =[
-    '1',
-    '2',
-    '3',
-    'NA',
-  ];
+  constructor(private formBuilder: FormBuilder, 
+    private addProgramService: AddProgramService,
+    private dialog: MatDialog) {}
 
   ngOnInit() {
     this.initForm();
@@ -56,15 +40,41 @@ export class AddProgramComponent implements OnInit {
 
   initForm(){
     this.programForm = this.formBuilder.group({
-      program: ['', [Validators.required]],
-      year: ['', [Validators.required]],
-      section: ['', [Validators.required]],
-      description: ['', Validators.required]
+      programName: ['', [Validators.required]],
+      programAbbreviation: ['', [Validators.required]],
+      programDescription: ['', Validators.required]
     });
   }
 
   submit(){
-    console.log("Submit");
-    return;
+    if(!this.programForm.valid) {
+      console.log('invalid');
+      return;
+    }
+
+    const program = this.programForm.value;
+    this.addProgramService.createProgram(program).subscribe({
+      next: (program: Program) => {
+        console.log(program);
+        this.programForm.reset();
+        this.openDialog();
+        this.programAdded.emit(program);
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Program Successfully Added!',
+        message: 'Program has been added to the system successfully.'
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.backToProgram.emit();
+    })
   }
 }

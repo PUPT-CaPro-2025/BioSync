@@ -1,53 +1,52 @@
-
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">Add New Program</span>
+        <span class="text-custom-32 text-brightRed">Edit Laboratory</span>
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="programForm">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="laboratoryForm">
         <div class="w-[55%] flex flex-col gap-4 row-block">
             <div class="group flex flex-col gap-1">
-                <label for="program-name" class="text-custom-16
+                <label for="name" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
-                        Program
+                        Laboratory Name
                 </label>
-                <input matInput id="program_name"
-                    name="program-name"
-                    placeholder="Enter program name"
+                <input matInput id="name"
+                    name="name"
+                    placeholder="Enter laboratory name"
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programName">
+                    formControlName="name">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="program-abbreviation" class="text-custom-16
+                <label for="room-code" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
-                        Program Abbreviation
+                        Room Code
                 </label>
-                <input matInput id="program_abbreviation"
-                    name="program-abbreviation"
-                    placeholder="Enter abbreviation of the program"
+                <input matInput id="room_code"
+                    name="room-code"
+                    placeholder="Enter the room code"
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programAbbreviation">
+                    formControlName="roomCode">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="description" class="text-custom-20
+                <label for="capacity" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Description
+                    Capactiy
                 </label>
-                <input matInput id="description"
-                    name="description"
-                    placeholder="Enter program description"
+                <input matInput id="capacity"
+                    name="capacity" type="number"
+                    placeholder="Enter a number capacity"
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programDescription">
+                    formControlName="capacity">
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">
@@ -59,7 +58,7 @@
                         bg-gradient-red-orange rounded-full
                         hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
                         (click)="submit()">
-                        Add Program
+                        Edit Laboratory
                     </button>
                 </div>
             </div>

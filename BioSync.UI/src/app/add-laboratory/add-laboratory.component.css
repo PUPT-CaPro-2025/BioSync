@@ -24,6 +24,12 @@
     background-color: #800c10;
 }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 @media (max-width: 1462px) {
     .row-block {
         width: 70%;
