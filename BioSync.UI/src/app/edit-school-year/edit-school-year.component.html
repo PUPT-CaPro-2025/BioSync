@@ -14,15 +14,12 @@
                         group-focus-within:text-brightRed">
                         Year Start
                     </label>
-                    <mat-select id="year_start" name="year-start"
-                            placeholder="Select the year start" class="bg-transparent
+                    <input matInput id="year_start" type="number" placeholder="Enter a start year"
+                            name="year-start" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="yearStart">
-                            @for(year of years; track year) {
-                                <mat-option [value]="year">{{year}}</mat-option>
-                            }
-                    </mat-select>
+                            duration-300 w-full py-2 px-1"
+                            formControlName="yearStart">
                 </div>
                 <div class="group flex flex-col gap-1 w-[45%]">
                     <label for="year-end" class="text-custom-16
@@ -30,15 +27,12 @@
                         group-focus-within:text-brightRed">
                         Year End
                     </label>
-                    <mat-select id="year_end" name="year-end"
-                            placeholder="Select the year end" class="bg-transparent
+                    <input matInput id="year_end" type="number" placeholder="Enter an end year"
+                            name="year-end" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="yearEnd">
-                            @for(year of years; track year) {
-                                <mat-option [value]="year">{{year}}</mat-option>
-                            }
-                    </mat-select>
+                            duration-300 w-full py-2 px-1"
+                            formControlName="yearEnd">
                 </div>
             </div>    
             <div class="flex flex-col mt-4 gap-[10px]">
