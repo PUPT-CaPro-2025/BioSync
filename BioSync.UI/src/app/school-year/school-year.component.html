@@ -46,58 +46,58 @@
             <div class="cell">Summer Semester</div>
             <div class="cell">Action</div>
         </div>
-    </div>
-</div>
-<div class="row-container text-custom-12">
-    @for (schoolYear of filteredSchoolYears; track schoolYear) {
-        <div class="row">
-            <div class="cell">{{ schoolYear.year_start }}</div>
-            <div class="cell">{{ schoolYear.year_end }}</div>
-            <div class="cell">
-                <div class="flex flex-col">
-                    <div class="flex">
-                        <p class="font-semibold mr-1">Start Date:</p> 
-                        <p>{{ schoolYear.first_sem_start }}</p>
+        <div class="row-container text-custom-12">
+            @for (schoolYear of filteredSchoolYears; track schoolYear) {
+                <div class="row">
+                    <div class="cell">{{ schoolYear.year_start }}</div>
+                    <div class="cell">{{ schoolYear.year_end }}</div>
+                    <div class="cell">
+                        <div class="flex flex-col">
+                            <div class="flex">
+                                <p class="font-semibold mr-1">Start Date:</p> 
+                                <p>{{ schoolYear.first_sem_start }}</p>
+                            </div>
+                            <div class="flex">
+                                <p class="font-semibold mr-1">End Date:</p> 
+                                <p>{{ schoolYear.first_sem_end }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex">
-                        <p class="font-semibold mr-1">End Date:</p> 
-                        <p>{{ schoolYear.first_sem_end }}</p>
+                    <div class="cell">
+                        <div class="flex flex-col">
+                            <div class="flex">
+                                <p class="font-semibold mr-1">Start Date:</p> 
+                                <p>{{ schoolYear.second_sem_start }}</p>
+                            </div>
+                            <div class="flex">
+                                <p class="font-semibold mr-1">End Date:</p> 
+                                <p>{{ schoolYear.second_sem_end }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <div class="flex flex-col">
+                            <div class="flex">
+                                <p class="font-semibold mr-1">Start Date:</p> 
+                                <p>{{ schoolYear.summer_start }}</p>
+                            </div>
+                            <div class="flex">
+                                <p class="font-semibold mr-1">End Date:</p> 
+                                <p>{{ schoolYear.summer_end }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cell">
+                        <div class="action-container">
+                            <button class="view-button" (click)="toggleViewSchedule()"><mat-icon>visibility</mat-icon></button>
+                            <button class="edit-button" (click)="toggleEditSchedule()"><mat-icon>edit</mat-icon></button>
+                            <button class="delete-button"><mat-icon>delete</mat-icon></button>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="cell">
-                <div class="flex flex-col">
-                    <div class="flex">
-                        <p class="font-semibold mr-1">Start Date:</p> 
-                        <p>{{ schoolYear.second_sem_start }}</p>
-                    </div>
-                    <div class="flex">
-                        <p class="font-semibold mr-1">End Date:</p> 
-                        <p>{{ schoolYear.second_sem_end }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="cell">
-                <div class="flex flex-col">
-                    <div class="flex">
-                        <p class="font-semibold mr-1">Start Date:</p> 
-                        <p>{{ schoolYear.summer_start }}</p>
-                    </div>
-                    <div class="flex">
-                        <p class="font-semibold mr-1">End Date:</p> 
-                        <p>{{ schoolYear.summer_end }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="cell">
-                <div class="action-container">
-                    <button class="view-button" (click)="toggleViewSchedule()"><mat-icon>visibility</mat-icon></button>
-                    <button class="edit-button" (click)="toggleEditSchedule()"><mat-icon>edit</mat-icon></button>
-                    <button class="delete-button"><mat-icon>delete</mat-icon></button>
-                </div>
-            </div>
+            }
         </div>
-    }
+    </div>
 </div>
 <div class="line-container">
     <img src="../../assets/black-line.svg">
