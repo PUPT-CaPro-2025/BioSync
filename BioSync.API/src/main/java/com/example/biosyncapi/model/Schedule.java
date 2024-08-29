@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.sql.Time;
 import java.sql.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -43,6 +44,8 @@ public class Schedule {
 
     private String remarks;
 
+    private UUID recurrenceId;
+
     @Enumerated(EnumType.STRING)
     private Recurrence recurrence;
 
@@ -55,7 +58,7 @@ public class Schedule {
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, Recurrence recurrence, int recurrenceInterval, List<String> recurrenceDays) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<String> recurrenceDays) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -67,6 +70,7 @@ public class Schedule {
         this.schoolYear = schoolYear;
         this.semester = semester;
         this.remarks = remarks;
+        this.recurrenceId = recurrenceId;
         this.recurrence = recurrence;
         this.recurrenceInterval = recurrenceInterval;
         this.recurrenceDays = recurrenceDays;
@@ -182,5 +186,13 @@ public class Schedule {
 
     public void setRecurrenceDays(List<String> recurrenceDays) {
         this.recurrenceDays = recurrenceDays;
+    }
+
+    public UUID getRecurrenceId() {
+        return recurrenceId;
+    }
+
+    public void setRecurrenceId(UUID recurrenceId) {
+        this.recurrenceId = recurrenceId;
     }
 }

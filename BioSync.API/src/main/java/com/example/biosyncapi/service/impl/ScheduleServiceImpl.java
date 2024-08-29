@@ -64,6 +64,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             return schedules;
         }
 
+        UUID recurrenceId = UUID.randomUUID();
         Semester semester = schedule.getSemester();
 
         Calendar startDate = Calendar.getInstance();
@@ -85,6 +86,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
                 // Create a new schedule
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
+                newSchedule.setRecurrenceId(recurrenceId);
+                newSchedule.setRecurrence(schedule.getRecurrence());
+                newSchedule.setRecurrenceDays(schedule.getRecurrenceDays());
+                newSchedule.setRecurrenceInterval(schedule.getRecurrenceInterval());
                 schedules.add(newSchedule);
             }
 

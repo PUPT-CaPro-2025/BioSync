@@ -19,7 +19,7 @@ public class MailService {
 
     public void sendMail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(this.from);
+        message.setFrom("BioSync <"+ from + ">");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
