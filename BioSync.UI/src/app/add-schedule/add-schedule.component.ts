@@ -57,7 +57,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 })
 export class AddScheduleComponent implements OnInit{
   @Output() backToSchedule = new EventEmitter<void>();
-  @Output() createdSchedule = new EventEmitter<Schedule>();
+  @Output() createdSchedule = new EventEmitter<Schedule[]>();
 
   selectedSubject!: Subject | undefined;
 
@@ -240,7 +240,7 @@ export class AddScheduleComponent implements OnInit{
     this.semesters.push(<Semester>this.selectedSY?.summerSemester);
   }
 
-  createSchedule(schedule: Schedule){
+  createSchedule(schedule: Schedule[]){
     return this.addScheduleService
       .createSchedule(schedule)
       .pipe(
