@@ -17,6 +17,7 @@ import { AttendanceManagementProfessorComponent } from './attendance-management-
 import { AddSchoolYearComponent } from './add-school-year/add-school-year.component';
 import { AddProgramComponent } from './add-program/add-program.component';
 import { SchoolYearComponent } from './school-year/school-year.component';
+import { ProgramComponent } from './program/program.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -32,7 +33,7 @@ export const routes: Routes = [
     { path: "student", component: StudentComponent },
     { path: "attendance", component: AttendanceComponent },
     { path: "school-year", component: SchoolYearComponent },
-    { path: "program", component: AddProgramComponent },
+    { path: "program", component: ProgramComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
