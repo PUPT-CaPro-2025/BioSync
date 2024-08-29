@@ -5,10 +5,10 @@
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 w-[90%] bg-transparent" [formGroup]="schoolYearForm">
-        <div class="w-[60%] flex flex-col gap-4">
-            <div class="flex justify-between w-[68%]">
-                <div class="group flex flex-col gap-1 w-[45%]">
+    <form class="mt-8 w-[90%] bg-transparent form-content" [formGroup]="schoolYearForm">
+        <div class="w-[70%] flex flex-col gap-4">
+            <div class="flex justify-between w-[100%] row-block">
+                <div class="group flex flex-col gap-1 w-[48%] row-input">
                     <label for="year-start" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -21,7 +21,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="yearStart">
                 </div>
-                <div class="group flex flex-col gap-1 w-[45%]">
+                <div class="group flex flex-col gap-1 w-[48%] row-input">
                     <label for="year-end" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -37,8 +37,8 @@
             </div>    
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">First Semester</h6>
-                <div class="flex justify-between w-[68%]">
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                <div class="flex justify-between w-[100%] row-block">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="one-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -51,7 +51,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="oneStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="one-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -68,8 +68,8 @@
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Second Semester</h6>
-                <div class="flex justify-between w-[68%]">
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                <div class="flex justify-between w-[100%] row-block">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="two-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -82,7 +82,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="twoStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="two-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -99,8 +99,8 @@
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Summer Semester</h6>
-                <div class="flex justify-between w-[68%]">
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                <div class="flex justify-between w-[100%] row-block">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="summer-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -113,7 +113,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="summerStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[45%]">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="summer-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -128,19 +128,20 @@
                     </div>
                 </div>    
             </div>
-        </div>
-        <div class="flex justify-end gap-[30px] mt-20">
-            <button class="text-custom-14 text-lightGray py-2
-                px-20 border-2 rounded-full border-lightGray
-                hover:bg-lightGray hover:text-white">
-                Back
-            </button>
-            <button class="text-custom-14 text-white py-2 px-19
-                bg-gradient-red-orange rounded-full
-                hover:bg-gradient-dark-red-orange hover:text-f4White"
-                (click)="submit()">
-                Edit School Year
-            </button>
+            <div class="flex flex-col justify-end gap-4 mt-10 mb-14">
+                <div class="flex gap-[40px] justify-end w-[100%] button-content">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray back-button">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
+                        (click)="submit()">
+                        Edit School Year
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>
