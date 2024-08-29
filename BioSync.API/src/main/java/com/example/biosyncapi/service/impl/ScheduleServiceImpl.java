@@ -138,6 +138,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public void deleteSchedule(Long id) {
-        scheduleRepository.deleteById(id);
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow();
+
+        if(schedule.getRecurrence() != Recurrence.NONE) {
+            scheduleRepository.deleteByRecurrenceId(schedule.getRecurrenceId());
+        } else {
+            scheduleRepository.deleteById(id);
+        }
     }
 }
