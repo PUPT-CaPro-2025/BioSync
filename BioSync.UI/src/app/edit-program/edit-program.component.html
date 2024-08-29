@@ -5,8 +5,8 @@
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="programForm">
-        <div class="w-[45%] flex flex-col gap-4">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="programForm">
+        <div class="w-[55%] flex flex-col gap-4 row-block">
             <div class="group flex flex-col gap-1">
                 <label for="program-name" class="text-custom-16
                         text-darkGray transition-colors duration-300
@@ -50,14 +50,14 @@
                     formControlName="description">
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
-                <div class="flex gap-[40px] justify-end">
+                <div class="flex gap-[40px] justify-end button-content">
                     <button class="text-custom-14 text-lightGray py-2
-                        px-20 border-2 rounded-full border-lightGray">
+                        px-20 border-2 rounded-full border-lightGray back-button">
                         Back
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19
                         bg-gradient-red-orange rounded-full
-                        hover:bg-gradient-dark-red-orange hover:text-f4White"
+                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
                         (click)="submit()">
                         Edit Program
                     </button>
