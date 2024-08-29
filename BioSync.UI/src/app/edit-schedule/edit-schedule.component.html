@@ -135,9 +135,9 @@
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 px-1" formControlName="recurrence">
-                        <option value="">Does not repeat</option>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly on '{{ selectedDayOfWeek }}'</option>
+                        <option value="NONE">Does not repeat</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly on '{{ selectedDayOfWeek }}'</option>
                         <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>
                         <option value="custom">Custom</option>
                     </select>

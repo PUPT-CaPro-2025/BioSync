@@ -1,6 +1,6 @@
 package com.example.biosyncapi.repository;
 
-import com.example.biosyncapi.model.Schedule;
+import com.example.biosyncapi.model.*;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,8 +16,46 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate AND s.startTime < :endTime AND s.endTime > :startTime")
     List<Schedule> findConflictingSchedules(@Param("scheduleDate") Date scheduleDate, @Param("startTime") Time startTime, @Param("endTime") Time endTime);
 
+    @Query("SELECT s FROM Schedule s WHERE s.recurrenceId = :recurrenceId")
+    List<Schedule> findByRecurrenceId(@Param("recurrenceId") UUID recurrenceId);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Schedule WHERE recurrenceId = :recurrenceId")
     void deleteByRecurrenceId(UUID recurrenceId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Schedule s SET s.startTime = :startTime, " +
+            "s.endTime = :endTime, " +
+            "s.subject = :subject, " +
+            "s.section = :section, " +
+            "s.laboratory = :laboratory, " +
+            "s.professor = :professor, " +
+            "s.semester = :semester, " +
+            "s.remarks = :remarks, " +
+            "s.recurrence = :recurrence, " +
+            "s.recurrenceInterval = :recurrenceInterval " +
+            "WHERE s.recurrenceId = :recurrenceId")
+    int updateSchedule(
+            @Param("recurrenceId") UUID recurrenceId,
+            @Param("startTime") Time startTime,
+            @Param("endTime") Time endTime,
+            @Param("subject") Subject subject,
+            @Param("section") Section section,
+            @Param("laboratory") Laboratory laboratory,
+            @Param("professor") User professor,
+            @Param("semester") Semester semester,
+            @Param("remarks") String remarks,
+            @Param("recurrence") Recurrence recurrence,
+            @Param("recurrenceInterval") int recurrenceInterval
+    );
+
+    @Query("SELECT s.recurrenceDays FROM Schedule s WHERE s.id = :scheduleId")
+    List<String> findRecurrenceDaysByScheduleId(@Param("scheduleId") Long scheduleId);
+
+    @Modifying
+    @Query("UPDATE Schedule s SET s.recurrenceDays = :days WHERE s.id = :scheduleId")
+    void updateRecurrenceDays(@Param("scheduleId") Long scheduleId, @Param("days") List<Integer> days);
+
 }

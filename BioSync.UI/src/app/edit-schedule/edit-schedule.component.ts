@@ -134,7 +134,7 @@ export class EditScheduleComponent implements OnInit{
       schoolYear: this.scheduleToEdit.schoolYear?.id,
       semester: this.scheduleToEdit.semester?.id,
       remarks: this.scheduleToEdit.remarks,
-      recurrence: ''
+      recurrence: this.scheduleToEdit.recurrence
     })
   }
 
@@ -164,11 +164,13 @@ export class EditScheduleComponent implements OnInit{
     const endTime = this.editScheduleForm.get('endTime')?.value;
 
     newSchedule = {
+      ...this.scheduleToEdit,
       ...newSchedule,
       subject: this.scheduleToEdit.subject,
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
-      id: this.scheduleToEdit.id
+      id: this.scheduleToEdit.id,
+      recurrenceId: this.scheduleToEdit.recurrenceId,
     }
 
     this.updateSchedule(newSchedule);
