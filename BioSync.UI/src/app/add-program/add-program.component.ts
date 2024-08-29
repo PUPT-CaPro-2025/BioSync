@@ -25,40 +25,14 @@ export class AddProgramComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {}
 
-  programs: string[] = [
-    'BSIT',
-    'DIT',
-    'BSOA',
-    'BSBA-MM',
-    'BSBA-HRM',
-    'BSA',
-  ]; 
-
-  years: string[] = [
-    '1',
-    '2',
-    '3',
-    '4',
-    'Ladderized 1',
-    'Ladderized 2',
-  ];
-
-  sections: string[] =[
-    '1',
-    '2',
-    '3',
-    'NA',
-  ];
-
   ngOnInit() {
     this.initForm();
   }
 
   initForm(){
     this.programForm = this.formBuilder.group({
-      program: ['', [Validators.required]],
-      year: ['', [Validators.required]],
-      section: ['', [Validators.required]],
+      programName: ['', [Validators.required]],
+      programAbbrv: ['', [Validators.required]],
       description: ['', Validators.required]
     });
   }
