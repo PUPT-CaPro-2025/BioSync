@@ -64,6 +64,9 @@
     @if(isDropdownOpenMaintenance) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/laboratory')">Laboratory</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
                 <button (click)="navigateTo('/program')">Program</button>
             </div>
             <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
