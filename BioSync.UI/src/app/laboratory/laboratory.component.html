@@ -41,22 +41,22 @@
         <div class="table-container">
             <div class="subject-table">
                 <div class="attributes text-custom-16">
-                    <div class="cell">Program</div>
-                    <div class="cell">Year</div>
-                    <div class="cell">Section</div>
+                    <div class="cell">Laboratory Name</div>
+                    <div class="cell">Room Code</div>
+                    <div class="cell">Capacity</div>
                     <div class="cell">Action</div>
                 </div>
                 <div class="row-container text-custom-12">
                     @for (laboratory of filteredLaboratories; track laboratory ) {
                         <div class="row">
-                            <div class="cell">{{ laboratory.laboratory_name }}</div>
-                            <div class="cell">{{ laboratory.room_code }}</div>
+                            <div class="cell">{{ laboratory.name }}</div>
+                            <div class="cell">{{ laboratory.roomCode }}</div>
                             <div class="cell">{{ laboratory.capacity }}</div>
                             <div class="cell">
                                 <div class="action-container">
                                     <button class="view-button"><mat-icon>visibility</mat-icon></button>
-                                    <button class="edit-button" (click)="toggleEditLaboratory()"><mat-icon>edit</mat-icon></button>
-                                    <button class="delete-button"><mat-icon>delete</mat-icon></button>
+                                    <button class="edit-button" (click)="toggleEditLaboratory(laboratory)"><mat-icon>edit</mat-icon></button>
+                                    <button class="delete-button" (click)="openDeleteDialog(laboratory)"><mat-icon>delete</mat-icon></button>
                                 </div>
                             </div>
                         </div>
@@ -102,8 +102,11 @@
             </div>
         </div>    
     } @else {
-        <app-edit-laboratory (backToEditLaboratory)="handleBackToEditLaboratory()"></app-edit-laboratory>
+        <app-edit-laboratory
+            [selectedLaboratory]="laboratoryToEdit" 
+            (updatedLaboratory)="onLaboratoryUpdate($event)" 
+            (backToEditLaboratory)="handleBackToEditLaboratory()"/>
     }
 } @else {
-    <app-add-laboratory (backToLaboratory)="handleBackToLaboratory()"></app-add-laboratory>
+    <app-add-laboratory (laboratoryAdded)="onLaboratoryAdded($event)" (backToLaboratory)="handleBackToLaboratory()"/>
 }

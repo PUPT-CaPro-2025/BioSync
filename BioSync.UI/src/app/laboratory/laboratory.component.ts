@@ -9,13 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { AddLaboratoryComponent } from '../add-laboratory/add-laboratory.component';
 import { EditLaboratoryComponent } from '../edit-laboratory/edit-laboratory.component';
-
-
-interface laboratories {
-  laboratory_name: string;
-  room_code: string;
-  capacity: string;
-}
+import { LaboratoryService } from '../../services/laboratory.service';
+import { Laboratory } from '../../model/laboratory.model';
+import { MatDialog } from '@angular/material/dialog';
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-laboratory',
@@ -32,13 +29,11 @@ interface laboratories {
     AddLaboratoryComponent,
     EditLaboratoryComponent
   ],
+  providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
   styleUrl: './laboratory.component.css'
 })
-export class LaboratoryComponent {
-  isAddLaboratory: boolean = false;
-  isEditLaboratory: boolean = false;
-
+export class LaboratoryComponent implements OnInit {
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -47,22 +42,80 @@ export class LaboratoryComponent {
     'Alphabetical', 'Date'
   ];
 
-  laboratory: laboratories[] = [
-    { laboratory_name: "DOST Laboratory", room_code: "000", capacity: "40" },
-    { laboratory_name: "Aboitiz Laboratory", room_code: "000", capacity: "40" },
-    { laboratory_name: "New Laboratory", room_code: "000", capacity: "N/A" },
-  ];
-
-  get filteredLaboratories(): laboratories[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.laboratory.slice(startIndex, endIndex);
-  }
+  laboratories: Laboratory[] = [];
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  isAddLaboratory: boolean = false;
+  isEditLaboratory: boolean = false;
+  laboratoryToEdit!: Laboratory;
+
+  constructor(
+    private laboratoryService: LaboratoryService, 
+    private dialog: MatDialog) {}
+
+  ngOnInit() {
+    this.getLaboratories()
+  }
+
+  getLaboratories(){
+    this.laboratoryService.getLaboratories().subscribe({
+      next: (laboratories: Laboratory[]) => {
+        laboratories.forEach((laboratory) => {
+          this.laboratories.push(laboratory);
+        })
+      },
+      error: (error) => { console.error(error) }
+    }
+    )
+  }
+
+  onLaboratoryAdded(newLaboratory: Laboratory){
+    this.laboratories.push(newLaboratory);
+  }
+
+  onLaboratoryUpdate(updatedLaboratory: Laboratory) {
+    const index = this.laboratories.findIndex(
+      laboratory => laboratory.id === updatedLaboratory.id
+    );
+
+    if(index === -1) return;
+
+    this.laboratories[index] = updatedLaboratory;
+  }
+
+  openDeleteDialog(laboratory: Laboratory): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: "Delete Laboratory",
+        message: "Are you sure you want to delete this laboratory?"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteLaboratoryById(laboratory);
+      }
+    });
+  }
+
+  deleteLaboratoryById(laboratoryToDelete: Laboratory) {
+    this.laboratoryService.deleteLaboratoryById(laboratoryToDelete).subscribe({
+      next: () => {
+        this.laboratories = this.laboratories.filter(laboratory => laboratory.id !== laboratoryToDelete.id);
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  get filteredLaboratories(): Laboratory[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.laboratories.slice(startIndex, endIndex);
+  }
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -108,8 +161,9 @@ export class LaboratoryComponent {
     this.isAddLaboratory = false;
   }
 
-  toggleEditLaboratory(): void {
+  toggleEditLaboratory(laboratory: Laboratory): void {
     this.isEditLaboratory = !this.isEditLaboratory;
+    this.laboratoryToEdit = laboratory;
   }
 
   handleBackToEditLaboratory(): void {
