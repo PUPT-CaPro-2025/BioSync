@@ -9,6 +9,7 @@
             <p>Dashboard</p>
         </button>
     </div>
+  @if(getRole() === "ADMIN") {
     <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
         <button routerLink="/visitor" class="menu-content">
             <img src="../../assets/visitor.svg" alt="Visitor Icon">
@@ -34,15 +35,15 @@
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
-        <div class="flex justify-between items-center schedule-arrow" (click)="toggleDropdown($event)">
+        <div class="flex justify-between items-center schedule-arrow" (click)="toggleStudentDropdown($event)">
             <button class="menu-content">
                 <img src="../../assets/student.svg" alt="Schedule Icon">
                 <p>Student</p>
             </button>
-            <mat-icon>{{ isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+            <mat-icon>{{ isDropdownOpenStudent ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
         </div>
     </div>
-    @if(isDropdownOpen) {
+    @if(isDropdownOpenStudent) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
                 <button (click)="navigateTo('/student')">List of Student</button>
@@ -52,6 +53,48 @@
             </div>
         </div>
     }
+    <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
+        <div class="flex justify-between items-center schedule-arrow" (click)="toggleMaintenanceDropdown($event)">
+            <button class="menu-content">
+                <img src="../../assets/maintenance.svg" alt="Maintenance Icon">
+                <p>Maintenance</p>
+            </button>
+            <mat-icon>{{ isDropdownOpenMaintenance ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+        </div>
+    </div>
+    @if(isDropdownOpenMaintenance) {
+        <div class="dropdown-content flex flex-col">
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/laboratory')">Laboratory</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/program')">Program</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/school-year')">School Year</button>
+            </div>
+            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+                <button (click)="navigateTo('/section')">Section</button>
+            </div>
+        </div>
+    }
+  }
+  @if(getRole() === "FACULTY"){
+    <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+      <button routerLink="/faculty-attendance" class="menu-content">
+        <img src="../../assets/schedule.svg" alt="Attendance Icon">
+        <p>Attendance</p>
+      </button>
+    </div>
+  }
+  @if(getRole() === "STUDENT"){
+    <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
+      <button routerLink="/student-schedule" class="menu-content">
+        <img src="../../assets/schedule.svg" alt="Schedule Icon">
+        <p>Schedule</p>
+      </button>
+    </div>
+  }
 </mat-nav-list>
 <div class="bottom-container">
     <div class="line-container">

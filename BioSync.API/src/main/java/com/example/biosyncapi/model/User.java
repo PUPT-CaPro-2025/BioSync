@@ -33,6 +33,13 @@ public class User implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
+    @ManyToOne
+    @JoinColumn(name = "program_id")
+    private Program Program;
+
+    @ManyToOne
+    private Section section;
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;
@@ -85,6 +92,22 @@ public class User implements UserDetails {
         this.suffix = suffix;
     }
 
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
+    }
+
+    public com.example.biosyncapi.model.Program getProgram() {
+        return Program;
+    }
+
+    public void setProgram(com.example.biosyncapi.model.Program program) {
+        Program = program;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -131,4 +154,6 @@ public class User implements UserDetails {
     public void setRole(Role role) {
         this.role = role;
     }
+
+
 }

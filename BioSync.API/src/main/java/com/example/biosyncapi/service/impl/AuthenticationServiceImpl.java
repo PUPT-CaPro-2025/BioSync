@@ -1,6 +1,7 @@
 package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.AuthenticationResponse;
+import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.Token;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.TokenRepository;
@@ -45,6 +46,11 @@ public class AuthenticationServiceImpl {
         user.setSuffix(request.getSuffix());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
+
+        if(user.getRole() == Role.STUDENT){
+            user.setSection(request.getSection());
+            user.setProgram(request.getProgram());
+        }
 
         user = userRepository.save(user);
 

@@ -5,7 +5,7 @@
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="studentForm">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent" [formGroup]="editStudentForm">
         <div class="w-[45%] flex flex-col gap-4">
             <div class="group flex flex-col gap-1">
                 <label for="student-number" class="text-custom-20
@@ -18,7 +18,7 @@
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="student_name">
+                    formControlName="usercode">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="first-name" class="text-custom-20
@@ -30,7 +30,7 @@
                     placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="first_name">
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="last-name" class="text-custom-20
@@ -42,19 +42,19 @@
                     placeholder="Enter student's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="last_name">
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
             <div class="group flex flex-col gap-1">
-                <label for="middle-initial" class="text-custom-20
+                <label for="middle-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Middle Initial
+                    Middle Name
                 </label>
-                <input matInput id="middle_initial" name="middle-initial"
+                <input matInput id="middle_name" name="middle-name"
                     placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="middle_initial">
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
             <div class="group flex flex-col gap-1">
                 <label for="suffix" class="text-custom-20
@@ -82,44 +82,33 @@
                             placeholder="Choose a student's program" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="program">
+                            duration-300 w-full py-2 px-1"
+                            (selectionChange)="onProgramChange($event)"
+                            formControlName="program">
                             @for(program of allPrograms; track program) {
-                                <mat-option [value]="program">{{program}}</mat-option>
+                                <mat-option [value]="program.id">{{program.programAbbreviation}}</mat-option>
                             }
                 </mat-select>
             </div>
             <div class="flex justify-between">
-                <div class="group flex flex-col gap-1 w-[47%]">
-                    <label for="Year" class="text-custom-16
-                        text-darkGray transition-colors duration-300
-                        group-focus-within:text-brightRed">
-                        Year
-                    </label>
-                    <mat-select id="year" name="year"
-                            placeholder="Choose a student's year" class="bg-transparent
-                            border-b-2 border-darkGray focus:border-brightRed
-                            focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="year">
-                            @for(year of allYears; track year) {
-                                <mat-option [value]="year">{{year}}</mat-option>
-                            }
-                </mat-select>
-                </div>
-                <div class="group flex flex-col gap-1 w-[47%]">
+                <div class="group flex flex-col gap-1 w-full">
                     <label for="section" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Section
                     </label>
-                    <mat-select id="section" name="section"
-                            placeholder="Choose a student's section" class="bg-transparent
+                  <mat-select id="year" name="year"
+                              placeholder="Choose a student's year" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="program">
-                            @for(section of allSections; track section) {
-                                <mat-option [value]="section">{{section}}</mat-option>
-                            }
-                </mat-select>
+                            duration-300 w-full py-2 px-1"
+                              formControlName="section">
+                    @for(section of filteredSections; track section) {
+                      <mat-option [value]="section.id">
+                        {{section.year}} - {{section.section}}
+                      </mat-option>
+                    }
+                  </mat-select>
                 </div>
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
@@ -127,7 +116,7 @@
                     <button class="text-custom-14 text-lightGray py-2
                         px-20 border-2 rounded-full border-lightGray
                         hover:bg-lightGray hover:text-white"
-                        (click)="cancelEditStudent()">
+                        (click)="returnToStudentView()">
                         Cancel
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19

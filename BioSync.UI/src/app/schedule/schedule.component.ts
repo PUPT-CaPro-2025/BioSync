@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
-import { Schedule } from '../../model/schedule-model';
+import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
@@ -46,27 +46,55 @@ export class ScheduleComponent implements OnInit{
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
   currentSchedule: number | undefined;
+  groupedSchedules: { [key: string]: Schedule[] } = {};
+  selectedSchedule!: Schedule;
 
   constructor(
     private scheduleService: ScheduleService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
     ) {}
 
   ngOnInit() {
-    this.getAllSubjects();
+    this.getAllSchedules();
   }
 
-  getAllSubjects() {
+  getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
-      next: schedules => {
-        schedules.forEach(schedule => this.schedules.push(schedule));
+      next: (schedules) => {
+        this.schedules = schedules;
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
       },
-      error: err => console.error(err)
-    })
+      error: (err) => console.error(err),
+    });
   }
 
-  onScheduleCreation(schedule: Schedule){
-    this.schedules.push(schedule);
+  getRecurrenceDays(recId: string): string[] {
+    const schedules = this.groupedSchedules[recId];
+    if (schedules) {
+      const daysSet = new Set<string>();
+      schedules.forEach((schedule) => {
+        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString())); // Ensure `day` is of type `string`
+      });
+      return Array.from(daysSet);
+    }
+    return [];
+  }
+
+  onScheduleCreation(schedule: Schedule[]){
+    schedule.forEach((schedule: Schedule) => {
+      this.schedules.push(schedule);
+    })
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+  }
+
+  onScheduleUpdate(updatedSchedule: Schedule) {
+    const index = this.schedules.findIndex(schedule =>
+      schedule.id === updatedSchedule.id);
+
+    this.schedules[index] = updatedSchedule;
+    this.getAllSchedules();
   }
 
   convertTimeFormat(time: string): string {
@@ -93,6 +121,13 @@ export class ScheduleComponent implements OnInit{
         this.deleteSchedule(schedule);
       }
     });
+  }
+
+  getDayOfWeek(date: string | Date): string {
+    const newDate = new Date(date);
+    const days = ['SUN', 'MON', 'TUE', 'WED',
+      'THU', 'FRI', 'SAT'];
+    return days[newDate.getDay()];
   }
 
   deleteSchedule(scheduleToDelete: Schedule){
@@ -156,8 +191,9 @@ export class ScheduleComponent implements OnInit{
     this.isAddSchedule = false;
   }
 
-  toggleEditSchedule(): void {
+  toggleEditSchedule(schedule: Schedule): void {
     this.isEditSchedule = !this.isEditSchedule;
+    this.selectedSchedule = schedule;
   }
 
   handleEditBackToSchedule(): void {
@@ -179,4 +215,34 @@ export class ScheduleComponent implements OnInit{
   handleViewBackToSchedule(): void {
     this.isViewSchedule = false;
   }
+
+  filteredRepeatedSchedules(): void {
+    const filteredSchedules: Schedule[] = [];
+    const recurrenceIdStorage: string[] = [];
+    this.schedules.forEach(schedule => {
+      if (schedule.recurrenceId != null) {
+        if(!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+          recurrenceIdStorage.push(schedule.recurrenceId);
+          filteredSchedules.push(schedule);
+        }
+      } else {
+        filteredSchedules.push(schedule);
+      }
+    })
+
+    this.schedules = filteredSchedules;
+  }
+
+  groupSchedulesByRecurrenceId() {
+    this.groupedSchedules = this.schedules.reduce((acc, schedule) => {
+      if (schedule.recurrenceId) {
+        if (!acc[schedule.recurrenceId]) {
+          acc[schedule.recurrenceId] = [];
+        }
+        acc[schedule.recurrenceId].push(schedule);
+      }
+      return acc;
+    }, {} as { [key: string]: Schedule[] });
+  }
+
 }

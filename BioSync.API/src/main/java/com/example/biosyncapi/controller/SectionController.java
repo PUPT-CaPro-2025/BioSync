@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1/section")
+@RequestMapping("api/v1/sections")
 public class SectionController {
 
     private final SectionService sectionService;

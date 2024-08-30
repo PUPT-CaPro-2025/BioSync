@@ -1,3 +1,6 @@
+import {Program} from "./program.model";
+import {Section} from "./section.model";
+
 export interface User {
   id: number
   firstName: string;
@@ -6,4 +9,7 @@ export interface User {
   usercode: string;
   suffix: string;
   role: string;
+  password?: string;
+  program?: Program;
+  section?: Section;
 }

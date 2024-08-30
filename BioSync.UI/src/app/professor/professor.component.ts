@@ -7,6 +7,9 @@ import { AddProfessorComponent } from '../add-professor/add-professor.component'
 import { EditProfessorComponent } from '../edit-professor/edit-professor.component';
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-professor',
@@ -39,10 +42,12 @@ export class ProfessorComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
+  professorToUpdate!: User
 
 
   constructor(
     private userService: UserService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -52,7 +57,6 @@ export class ProfessorComponent implements OnInit{
   getProfessors(): void {
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: (professors: User[]) => {
-        console.log(professors)
         this.professors = professors;
       }
     })
@@ -60,6 +64,15 @@ export class ProfessorComponent implements OnInit{
 
   onProfessorAdded(newProfessor: User){
     this.professors.push(newProfessor);
+  }
+
+  onProfessorUpdate(updatedProfessor: User){
+    const index = this.professors.findIndex(
+      professor => professor.id === updatedProfessor.id);
+
+    if(index === -1) return;
+
+    this.professors[index] = updatedProfessor;
   }
 
   get pages(): number[] {
@@ -112,11 +125,51 @@ export class ProfessorComponent implements OnInit{
     this.isAddProfessor = false;
   }
 
-  toggleEditProfessor(): void {
+  toggleEditProfessor(professor: User): void {
     this.isEditProfessor = !this.isEditProfessor;
+    this.professorToUpdate = professor;
   }
 
   handleBackToEditProfessor(): void {
     this.isEditProfessor = false;
   }
+
+  openDeleteConfirmation(professor: User){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Professor',
+        message: 'Are you sure you want to delete?',
+      }
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.deleteProfessor(professor);
+      }
+    })
+  }
+
+  openSomethingWentWrong(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Something Went Wrong!',
+        message: 'Can\'t delete professor with existing schedule'
+      }
+    })
+
+  }
+
+  deleteProfessor(professor: User){
+    this.userService.deleteUser(professor).subscribe({
+      next: () => {
+        this.professors = this.professors.filter(
+          prof => prof.id !== professor.id
+        );
+      },
+      error: () => this.openSomethingWentWrong()
+    })
+  }
+
 }

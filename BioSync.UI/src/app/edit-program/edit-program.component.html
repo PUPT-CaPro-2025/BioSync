@@ -1,0 +1,69 @@
+
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Edit Program</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="programForm">
+        <div class="w-[55%] flex flex-col gap-4 row-block">
+            <div class="group flex flex-col gap-1">
+                <label for="program-name" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Program
+                </label>
+                <input matInput id="program_name"
+                    name="program-name"
+                    placeholder="Enter program name"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="programName">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="program-abbreviation" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Program Abbreviation
+                </label>
+                <input matInput id="program_abbreviation"
+                    name="program-abbreviation"
+                    placeholder="Enter abbreviation of the program"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="programAbbreviation">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="description" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Description
+                </label>
+                <input matInput id="description"
+                    name="description"
+                    placeholder="Enter program description"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="programDescription">
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end button-content">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray back-button"
+                        (click)="returnToProgramView()">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
+                        (click)="submit()">
+                        Edit Program
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

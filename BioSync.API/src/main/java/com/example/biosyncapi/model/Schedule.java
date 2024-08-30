@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import java.sql.Time;
 import java.sql.Date;
+import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -17,7 +19,8 @@ public class Schedule {
     @JoinColumn(name="subject_id", nullable=false)
     private Subject subject;
 
-    private String section;
+    @ManyToOne
+    private Section section;
 
     private Time startTime;
 
@@ -25,33 +28,52 @@ public class Schedule {
 
     private Date scheduleDate;
 
-    private String labRoom;
+    @ManyToOne
+    private Laboratory laboratory;
 
     @ManyToOne
     @JoinColumn(name = "professor_id", nullable = false)
     private User professor;
 
-    private String semester;
+    @ManyToOne
+    @JoinColumn(name = "school_year_id", nullable = false)
+    private SchoolYear schoolYear;
 
-    private String schoolYear;
+    @ManyToOne
+    private Semester semester;
 
     private String remarks;
+
+    private UUID recurrenceId;
+
+    @Enumerated(EnumType.STRING)
+    private Recurrence recurrence;
+
+    private int recurrenceInterval;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+    public List<String> recurrenceDays;
 
     public Schedule() {
     }
 
-    public Schedule(Long id, Subject subject, String section, Time startTime, Time endTime, Date scheduleDate, String labRoom, User professor, String semester, String schoolYear, String remarks) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<String> recurrenceDays) {
         this.id = id;
         this.subject = subject;
         this.section = section;
         this.startTime = startTime;
         this.endTime = endTime;
         this.scheduleDate = scheduleDate;
-        this.labRoom = labRoom;
+        this.laboratory = laboratory;
         this.professor = professor;
-        this.semester = semester;
         this.schoolYear = schoolYear;
+        this.semester = semester;
         this.remarks = remarks;
+        this.recurrenceId = recurrenceId;
+        this.recurrence = recurrence;
+        this.recurrenceInterval = recurrenceInterval;
+        this.recurrenceDays = recurrenceDays;
     }
 
     public Long getId() {
@@ -70,11 +92,11 @@ public class Schedule {
         this.subject = subject;
     }
 
-    public String getSection() {
+    public Section getSection() {
         return section;
     }
 
-    public void setSection(String section) {
+    public void setSection(Section section) {
         this.section = section;
     }
 
@@ -102,14 +124,6 @@ public class Schedule {
         this.scheduleDate = scheduleDate;
     }
 
-    public String getLabRoom() {
-        return labRoom;
-    }
-
-    public void setLabRoom(String labRoom) {
-        this.labRoom = labRoom;
-    }
-
     public User getProfessor() {
         return professor;
     }
@@ -118,19 +132,27 @@ public class Schedule {
         this.professor = professor;
     }
 
-    public String getSemester() {
+    public Laboratory getLaboratory() {
+        return laboratory;
+    }
+
+    public void setLaboratory(Laboratory laboratory) {
+        this.laboratory = laboratory;
+    }
+
+    public Semester getSemester() {
         return semester;
     }
 
-    public void setSemester(String semester) {
+    public void setSemester(Semester semester) {
         this.semester = semester;
     }
 
-    public String getSchoolYear() {
+    public SchoolYear getSchoolYear() {
         return schoolYear;
     }
 
-    public void setSchoolYear(String schoolYear) {
+    public void setSchoolYear(SchoolYear schoolYear) {
         this.schoolYear = schoolYear;
     }
 
@@ -140,5 +162,37 @@ public class Schedule {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public int getRecurrenceInterval() {
+        return recurrenceInterval;
+    }
+
+    public void setRecurrenceInterval(int recurrenceInterval) {
+        this.recurrenceInterval = recurrenceInterval;
+    }
+
+    public List<String> getRecurrenceDays() {
+        return recurrenceDays;
+    }
+
+    public void setRecurrenceDays(List<String> recurrenceDays) {
+        this.recurrenceDays = recurrenceDays;
+    }
+
+    public UUID getRecurrenceId() {
+        return recurrenceId;
+    }
+
+    public void setRecurrenceId(UUID recurrenceId) {
+        this.recurrenceId = recurrenceId;
     }
 }

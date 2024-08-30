@@ -23,8 +23,23 @@ export class UserService {
     });
   }
 
+  updateUser(user: User): Observable<User> {
+    return this.http.put<User>(`${this.url}/users`, user, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getUsersByRole(role: string): Observable<User[]> {
     return this.http.get<User[]>(`${this.url}/users/role/${role}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  deleteUser(user: User){
+    return this.http.delete<User>(`${this.url}/users`, {
+      body: { id: user.id },
       headers: this.headers,
       withCredentials: true
     })

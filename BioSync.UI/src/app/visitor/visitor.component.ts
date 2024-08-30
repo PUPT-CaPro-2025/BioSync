@@ -1,10 +1,13 @@
-import { Visitor } from '../../model/visitor-model';
+import { Visitor } from '../../model/visitor.model';
 import {Component, Input, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
+import {VisitorService} from "../../services/visitor.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-visitor',
@@ -15,16 +18,13 @@ import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
     FormsModule,
     MatIconModule,
     EditVisitorComponent],
+  providers: [VisitorService],
   templateUrl: './visitor.component.html',
   styleUrl: './visitor.component.css'
 })
-export class VisitorComponent {
+export class VisitorComponent implements OnInit{
   //Temporary Data
-  visitors: Visitor[] = [
-    { id: 1, visitor_name: "John Doe", visit: "Speaker", visit_date: "04/08/2024", details: "N/A", event: "Knights of Honor", destination: "DOST Laboratory", time_in: "7:30 AM", time_out: "10:30 AM" },
-    { id: 2, visitor_name: "Rence Tenorio", visit: "Speaker", visit_date: "07/29/2024", details: "N/A", event: "Seminar", destination: "DOST Laboratory", time_in: "1:00 PM", time_out: "5:00 PM" },
-    { id: 3, visitor_name: "Stan Smith", visit: "Speaker", visit_date: "02/16/2024", details: "N/A", event: "Seminar", destination: "Aboitiz Laboratory", time_in: "10:00 AM", time_out: "2:00 PM" }
-  ];
+  visitors: Visitor[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
@@ -39,6 +39,80 @@ export class VisitorComponent {
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isEditVisitor: boolean = false;
+  visitorToEdit!: Visitor;
+
+  constructor(
+    private visitorService: VisitorService,
+    private dialog: MatDialog
+  ){}
+
+  ngOnInit() {
+    this.initializeVisitors();
+  }
+
+  initializeVisitors(){
+    this.visitorService.getVisitors().subscribe({
+      next: (visitors: Visitor[]) => {
+        this.visitors = visitors;
+      }
+    })
+  }
+
+  getDate(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  getTime(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    return `${hours}:${minutes}:${seconds} ${ampm}`;
+  }
+
+  onVisitorUpdate(updatedVisitor: Visitor){
+    const index = this.visitors.findIndex(
+      visitor => visitor.id === updatedVisitor.id
+    );
+
+    if(index === -1) return;
+
+    this.visitors[index] = updatedVisitor;
+  }
+
+  openDeleteDialog(visitor: Visitor): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Visitor',
+        message: 'Are you sure you want to delete this visitor?',
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!result) return;
+
+      this.deleteVisitorLog(visitor);
+    })
+  }
+
+  deleteVisitorLog(visitor: Visitor): void {
+    this.visitorService.deleteVisitor(visitor).subscribe({
+      next: () => {
+        this.visitors = this.visitors.filter(v => v.id !== visitor.id);
+      },
+      error: err => console.error(err)
+    })
+  }
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -82,11 +156,14 @@ export class VisitorComponent {
     }
   }
 
-  toggleEditVisitor(): void {
+  toggleEditVisitor(visitor: Visitor) {
     this.isEditVisitor = !this.isEditVisitor;
+    this.visitorToEdit = visitor;
   }
 
   handleBackToEditVisitor(): void {
     this.isEditVisitor = false;
   }
+
+  protected readonly open = open;
 }

@@ -3,9 +3,9 @@ package com.example.biosyncapi.controller;
 import com.example.biosyncapi.model.Schedule;
 import com.example.biosyncapi.service.ScheduleService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,9 +31,15 @@ public class ScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Schedule> createSchedule(@RequestBody Schedule schedule) {
-        Schedule createdSchedule = scheduleService.createSchedule(schedule);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedule);
+    public ResponseEntity<List<Schedule>> createSchedule(@RequestBody Schedule schedule) {
+        try{
+            List<Schedule> createdSchedule = scheduleService.createSchedule(schedule);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdSchedule);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PutMapping

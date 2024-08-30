@@ -1,7 +1,7 @@
 @if(!isEditVisitor) {
     <div class="header">
         <mat-toolbar class="toolbar-container">
-            <span>List of Visitors - ALL</span>
+            <span>Visitor Logs</span>
             <div class="toolbar-button">
                 <button>Print Visitor Report</button>
             </div>
@@ -41,25 +41,23 @@
             <div class="attributes">
                 <div class="cell">VISITOR'S NAME</div>
                 <div class="cell">PURPOSE OF VISIT</div>
-                <div class="cell">DATE OF VISITATION</div>
-                <div class="cell">TIME IN</div>
-                <div class="cell">TIME OUT</div>
+                <div class="cell">DATE</div>
+                <div class="cell">TIME</div>
                 <DIV class="cell">DESTINATION</DIV>
                 <div class="cell">ACTION</div>
             </div>
             <div class="row-container">
                 @for (visitor of filteredVisitors; track visitor) {
                     <div class="row">
-                        <div class="cell">{{visitor.visitor_name}}</div>
-                        <div class="cell">{{visitor.visit}}</div>
-                        <div class="cell">{{visitor.visit_date}}</div>
-                        <div class="cell">{{visitor.time_in}}</div>
-                        <div class="cell">{{visitor.time_out}}</div>
+                        <div class="cell">{{visitor.name}}</div>
+                        <div class="cell">{{visitor.purposeOfVisit}}</div>
+                        <div class="cell">{{getDate(visitor.visitDate)}}</div>
+                        <div class="cell">{{getTime(visitor.visitDate)}}</div>
                         <div class="cell">{{visitor.destination}}</div>
                         <div class="cell">
                             <div class="action-container">
-                                <button class="edit-button" (click)="toggleEditVisitor()"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button"><mat-icon>delete</mat-icon></button>
+                                <button class="edit-button" (click)="toggleEditVisitor(visitor)"><mat-icon>edit</mat-icon></button>
+                                <button class="delete-button" (click)="openDeleteDialog(visitor)"><mat-icon>delete</mat-icon></button>
                             </div>
                         </div>
                     </div>
@@ -104,5 +102,8 @@
         </div>
     </div>
 } @else {
-        <app-edit-visitor (backToEditVisitor)="handleBackToEditVisitor()"></app-edit-visitor>
+        <app-edit-visitor
+          [visitor]="visitorToEdit"
+          (editedVisitor)="onVisitorUpdate($event)"
+          (backToEditVisitor)="handleBackToEditVisitor()"/>
     }

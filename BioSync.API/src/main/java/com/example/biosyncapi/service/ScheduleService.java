@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface ScheduleService {
     List<Schedule> getAllSchedules();
     Optional<Schedule> getScheduleById(Long id);
-    Schedule createSchedule(Schedule schedule);
+    List<Schedule> createSchedule(Schedule schedule);
     Schedule updateSchedule(Schedule schedule);
     void deleteSchedule(Long id);
 }
