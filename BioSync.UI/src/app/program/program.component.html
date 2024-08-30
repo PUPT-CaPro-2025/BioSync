@@ -46,12 +46,12 @@
         <div class="row-container text-custom-12">
             @for (program of filteredPrograms; track program ) {
                 <div class="row">
-                    <div class="cell">{{ program.program_name }}</div>
-                    <div class="cell">{{ program.program_abbreviation }}</div>
+                    <div class="cell">{{ program.programName }}</div>
+                    <div class="cell">{{ program.programAbbreviation }}</div>
                     <div class="cell">
                         <div class="action-container">
-                            <button class="view-button" (click)="toggleViewSchedule()"><mat-icon>visibility</mat-icon></button>
-                            <button class="edit-button" (click)="toggleEditSchedule()"><mat-icon>edit</mat-icon></button>
+                            <button class="view-button"><mat-icon>visibility</mat-icon></button>
+                            <button class="edit-button"><mat-icon>edit</mat-icon></button>
                             <button class="delete-button"><mat-icon>delete</mat-icon></button>
                         </div>
                     </div>
