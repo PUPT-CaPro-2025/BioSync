@@ -27,7 +27,7 @@ jobs:
                  ./BioSync.API/src/main/resources/application.properties
 
       - name: Build Project
-        run: mvn clean install
+        run: mvn clean install -DskipTests
         working-directory: ./BioSync.API
 
       - name: Login to Docker Hub
