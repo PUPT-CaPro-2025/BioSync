@@ -34,7 +34,7 @@ jobs:
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
 
       - name: Build docker image
-        run: docker build -t jheankhendrick/BioSync-API ./BioSync.API
+        run: docker build -t jheankhendrick/bio-sync-api ./BioSync.API
 
       - name: Publish Image to Docker Hub
         run: docker push jheankhendrick/bio-sync-api:latest
