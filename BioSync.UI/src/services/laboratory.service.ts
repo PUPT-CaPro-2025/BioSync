@@ -7,16 +7,31 @@ import {Laboratory} from "../model/laboratory.model";
 
 @Injectable()
 export class LaboratoryService {
+  url = `${environment.apiUrl}/api/v1/laboratories`;
   accessToken = this.cookieService.getCookie("authToken");
   headers = new HttpHeaders().set('Authorization', `Bearer ${this.accessToken}`);
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   getLaboratories() {
-    const url = `${environment.apiUrl}/api/v1/laboratories`;
-    return this.http.get<Laboratory[]>(url, {
+    return this.http.get<Laboratory[]>(this.url, {
       headers: this.headers,
       withCredentials: true,
+    });
+  }
+
+  updateLaboratory(laboratories: Laboratory){
+    return this.http.put<Laboratory>(this.url, laboratories,{
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  deleteLaboratoryById(laboratories: Laboratory){
+    return this.http.delete<Laboratory>(this.url, {
+      body: { "id" : laboratories.id },
+      headers: this.headers,
+      withCredentials: true
     });
   }
 }

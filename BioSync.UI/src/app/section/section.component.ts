@@ -7,6 +7,11 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { Section } from '../../model/section.model';
+import { Semester } from '../../model/semester.model'; 
+import { SectionService } from '../../services/section.service';
+import { AddSectionComponent } from '../add-section/add-section.component';
+import { EditSectionComponent } from '../edit-section/edit-section.component';
 
 interface sections {
   program: string;
@@ -26,7 +31,10 @@ interface sections {
     MatButtonModule,
     MatSelectModule,
     CommonModule,
+    AddSectionComponent,
+    EditSectionComponent
   ],
+  providers: [SectionService],
   templateUrl: './section.component.html',
   styleUrl: './section.component.css'
 })
@@ -50,19 +58,19 @@ export class SectionComponent {
     { program: "DIT", year: "4", section: "1" },
   ];
 
+  @Input() totalItems: number = 500;
+  itemsPerPage: number = 10;
+  currentPage: number = 1;
+  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  isAddSection: boolean = false;
+  isEditSection: boolean = false;
+  sectionToEdit!: Section;
+
   get filteredSections(): sections[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.section.slice(startIndex, endIndex);
   }
-
-  @Input() totalItems: number = 500;
-  itemsPerPage: number = 10;
-  currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
-  isAddSchedule: boolean = false;
-  isEditSchedule: boolean = false;
-  isViewSchedule: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -100,27 +108,19 @@ export class SectionComponent {
     }
   }
 
-  toggleAddSchedule(): void {
-    this.isAddSchedule = !this.isAddSchedule;
+  toggleAddSection(): void {
+    this.isAddSection = !this.isAddSection;
   }
 
-  handleBackToSchedule(): void {
-    this.isAddSchedule = false;
+  handleBackToSection(): void {
+    this.isAddSection = false;
   }
 
-  toggleEditSchedule(): void {
-    this.isEditSchedule = !this.isEditSchedule;
+  toggleEditSection(): void {
+    this.isEditSection = !this.isEditSection;
   }
 
-  handleEditBackToSchedule(): void {
-    this.isEditSchedule = false;
-  }
-
-  toggleViewSchedule(): void {
-    this.isViewSchedule = !this.isViewSchedule;
-  }
-
-  handleViewBackToSchedule(): void {
-    this.isViewSchedule = false;
+  handleBackToEditSection(): void {
+    this.isEditSection = false;
   }
 }

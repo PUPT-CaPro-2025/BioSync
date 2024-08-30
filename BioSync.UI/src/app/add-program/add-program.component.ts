@@ -46,6 +46,10 @@ export class AddProgramComponent implements OnInit {
     });
   }
 
+  returnToProgramView(): void {
+    this.backToProgram.emit();
+  }
+
   submit(){
     if(!this.programForm.valid) {
       console.log('invalid');
