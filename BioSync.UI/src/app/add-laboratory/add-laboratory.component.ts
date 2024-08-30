@@ -5,6 +5,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import { Laboratory } from '../../model/laboratory.model'; 
 
 @Component({
   selector: 'app-add-laboratory',
@@ -21,6 +22,8 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './add-laboratory.component.css'
 })
 export class AddLaboratoryComponent implements OnInit {
+  @Output() backToLaboratory = new EventEmitter<void>();
+  @Output() laboratoryAdded = new EventEmitter<Laboratory>();
   laboratoryForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {}
@@ -37,8 +40,14 @@ export class AddLaboratoryComponent implements OnInit {
     });
   }
 
+  returnToLaboratoryView(): void {
+    this.backToLaboratory.emit();
+  }
+
   submit(){
-    console.log("Submit");
-    return;
+    if(!this.laboratoryForm.valid) {
+      console.log('invalid');
+      return;
+    }
   }
 }
