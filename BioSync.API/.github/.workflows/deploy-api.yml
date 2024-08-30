@@ -1,0 +1,44 @@
+name: Build and Deploy API
+
+on:
+  workflow_dispatch:
+    branches: [dev, jhean-branch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Project
+        run: mvn clean install
+        working-directory: ./BioSync.API
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+
+      - name: Build docker image
+        run: docker build -t jheankhendrick/BioSync-API ./BioSync.API
+
+      - name: Publish Image to Docker Hub
+        run: docker push jheankhendrick/bio-sync-api:latest
+
+  deploy:
+    needs: build
+    runs-on: aws-ec2
+    steps:
+      - name: Pull Image from Docker Hub
+        run: docker pull jheankhendrick/bio-sync-api:latest
+
+      - name: Delete Old Container
+        run: docker rm -f bio-sync-api-container
+
+      - name: Run Docker Container
+        run: docker run -d -p 8080:8080 --name BioSync-API jheankhendrick/bio-sync-api
