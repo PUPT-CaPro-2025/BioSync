@@ -46,6 +46,7 @@ export class ScheduleComponent implements OnInit{
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
   currentSchedule: number | undefined;
+  groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
 
   constructor(
@@ -59,18 +60,32 @@ export class ScheduleComponent implements OnInit{
 
   getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
-      next: schedules => {
-        schedules.forEach(schedule => this.schedules.push(schedule));
+      next: (schedules) => {
+        this.schedules = schedules;
+        this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
       },
-      error: err => console.error(err)
-    })
+      error: (err) => console.error(err),
+    });
+  }
+
+  getRecurrenceDays(recId: string): string[] {
+    const schedules = this.groupedSchedules[recId];
+    if (schedules) {
+      const daysSet = new Set<string>();
+      schedules.forEach((schedule) => {
+        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString())); // Ensure `day` is of type `string`
+      });
+      return Array.from(daysSet);
+    }
+    return [];
   }
 
   onScheduleCreation(schedule: Schedule[]){
     schedule.forEach((schedule: Schedule) => {
       this.schedules.push(schedule);
     })
+    this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
   }
 
@@ -79,6 +94,7 @@ export class ScheduleComponent implements OnInit{
       schedule.id === updatedSchedule.id);
 
     this.schedules[index] = updatedSchedule;
+    this.getAllSchedules();
   }
 
   convertTimeFormat(time: string): string {
@@ -215,6 +231,18 @@ export class ScheduleComponent implements OnInit{
     })
 
     this.schedules = filteredSchedules;
+  }
+
+  groupSchedulesByRecurrenceId() {
+    this.groupedSchedules = this.schedules.reduce((acc, schedule) => {
+      if (schedule.recurrenceId) {
+        if (!acc[schedule.recurrenceId]) {
+          acc[schedule.recurrenceId] = [];
+        }
+        acc[schedule.recurrenceId].push(schedule);
+      }
+      return acc;
+    }, {} as { [key: string]: Schedule[] });
   }
 
 }

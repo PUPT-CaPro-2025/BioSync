@@ -1,9 +1,6 @@
 package com.example.biosyncapi.service.impl;
 
-import com.example.biosyncapi.model.Recurrence;
-import com.example.biosyncapi.model.Schedule;
-import com.example.biosyncapi.model.Semester;
-import com.example.biosyncapi.model.Subject;
+import com.example.biosyncapi.model.*;
 import com.example.biosyncapi.repository.ScheduleRepository;
 import com.example.biosyncapi.repository.SubjectRepository;
 import com.example.biosyncapi.service.ScheduleService;
@@ -11,7 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.*;
+import java.util.logging.Logger;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -75,7 +76,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         while(startDate.before(endDate) || startDate.equals(endDate)) {
             // Iterate over the specified days in recurrenceDays
-            for (String day : schedule.getRecurrenceDays()) {
+            for (int index = 0; index < schedule.getRecurrenceDays().size(); index++) {
+                String day = schedule.getRecurrenceDays().get(index);
+
                 // Set calendar to the specified day of the week
                 while (startDate.get(Calendar.DAY_OF_WEEK) != getCalendarDayOfWeek(day)) {
                     startDate.add(Calendar.DAY_OF_MONTH, 1);
@@ -88,9 +91,15 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
-                newSchedule.setRecurrenceDays(schedule.getRecurrenceDays());
+
+                // Set recurrenceDays to the current index day
+                newSchedule.setRecurrenceDays(Collections.singletonList(day));
+
                 newSchedule.setRecurrenceInterval(schedule.getRecurrenceInterval());
                 schedules.add(newSchedule);
+
+                // Move to the next day to avoid duplicate entries for the same day
+                startDate.add(Calendar.DAY_OF_MONTH, 1);
             }
 
             // Move startDate by the recurrence interval in weeks
@@ -130,10 +139,70 @@ public class ScheduleServiceImpl implements ScheduleService {
         return newSchedule;
     }
 
+    private static final Logger logger = Logger.getLogger(ScheduleServiceImpl.class.getName());
 
     @Override
     public Schedule updateSchedule(Schedule schedule) {
+        if (schedule.getRecurrence() != Recurrence.NONE) {
+            Schedule existingSchedule = scheduleRepository.findById(schedule.getId())
+                    .orElseThrow();
+
+            int updatedRows = scheduleRepository.updateSchedule(
+                    schedule.getRecurrenceId(),
+                    schedule.getStartTime(),
+                    schedule.getEndTime(),
+                    schedule.getSubject(),
+                    schedule.getSection(),
+                    schedule.getLaboratory(),
+                    schedule.getProfessor(),
+                    schedule.getSemester(),
+                    schedule.getRemarks(),
+                    schedule.getRecurrence(),
+                    schedule.getRecurrenceInterval()
+            );
+            if (updatedRows == 0) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for update");
+            }
+
+            // Convert java.util.Date to LocalDate
+            LocalDate oldDate = convertToLocalDate(existingSchedule.getScheduleDate());
+            LocalDate newDate = convertToLocalDate(schedule.getScheduleDate());
+            long gapInDays = ChronoUnit.DAYS.between(oldDate, newDate);
+            logger.info("Old Date: " + oldDate + ", New Date: " + newDate + ", Gap in Days: " + gapInDays);
+
+            List<Schedule> relatedSchedules = scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
+
+            for (Schedule relatedSchedule : relatedSchedules) {
+
+                LocalDate relatedDate = convertToLocalDate(relatedSchedule.getScheduleDate());
+
+                LocalDate newScheduleDate = relatedDate.plusDays(gapInDays);
+
+                relatedSchedule.setScheduleDate(convertToDate(newScheduleDate));
+
+                scheduleRepository.save(relatedSchedule);
+
+                logger.info("Related Date: " + relatedSchedule.getScheduleDate()
+                        + "Day: " + relatedSchedule.getScheduleDate().toLocalDate().getDayOfWeek());
+                scheduleRepository.updateRecurrenceDays(relatedSchedule.getId(),
+                            String.valueOf(newScheduleDate.getDayOfWeek()).substring(0,3));
+
+            }
+
+            return schedule;
+        }
         return scheduleRepository.save(schedule);
+    }
+
+    private LocalDate convertToLocalDate(java.sql.Date date) {
+        if(date == null) return null;
+
+        return date.toLocalDate();
+    }
+
+    private java.sql.Date convertToDate(LocalDate localDate) {
+        if (localDate == null) return null;
+        return java.sql.Date.valueOf(localDate);
     }
 
     @Override
