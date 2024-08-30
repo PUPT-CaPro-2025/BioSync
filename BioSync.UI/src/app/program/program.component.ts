@@ -84,7 +84,6 @@ export class ProgramComponent implements OnInit{
     if(index === -1) return;
 
     this.programs[index] = updatedProgram;
-    this.getAllPrograms();
   }
 
   openDeleteDialog(program: Program): void {
