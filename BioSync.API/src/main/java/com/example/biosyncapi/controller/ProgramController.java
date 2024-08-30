@@ -38,7 +38,7 @@ public class ProgramController {
     }
 
     @DeleteMapping()
-    public void deleteProgramById(@RequestParam Program program) {
+    public void deleteProgram(@RequestBody Program program) {
         programService.deleteProgram(program.getId());
     }
 }
