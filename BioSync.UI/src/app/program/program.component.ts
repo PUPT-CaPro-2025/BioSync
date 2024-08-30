@@ -9,9 +9,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 
 interface programs {
-  program: string;
-  year: string;
-  section: string;
+  program_name: string;
+  program_abbreviation: string;
 }
 
 @Component({
@@ -39,14 +38,9 @@ export class ProgramComponent {
   ];
 
   program: programs[] = [
-    { program: "BSIT", year: "1", section: "1" },
-    { program: "BSIT", year: "2", section: "1" },
-    { program: "BSIT", year: "3", section: "1" },
-    { program: "BSIT", year: "4", section: "1" },
-    { program: "DIT", year: "1", section: "1" },
-    { program: "DIT", year: "2", section: "1" },
-    { program: "DIT", year: "3", section: "1" },
-    { program: "DIT", year: "4", section: "1" },
+    { program_name: "Bachelor of Science in Information Technology", program_abbreviation: "BSIT" },
+    { program_name: "Diploma in Information Technology", program_abbreviation: "DIT" },
+    { program_name: "Bachelor of Science in Electronics Engineering", program_abbreviation: "BSECE" },
   ];
 
   get filteredPrograms(): programs[] {

@@ -39,17 +39,15 @@
 <div class="table-container">
     <div class="subject-table">
         <div class="attributes text-custom-16">
-            <div class="cell">Program</div>
-            <div class="cell">Year</div>
-            <div class="cell">Section</div>
+            <div class="cell">Program Name</div>
+            <div class="cell">Program Abbreviation</div>
             <div class="cell">Action</div>
         </div>
         <div class="row-container text-custom-12">
             @for (program of filteredPrograms; track program ) {
                 <div class="row">
-                    <div class="cell">{{ program.program }}</div>
-                    <div class="cell">{{ program.year }}</div>
-                    <div class="cell">{{ program.section }}</div>
+                    <div class="cell">{{ program.program_name }}</div>
+                    <div class="cell">{{ program.program_abbreviation }}</div>
                     <div class="cell">
                         <div class="action-container">
                             <button class="view-button" (click)="toggleViewSchedule()"><mat-icon>visibility</mat-icon></button>
