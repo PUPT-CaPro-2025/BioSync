@@ -2,7 +2,6 @@ name: Build and Deploy API
 
 on:
   workflow_dispatch:
-    branches: [dev, jhean-branch]
 
 jobs:
   build:
