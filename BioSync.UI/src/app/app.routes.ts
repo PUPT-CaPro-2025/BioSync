@@ -16,8 +16,8 @@ import { SubjectScheduleStudentComponent } from './subject-schedule-student/subj
 import { AttendanceManagementProfessorComponent } from './attendance-management-professor/attendance-management-professor.component';
 import { SchoolYearComponent } from './school-year/school-year.component';
 import { ProgramComponent } from './program/program.component';
-import { AddSectionComponent } from './add-section/add-section.component';
 import { LaboratoryComponent } from './laboratory/laboratory.component';
+import { SectionComponent } from './section/section.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -34,7 +34,7 @@ export const routes: Routes = [
     { path: "attendance", component: AttendanceComponent },
     { path: "school-year", component: SchoolYearComponent },
     { path: "program", component: ProgramComponent },
-    { path: "section", component: AddSectionComponent },
+    { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
