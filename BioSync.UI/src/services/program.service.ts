@@ -19,4 +19,18 @@ export class ProgramService {
     });
   }
 
+  updateProgram(program: Program){
+    return this.http.put<Program>(this.url, program,{
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  deleteProgram(program: Program){
+    return this.http.delete<Program>(this.url, {
+      body: { "id" : program.id },
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
 }
