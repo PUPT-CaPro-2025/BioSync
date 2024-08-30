@@ -16,6 +16,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Update application.properties
+        run: |
+          sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${{ secrets.DATABASE_URL }}|" \
+                 -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
+                 -e "s|spring.datasource.password=.*|spring.datasource.password=${{ secrets.DATABASE_PASSWORD }}|" \
+                 -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
+                 -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
+                 -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
+                 ./BioSync.API/src/main/resources/application.properties
+
       - name: Build Project
         run: mvn clean install
         working-directory: ./BioSync.API
