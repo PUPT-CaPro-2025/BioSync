@@ -47,13 +47,20 @@
                 @for (schedule of filteredUpcomingSchedules; track schedule) {
                     <div class="flex justify-start gap-12 border-semiGray border-2 p-5 bg-white rounded-xl row-classes">
                         <div class="flex flex-col justify-center items-center text-brightRed ml-3 month-day">
-                            <p class="text-custom-16">{{ schedule }}</p>
-                            <p class="text-custom-24 font-semibold">{{ schedule }}</p>
+                            <p class="text-custom-16">{{ getMonth(schedule.scheduleDate) }}</p>
+                            <p class="text-custom-24 font-semibold">{{ getDay(schedule.scheduleDate) }}</p>
                         </div>
                         <div class="flex flex-col">
-                            <p class="text-custom-14 font-weight700 subject-name">{{ schedule }}</p>
-                            <p class="text-custom-14 lab-room">{{ schedule }}</p>
-                            <p class="text-custom-14 italic time">{{ schedule.startTime }}-{{schedule.endTime}}</p>
+                            <p class="text-custom-14 font-weight700 subject-name">
+                              {{ schedule.subject?.name }}
+                            </p>
+                            <p class="text-custom-14 lab-room">
+                              {{ schedule.laboratory?.name }}
+                            </p>
+                            <p class="text-custom-14 italic time">
+                              {{ getTime12HourFormat(schedule.startTime) }}
+                                - {{getTime12HourFormat(schedule.endTime)}}
+                            </p>
                         </div>
                     </div>
                 }
