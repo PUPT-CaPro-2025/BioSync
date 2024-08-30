@@ -7,11 +7,11 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-
-interface programs {
-  program_name: string;
-  program_abbreviation: string;
-}
+import { AddProgramComponent } from '../add-program/add-program.component';
+import { EditProgramComponent } from '../edit-program/edit-program.component';
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-program',
@@ -24,7 +24,11 @@ interface programs {
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule,
-    CommonModule,],
+    CommonModule,
+    AddProgramComponent,
+    EditProgramComponent,
+  ],
+  providers: [ProgramService],
   templateUrl: './program.component.html',
   styleUrl: './program.component.css'
 })
@@ -37,25 +41,38 @@ export class ProgramComponent {
     'Alphabetical', 'Date'
   ];
 
-  program: programs[] = [
-    { program_name: "Bachelor of Science in Information Technology", program_abbreviation: "BSIT" },
-    { program_name: "Diploma in Information Technology", program_abbreviation: "DIT" },
-    { program_name: "Bachelor of Science in Electronics Engineering", program_abbreviation: "BSECE" },
-  ];
+  programs: Program[] = []
 
-  get filteredPrograms(): programs[] {
+  constructor(
+    private programService: ProgramService, 
+    private dialog: MatDialog) {}
+
+    ngOnInit() {
+      this.getPrograms()
+    }
+
+    getPrograms(){
+      this.programService.getAllPrograms().subscribe({
+        next: (programs: Program[]) => {
+          programs.forEach((program) => {
+            this.programs.push(program);
+          })
+        },
+        error: (error) => { console.error(error) }
+      }
+      )
+    }
+
+  get filteredPrograms(): Program[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.program.slice(startIndex, endIndex);
+    return this.programs.slice(startIndex, endIndex);
   }
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
-  isAddSchedule: boolean = false;
-  isEditSchedule: boolean = false;
-  isViewSchedule: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -91,29 +108,5 @@ export class ProgramComponent {
       this.currentPage++;
       this.onPageChange();
     }
-  }
-
-  toggleAddSchedule(): void {
-    this.isAddSchedule = !this.isAddSchedule;
-  }
-
-  handleBackToSchedule(): void {
-    this.isAddSchedule = false;
-  }
-
-  toggleEditSchedule(): void {
-    this.isEditSchedule = !this.isEditSchedule;
-  }
-
-  handleEditBackToSchedule(): void {
-    this.isEditSchedule = false;
-  }
-
-  toggleViewSchedule(): void {
-    this.isViewSchedule = !this.isViewSchedule;
-  }
-
-  handleViewBackToSchedule(): void {
-    this.isViewSchedule = false;
   }
 }
