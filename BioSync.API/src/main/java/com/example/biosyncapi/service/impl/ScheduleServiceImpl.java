@@ -76,7 +76,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         while(startDate.before(endDate) || startDate.equals(endDate)) {
             // Iterate over the specified days in recurrenceDays
-            for (String day : schedule.getRecurrenceDays()) {
+            for (int index = 0; index < schedule.getRecurrenceDays().size(); index++) {
+                String day = schedule.getRecurrenceDays().get(index);
+
                 // Set calendar to the specified day of the week
                 while (startDate.get(Calendar.DAY_OF_WEEK) != getCalendarDayOfWeek(day)) {
                     startDate.add(Calendar.DAY_OF_MONTH, 1);
@@ -89,9 +91,15 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
-                newSchedule.setRecurrenceDays(schedule.getRecurrenceDays());
+
+                // Set recurrenceDays to the current index day
+                newSchedule.setRecurrenceDays(Collections.singletonList(day));
+
                 newSchedule.setRecurrenceInterval(schedule.getRecurrenceInterval());
                 schedules.add(newSchedule);
+
+                // Move to the next day to avoid duplicate entries for the same day
+                startDate.add(Calendar.DAY_OF_MONTH, 1);
             }
 
             // Move startDate by the recurrence interval in weeks
@@ -172,14 +180,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
                 relatedSchedule.setScheduleDate(convertToDate(newScheduleDate));
 
-                List<String> recurrenceDays = relatedSchedule.getRecurrenceDays();
-
                 scheduleRepository.save(relatedSchedule);
 
-                recurrenceDays.forEach(day -> {
-                    scheduleRepository.updateRecurrenceDays(relatedSchedule.getId(),
+                logger.info("Related Date: " + relatedSchedule.getScheduleDate()
+                        + "Day: " + relatedSchedule.getScheduleDate().toLocalDate().getDayOfWeek());
+                scheduleRepository.updateRecurrenceDays(relatedSchedule.getId(),
                             String.valueOf(newScheduleDate.getDayOfWeek()).substring(0,3));
-                });
 
             }
 
