@@ -7,6 +7,8 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { AddLaboratoryComponent } from '../add-laboratory/add-laboratory.component';
+import { EditLaboratoryComponent } from '../edit-laboratory/edit-laboratory.component';
 
 
 interface laboratories {
@@ -27,11 +29,16 @@ interface laboratories {
     MatButtonModule,
     MatSelectModule,
     CommonModule,
+    AddLaboratoryComponent,
+    EditLaboratoryComponent
   ],
   templateUrl: './laboratory.component.html',
   styleUrl: './laboratory.component.css'
 })
 export class LaboratoryComponent {
+  isAddLaboratory: boolean = false;
+  isEditLaboratory: boolean = false;
+
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -56,9 +63,6 @@ export class LaboratoryComponent {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
-  isAddSchedule: boolean = false;
-  isEditSchedule: boolean = false;
-  isViewSchedule: boolean = false;
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -96,27 +100,19 @@ export class LaboratoryComponent {
     }
   }
 
-  toggleAddSchedule(): void {
-    this.isAddSchedule = !this.isAddSchedule;
+  toggleAddLaboratory(): void {
+    this.isAddLaboratory = !this.isAddLaboratory;
   }
 
-  handleBackToSchedule(): void {
-    this.isAddSchedule = false;
+  handleBackToLaboratory(): void {
+    this.isAddLaboratory = false;
   }
 
-  toggleEditSchedule(): void {
-    this.isEditSchedule = !this.isEditSchedule;
+  toggleEditLaboratory(): void {
+    this.isEditLaboratory = !this.isEditLaboratory;
   }
 
-  handleEditBackToSchedule(): void {
-    this.isEditSchedule = false;
-  }
-
-  toggleViewSchedule(): void {
-    this.isViewSchedule = !this.isViewSchedule;
-  }
-
-  handleViewBackToSchedule(): void {
-    this.isViewSchedule = false;
+  handleBackToEditLaboratory(): void {
+    this.isEditLaboratory = false;
   }
 }
