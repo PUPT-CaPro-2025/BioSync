@@ -55,6 +55,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req->req.requestMatchers("/api/v1/auth/**")
                                 .permitAll()
+                                .requestMatchers("api/v1/test/")
+                                .permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/visitors")
                                 .permitAll()
                                 .anyRequest()

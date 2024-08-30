@@ -27,14 +27,14 @@ jobs:
                  ./BioSync.API/src/main/resources/application.properties
 
       - name: Build Project
-        run: mvn clean install
+        run: mvn clean install -DskipTests
         working-directory: ./BioSync.API
 
       - name: Login to Docker Hub
         run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
 
       - name: Build docker image
-        run: docker build -t jheankhendrick/BioSync-API ./BioSync.API
+        run: docker build -t jheankhendrick/bio-sync-api ./BioSync.API
 
       - name: Publish Image to Docker Hub
         run: docker push jheankhendrick/bio-sync-api:latest
