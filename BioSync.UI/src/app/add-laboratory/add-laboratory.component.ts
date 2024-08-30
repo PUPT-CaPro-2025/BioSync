@@ -6,6 +6,9 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Laboratory } from '../../model/laboratory.model'; 
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import { AddLaboratoryService } from '../../services/add-laboratory.service';
 
 @Component({
   selector: 'app-add-laboratory',
@@ -18,6 +21,7 @@ import { Laboratory } from '../../model/laboratory.model';
     MatButtonModule,
     MatSelectModule,
   ],
+  providers: [AddLaboratoryService],
   templateUrl: './add-laboratory.component.html',
   styleUrl: './add-laboratory.component.css'
 })
@@ -26,7 +30,9 @@ export class AddLaboratoryComponent implements OnInit {
   @Output() laboratoryAdded = new EventEmitter<Laboratory>();
   laboratoryForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder, 
+    private addLaboratoryService: AddLaboratoryService,
+    private dialog: MatDialog) {}
 
   ngOnInit() {
     this.initForm();
@@ -49,5 +55,30 @@ export class AddLaboratoryComponent implements OnInit {
       console.log('invalid');
       return;
     }
+
+    const laboratory = this.laboratoryForm.value;
+    this.addLaboratoryService.createLaboratory(laboratory).subscribe({
+      next: (laboratory: Laboratory) => {
+        console.log(laboratory);
+        this.laboratoryForm.reset();
+        this.openDialog();
+        this.laboratoryAdded.emit(laboratory);
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Laboratory Successfully Added!',
+        message: 'Laboratory has been added to the system successfully.'
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.backToLaboratory.emit();
+    })
   }
 }
