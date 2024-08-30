@@ -303,14 +303,14 @@ export class AddScheduleComponent implements OnInit{
       newSchedule = {
         ...newSchedule,
         recurrenceDays: ["MON", "TUE", "WED", "THU", "FRI", "SAT"],
-        recurrenceInterval: 1
+        recurrenceInterval: 0
       }
     } else if(this.scheduleForm.get('recurrence')?.value === "WEEKLY"){
       const selectedDay = this.selectedDayOfWeek.substring(0,3).toUpperCase()
       newSchedule = {
         ...newSchedule,
         recurrenceDays: [selectedDay],
-        recurrenceInterval: 1
+        recurrenceInterval: 0
       }
     }
 
