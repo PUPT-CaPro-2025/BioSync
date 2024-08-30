@@ -4,25 +4,14 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
-
-export interface Schedule {
-  subjectName: string;
-  section: string;
-  startTime: string;
-  endTime: string;
-  labRoom: string;
-  professor: string;
-  semester: string;
-  schoolYear: string;
-  remarks: string;
-  month: string;
-  day: string;
-}
+import {ScheduleService} from "../../services/schedule.service";
+import {Schedule} from "../../model/schedule.model";
 
 @Component({
   selector: 'app-dashboard-admin',
   standalone: true,
   imports: [FullCalendarModule, MatToolbarModule],
+  providers: [ScheduleService],
   templateUrl: './dashboard-admin.component.html',
   styleUrl: './dashboard-admin.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -34,9 +23,32 @@ export class DashboardAdminComponent implements OnInit {
   totalStudents: number = 300;
   totalProfessors: number = 32;
 
+
+  constructor(
+    private scheduleService : ScheduleService,
+  ) {
+  }
+
   ngOnInit(): void {
     this.updateTimeAndDate();
     setInterval(() => this.updateTimeAndDate(), 1000);
+    this.loadSchedules();
+  }
+
+  loadSchedules(): void {
+    this.scheduleService.getAllSchedules().subscribe({
+      next: data => {
+        this.calendarOptions.events = this.transformToCalendarEvents(data);
+      }
+    })
+  }
+
+  transformToCalendarEvents(schedules: Schedule[]): { title: string, start: string, end?: string }[] {
+    return schedules.map(schedule => ({
+      title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.section})`,
+      start: `${schedule.scheduleDate}T${schedule.startTime}`,
+      end: `${schedule.scheduleDate}T${schedule.endTime}`
+    }));
   }
 
   updateTimeAndDate(): void {
@@ -70,13 +82,25 @@ export class DashboardAdminComponent implements OnInit {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
     dateClick: (arg: DateClickArg) => this.handleDateClick(arg),
-    events: [
-      { title: 'Fundamentals to Computing', date: '2024-08-05' },
-      { title: 'Fundamentals to Computing', date: '2024-08-16' },
-      { title: 'Computer Programming I', date: '2024-08-16' },
-      { title: 'Defense', date: '2024-08-28' },
-    ],
-    eventColor: '#F84C42',
+    eventTextColor: '#FFF',
+    eventDidMount: function(info) {
+      info.el.style.background = 'linear-gradient(to bottom, #E4581D, #F9653F)';
+    },
+    eventContent: function(info) {
+      // Extract and format start and end times
+      const startTime = new Date(info.event.start!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const endTime = new Date(info.event.end!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Return HTML with the formatted time
+      return {
+        html: `
+            <div class="text-white text-xs flex flex-col gap-0.5 pl-1">
+              <p>${info.event.title}</p>
+              <p>${startTime} - ${endTime}</p>
+            </div>
+        `
+      };
+    }
   };
 
   //Temporary: if the date cell was click!
@@ -84,11 +108,7 @@ export class DashboardAdminComponent implements OnInit {
     alert('date click! ' + arg.dateStr);
   }
 
-  upcomingSchedules: Schedule[] = [
-    { subjectName: "Fundamentals of Computing", section: "BSIT 1-1", startTime: "1:00 PM", endTime: "3:00 PM", labRoom: "DOST Laboratory", professor: "Gecilie Almirañez", semester: "Summer", schoolYear: "2023 -2024", remarks: "Laboratory", month: "August", day: "5" },
-    { subjectName: "Computer Programming I", section: "BSIT 1-1", startTime: "7:30 AM", endTime: "12:00 PM", labRoom: "DOST Laboratory", professor: "Gecilie Almirañez", semester: "Summer", schoolYear: "2023 -2024", remarks: "Laboratory", month: "August", day: "16" },
-    { subjectName: "Fundamentals of Computing", section: "BSIT 1-1", startTime: "1:00 PM", endTime: "3:00 PM", labRoom: "DOST Laboratory", professor: "Gecilie Almirañez", semester: "Summer", schoolYear: "2023 -2024", remarks: "Laboratory", month: "August", day: "16" }
-  ];
+  upcomingSchedules: Schedule[] = [];
 
   get filteredUpcomingSchedules(): Schedule[] {
     return this.upcomingSchedules.slice();
