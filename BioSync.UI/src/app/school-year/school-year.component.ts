@@ -7,6 +7,11 @@ import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} fr
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
+import { SchoolYearService } from '../../services/school.year.service';
+import { SchoolYear } from '../../model/school.year.model';
+import { MatDialog } from '@angular/material/dialog';
+import { EditSchoolYearComponent } from "../edit-school-year/edit-school-year.component";
+import { AddSchoolYearComponent } from '../add-school-year/add-school-year.component';
 
 interface schoolYears {
   year_start: string;
@@ -31,7 +36,10 @@ interface schoolYears {
     MatButtonModule,
     MatSelectModule,
     CommonModule,
+    AddSchoolYearComponent, 
+    EditSchoolYearComponent
   ],
+  providers: [SchoolYearService],
   templateUrl: './school-year.component.html',
   styleUrl: './school-year.component.css'
 })
@@ -56,19 +64,23 @@ export class SchoolYearComponent {
         },
       ];
 
+      @Input() totalItems: number = 500;
+      itemsPerPage: number = 10;
+      currentPage: number = 1;
+      totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+      isAddSchoolYear: boolean = false;
+      isEditSchoolYear: boolean = false;
+      schoolYearToEdit!: SchoolYear;
+
+      constructor(
+        private schoolYearService: SchoolYearService, 
+        private dialog: MatDialog) {}
+
       get filteredSchoolYears(): schoolYears[] {
         const startIndex = (this.currentPage - 1) * this.itemsPerPage;
         const endIndex = startIndex + this.itemsPerPage;
         return this.schoolYear.slice(startIndex, endIndex);
       }
-    
-      @Input() totalItems: number = 500;
-      itemsPerPage: number = 10;
-      currentPage: number = 1;
-      totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
-      isAddSchedule: boolean = false;
-      isEditSchedule: boolean = false;
-      isViewSchedule: boolean = false;
     
       get pages(): number[] {
         return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -105,28 +117,20 @@ export class SchoolYearComponent {
           this.onPageChange();
         }
       }
-    
-      toggleAddSchedule(): void {
-        this.isAddSchedule = !this.isAddSchedule;
+
+      toggleAddSchoolYear(): void {
+        this.isAddSchoolYear = !this.isAddSchoolYear;
       }
     
-      handleBackToSchedule(): void {
-        this.isAddSchedule = false;
+      handleBackToSchoolYear(): void {
+        this.isAddSchoolYear = false;
       }
     
-      toggleEditSchedule(): void {
-        this.isEditSchedule = !this.isEditSchedule;
+      toggleEditSchoolYear(): void {
+        this.isEditSchoolYear = !this.isEditSchoolYear;
       }
     
-      handleEditBackToSchedule(): void {
-        this.isEditSchedule = false;
-      }
-    
-      toggleViewSchedule(): void {
-        this.isViewSchedule = !this.isViewSchedule;
-      }
-    
-      handleViewBackToSchedule(): void {
-        this.isViewSchedule = false;
+      handleBackToEditSchoolYear(): void {
+        this.isEditSchoolYear = false;
       }
 }
