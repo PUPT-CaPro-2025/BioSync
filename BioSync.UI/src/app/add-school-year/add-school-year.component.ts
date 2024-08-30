@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -21,6 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './add-school-year.component.css'
 })
 export class AddSchoolYearComponent implements OnInit {
+  @Output() backToSchoolYear = new EventEmitter<void>();
   schoolYearForm!: FormGroup;
 
   constructor( private formBuilder: FormBuilder) {}
@@ -40,6 +41,10 @@ export class AddSchoolYearComponent implements OnInit {
       summerStartDate: ['', [Validators.required]],
       summerStart: ['', [Validators.required]],
     });
+  }
+
+  returnToSchoolYearView(): void {
+    this.backToSchoolYear.emit();
   }
 
   submit(){
