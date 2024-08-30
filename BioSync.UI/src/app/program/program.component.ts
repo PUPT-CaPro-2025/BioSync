@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
@@ -12,6 +12,7 @@ import { EditProgramComponent } from '../edit-program/edit-program.component';
 import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { MatDialog } from '@angular/material/dialog';
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 @Component({
   selector: 'app-program',
@@ -32,7 +33,7 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './program.component.html',
   styleUrl: './program.component.css'
 })
-export class ProgramComponent {
+export class ProgramComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -41,38 +42,81 @@ export class ProgramComponent {
     'Alphabetical', 'Date'
   ];
 
-  programs: Program[] = []
+  programs: Program[] = [];
+
+  @Input() totalItems: number = 500;
+  itemsPerPage: number = 10;
+  currentPage: number = 1;
+  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  isAddProgram: boolean = false;
+  isEditProgram: boolean = false;
+  programToEdit!: Program;
 
   constructor(
     private programService: ProgramService, 
     private dialog: MatDialog) {}
 
-    ngOnInit() {
-      this.getPrograms()
-    }
+  ngOnInit() {
+    this.getAllPrograms()
+  }
 
-    getPrograms(){
-      this.programService.getAllPrograms().subscribe({
-        next: (programs: Program[]) => {
-          programs.forEach((program) => {
-            this.programs.push(program);
-          })
-        },
-        error: (error) => { console.error(error) }
-      }
-      )
+  getAllPrograms(){
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        programs.forEach((program) => {
+          this.programs.push(program);
+        })
+      },
+      error: (error) => { console.error(error) }
     }
+    )
+  }
+
+  onProgramAdded(newProgram: Program){
+    this.programs.push(newProgram);
+  }
+
+  onProgramUpdate(updatedProgram: Program) {
+    const index = this.programs.findIndex(
+      program => program.id === updatedProgram.id
+    );
+
+    if(index === -1) return;
+
+    this.programs[index] = updatedProgram;
+    this.getAllPrograms();
+  }
+
+  openDeleteDialog(program: Program): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: "Delete Program",
+        message: "Are you sure you want to delete this program?"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteProgram(program);
+      }
+    });
+  }
+
+  deleteProgram(programToDelete: Program) {
+    this.programService.deleteProgram(programToDelete).subscribe({
+      next: () => {
+        this.programs = this.programs.filter(program => program.id !== programToDelete.id);
+      },
+      error: err => console.error(err)
+    });
+  }
 
   get filteredPrograms(): Program[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.programs.slice(startIndex, endIndex);
   }
-
-  @Input() totalItems: number = 500;
-  itemsPerPage: number = 10;
-  currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -108,5 +152,22 @@ export class ProgramComponent {
       this.currentPage++;
       this.onPageChange();
     }
+  }
+
+  toggleAddProgram(): void {
+    this.isAddProgram = !this.isAddProgram;
+  }
+
+  handleBackToProgram(): void {
+    this.isAddProgram = false;
+  }
+
+  toggleEditProgram(program: Program): void {
+    this.isEditProgram = !this.isEditProgram;
+    this.programToEdit = program;
+  }
+
+  handleBackToEditProgram(): void {
+    this.isEditProgram = false;
   }
 }
