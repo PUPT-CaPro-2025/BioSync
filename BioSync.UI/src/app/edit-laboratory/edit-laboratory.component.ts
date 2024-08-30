@@ -5,6 +5,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import { Laboratory } from '../../model/laboratory.model';
 
 @Component({
   selector: 'app-edit-laboratory',
@@ -21,6 +22,8 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './edit-laboratory.component.css'
 })
 export class EditLaboratoryComponent implements OnInit {
+  @Output() backToEditLaboratory = new EventEmitter<void>();
+  @Output() updatedLaboratory = new EventEmitter<Laboratory>();
   laboratoryForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {}
@@ -35,6 +38,10 @@ export class EditLaboratoryComponent implements OnInit {
       roomCode: ['', [Validators.required]],
       capacity: ['', Validators.required]
     });
+  }
+
+  returnToLaboratoryView(): void {
+    this.backToEditLaboratory.emit();
   }
 
   submit(){
