@@ -47,7 +47,7 @@ jobs:
         run: docker pull jheankhendrick/bio-sync-api:latest
 
       - name: Delete Old Container
-        run: docker rm -f bio-sync-api-container
+        run: docker rm -f BioSync-API
 
       - name: Run Docker Container
         run: docker run -d -p 8080:8080 --name BioSync-API jheankhendrick/bio-sync-api
