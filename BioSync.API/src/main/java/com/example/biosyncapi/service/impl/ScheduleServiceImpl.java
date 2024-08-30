@@ -13,9 +13,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
-import java.time.DayOfWeek;
-import java.time.format.TextStyle;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -166,53 +163,29 @@ public class ScheduleServiceImpl implements ScheduleService {
             logger.info("Old Date: " + oldDate + ", New Date: " + newDate + ", Gap in Days: " + gapInDays);
 
             List<Schedule> relatedSchedules = scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
-            List<Long> updatedScheduleIds = new ArrayList<>();
 
             for (Schedule relatedSchedule : relatedSchedules) {
-                // Convert the existing schedule date to LocalDate
+
                 LocalDate relatedDate = convertToLocalDate(relatedSchedule.getScheduleDate());
-                logger.info("Related Date: " + relatedDate + ", New Schedule Date: " + relatedDate);
-                // Calculate the new date while maintaining the same day-of-week alignment
+
                 LocalDate newScheduleDate = relatedDate.plusDays(gapInDays);
-                logger.info("Related Date: " + relatedDate + ", New Schedule Date: " + newScheduleDate);
 
                 relatedSchedule.setScheduleDate(convertToDate(newScheduleDate));
 
-                List<String> updatedRecurrenceDays = updateRecurrenceDays(relatedSchedule.getRecurrenceDays(), gapInDays);
-                relatedSchedule.setRecurrenceDays(updatedRecurrenceDays);
+                List<String> recurrenceDays = relatedSchedule.getRecurrenceDays();
 
                 scheduleRepository.save(relatedSchedule);
-                updatedScheduleIds.add(relatedSchedule.getId());
+
+                recurrenceDays.forEach(day -> {
+                    scheduleRepository.updateRecurrenceDays(relatedSchedule.getId(),
+                            String.valueOf(newScheduleDate.getDayOfWeek()).substring(0,3));
+                });
+
             }
 
             return schedule;
         }
         return scheduleRepository.save(schedule);
-    }
-
-    private List<String> updateRecurrenceDays(List<String> recurrenceDays, long gapInDays) {
-        return recurrenceDays.stream()
-                .map(day -> updateDayOfWeek(day, gapInDays))
-                .collect(Collectors.toList());
-    }
-
-    private String updateDayOfWeek(String dayOfWeekStr, long gapInDays) {
-        DayOfWeek dayOfWeek = getDayOfWeekFromAbbreviation(dayOfWeekStr);
-        LocalDate updatedDate = LocalDate.now().plusDays(gapInDays).with(dayOfWeek);
-        return updatedDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ROOT).toUpperCase(Locale.ROOT);
-    }
-
-    private DayOfWeek getDayOfWeekFromAbbreviation(String abbreviation) {
-        return switch (abbreviation) {
-            case "MON" -> DayOfWeek.MONDAY;
-            case "TUE" -> DayOfWeek.TUESDAY;
-            case "WED" -> DayOfWeek.WEDNESDAY;
-            case "THU" -> DayOfWeek.THURSDAY;
-            case "FRI" -> DayOfWeek.FRIDAY;
-            case "SAT" -> DayOfWeek.SATURDAY;
-            case "SUN" -> DayOfWeek.SUNDAY;
-            default -> throw new IllegalArgumentException("Invalid day: " + abbreviation);
-        };
     }
 
     private LocalDate convertToLocalDate(java.sql.Date date) {
@@ -225,8 +198,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (localDate == null) return null;
         return java.sql.Date.valueOf(localDate);
     }
-
-
 
     @Override
     public void deleteSchedule(Long id) {

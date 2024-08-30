@@ -51,11 +51,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("recurrenceInterval") int recurrenceInterval
     );
 
-    @Query("SELECT s.recurrenceDays FROM Schedule s WHERE s.id = :scheduleId")
-    List<String> findRecurrenceDaysByScheduleId(@Param("scheduleId") Long scheduleId);
-
     @Modifying
-    @Query("UPDATE Schedule s SET s.recurrenceDays = :days WHERE s.id = :scheduleId")
-    void updateRecurrenceDays(@Param("scheduleId") Long scheduleId, @Param("days") List<Integer> days);
+    @Transactional
+    @Query(value = "UPDATE schedule_days SET recurrence_days = :days WHERE schedule_id = :scheduleId", nativeQuery = true)
+    void updateRecurrenceDays(@Param("scheduleId") Long scheduleId, @Param("days") String days);
 
 }
