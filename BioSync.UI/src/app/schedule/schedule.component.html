@@ -64,15 +64,20 @@
                             <div class="cell">
                                 <div class="flex flex-col">
                                     <div class="flex gap-1 text-xs">
-                                        <p>
-                                          {{schedule.section?.program?.programAbbreviation}}
-                                          {{schedule.section?.year}}-{{schedule.section?.section}}
-                                        </p>
                                       <span class="font-semibold">
-                                         [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]</span>
+                                        @if(schedule.recurrenceId){
+                                          [ {{schedule.recurrenceDays}} / {{ schedule.recurrence }} ]
+                                        }@else{
+                                          [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
+                                        }</span>
                                     </div>
                                     <div class="italic">
                                       Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                                      <p>
+                                        Class:
+                                        {{schedule.section?.program?.programAbbreviation}}
+                                        {{schedule.section?.year}}-{{schedule.section?.section}}
+                                      </p>
                                     </div>
                                 </div>
                             </div>

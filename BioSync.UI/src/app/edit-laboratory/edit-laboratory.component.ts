@@ -7,7 +7,7 @@ import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 
 @Component({
-  selector: 'app-edit-program',
+  selector: 'app-edit-laboratory',
   standalone: true,
   imports: [MatToolbarModule,
     MatFormFieldModule,
@@ -15,12 +15,13 @@ import { MatSelectModule } from '@angular/material/select';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule,],
-  templateUrl: './edit-program.component.html',
-  styleUrl: './edit-program.component.css'
+    MatSelectModule,
+  ],
+  templateUrl: './edit-laboratory.component.html',
+  styleUrl: './edit-laboratory.component.css'
 })
-export class EditProgramComponent implements OnInit{
-  programForm!: FormGroup;
+export class EditLaboratoryComponent implements OnInit {
+  laboratoryForm!: FormGroup;
 
   constructor(private formBuilder: FormBuilder) {}
 
@@ -29,10 +30,10 @@ export class EditProgramComponent implements OnInit{
   }
 
   initForm(){
-    this.programForm = this.formBuilder.group({
-      programName: ['', [Validators.required]],
-      programAbbrv: ['', [Validators.required]],
-      description: ['', Validators.required]
+    this.laboratoryForm = this.formBuilder.group({
+      name: ['', [Validators.required]],
+      roomCode: ['', [Validators.required]],
+      capacity: ['', Validators.required]
     });
   }
 

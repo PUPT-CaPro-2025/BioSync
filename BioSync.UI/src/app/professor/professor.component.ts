@@ -7,6 +7,9 @@ import { AddProfessorComponent } from '../add-professor/add-professor.component'
 import { EditProfessorComponent } from '../edit-professor/edit-professor.component';
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-professor',
@@ -44,6 +47,7 @@ export class ProfessorComponent implements OnInit{
 
   constructor(
     private userService: UserService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -129,4 +133,43 @@ export class ProfessorComponent implements OnInit{
   handleBackToEditProfessor(): void {
     this.isEditProfessor = false;
   }
+
+  openDeleteConfirmation(professor: User){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Professor',
+        message: 'Are you sure you want to delete?',
+      }
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.deleteProfessor(professor);
+      }
+    })
+  }
+
+  openSomethingWentWrong(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Something Went Wrong!',
+        message: 'Can\'t delete professor with existing schedule'
+      }
+    })
+
+  }
+
+  deleteProfessor(professor: User){
+    this.userService.deleteUser(professor).subscribe({
+      next: () => {
+        this.professors = this.professors.filter(
+          prof => prof.id !== professor.id
+        );
+      },
+      error: () => this.openSomethingWentWrong()
+    })
+  }
+
 }

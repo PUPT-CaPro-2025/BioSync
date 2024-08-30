@@ -22,7 +22,7 @@ export class HomepageComponent implements AfterViewInit {
     '/login',
     '/admin-login',
     '/student-login',
-    '/professor-login',
+    '/faculty-login',
     '/visitor-log'
   ];
 

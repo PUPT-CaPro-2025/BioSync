@@ -1,0 +1,75 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Add New Section</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="sectionForm">
+        <div class="w-[55%] flex flex-col gap-4 row-block">
+            <div class="group flex flex-col gap-1">
+                <label for="program" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Program
+                </label>
+                <mat-select id="program" name="program" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="program">
+                        <mat-option value="">Select a program</mat-option>
+                        @for(program of programs; track program){
+                            <mat-option [value]="program.id">
+                              {{ program.programName }} - {{ program.programAbbreviation }}
+                            </mat-option>
+                          }
+                </mat-select>
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="year" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Year
+                </label>
+                <mat-select id="year" name="year" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="year">
+                        <mat-option value="">Select a year level</mat-option>
+                        @for(year of years; track year) {
+                            <mat-option [value]="year">{{year}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="section" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Section
+                </label>
+                <mat-select id="section" name="section" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="section">
+                        <mat-option value="">Select a section</mat-option>
+                        @for(section of sections; track section) {
+                            <mat-option [value]="section">{{section}}</mat-option>
+                        }
+                </mat-select>
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end button-content">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray back-button">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
+                        (click)="submit()">
+                        Add Section
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

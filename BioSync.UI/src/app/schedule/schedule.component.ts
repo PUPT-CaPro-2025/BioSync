@@ -54,20 +54,24 @@ export class ScheduleComponent implements OnInit{
     ) {}
 
   ngOnInit() {
-    this.getAllSubjects();
+    this.getAllSchedules();
   }
 
-  getAllSubjects() {
+  getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
       next: schedules => {
         schedules.forEach(schedule => this.schedules.push(schedule));
+        this.filteredRepeatedSchedules();
       },
       error: err => console.error(err)
     })
   }
 
-  onScheduleCreation(schedule: Schedule){
-    this.schedules.push(schedule);
+  onScheduleCreation(schedule: Schedule[]){
+    schedule.forEach((schedule: Schedule) => {
+      this.schedules.push(schedule);
+    })
+    this.filteredRepeatedSchedules();
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -105,11 +109,10 @@ export class ScheduleComponent implements OnInit{
 
   getDayOfWeek(date: string | Date): string {
     const newDate = new Date(date);
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
-      'Thursday', 'Friday', 'Saturday'];
+    const days = ['SUN', 'MON', 'TUE', 'WED',
+      'THU', 'FRI', 'SAT'];
     return days[newDate.getDay()];
   }
-
 
   deleteSchedule(scheduleToDelete: Schedule){
     this.scheduleService.deleteSchedule(scheduleToDelete)
@@ -196,4 +199,22 @@ export class ScheduleComponent implements OnInit{
   handleViewBackToSchedule(): void {
     this.isViewSchedule = false;
   }
+
+  filteredRepeatedSchedules(): void {
+    const filteredSchedules: Schedule[] = [];
+    const recurrenceIdStorage: string[] = [];
+    this.schedules.forEach(schedule => {
+      if (schedule.recurrenceId != null) {
+        if(!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+          recurrenceIdStorage.push(schedule.recurrenceId);
+          filteredSchedules.push(schedule);
+        }
+      } else {
+        filteredSchedules.push(schedule);
+      }
+    })
+
+    this.schedules = filteredSchedules;
+  }
+
 }

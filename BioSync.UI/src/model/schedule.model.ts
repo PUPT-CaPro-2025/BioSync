@@ -17,4 +17,8 @@ export interface Schedule {
     schoolYear?: SchoolYear;
     remarks: string;
     subject?: Subject;
+    recurrenceId?: string;
+    recurrence?: string;
+    recurrenceDays?: String[];
+    recurrenceInterval?: string;
   }
