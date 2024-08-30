@@ -1,0 +1,253 @@
+.header, .filter-container, .table-container, .bottom-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.toolbar-container {
+    margin-top: 5rem;
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    width: 96%;
+}
+
+.toolbar-container span {
+    font-size: 32px;
+    color: #D31119;
+}
+
+.toolbar-button {
+    display: flex;
+    gap: 30px;
+}
+
+.toolbar-button button {
+    font-size: 14px;
+    padding: 8px 50px;
+    background-color: #D31119;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+.toolbar-button button:hover {
+    background-color: #800c10;
+}
+
+.filter-content {
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    width: 96%;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: gray;
+}
+
+.search-container input {
+    padding-left: 40px;
+    padding-right: 80px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+}
+
+.dropdown-content {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+.entry-container {
+    display: flex;
+    gap: 10px;
+}
+
+.entry-container span {
+    color: #D31119;
+    font-size: 14px;
+}
+
+.entry-container select {
+    color: #7F7F7F;
+    border: 1px solid #F2E8E9;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.sort-container select {
+    color: #D31119;
+    border: 1px solid #F2E8E9;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.subject-table {
+    width: 94%;
+    margin: 20px 0;
+    font-size: 16px;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.attributes {
+    font-weight: bold;
+    color: #D31119;
+    padding: 25px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 480px;
+    overflow-y: auto;
+}
+
+.row {
+    display: flex;
+    align-items: center; 
+    padding: 8px;
+    background-color: #FFFFFF;
+    border-radius: 18px;
+    justify-content: space-between;
+}
+
+.subject-table .cell {
+    flex: 1;
+    text-align: left;
+    padding: 10px 5px;
+}
+
+.action-container {
+    display: flex;
+    gap: 10px;
+}
+
+.view-button, .edit-button, .delete-button {
+    background-color: #393939;
+    color: white;
+    border: none;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 15px;
+    min-width: 40px;
+}
+
+.delete-button {
+    background-color: #D31119;
+}
+
+.view-button:hover, .edit-button:hover {
+    background-color: #949494;
+}
+
+.delete-button:hover {
+    background-color: #d44f53;
+}
+
+.line-container {
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.line-container img {
+    width: 94%;
+}
+
+.paginator {
+    margin-top: 0.5rem;
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+}
+
+.paginator-info {
+    color: #393939;
+}
+
+.paginator-controls {
+    display: flex;
+    align-items: center;
+}
+
+.paginator-controls span {
+    color: #393939;
+}
+
+.paginator-controls select {
+    color: #393939;
+    border: 1px solid #393939;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.paginator-button-container {
+    display: flex;
+    gap: 10px;
+}
+  
+.paginator-button-container button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    padding: 10px 20px;
+    color: #7F7F7F;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+  
+.paginator-button-container button.active-button {
+    color: #D31119;
+}
+
+.paginator-button-container img {
+    height: 15px;
+    width: 15px;
+}
+
+.paginator-button-container img.active-icon {
+    filter: invert(41%) sepia(68%) saturate(6900%) 
+            hue-rotate(336deg) brightness(100%) contrast(101%);
+}
