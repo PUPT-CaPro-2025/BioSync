@@ -7,6 +7,8 @@ import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { ProgramService } from '../../services/program.service';
 import { Program } from '../../model/program.model';
+import { Section } from '../../model/section.model';
+import { Semester } from '../../model/semester.model';
 
 @Component({
   selector: 'app-edit-section',
@@ -25,6 +27,8 @@ import { Program } from '../../model/program.model';
 })
 export class EditSectionComponent implements OnInit {
   sectionForm!: FormGroup;
+  @Output() backToEditSection = new EventEmitter<void>();
+  @Output() updatdSection = new EventEmitter<Section>();
 
   years: string[] = [
     '1', '2', '3', '4', '5', 'Ladderized'
@@ -57,6 +61,10 @@ export class EditSectionComponent implements OnInit {
         this.programs = programs;
       }
     })
+  }
+
+  returnToSectionView(): void {
+    this.backToEditSection.emit();
   }
 
   submit(){
