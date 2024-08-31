@@ -1,1 +1,44 @@
-<p>view-laboratory works!</p>
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">View Laboratory</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-2 flex justify-between w-[94%]
+            bg-white py-4 px-4 rounded-2xl ">
+        <div class="flex gap-5">
+            <div class="flex flex-col gap-4">
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Laboratory Name:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Room Code:
+                </p>
+                <p class="text-brightRed text-custom-16 font-medium">
+                    Capacity:
+                </p>
+            </div>
+            <div class="flex flex-col gap-4">
+                <p class="text-darkGray text-custom-16">
+                    {{ laboratory.name }}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{ laboratory.roomCode }}
+                </p>
+                <p class="text-darkGray text-custom-16">
+                    {{ laboratory.capacity }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center items-center">
+    <div class="mt-28 flex justify-end w-[94%]">
+        <button class="text-custom-14 text-white py-2 px-19
+            bg-gradient-red-orange rounded-full
+            hover:bg-gradient-dark-red-orange hover:text-f4White"
+            (click)="returnToLaboratoryView()">
+            Back
+        </button>
+    </div>
+</div>
