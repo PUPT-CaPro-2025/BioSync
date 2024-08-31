@@ -31,9 +31,9 @@ jobs:
         working-directory: ./BioSync.API
 
       - name: Login to Docker Hub
-        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build docker image
+      - name: Build Docker Image
         run: docker build -t jheankhendrick/bio-sync-api ./BioSync.API
 
       - name: Publish Image to Docker Hub
@@ -41,13 +41,20 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: aws-ec2
+    runs-on: ubuntu-latest
     steps:
-      - name: Pull Image from Docker Hub
-        run: docker pull jheankhendrick/bio-sync-api:latest
+      - name: Checkout Source
+        uses: actions/checkout@v2
 
-      - name: Delete Old Container
-        run: docker rm -f BioSync-API
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
 
-      - name: Run Docker Container
-        run: docker run -d -p 8080:8080 --name BioSync-API jheankhendrick/bio-sync-api
+      - name: Deploy to EC2 Instance
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_HOST }} << 'EOF'
+            docker pull jheankhendrick/bio-sync-api:latest
+            docker rm -f bio-sync-api-container || true
+            docker run -d -p 8080:8080 --name bio-sync-api-container jheankhendrick/bio-sync-api:latest
+          EOF
