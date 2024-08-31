@@ -26,12 +26,12 @@ jobs:
     #        sed -i "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.settings.ts
 
     - name: Build Angular Project
-      run: CI=false npm run build
+      run: npm run build
 
     - name: Verify Build Directory
       run: ls -al dist/bio-sync.ui
 
-    - name: Transfer Build Folder to EC2 Instance (uat)
+    - name: Transfer Build Folder to EC2 Instance
       uses: easingthemes/ssh-deploy@v2.1.4
       env:
         SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
@@ -39,4 +39,4 @@ jobs:
         REMOTE_USER: ${{ secrets.AWS_DEPLOY_USER }}
         REMOTE_PORT: ${{ secrets.AWS_DEPLOY_PORT }}
         SOURCE: "dist/bio-sync.ui/"
-        TARGET: ${{ secrets.AWS_UAT_DEPLOY_TARGET }}
+        TARGET: ${{ secrets.AWS_DEPLOY_TARGET }}
