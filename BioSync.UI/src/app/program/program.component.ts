@@ -13,6 +13,7 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import { ViewProgramComponent } from '../view-program/view-program.component';
 
 @Component({
   selector: 'app-program',
@@ -28,6 +29,7 @@ import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component
     CommonModule,
     AddProgramComponent,
     EditProgramComponent,
+    ViewProgramComponent
   ],
   providers: [ProgramService],
   templateUrl: './program.component.html',
@@ -50,7 +52,9 @@ export class ProgramComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddProgram: boolean = false;
   isEditProgram: boolean = false;
+  isViewProgram: boolean = false;
   programToEdit!: Program;
+  currentProgram: number | undefined;
 
   constructor(
     private programService: ProgramService, 
@@ -168,5 +172,20 @@ export class ProgramComponent implements OnInit{
 
   handleBackToEditProgram(): void {
     this.isEditProgram = false;
+  }
+
+  toggleViewProgram(programId: number | undefined): void {
+    this.isViewProgram = !this.isViewProgram;
+    if(this.isViewProgram){
+      this.currentProgram = programId;
+    }
+  }
+
+  setViewId(){
+    return this.currentProgram;
+  }
+
+  handleBackToViewProgram(): void {
+    this.isViewProgram = false;
   }
 }
