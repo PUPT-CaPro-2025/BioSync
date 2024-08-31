@@ -9,13 +9,10 @@
         <div class="flex gap-5">
             <div class="flex flex-col gap-4">
                 <p class="text-brightRed text-custom-16 font-medium">
-                    Program:
+                    Program Name:
                 </p>
                 <p class="text-brightRed text-custom-16 font-medium">
-                    Year:
-                </p>
-                <p class="text-brightRed text-custom-16 font-medium">
-                    Section:
+                    Program Abbreviation:
                 </p>
                 <p class="text-brightRed text-custom-16 font-medium">
                     Description:
@@ -23,16 +20,13 @@
             </div>
             <div class="flex flex-col gap-4">
                 <p class="text-darkGray text-custom-16">
-                    {{ program }}
+                    {{ program.programName }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{ year }}
+                    {{ program.programAbbreviation }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{ section }}
-                </p>
-                <p class="text-darkGray text-custom-16">
-                    {{ description }}
+                    {{ program.programDescription }}
                 </p>
             </div>
         </div>
@@ -42,7 +36,8 @@
     <div class="mt-28 flex justify-end w-[94%]">
         <button class="text-custom-14 text-white py-2 px-19
             bg-gradient-red-orange rounded-full
-            hover:bg-gradient-dark-red-orange hover:text-f4White">
+            hover:bg-gradient-dark-red-orange hover:text-f4White"
+            (click)="returnToProgramView()">
             Back
         </button>
     </div>
