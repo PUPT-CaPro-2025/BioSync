@@ -3,6 +3,7 @@ package com.example.biosyncapi.config;
 
 import com.example.biosyncapi.filter.JwtAuthenticationFilter;
 import com.example.biosyncapi.service.impl.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,9 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${cors.allowed.origins}")
+    private String allowedOrigins;
+
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomLogoutHandler customLogoutHandler;
@@ -45,7 +49,7 @@ public class SecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                            corsConfig.setAllowedOrigins(List.of("http://localhost:4200"));
+                            corsConfig.setAllowedOrigins(List.of(allowedOrigins));
                             corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                             corsConfig.setAllowedHeaders(List.of("*"));
                             corsConfig.setAllowCredentials(true);
