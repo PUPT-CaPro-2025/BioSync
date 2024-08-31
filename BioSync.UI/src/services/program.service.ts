@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {environment} from "../../environment/appsetting";
+import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {Program} from "../model/program.model";
 
