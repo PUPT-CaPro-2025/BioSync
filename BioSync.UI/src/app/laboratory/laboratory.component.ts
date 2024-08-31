@@ -13,6 +13,7 @@ import { LaboratoryService } from '../../services/laboratory.service';
 import { Laboratory } from '../../model/laboratory.model';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import { ViewLaboratoryComponent } from '../view-laboratory/view-laboratory.component';
 
 @Component({
   selector: 'app-laboratory',
@@ -27,7 +28,8 @@ import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component
     MatSelectModule,
     CommonModule,
     AddLaboratoryComponent,
-    EditLaboratoryComponent
+    EditLaboratoryComponent,
+    ViewLaboratoryComponent
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
@@ -50,7 +52,9 @@ export class LaboratoryComponent implements OnInit {
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddLaboratory: boolean = false;
   isEditLaboratory: boolean = false;
+  isViewLaboratory: boolean = false;
   laboratoryToEdit!: Laboratory;
+  currentLaboratory: number | undefined;
 
   constructor(
     private laboratoryService: LaboratoryService, 
@@ -168,5 +172,20 @@ export class LaboratoryComponent implements OnInit {
 
   handleBackToEditLaboratory(): void {
     this.isEditLaboratory = false;
+  }
+
+  toggleViewLaboratory(laboratoryId: number | undefined): void {
+    this.isViewLaboratory = !this.isViewLaboratory;
+    if(this.isViewLaboratory){
+      this.currentLaboratory = laboratoryId;
+    }
+  }
+
+  setViewId(){
+    return this.currentLaboratory;
+  }
+
+  handleBackToViewLaboratory(): void {
+    this.isViewLaboratory = false;
   }
 }
