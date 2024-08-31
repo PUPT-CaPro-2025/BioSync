@@ -22,6 +22,7 @@ jobs:
                  -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
                  -e "s|spring.datasource.password=.*|spring.datasource.password=${{ secrets.DATABASE_PASSWORD }}|" \
                  -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
+                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${{ secrets.ALLOWED_ORIGIN }}|" \
                  -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
                  -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
                  ./BioSync.API/src/main/resources/application.properties
