@@ -42,12 +42,14 @@ export class ScheduleComponent implements OnInit{
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
-  isAddSchedule: boolean = false;
+  isOneAddSchedule: boolean = false;
+  isWeeklyAddSchedule: boolean = false;
   isEditSchedule: boolean = false;
   isViewSchedule: boolean = false;
   currentSchedule: number | undefined;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
+  isDropdownOpenAddSchedule: boolean = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -183,12 +185,19 @@ export class ScheduleComponent implements OnInit{
     }
   }
 
-  toggleAddSchedule(): void {
-    this.isAddSchedule = !this.isAddSchedule;
+  toggleOneAddSchedule(): void {
+    this.isDropdownOpenAddSchedule = false;
+    this.isOneAddSchedule = !this.isOneAddSchedule;
+  }
+
+  toggleWeeklyAddSchedule(): void {
+    this.isDropdownOpenAddSchedule = false;
+    this.isWeeklyAddSchedule = !this.isWeeklyAddSchedule;
   }
 
   handleBackToSchedule(): void {
-    this.isAddSchedule = false;
+    this.isOneAddSchedule = false;
+    this.isWeeklyAddSchedule = false;
   }
 
   toggleEditSchedule(schedule: Schedule): void {
@@ -245,4 +254,8 @@ export class ScheduleComponent implements OnInit{
     }, {} as { [key: string]: Schedule[] });
   }
 
+  onAddScheduleClick() {
+    this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
+    
+  }
 }
