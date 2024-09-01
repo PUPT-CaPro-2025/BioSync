@@ -1,6 +1,21 @@
 <button (click)="closeSidenav()"><mat-icon class="close-icon">close</mat-icon></button>
 <mat-toolbar class="toolbar-container">
     <img class="biosync-logo" src="../../assets/BioSyncLogo.png" alt="Biosync Logo">
+    @if(getRole() === "ADMIN") {
+        <div class="role-container">
+            <p>Admin Portal</p>
+        </div>
+    }
+    @if(getRole() === "FACULTY") {
+        <div class="role-container">
+            <p>Professor Portal</p>
+        </div>
+    }
+    @if(getRole() === "STUDENT") {
+        <div class="role-container">
+            <p>Student Portal</p>
+        </div>
+    }
 </mat-toolbar>
 <mat-nav-list class="list-container">
     <div routerLinkActive="router-link-active"  class="menu-container" (click)="onButtonClick('dashboard')" [class.clicked]="activeButton === 'dashboard'">
@@ -9,7 +24,7 @@
             <p>Dashboard</p>
         </button>
     </div>
-  @if(getRole() === "ADMIN") {
+@if(getRole() === "ADMIN") {
     <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
         <button routerLink="/visitor" class="menu-content">
             <img src="../../assets/visitor.svg" alt="Visitor Icon">
@@ -18,7 +33,7 @@
     </div>
     <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
         <button routerLink="/schedule" class="menu-content">
-            <img src="../../assets/professor.svg" alt="Professor Icon">
+            <img src="../../assets/schedule.svg" alt="Professor Icon">
             <p>Schedules</p>
         </button>
     </div>
@@ -35,66 +50,71 @@
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
-        <div class="flex justify-between items-center schedule-arrow" (click)="toggleStudentDropdown($event)">
+        <div class="flex justify-between items-center" (click)="toggleStudentDropdown($event)">
             <button class="menu-content">
                 <img src="../../assets/student.svg" alt="Schedule Icon">
                 <p>Student</p>
+                <div class="schedule-arrow">
+                    <mat-icon>{{ isDropdownOpenStudent ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+                </div>
             </button>
-            <mat-icon>{{ isDropdownOpenStudent ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
         </div>
     </div>
     @if(isDropdownOpenStudent) {
         <div class="dropdown-content flex flex-col">
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/student')">List of Student</button>
             </div>
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/attendance')">List of Attendance</button>
             </div>
         </div>
     }
     <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
-        <div class="flex justify-between items-center schedule-arrow" (click)="toggleMaintenanceDropdown($event)">
+        <div class="flex justify-between items-center" (click)="toggleMaintenanceDropdown($event)">
             <button class="menu-content">
                 <img src="../../assets/maintenance.svg" alt="Maintenance Icon">
                 <p>Maintenance</p>
+                <div class="schedule-arrow">
+                    <mat-icon>{{ isDropdownOpenMaintenance ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+
+                </div>
             </button>
-            <mat-icon>{{ isDropdownOpenMaintenance ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
         </div>
     </div>
     @if(isDropdownOpenMaintenance) {
         <div class="dropdown-content flex flex-col">
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/laboratory')">Laboratory</button>
             </div>
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/program')">Program</button>
             </div>
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/school-year')">School Year</button>
             </div>
-            <div class="hover:bg-lightGray hover:text-white rounded-tr-lg rounded-br-lg">
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/section')">Section</button>
             </div>
         </div>
     }
-  }
-  @if(getRole() === "FACULTY"){
-    <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
-      <button routerLink="/faculty-attendance" class="menu-content">
-        <img src="../../assets/schedule.svg" alt="Attendance Icon">
-        <p>Attendance</p>
-      </button>
-    </div>
-  }
-  @if(getRole() === "STUDENT"){
-    <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
-      <button routerLink="/student-schedule" class="menu-content">
-        <img src="../../assets/schedule.svg" alt="Schedule Icon">
-        <p>Schedule</p>
-      </button>
-    </div>
-  }
+}
+@if(getRole() === "FACULTY"){
+<div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+    <button routerLink="/faculty-attendance" class="menu-content">
+    <img src="../../assets/schedule.svg" alt="Attendance Icon">
+    <p>Attendance</p>
+    </button>
+</div>
+}
+@if(getRole() === "STUDENT"){
+<div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
+    <button routerLink="/student-schedule" class="menu-content">
+    <img src="../../assets/schedule.svg" alt="Schedule Icon">
+    <p>Schedule</p>
+    </button>
+</div>
+}
 </mat-nav-list>
 <div class="bottom-container">
     <div class="line-container">
@@ -103,7 +123,7 @@
     <div class="logout-container">
         <button class="logout-content" (click)="openLogoutDialog()">
             <img src="../../assets/logout.svg" alt="Logout Icon">
-            <p>Logout</p>
+            <p>LOGOUT</p>
         </button>
     </div>
 </div>
