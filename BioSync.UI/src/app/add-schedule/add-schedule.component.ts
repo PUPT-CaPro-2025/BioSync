@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit, ChangeDetectorRef} from '@angular/core';
+import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
@@ -56,6 +56,8 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrl: './add-schedule.component.css'
 })
 export class AddScheduleComponent implements OnInit{
+  @Input() isOneSchedule!: boolean;
+  @Input() isWeeklySchedule!: boolean;
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule[]>();
 
@@ -181,6 +183,8 @@ export class AddScheduleComponent implements OnInit{
   }
 
   cancelOrAddSchedule(): void {
+    this.isOneSchedule = false;
+    this.isWeeklySchedule = false;
     this.backToSchedule.emit();
   }
 
