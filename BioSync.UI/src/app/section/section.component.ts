@@ -12,6 +12,7 @@ import { Semester } from '../../model/semester.model';
 import { SectionService } from '../../services/section.service';
 import { AddSectionComponent } from '../add-section/add-section.component';
 import { EditSectionComponent } from '../edit-section/edit-section.component';
+import { ViewSectionComponent } from '../view-section/view-section.component';
 
 interface sections {
   program: string;
@@ -32,7 +33,8 @@ interface sections {
     MatSelectModule,
     CommonModule,
     AddSectionComponent,
-    EditSectionComponent
+    EditSectionComponent,
+    ViewSectionComponent
   ],
   providers: [SectionService],
   templateUrl: './section.component.html',
@@ -64,6 +66,7 @@ export class SectionComponent {
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSection: boolean = false;
   isEditSection: boolean = false;
+  isViewSection: boolean = false;
   sectionToEdit!: Section;
 
   get filteredSections(): sections[] {
@@ -122,5 +125,13 @@ export class SectionComponent {
 
   handleBackToEditSection(): void {
     this.isEditSection = false;
+  }
+
+  toggleViewSection(): void {
+    this.isViewSection = !this.isViewSection;
+  }
+
+  handleBackToViewSection(): void {
+    this.isViewSection = false;
   }
 }

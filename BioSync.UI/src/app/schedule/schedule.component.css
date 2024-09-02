@@ -20,9 +20,10 @@
 .toolbar-button {
     display: flex;
     gap: 30px;
+    position: relative;
 }
 
-.toolbar-button button {
+.print-schedule, .add-schedule-button {
     font-size: 14px;
     padding: 8px 50px;
     background-color: #D31119;
@@ -32,8 +33,36 @@
     cursor: pointer;
 }
 
-.toolbar-button button:hover {
+.print-schedule:hover, .add-schedule-button:hover {
     background-color: #800c10;
+}
+
+.dropdown-icon {
+    position: absolute;
+    right: 285px;
+    top: 50%; 
+    transform: translateY(-50%);
+}
+
+.add-schedule-content {
+    position: absolute;
+    top: 100%; 
+    left: 1.5%; 
+    width: 210px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.add-schedule-content div {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 8px;
+    margin: 0;
 }
 
 .filter-content {

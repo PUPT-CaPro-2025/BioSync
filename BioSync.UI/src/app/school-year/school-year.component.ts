@@ -12,6 +12,7 @@ import { SchoolYear } from '../../model/school.year.model';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSchoolYearComponent } from "../edit-school-year/edit-school-year.component";
 import { AddSchoolYearComponent } from '../add-school-year/add-school-year.component';
+import { ViewSchoolYearComponent } from '../view-school-year/view-school-year.component';
 
 interface schoolYears {
   year_start: string;
@@ -37,7 +38,8 @@ interface schoolYears {
     MatSelectModule,
     CommonModule,
     AddSchoolYearComponent, 
-    EditSchoolYearComponent
+    EditSchoolYearComponent,
+    ViewSchoolYearComponent
   ],
   providers: [SchoolYearService],
   templateUrl: './school-year.component.html',
@@ -70,6 +72,7 @@ export class SchoolYearComponent {
       totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
       isAddSchoolYear: boolean = false;
       isEditSchoolYear: boolean = false;
+      isViewSchoolYear: boolean = false;
       schoolYearToEdit!: SchoolYear;
 
       constructor(
@@ -132,5 +135,13 @@ export class SchoolYearComponent {
     
       handleBackToEditSchoolYear(): void {
         this.isEditSchoolYear = false;
+      }
+
+      toggleViewSchoolYear(): void {
+        this.isViewSchoolYear = !this.isViewSchoolYear;
+      }
+    
+      handleBackToViewSchoolYear(): void {
+        this.isViewSchoolYear = false;
       }
 }

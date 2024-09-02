@@ -1,6 +1,6 @@
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">View Program</span>
+        <span class="text-custom-32 text-brightRed">View Section</span>
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
@@ -12,21 +12,21 @@
                     Program Name:
                 </p>
                 <p class="text-brightRed text-custom-16 font-medium">
-                    Program Abbreviation:
+                    Year:
                 </p>
                 <p class="text-brightRed text-custom-16 font-medium">
-                    Description:
+                    Section:
                 </p>
             </div>
             <div class="flex flex-col gap-4">
                 <p class="text-darkGray text-custom-16">
-                    {{ program.programName }}
+                    {{ program }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{ program.programAbbreviation }}
+                    {{ year }}
                 </p>
                 <p class="text-darkGray text-custom-16">
-                    {{ program.programDescription }}
+                    {{ section }}
                 </p>
             </div>
         </div>
@@ -37,7 +37,7 @@
         <button class="text-custom-14 text-white py-2 px-19
             bg-gradient-red-orange rounded-full
             hover:bg-gradient-dark-red-orange hover:text-f4White"
-            (click)="returnToProgramView()">
+            (click)="returnToSectionView()">
             Back
         </button>
     </div>

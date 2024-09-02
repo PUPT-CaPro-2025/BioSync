@@ -102,8 +102,8 @@
                             duration-300 w-full py-2 px-1" formControlName="endTime">
                     </div>
                 </div>
-                <div class="flex justify-between">
-                    <div class="group flex flex-col gap-1 w-[47%]">
+                @if(isOneSchedule) {
+                    <div class="group flex flex-col gap-1">
                         <label for="subject-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -140,26 +140,48 @@
                         <mat-datepicker #picker></mat-datepicker>
                       </div>
                     </div>
-                    <div class="group flex flex-col gap-1 w-[47%]">
-                        <label for="recurrence" class="text-custom-16
-                            text-darkGray transition-colors duration-300
-                            group-focus-within:text-brightRed">
-                            Date Recurrence
-                        </label>
-                        <select id="recurrence" name="recurrence"
-                            [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
-                            placeholder="Select the date's recurrence" class="bg-transparent
+                }
+                @if(isWeeklySchedule) {
+                    <div class="flex justify-between">
+                        <div class="group flex flex-col gap-1 w-[47%]">
+                            <label for="recurrence" class="text-custom-16
+                                text-darkGray transition-colors duration-300
+                                group-focus-within:text-brightRed">
+                                Select a Days
+                            </label>
+                            <div class="flex justify-between bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="recurrence">
-                            <option value="NONE" selected>Does not repeat</option>
-                            <option value="DAILY">Daily</option>
-                            <option value="WEEKLY">Weekly on '{{ selectedDayOfWeek }}'</option>
-                            <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>
-                            <option value="custom">Custom</option>
-                        </select>
+                            duration-300 w-full py-1 px-1">
+                                @for(day of weekDays; track day) {
+                                    <div class="inline-block w-7 h-7 leading-30px text-center
+                                        text-custom-14 rounded-full bg-semiGray text-darkGray
+                                        mr-1 cursor-pointer bubble"
+                                        [class.selected]="customRecurrence.days.includes(day)"
+                                        (click)="toggleDaySelection(day)">
+                                        {{ day }}
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="group flex flex-col gap-1 w-[47%]">
+                            <label for="recurrence" class="text-custom-16
+                                text-darkGray transition-colors duration-300
+                                group-focus-within:text-brightRed">
+                                Recurrence
+                            </label>
+                            <select id="recurrence" name="recurrence"
+                                [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
+                                placeholder="Select the date's recurrence" class="bg-transparent
+                                border-b-2 border-darkGray focus:border-brightRed
+                                focus:outline-none transition-colors
+                                duration-300 w-full py-2 px-1" formControlName="recurrence">
+                                <option value="WEEKLY" selected>Weekly</option>
+                                <option *ngIf="customOption" [value]="customOption.value">{{ customOption.display }}</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
+                }
                 <div class="group flex flex-col gap-1">
                     <label for="laboratory" class="text-custom-16
                             text-darkGray transition-colors duration-300
