@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef} from 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule, DatePipe} from '@angular/common';
 import {SubjectService} from "../../services/subject.service";
 import {Subject} from "../../model/subject-model";
@@ -147,7 +147,7 @@ export class AddScheduleComponent implements OnInit{
         professor: ['', [Validators.required]],
         semester: ['', [Validators.required]],
         remarks: ['', [Validators.required]],
-        recurrence: ['NONE', [Validators.required]],
+        recurrence: [this.isWeeklySchedule ? 'WEEKLY' : 'NONE', [Validators.required]],
         schoolYear: ['', [Validators.required]]
       }
     )
@@ -290,6 +290,13 @@ export class AddScheduleComponent implements OnInit{
 
     const startTime = this.scheduleForm.get('startTime')?.value;
     const endTime = this.scheduleForm.get('endTime')?.value;
+    const scheduleDay = this.selectedSY?.firstSemester.startDate;
+
+    let dayValues: string[] = [];
+
+    this.customRecurrence.days.forEach(day => {
+      dayValues.push(this.getDayAbbreviation(day));
+    });
 
     newSchedule = {
       ...newSchedule,
@@ -303,24 +310,16 @@ export class AddScheduleComponent implements OnInit{
         recurrenceDays:  [],
         recurrenceInterval: 0
       }
-    } else if(this.scheduleForm.get('recurrence')?.value === "DAILY"){
-      newSchedule = {
-        ...newSchedule,
-        recurrenceDays: ["MON", "TUE", "WED", "THU", "FRI", "SAT"],
-        recurrenceInterval: 0
-      }
     } else if(this.scheduleForm.get('recurrence')?.value === "WEEKLY"){
-      const selectedDay = this.selectedDayOfWeek.substring(0,3).toUpperCase()
       newSchedule = {
         ...newSchedule,
-        recurrenceDays: [selectedDay],
-        recurrenceInterval: 0
+        recurrenceDays: dayValues,
+        recurrenceInterval: 0,
+        scheduleDate: scheduleDay
       }
     }
 
-    //TODO: CUSTOM SELECTION
-
-    console.log(newSchedule);
+    console.log(newSchedule)
 
     this.createSchedule(newSchedule);
   }
@@ -447,6 +446,20 @@ export class AddScheduleComponent implements OnInit{
     }
     return formatted;
   }
+
+  getDayAbbreviation(day: string): string {
+    switch (day.toUpperCase()) {
+      case 'M': return 'MON';
+      case 'T': return 'TUE';
+      case 'W': return 'WED';
+      case 'TH': return 'THU';
+      case 'F': return 'FRI';
+      case 'S': return 'SAT';
+      case 'SU': return 'SUN';
+      default: return 'Invalid day';
+    }
+  }
+
 
   getDayOfWeek(date: Date): string {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
