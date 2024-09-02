@@ -315,11 +315,9 @@ export class AddScheduleComponent implements OnInit{
         ...newSchedule,
         recurrenceDays: dayValues,
         recurrenceInterval: 0,
-        scheduleDate: scheduleDay
+        scheduleDate: scheduleDay?.toString().split('T')[0]
       }
     }
-
-    console.log(newSchedule)
 
     this.createSchedule(newSchedule);
   }
