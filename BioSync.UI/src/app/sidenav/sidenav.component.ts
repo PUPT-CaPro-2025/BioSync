@@ -12,6 +12,8 @@ import { LogoutService } from '../../services/auth/logout.service';
 import { CookieService } from '../../services/cookie.service';
 import { PromptConfirmComponent } from '../prompt-confirm/prompt-confirm.component';
 import { MatDialog } from '@angular/material/dialog';
+import { NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidenav',
@@ -50,10 +52,24 @@ export class SidenavComponent implements OnInit {
     if (savedActiveButton) {
       this.activeButton = savedActiveButton;
     }
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.updateActiveButton();
+    });
+  }
+
+  updateActiveButton() {
+    const currentRoute = this.router.url.split('/').pop() || '';
+    this.activeButton = currentRoute;
+    localStorage.setItem('activeButton', this.activeButton);
   }
 
   onButtonClick(buttonName: string) {
-    if (buttonName !== 'student' && buttonName !== 'maintenance') {
+    if (buttonName === 'student' || buttonName === 'maintenance') {
+      this.activeButton = buttonName;
+      localStorage.setItem('activeButton', buttonName);
+    } else {
       this.activeButton = buttonName;
       localStorage.setItem('activeButton', buttonName);
       this.isDropdownOpenStudent = false;
@@ -70,7 +86,7 @@ export class SidenavComponent implements OnInit {
       this.isDropdownOpenMaintenance = false;
     }
   }
-
+  
   toggleMaintenanceDropdown(event: Event) {
     event.stopPropagation();
     this.isDropdownOpenMaintenance = !this.isDropdownOpenMaintenance;
@@ -80,22 +96,23 @@ export class SidenavComponent implements OnInit {
       this.isDropdownOpenStudent = false;
     }
   }
-
+  
   navigateTo(route: string) {
-    this.router.navigate([route]).then();
-    this.isDropdownOpenStudent = false;
-    this.isDropdownOpenMaintenance = false;
-    if (route === '/student' || route === '/attendance') {
-      this.activeButton = 'student';
-      localStorage.setItem('activeButton', 'student');
-    } else if (route === '/school-year' || route === '/program'
-          || route === '/section' || route === '/laboratory') {
-      this.activeButton = 'maintenance';
-      localStorage.setItem('activeButton', 'maintenance');
-    } else {
-      this.activeButton = route.split('/').pop() || '';
-      localStorage.setItem('activeButton', this.activeButton);
-    }
+    this.router.navigate([route]).then(() => {
+      if (route.startsWith('/student') || route.startsWith('/attendance')) {
+        this.activeButton = 'student';
+        localStorage.setItem('activeButton', 'student');
+      } else if (
+        route.startsWith('/program') || route.startsWith('/laboratory') ||
+        route.startsWith('/school-year') || route.startsWith('/section')
+      ) {
+        this.activeButton = 'maintenance';
+        localStorage.setItem('activeButton', 'maintenance');
+      } else {
+        this.activeButton = route.split('/').pop() || '';
+        localStorage.setItem('activeButton', this.activeButton);
+      }
+    });
   }
 
   closeSidenav() {

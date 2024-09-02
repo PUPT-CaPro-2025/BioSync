@@ -1,39 +1,55 @@
 .toolbar-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 7rem;
+    margin: 40px auto;
+    padding-top: 40px;
+    padding-bottom: 48px;
+    width: 100%;
+    position: relative;
 }
 
 .biosync-logo {
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
+}
+
+.role-container p {
+    font-size: 16px;
+    color: #7F7F7F;
+    font-style: italic;
 }
 
 .list-container {
-    margin-top: 4.5rem;
-    flex: 1;
-    height: calc(100vh - 400px);
+    margin-top: 32px;
+    height: calc(100vh - 268px);
     overflow-y: auto;
+    position: relative;
 }
 
 .menu-container {
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
-    width: 300px;
-    height: 60px;
+    width: 295px;
+    height: 52px;
     display: flex;
     align-items: center;
     transition: background 0.5s ease, color 0.5s ease;
 }
 
+.menu-container img {
+    max-width: 6%;
+}
+
 .menu-content {
-    margin-left: 5%;
-    display:flex;
+    margin-left: 23px;
+    display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 2rem;
-    width: 17.5rem;
+    gap: 23px;
+    width: 270px;
+    height: 100%;
     background: none;
     border: none;
     cursor: pointer;
@@ -45,7 +61,7 @@
 
 .menu-content p {
     transition: color 0.3s ease;
-    font-size: 24px;
+    font-size: 16px;
 }
 
 .menu-container.clicked {
@@ -61,37 +77,39 @@
 }
 
 .dropdown-content {
-    width: 300px;
+    width: 295px;
     background-color: #F4F4F4;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
 }
 
 .dropdown-content button {
-    margin-left: 5%;
+    margin-left: 60px;
     display:flex;
     flex-direction: row;
     align-items: center;
-    gap: 2rem;
-    width: 17.5rem;
+    width: 200px;
     background: none;
     border: none;
     cursor: pointer;
     font-size: 16px;
-    padding: 15px 20px;
+    padding: 8px 0px;
 }
 
-.schedule-arrow mat-icon {
-    color: inherit;
-    margin-right: 7.5%;
+.schedule-arrow {
+    margin-left: auto;
+    margin-right: 9px;
+    display: flex;
+    align-items: center;
 }
-  
+
 .clicked mat-icon {
     color: white;
 }
 
 .bottom-container {
-    margin-top: 5rem;
+    position: absolute; /* Allows it to stick to the bottom */
+    bottom: 0; /* Sticks it to the bottom */
+    width: 100%; /* Ensure it stretches across the full width */
+    padding-bottom: 1rem; /* Optional: add padding */
 }
 
 .line-container {
@@ -113,15 +131,20 @@
     display:flex;
     flex-direction: row;
     align-items: center;
-    gap: 1rem;
-    margin-left: 5%;
+    gap: 23px;
+    margin-top: 8px;
+    margin-left: 23px;
     background: none;
     border: none;
     cursor: pointer;
 }
 
+.logout-content img {
+    max-width: 6%;
+}
+
 .logout-content p {
-    font-size: 24px;
+    font-size: 16px;
     color: #F84C42;
 }
 
@@ -141,14 +164,33 @@
     right: 0;
     margin: 8px;
 }
-  
+
 .close-icon:hover {
-  background-color: #d0d0d0;
-  transform: scale(1.1);
+    background-color: #d0d0d0;
+    transform: scale(1.1);
+}
+
+.list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.list-container::-webkit-scrollbar-track {
+    background-color: #E3E3E3;
+    border-radius: 10px;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+    background-color: #D33C33;
+    border-radius: 10px;
+    border: 2px solid #E3E3E3;
+}
+
+.list-container::-webkit-scrollbar-thumb:hover {
+    background-color: #F9653F;
 }
 
 @media (min-width: 901px) {
     .close-icon {
-      display: none;
+    display: none;
     }
 }
