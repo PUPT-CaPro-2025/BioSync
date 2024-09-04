@@ -93,7 +93,7 @@
                                 <div class="cell">
                                     <div class="action-container">
                                         <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
-                                        <button class="edit-button" (click)="toggleEditSchoolYear()"><mat-icon>edit</mat-icon></button>
+                                        <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
                                         <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
                                     </div>
                                 </div>
@@ -142,7 +142,10 @@
             <app-view-school-year (backToViewSchoolYear)="handleBackToViewSchoolYear()"/>
         }
     } @else {
-        <app-edit-school-year (backToEditSchoolYear)="handleBackToEditSchoolYear()"/>
+        <app-edit-school-year
+          [schoolYearToEdit]="schoolYearToEdit"
+          (editedSchoolYear)="onSchoolYearEdit($event)"
+          (backToEditSchoolYear)="handleBackToEditSchoolYear()"/>
     }
 } @else {
     <app-add-school-year (newSchoolYear)="onSchoolYearCreate($event)" (backToSchoolYear)="handleBackToSchoolYear()"/>

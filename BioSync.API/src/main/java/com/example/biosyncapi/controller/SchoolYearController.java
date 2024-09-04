@@ -33,7 +33,7 @@ public class SchoolYearController {
     }
 
     @PutMapping
-    public SchoolYear updateSchoolYear(@RequestBody SchoolYear schoolYear) {
+    public SchoolYear updateSchoolYear(@RequestBody SchoolYear schoolYear) throws Exception {
         return schoolYearService.updateSchoolYear(schoolYear);
     }
 

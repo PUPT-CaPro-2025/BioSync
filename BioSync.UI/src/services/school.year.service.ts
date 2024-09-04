@@ -26,6 +26,13 @@ export class SchoolYearService {
       })
   }
 
+  updateSchoolYear(schoolYear: SchoolYear){
+    return this.http.put<SchoolYear>(this.url, schoolYear, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deleteSchoolYear(schoolYear: SchoolYear){
     return this.http.delete<SchoolYear>(this.url, {
       body: { "id" : schoolYear.id },

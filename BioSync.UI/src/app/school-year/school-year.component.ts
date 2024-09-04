@@ -101,6 +101,12 @@ export class SchoolYearComponent implements OnInit {
     this.schoolYear.push(schoolYear);
   }
 
+  onSchoolYearEdit(schoolYear: SchoolYear): void {
+    const index = this.schoolYear.findIndex((sy: SchoolYear) => sy.id === schoolYear.id);
+
+    this.schoolYear[index] = schoolYear;
+  }
+
   deleteSchoolYear(schoolYear: SchoolYear): void {
     this.schoolYearService.deleteSchoolYear(schoolYear).subscribe({
       next: () => {
@@ -162,8 +168,10 @@ export class SchoolYearComponent implements OnInit {
     this.isAddSchoolYear = false;
   }
 
-  toggleEditSchoolYear(): void {
+  toggleEditSchoolYear(schoolYear: SchoolYear): void {
     this.isEditSchoolYear = !this.isEditSchoolYear;
+    this.schoolYearToEdit = schoolYear;
+
   }
 
   handleBackToEditSchoolYear(): void {
