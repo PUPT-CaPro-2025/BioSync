@@ -18,6 +18,8 @@ import { SchoolYearComponent } from './school-year/school-year.component';
 import { ProgramComponent } from './program/program.component';
 import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
+import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
+import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -36,6 +38,8 @@ export const routes: Routes = [
     { path: "program", component: ProgramComponent },
     { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
+    { path: "faculty-attendance", component: FacultyAttendanceComponent },
+    { path: "student-schedule", component:StudentScheduleComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
