@@ -14,7 +14,7 @@
 
 .toolbar-container span {
     font-size: 32px;
-    color: #D31119;
+    color: #F84C42;
 }
 
 .toolbar-button {
@@ -26,7 +26,7 @@
 .print-schedule {
     font-size: 14px;
     padding: 8px 50px;
-    background-color: #D31119;
+    background-color: #F84C42;
     color: white;
     border: none;
     border-radius: 40px;
@@ -34,7 +34,7 @@
 }
 
 .print-schedule:hover {
-    background-color: #800c10;
+    background-color: #7a2521;
 }
 
 .filter-content {
@@ -64,7 +64,7 @@
 }
 
 .entry-container span {
-    color: #D31119;
+    color: #F84C42;
     font-size: 14px;
 }
 
@@ -79,7 +79,7 @@
 }
 
 .sort-container select {
-    color: #D31119;
+    color: #F84C42;
     border: 1px solid #F2E8E9;
     border-radius: 4px;
     padding: 5px 10px;
@@ -100,7 +100,7 @@
 
 .attributes {
     font-weight: bold;
-    color: #D31119;
+    color: #F84C42;
     padding: 25px;
     background-color: #FFFFFF;
     border-radius: 18px;
@@ -215,7 +215,7 @@
 }
   
 .paginator-button-container button.active-button {
-    color: #D31119;
+    color: #F84C42;
 }
 
 .paginator-button-container img {
