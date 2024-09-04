@@ -64,8 +64,18 @@ export class SectionComponent implements OnInit{
     this.sectionService.getSections().subscribe({
       next: (sections: Section[]) => {
         this.section = sections;
+        this.sortSections();
       }
     })
+  }
+
+  sortSections() {
+    this.section.sort((a: Section, b: Section) => b.id - a.id);
+  }
+
+  onSectionCreation(section: Section){
+    this.section.push(section);
+    this.sortSections();
   }
 
   get filteredSections(): Section[] {

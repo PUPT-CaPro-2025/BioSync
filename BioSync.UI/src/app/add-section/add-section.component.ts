@@ -7,8 +7,10 @@ import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { ProgramService } from '../../services/program.service';
 import { Program } from '../../model/program.model';
-import { Section } from '../../model/section.model';
-import { Semester } from '../../model/semester.model';
+import {SectionService} from "../../services/section.service";
+import {Section} from "../../model/section.model";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-add-section',
@@ -21,14 +23,17 @@ import { Semester } from '../../model/semester.model';
     MatButtonModule,
     MatSelectModule
   ],
-  providers: [ProgramService],
+  providers: [
+    ProgramService,
+    SectionService
+  ],
   templateUrl: './add-section.component.html',
   styleUrl: './add-section.component.css'
 })
 export class AddSectionComponent implements OnInit {
   sectionForm!: FormGroup;
   @Output() backToSection = new EventEmitter<void>();
-  @Output() sectionAdded = new EventEmitter<Program>();
+  @Output() sectionAdded = new EventEmitter<Section>();
 
   years: string[] = [
     '1', '2', '3', '4', '5', 'Ladderized'
@@ -40,7 +45,12 @@ export class AddSectionComponent implements OnInit {
 
   programs: Program[] = [];
 
-  constructor(private formBuilder: FormBuilder, private programService: ProgramService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private programService: ProgramService,
+    private sectionService: SectionService,
+    private dialog: MatDialog,
+  ) {}
 
   ngOnInit() {
     this.getAllPrograms();
@@ -68,7 +78,32 @@ export class AddSectionComponent implements OnInit {
   }
 
   submit(){
-    console.log("Submit");
-    return;
+    if(this.sectionForm.invalid) return;
+
+    this.sectionService.addSection(this.sectionForm.value).subscribe({
+      next: (section: Section) => {
+        if(!section.id) return;
+        this.sectionAdded.emit(section);
+        this.openConfirmationModal();
+      }
+    })
   }
+
+  openConfirmationModal(){
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Section Added!',
+        message: 'Section has been added successfully.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToSectionView();
+      }
+    })
+  }
+
+
 }

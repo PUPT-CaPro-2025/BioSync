@@ -98,5 +98,7 @@
                 </div>
             </div>
 } @else {
-    <app-add-section (backToSection)="handleBackToSection()"/>
+    <app-add-section
+      (sectionAdded)="onSectionCreation($event)"
+      (backToSection)="handleBackToSection()"/>
 }

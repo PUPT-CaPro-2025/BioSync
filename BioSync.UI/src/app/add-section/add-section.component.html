@@ -18,7 +18,7 @@
                         duration-300 w-full py-2 px-1" formControlName="program">
                         <mat-option value="">Select a program</mat-option>
                         @for(program of programs; track program){
-                            <mat-option [value]="program.id">
+                            <mat-option [value]="program">
                               {{ program.programName }} - {{ program.programAbbreviation }}
                             </mat-option>
                           }
