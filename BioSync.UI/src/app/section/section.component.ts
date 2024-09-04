@@ -3,22 +3,16 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Section } from '../../model/section.model';
-import { Semester } from '../../model/semester.model'; 
 import { SectionService } from '../../services/section.service';
 import { AddSectionComponent } from '../add-section/add-section.component';
-import { EditSectionComponent } from '../edit-section/edit-section.component';
-import { ViewSectionComponent } from '../view-section/view-section.component';
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
-interface sections {
-  program: string;
-  year: string;
-  section: string;
-}
 
 @Component({
   selector: 'app-section',
@@ -33,14 +27,12 @@ interface sections {
     MatSelectModule,
     CommonModule,
     AddSectionComponent,
-    EditSectionComponent,
-    ViewSectionComponent
   ],
   providers: [SectionService],
   templateUrl: './section.component.html',
   styleUrl: './section.component.css'
 })
-export class SectionComponent {
+export class SectionComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -49,16 +41,7 @@ export class SectionComponent {
     'Alphabetical', 'Date'
   ];
 
-  section: sections[] = [
-    { program: "BSIT", year: "1", section: "1" },
-    { program: "BSIT", year: "2", section: "1" },
-    { program: "BSIT", year: "3", section: "1" },
-    { program: "BSIT", year: "4", section: "1" },
-    { program: "DIT", year: "1", section: "1" },
-    { program: "DIT", year: "2", section: "1" },
-    { program: "DIT", year: "3", section: "1" },
-    { program: "DIT", year: "4", section: "1" },
-  ];
+  section: Section[] = [];
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
@@ -69,7 +52,58 @@ export class SectionComponent {
   isViewSection: boolean = false;
   sectionToEdit!: Section;
 
-  get filteredSections(): sections[] {
+  constructor(
+    private dialog: MatDialog,
+    private sectionService: SectionService,
+  ) {}
+
+  ngOnInit() {
+    this.getSections();
+  }
+
+  getSections(){
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.section = sections;
+        this.sortSections();
+      }
+    })
+  }
+
+  sortSections() {
+    this.section.sort((a: Section, b: Section) => b.id - a.id);
+  }
+
+  onSectionCreation(section: Section){
+    this.section.push(section);
+    this.sortSections();
+  }
+
+  openConfirmationDialog(section: Section){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Section',
+        message: `Are you sure you want to delete this section?`
+      }
+    })
+
+    ref.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteSection(section);
+      }
+    })
+  }
+
+  deleteSection(section: Section){
+    this.sectionService.deleteSection(section).subscribe({
+      next: () => {
+        this.section = this.section.filter(v => v.id !== section.id);
+      }
+    })
+  }
+
+  get filteredSections(): Section[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.section.slice(startIndex, endIndex);

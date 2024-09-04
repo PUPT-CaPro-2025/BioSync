@@ -13,14 +13,14 @@ public class Section {
     @JoinColumn(name="program_id", nullable=false)
     private Program program;
 
-    private int year;
+    private String year;
 
     private int section;
 
     public Section() {
     }
 
-    public Section(Long id, Program program, int year, int section) {
+    public Section(Long id, Program program, String year, int section) {
         this.id = id;
         this.program = program;
         this.year = year;
@@ -43,11 +43,11 @@ public class Section {
         this.program = program;
     }
 
-    public int getYear() {
+    public String getYear() {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(String year) {
         this.year = year;
     }
 

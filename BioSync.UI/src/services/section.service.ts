@@ -8,14 +8,29 @@ import {Section} from "../model/section.model";
 export class SectionService {
   accessToken = this.cookieService.getCookie("authToken");
   headers = new HttpHeaders().set('Authorization', `Bearer ${this.accessToken}`);
+  url = `${environment.apiUrl}/api/v1/sections`;
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   getSections() {
-    const url = `${environment.apiUrl}/api/v1/sections`;
-    return this.http.get<Section[]>(url, {
+    return this.http.get<Section[]>(this.url, {
       headers: this.headers,
       withCredentials: true,
     });
+  }
+
+  addSection(section: Section) {
+    return this.http.post<Section>(this.url, section, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  deleteSection(section: Section) {
+    return this.http.delete<Section>(this.url, {
+      body: { id: section.id },
+      headers: this.headers,
+      withCredentials: true
+    })
   }
 }

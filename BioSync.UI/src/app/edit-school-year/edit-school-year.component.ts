@@ -1,10 +1,14 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import {SchoolYear} from "../../model/school.year.model";
+import {SchoolYearService} from "../../services/school.year.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-edit-school-year',
@@ -16,29 +20,54 @@ import { MatSelectModule } from '@angular/material/select';
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule,],
+  providers: [SchoolYearService],
   templateUrl: './edit-school-year.component.html',
   styleUrl: './edit-school-year.component.css'
 })
 export class EditSchoolYearComponent implements OnInit {
   @Output() backToEditSchoolYear = new EventEmitter<void>();
+  @Output() editedSchoolYear = new EventEmitter<SchoolYear>();
+  @Input() schoolYearToEdit!: SchoolYear;
   schoolYearForm!: FormGroup;
 
-  constructor( private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private schoolYearService: SchoolYearService,
+    private dialog: MatDialog,
+  ) {}
 
   ngOnInit() {
-    this.initForm();
+    this.initEditSchoolYearForm();
+    this.initFormValues();
   }
 
-  initForm(){
+  initEditSchoolYearForm(){
     this.schoolYearForm = this.formBuilder.group({
-      yearStart: ['', [Validators.required]],
-      yearEnd: ['', [Validators.required]],
+      startYear: ['', [Validators.required]],
+      endYear: ['', [Validators.required]],
       oneStartDate: ['', Validators.required],
       oneEndDate: ['', [Validators.required]],
       twoStartDate: ['', [Validators.required]],
       twoEndDate: ['', [Validators.required]],
       summerStartDate: ['', [Validators.required]],
-      summerStart: ['', [Validators.required]],
+      summerEndDate: ['', [Validators.required]],
+    });
+  }
+
+  initFormValues(){
+    const formatDate = (dateString: Date): string => {
+      return new Date(dateString).toISOString().split('T')[0];
+    };
+
+    this.schoolYearForm.patchValue({
+      startYear: this.schoolYearToEdit.startYear,
+      endYear: this.schoolYearToEdit.endYear,
+      oneStartDate: formatDate(this.schoolYearToEdit.firstSemester.startDate),
+      twoStartDate: formatDate(this.schoolYearToEdit.secondSemester.startDate),
+      summerStartDate: formatDate(this.schoolYearToEdit.summerSemester.startDate),
+      oneEndDate: formatDate(this.schoolYearToEdit.firstSemester.endDate),
+      twoEndDate: formatDate(this.schoolYearToEdit.secondSemester.endDate),
+      summerEndDate: formatDate(this.schoolYearToEdit.summerSemester.endDate),
     });
   }
 
@@ -47,7 +76,65 @@ export class EditSchoolYearComponent implements OnInit {
   }
 
   submit(){
-    console.log("Submit!");
-    return;
+    let hello = this.createSchoolYearObject(this.schoolYearForm.value)
+
+    const updatedSchoolYear= {
+      ...this.schoolYearToEdit,
+      ...hello,
+    }
+
+    console.log(updatedSchoolYear);
+    this.editSchoolYear(updatedSchoolYear);
+  }
+
+  editSchoolYear(schoolYear: SchoolYear){
+    this.schoolYearService.updateSchoolYear(schoolYear).subscribe({
+      next: (schoolYear: SchoolYear) => {
+        if(!schoolYear.id) return;
+        this.editedSchoolYear.emit(schoolYear);
+        this.openSuccessDialog();
+      }
+    })
+  }
+
+  openSuccessDialog(){
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'School Year Updated',
+        message: 'School Year has been updated successfully.',
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.returnToSchoolYearView();
+      }
+    })
+  }
+
+  createSchoolYearObject(formValues: any): SchoolYear {
+    return {
+      startYear: formValues.startYear,
+      endYear: formValues.endYear,
+      firstSemester: {
+        id: this.schoolYearToEdit.firstSemester.id,
+        name: 'First Semester',
+        startDate: formValues.oneStartDate,
+        endDate: formValues.oneEndDate,
+      },
+      secondSemester: {
+        id: this.schoolYearToEdit.secondSemester.id,
+        name: 'Second Semester',
+        startDate: formValues.twoStartDate,
+        endDate: formValues.twoEndDate,
+      },
+      summerSemester: {
+        id: this.schoolYearToEdit.summerSemester.id,
+        name: 'Summer Semester',
+        startDate: formValues.summerStartDate,
+        endDate: formValues.summerEndDate,
+      }
+    };
   }
 }

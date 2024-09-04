@@ -1,7 +1,7 @@
 import {Semester} from "./semester.model";
 
 export interface SchoolYear {
-  id: number;
+  id?: number;
   startYear: Date;
   endYear: Date;
   firstSemester: Semester;
