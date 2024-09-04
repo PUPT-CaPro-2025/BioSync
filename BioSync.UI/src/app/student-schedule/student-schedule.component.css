@@ -20,9 +20,10 @@
 .toolbar-button {
     display: flex;
     gap: 30px;
+    position: relative;
 }
 
-.toolbar-button button {
+.print-schedule {
     font-size: 14px;
     padding: 8px 50px;
     background-color: #F84C42;
@@ -32,7 +33,7 @@
     cursor: pointer;
 }
 
-.toolbar-button button:hover {
+.print-schedule:hover {
     background-color: #7a2521;
 }
 
@@ -43,26 +44,11 @@
     width: 96%;
 }
 
-.search-container {
+.select-semester-container {
     position: relative;
     display: flex;
     align-items: center;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    color: gray;
-}
-
-.search-container input {
-    padding-left: 40px;
-    padding-right: 80px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    border: none;
+    width: 22%;
 }
 
 .dropdown-content {
@@ -120,7 +106,6 @@
     border-radius: 18px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .row-container {
@@ -134,7 +119,7 @@
 .row {
     display: flex;
     align-items: center; 
-    padding: 8px;
+    padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
     justify-content: space-between;
@@ -143,42 +128,11 @@
 .subject-table .cell {
     flex: 1;
     text-align: left;
-    padding: 10px 5px;
-}
-
-.action-container {
-    display: flex;
-    gap: 10px;
-}
-
-.view-button, .edit-button, .delete-button {
-    background-color: #393939;
-    color: white;
-    border: none;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    cursor: pointer;
-    border-radius: 15px;
-    min-width: 40px;
-}
-
-.delete-button {
-    background-color: #F84C42;
-}
-
-.view-button:hover, .edit-button:hover {
-    background-color: #949494;
-}
-
-.delete-button:hover {
-    background-color: #7a2521;
+    padding: 5px 10px;
 }
 
 .line-container {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -189,7 +143,7 @@
 }
 
 .paginator {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
     background: none;
     display: flex;
     justify-content: space-between;
