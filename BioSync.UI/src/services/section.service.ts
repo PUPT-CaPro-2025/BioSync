@@ -25,4 +25,12 @@ export class SectionService {
       withCredentials: true
     })
   }
+
+  deleteSection(section: Section) {
+    return this.http.delete<Section>(this.url, {
+      body: { id: section.id },
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
 }

@@ -11,6 +11,7 @@ import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
 import { AddSectionComponent } from '../add-section/add-section.component';
 import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 
 
 @Component({
@@ -76,6 +77,30 @@ export class SectionComponent implements OnInit{
   onSectionCreation(section: Section){
     this.section.push(section);
     this.sortSections();
+  }
+
+  openConfirmationDialog(section: Section){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Delete Section',
+        message: `Are you sure you want to delete this section?`
+      }
+    })
+
+    ref.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteSection(section);
+      }
+    })
+  }
+
+  deleteSection(section: Section){
+    this.sectionService.deleteSection(section).subscribe({
+      next: () => {
+        this.section = this.section.filter(v => v.id !== section.id);
+      }
+    })
   }
 
   get filteredSections(): Section[] {
