@@ -13,13 +13,13 @@ public class SchoolYear {
 
     private int endYear;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Semester firstSemester;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Semester secondSemester;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Semester summerSemester;
 
     public SchoolYear() {

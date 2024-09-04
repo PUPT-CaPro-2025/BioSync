@@ -145,5 +145,5 @@
         <app-edit-school-year (backToEditSchoolYear)="handleBackToEditSchoolYear()"/>
     }
 } @else {
-    <app-add-school-year (backToSchoolYear)="handleBackToSchoolYear()"/>
+    <app-add-school-year (newSchoolYear)="onSchoolYearCreate($event)" (backToSchoolYear)="handleBackToSchoolYear()"/>
 }

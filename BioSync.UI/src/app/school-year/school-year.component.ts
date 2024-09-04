@@ -97,6 +97,10 @@ export class SchoolYearComponent implements OnInit {
     })
   }
 
+  onSchoolYearCreate(schoolYear: SchoolYear): void {
+    this.schoolYear.push(schoolYear);
+  }
+
   deleteSchoolYear(schoolYear: SchoolYear): void {
     this.schoolYearService.deleteSchoolYear(schoolYear).subscribe({
       next: () => {
