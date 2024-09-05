@@ -19,6 +19,20 @@ export class ScheduleService {
     });
   }
 
+  getAllSchedulesByProfessorId(professorId: number){
+    return this.http.get<Schedule[]>(`${this.url}/professor/${professorId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  getAllSchedulesBySectionId(sectionId: number){
+    return this.http.get<Schedule[]>(`${this.url}/sections/${sectionId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   updateSchedule(schedule: Schedule){
     return this.http.put<Schedule>(this.url, schedule,{
       headers: this.headers,

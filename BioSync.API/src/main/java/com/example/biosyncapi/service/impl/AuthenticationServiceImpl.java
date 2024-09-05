@@ -81,7 +81,9 @@ public class AuthenticationServiceImpl {
 
         String role = String.valueOf(user.getRole());
 
-        return new AuthenticationResponse(jwt, role);
+        String userId = String.valueOf(user.getId());
+
+        return new AuthenticationResponse(jwt, role, userId);
     }
 
     private void revokeAllTokenByUser(User user) {

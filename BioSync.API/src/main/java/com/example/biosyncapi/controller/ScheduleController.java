@@ -25,6 +25,16 @@ public class ScheduleController {
         return scheduleService.getAllSchedules();
     }
 
+    @GetMapping("/professor/{id}")
+    public List<Schedule> getSchedulesByProfessorId(@PathVariable Long id) {
+        return scheduleService.getAllSchedulesByProfessorId(id);
+    }
+
+    @GetMapping("/section/{id}")
+    public List<Schedule> getSchedulesBySectionId(@PathVariable Long id) {
+        return scheduleService.getAllSchedulesBySectionId(id);
+    }
+
     @GetMapping("/{id}")
     public Optional<Schedule> getScheduleById(@PathVariable Long id) {
         return scheduleService.getScheduleById(id);
