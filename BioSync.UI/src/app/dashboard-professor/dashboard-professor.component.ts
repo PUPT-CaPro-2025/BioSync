@@ -27,7 +27,7 @@ import {SubjectService} from "../../services/subject.service";
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardProfessorComponent implements OnInit{
-  userId = '';
+  userId!: string | number;
   totalStudents!: number;
   totalSubject!: number;
   upcomingSchedules: Schedule[] = [];
@@ -86,7 +86,6 @@ export class DashboardProfessorComponent implements OnInit{
   getFacultySchedule(facultyId: number) {
     this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules);
         this.calendarOptions.events = this.transformToCalendarEvents(schedules);
       }
     })

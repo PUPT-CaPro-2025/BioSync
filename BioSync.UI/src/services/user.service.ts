@@ -37,6 +37,13 @@ export class UserService {
     })
   }
 
+  getUserById(userId: number) {
+    return this.http.get<User>(`${this.url}/users/${userId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deleteUser(user: User){
     return this.http.delete<User>(`${this.url}/users`, {
       body: { id: user.id },
