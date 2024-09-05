@@ -49,7 +49,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                 scheduleRepository.findConflictingSchedules(
                         schedule.getScheduleDate(),
                         schedule.getStartTime(),
-                        schedule.getEndTime()
+                        schedule.getEndTime(),
+                        schedule.getLaboratory()
                 );
 
         if(!conflictingSchedule.isEmpty()) {
