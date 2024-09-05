@@ -1,19 +1,17 @@
-import { Component, OnInit, EventEmitter, Output, HostListener } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {NavigationEnd, Router, RouterLink} from '@angular/router';
+import {MatIconModule} from '@angular/material/icon';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { RouterLink } from '@angular/router';
-import { LogoutService } from '../../services/auth/logout.service';
-import { CookieService } from '../../services/cookie.service';
-import { PromptConfirmComponent } from '../prompt-confirm/prompt-confirm.component';
-import { MatDialog } from '@angular/material/dialog';
-import { NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import {MatSelectModule} from '@angular/material/select';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {LogoutService} from '../../services/auth/logout.service';
+import {CookieService} from '../../services/cookie.service';
+import {PromptConfirmComponent} from '../prompt-confirm/prompt-confirm.component';
+import {MatDialog} from '@angular/material/dialog';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-sidenav',
@@ -60,8 +58,7 @@ export class SidenavComponent implements OnInit {
   }
 
   updateActiveButton() {
-    const currentRoute = this.router.url.split('/').pop() || '';
-    this.activeButton = currentRoute;
+    this.activeButton = this.router.url.split('/').pop() || '';
     localStorage.setItem('activeButton', this.activeButton);
   }
 
@@ -86,7 +83,7 @@ export class SidenavComponent implements OnInit {
       this.isDropdownOpenMaintenance = false;
     }
   }
-  
+
   toggleMaintenanceDropdown(event: Event) {
     event.stopPropagation();
     this.isDropdownOpenMaintenance = !this.isDropdownOpenMaintenance;
@@ -96,7 +93,7 @@ export class SidenavComponent implements OnInit {
       this.isDropdownOpenStudent = false;
     }
   }
-  
+
   navigateTo(route: string) {
     this.router.navigate([route]).then(() => {
       if (route.startsWith('/student') || route.startsWith('/attendance')) {
@@ -163,6 +160,7 @@ export class SidenavComponent implements OnInit {
       next: () => {
         this.cookieService.deleteCookie('authToken');
         this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
         localStorage.removeItem('activeButton');
         this.router.navigate(['/login']).then();
       },
