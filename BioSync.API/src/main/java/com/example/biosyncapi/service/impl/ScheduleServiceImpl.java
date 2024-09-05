@@ -31,6 +31,16 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public List<Schedule> getAllSchedulesByProfessorId(Long professorId) {
+        return scheduleRepository.findSchedulesByProfessorId(professorId);
+    }
+
+    @Override
+    public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
+        return scheduleRepository.findSchedulesBySectionId(sectionId);
+    }
+
+    @Override
     public Optional<Schedule> getScheduleById(Long id) {
         return scheduleRepository.findById(id);
     }
@@ -49,7 +59,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                 scheduleRepository.findConflictingSchedules(
                         schedule.getScheduleDate(),
                         schedule.getStartTime(),
-                        schedule.getEndTime()
+                        schedule.getEndTime(),
+                        schedule.getLaboratory()
                 );
 
         if(!conflictingSchedule.isEmpty()) {

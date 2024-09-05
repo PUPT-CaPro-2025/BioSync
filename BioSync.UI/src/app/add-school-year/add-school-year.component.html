@@ -1,11 +1,11 @@
 
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">Add New School Year</span>
+        <span class="text-custom-32 text-brightRed">Add School Year</span>
     </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 w-[90%] bg-transparent form-content" [formGroup]="schoolYearForm">
+    <form class="mt-8 w-[90%] bg-transparent form-content" [formGroup]="addSchoolYearForm">
         <div class="w-[70%] flex flex-col gap-4">
             <div class="flex justify-between w-[100%] row-block">
                 <div class="group flex flex-col gap-1 w-[48%] row-input">
@@ -19,7 +19,7 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="yearStart">
+                            formControlName="startYear">
                 </div>
                 <div class="group flex flex-col gap-1 w-[48%] row-input">
                     <label for="year-end" class="text-custom-16
@@ -32,9 +32,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="yearEnd">
+                            formControlName="endYear">
                 </div>
-            </div>    
+            </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">First Semester</h6>
                 <div class="flex justify-between w-[100%] row-block">
@@ -64,7 +64,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="oneEndDate">
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Second Semester</h6>
@@ -95,7 +95,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="twoEndDate">
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Summer Semester</h6>
@@ -126,7 +126,7 @@
                             duration-300 w-full py-2 px-1"
                             formControlName="summerEndDate">
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10 mb-14">
                 <div class="flex gap-[40px] justify-end w-[100%] button-content">

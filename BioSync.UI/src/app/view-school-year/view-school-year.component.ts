@@ -10,6 +10,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   styleUrl: './view-school-year.component.css'
 })
 export class ViewSchoolYearComponent {
+  @Output() backToViewSchoolYear = new EventEmitter<void>();
+  @Input() id!: number | undefined;
+
   yearStart: string = "2024";
   yearEnd: string =  "2025";
   oneStartDate: string = "September 10, 2024";
@@ -18,4 +21,8 @@ export class ViewSchoolYearComponent {
   twoEndDate: string = "June 30, 2025";
   summerStartDate: string = "July 14, 2025";
   summerEndDate: string = " September 1, 2025";
+
+  returnToSchoolYearView(): void {
+    this.backToViewSchoolYear.emit();
+  }
 }

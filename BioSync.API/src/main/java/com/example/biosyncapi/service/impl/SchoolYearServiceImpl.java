@@ -4,7 +4,6 @@ import com.example.biosyncapi.model.SchoolYear;
 import com.example.biosyncapi.repository.SchoolYearRepository;
 import com.example.biosyncapi.service.SchoolYearService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +32,22 @@ public class SchoolYearServiceImpl implements SchoolYearService {
     }
 
     @Override
-    public SchoolYear updateSchoolYear(SchoolYear schoolYear) {
-        return schoolYearRepository.save(schoolYear);
+    public SchoolYear updateSchoolYear(SchoolYear updatedSchoolYear) throws Exception {
+        Optional<SchoolYear> oldSchoolYearOpt = schoolYearRepository.findById(updatedSchoolYear.getId());
+
+        if (oldSchoolYearOpt.isEmpty()) { throw new Exception("School Year not found"); }
+
+        SchoolYear oldSchoolYear = oldSchoolYearOpt.get();
+
+        oldSchoolYear.getFirstSemester().setStartDate(updatedSchoolYear.getFirstSemester().getStartDate());
+        oldSchoolYear.getFirstSemester().setEndDate(updatedSchoolYear.getFirstSemester().getEndDate());
+
+        oldSchoolYear.getSecondSemester().setStartDate(updatedSchoolYear.getSecondSemester().getStartDate());
+        oldSchoolYear.getSecondSemester().setEndDate(updatedSchoolYear.getSecondSemester().getEndDate());
+
+        oldSchoolYear.getSummerSemester().setStartDate(updatedSchoolYear.getSummerSemester().getStartDate());
+        oldSchoolYear.getSummerSemester().setEndDate(updatedSchoolYear.getSummerSemester().getEndDate());
+        return schoolYearRepository.save(oldSchoolYear);
     }
 
     @Override
