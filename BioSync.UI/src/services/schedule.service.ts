@@ -27,7 +27,7 @@ export class ScheduleService {
   }
 
   getAllSchedulesBySectionId(sectionId: number){
-    return this.http.get<Schedule[]>(`${this.url}/sections/${sectionId}`, {
+    return this.http.get<Schedule[]>(`${this.url}/section/${sectionId}`, {
       headers: this.headers,
       withCredentials: true
     })
