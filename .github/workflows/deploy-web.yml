@@ -23,8 +23,8 @@ jobs:
 
     - name: Substitute variables in app.settings
       run: |
-        sed -i "s|apiUrl: '.*'|apiUrl: '${{ secrets.API_URL }}'|" environment/app.setting.ts
-        sed -i "s|cryptoKey: '.*'|cryptoKey: '${{ secrets.CRYPTO_KEY }}'|" environment/app.setting.ts
+        sed -i "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+        sed -i "s~cryptoKey: '.*'~cryptoKey: '${{ secrets.CRYPTO_KEY }}'~" environment/app.setting.ts
       shell: /usr/bin/bash -e {0}
 
     - name: Build Angular Project
