@@ -23,8 +23,8 @@ jobs:
 
     - name: Substitute variables in app.settings
       run: |
-        sed -i -e "s|apiUrl: '.*'|apiUrl: '${{ secrets.API_URL }}'|" \
-               -e "s|cryptoKey: '.*'|cryptoKey: '${{ secrets.CRYPTO_KEY }}'|" \
+        sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" \
+               -e "s~cryptoKey: '.*'~cryptoKey: '${{ secrets.CRYPTO_KEY }}'~" \
                environment/app.setting.ts
       shell: /usr/bin/bash -e {0}
 
