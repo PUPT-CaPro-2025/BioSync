@@ -7,3 +7,49 @@
     width: 96%;
     align-items: flex-start;
 }
+
+@media (max-width: 1160px) {
+    .label {
+        width: 25%;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    .label {
+        width: 30%;
+    }
+
+}
+
+@media (max-width: 900px) {
+    .label {
+        width: 25%;
+    }
+}
+
+@media (max-width: 650px) {
+    .toolbar-container span {
+        font-size: 24px;
+    }
+
+    .row-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .label, .data {
+        width: 100%;
+    }
+}
+
+@media (max-width: 535px) {
+    .button-content {
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .button-content button {
+        width: 100%;
+    }
+}
