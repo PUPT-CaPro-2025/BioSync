@@ -9,6 +9,13 @@
                     <h2 class="text-custom-20 md:text-custom-40 text-darkGrey font-semibold mb-0 md:mb-4">Faculty Login</h2>
                     <p class="text-custom-12 md:text-custom-16 text-lightGray mb-0 md:mb-6">Welcome, Professor! Please log in to continue.</p>
                 </div>
+                @if(credentialsError){
+                  <div class="h-6 -mt-4">
+                    <p class="text-custom-12 md:text-custom-16 text-brightRed mb-0 md:mb-6">
+                      Incorrect Usercode or Password
+                    </p>
+                  </div>
+                }
                 <div class="group relative flex items-center">
                     <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
                     group-focus-within:text-brightRed">supervised_user_circle</mat-icon>
@@ -16,7 +23,8 @@
                         placeholder="Faculty Code" class="bg-transparent
                         border-b-2 border-lightGray focus:border-brightRed
                         focus:outline-none transition-colors
-                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="usercode">
+                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="usercode"
+                        (input)="credentialsError = false">
                 </div>
                 <div class="group relative flex items-center">
                     <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300
@@ -25,7 +33,8 @@
                         placeholder="Password" class="bg-transparent
                         border-b-2 border-lightGray focus:border-brightRed
                         focus:outline-none transition-colors
-                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="password">
+                        duration-300 w-full pl-12 pr-20 py-2 md:py-4" formControlName="password"
+                        (input)="credentialsError = false">
                 </div>
                 <button class="text-custom-12 md:text-custom-16 text-white py-3 px-24
                     bg-gradient-red-orange rounded-2xl

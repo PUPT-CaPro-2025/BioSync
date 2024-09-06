@@ -26,6 +26,7 @@ import {CryptoService} from "../../services/crypto.service";
 })
 export class LoginFacultyComponent implements OnInit{
   facultyLoginForm!: FormGroup;
+  credentialsError = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -53,13 +54,16 @@ export class LoginFacultyComponent implements OnInit{
   }
 
   submit(): void{
-    if(!this.facultyLoginForm.valid) return; //TODO: ADD PROMPT
+    if(!this.facultyLoginForm.valid) return;
 
     const facultyCredentials = this.facultyLoginForm.value;
 
     this.loginService.login(facultyCredentials).subscribe({
       next: (response: Authentication) => {
-        if(response.role !== 'FACULTY') return //TODO: ADD PROMPT
+        if(response.role !== 'FACULTY') {
+          this.credentialsError = !this.credentialsError;
+          return;
+        }
 
         const token = response.token;
 
@@ -74,7 +78,9 @@ export class LoginFacultyComponent implements OnInit{
 
         this.alComp.navigateTo('/dashboard');
       },
-      error: err => console.error(err)
+      error: () => {
+        this.credentialsError = !this.credentialsError;
+      }
     })
   }
 
