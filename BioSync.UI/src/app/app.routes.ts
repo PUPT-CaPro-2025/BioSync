@@ -19,7 +19,6 @@ import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
 import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
 import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
-import {AddScheduleComponent} from "./add-schedule/add-schedule.component";
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
