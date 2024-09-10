@@ -26,7 +26,6 @@ import {Laboratory} from "../../model/laboratory.model";
 import {LaboratoryService} from "../../services/laboratory.service";
 import {catchError, of} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-add-schedule',

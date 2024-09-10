@@ -66,9 +66,14 @@ export class ScheduleComponent implements OnInit{
         this.schedules = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
       },
       error: (err) => console.error(err),
     });
+  }
+
+  sortSchedulesById(schedules: Schedule[]): Schedule[] {
+    return schedules.sort((a, b) => b.id - a.id);
   }
 
   getRecurrenceDays(recId: string): string[] {
@@ -89,6 +94,7 @@ export class ScheduleComponent implements OnInit{
     })
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -256,6 +262,6 @@ export class ScheduleComponent implements OnInit{
 
   onAddScheduleClick() {
     this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-    
+
   }
 }
