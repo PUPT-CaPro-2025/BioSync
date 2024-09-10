@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomepageComponent } from './homepage/homepage.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { SubjectComponent } from './subject/subject.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -20,6 +19,7 @@ import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
 import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
 import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
+import {AddScheduleComponent} from "./add-schedule/add-schedule.component";
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -29,6 +29,7 @@ export const routes: Routes = [
     { path: "visitor-log", component: LoginVisitorComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
+    { path: "schedule/add", component: AddScheduleComponent },
     { path: "subject", component: SubjectComponent },
     { path: "visitor", component: VisitorComponent },
     { path: "professor", component: ProfessorComponent },

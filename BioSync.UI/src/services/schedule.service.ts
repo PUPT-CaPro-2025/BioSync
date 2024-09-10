@@ -47,4 +47,21 @@ export class ScheduleService {
       withCredentials: true
     });
   }
+
+  getMonth(dateString: string): string {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { month: 'long' };
+    return date.toLocaleDateString(undefined, options);
+  }
+
+  getTime12HourFormat(time: string): string {
+    const date = new Date(`1970-01-01T${time}Z`);
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  getDay(dateString: string): string {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  }
 }

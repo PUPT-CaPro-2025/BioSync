@@ -8,6 +8,8 @@ import {ScheduleService} from "../../services/schedule.service";
 import {Schedule} from "../../model/schedule.model";
 import {UserService} from "../../services/user.service";
 import {SubjectService} from "../../services/subject.service";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptEventsComponent} from "../prompt-events/prompt-events.component";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -25,14 +27,17 @@ import {SubjectService} from "../../services/subject.service";
 export class DashboardAdminComponent implements OnInit {
   currentTime!: string;
   currentDate!: string;
-  totalSubject: number = 8;
-  totalStudents: number = 300;
-  totalProfessors: number = 32;
+  totalSubject: number = 0;
+  totalStudents: number = 0;
+  totalProfessors: number = 0;
+  upcomingSchedules: Schedule[] = [];
+  schedules: Schedule[] = [];
 
   constructor(
     private scheduleService : ScheduleService,
     private userService: UserService,
-    private subjectService: SubjectService
+    private subjectService: SubjectService,
+    private dialog: MatDialog
   ) {
   }
 
@@ -48,6 +53,7 @@ export class DashboardAdminComponent implements OnInit {
     this.scheduleService.getAllSchedules().subscribe({
       next: data => {
         this.calendarOptions.events = this.transformToCalendarEvents(data);
+        this.schedules = data;
       }
     })
   }
@@ -102,7 +108,8 @@ export class DashboardAdminComponent implements OnInit {
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
-    dateClick: (arg: DateClickArg) => this.handleDateClick(arg),
+    dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
+    eventClick: () => console.log("hello"),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = 'linear-gradient(to bottom, #E4581D, #F9653F)';
@@ -122,12 +129,19 @@ export class DashboardAdminComponent implements OnInit {
     }
   };
 
-  //Temporary: if the date cell was click!
-  handleDateClick(arg: DateClickArg) {
-    alert('date click! ' + arg.dateStr);
-  }
+  openDateSchedule(arg: DateClickArg) {
+    const date = arg.dateStr;
 
-  upcomingSchedules: Schedule[] = [];
+    const schedule = this.schedules.filter(
+      schedule => schedule.scheduleDate === date);
+
+    this.dialog.open(PromptEventsComponent, {
+      data: {
+        title: "Events",
+        schedules: schedule,
+      }
+    })
+  }
 
   get filteredUpcomingSchedules(): Schedule[] {
     return this.upcomingSchedules.slice();
