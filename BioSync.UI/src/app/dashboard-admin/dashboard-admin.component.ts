@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {FullCalendarModule} from '@fullcalendar/angular';
-import {CalendarOptions} from '@fullcalendar/core';
+import {CalendarOptions, EventClickArg} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, {DateClickArg} from '@fullcalendar/interaction';
 import {ScheduleService} from "../../services/schedule.service";
@@ -10,6 +10,7 @@ import {UserService} from "../../services/user.service";
 import {SubjectService} from "../../services/subject.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptEventsComponent} from "../prompt-events/prompt-events.component";
+import {PromptScheduleComponent} from "../prompt-schedule/prompt-schedule.component";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -109,7 +110,7 @@ export class DashboardAdminComponent implements OnInit {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
     dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
-    eventClick: () => console.log("hello"),
+    eventClick: (info) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = 'linear-gradient(to bottom, #E4581D, #F9653F)';
@@ -136,9 +137,29 @@ export class DashboardAdminComponent implements OnInit {
       schedule => schedule.scheduleDate === date);
 
     this.dialog.open(PromptEventsComponent, {
+      width: '400px',
       data: {
         title: "Events",
         schedules: schedule,
+      }
+    })
+  }
+
+  handleEventClick(info: EventClickArg): void {
+    const event = info.event;
+    const startTime = new Date(event.start!).toLocaleTimeString('en-GB', { hour12: false });
+    const eventDate = new Intl.DateTimeFormat('en-GB').format(event.start!);
+    const [month, day, year] = eventDate.split('/');
+    const scheduleDate = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')}`;
+
+    const scheduledEvent = this.schedules.find(
+      schedule => schedule.scheduleDate === scheduleDate && schedule.startTime === startTime
+    );
+
+    this.dialog.open(PromptScheduleComponent, {
+      width: '400px',
+      data: {
+        schedule: scheduledEvent,
       }
     })
   }
@@ -148,20 +169,15 @@ export class DashboardAdminComponent implements OnInit {
   }
 
   getTime12HourFormat(time: string): string {
-    const date = new Date(`1970-01-01T${time}Z`);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return this.scheduleService.getTime12HourFormat(time);
   }
 
   getMonth(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { month: 'long' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getMonth(dateString);
   }
 
   getDay(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getDay(dateString);
   }
 
   loadDashboardNumbers(){

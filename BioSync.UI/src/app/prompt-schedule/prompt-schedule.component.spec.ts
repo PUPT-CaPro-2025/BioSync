@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewScheduleComponent } from './view-schedule.component';
+import { PromptScheduleComponent } from './prompt-schedule.component';
 
-describe('ViewScheduleComponent', () => {
-  let component: ViewScheduleComponent;
-  let fixture: ComponentFixture<ViewScheduleComponent>;
+describe('PromptScheduleComponent', () => {
+  let component: PromptScheduleComponent;
+  let fixture: ComponentFixture<PromptScheduleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViewScheduleComponent]
+      imports: [PromptScheduleComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViewScheduleComponent);
+    fixture = TestBed.createComponent(PromptScheduleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
