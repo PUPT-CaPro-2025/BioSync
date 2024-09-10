@@ -13,11 +13,11 @@
                                     </div>
                                     @if(isDropdownOpenAddSchedule) {
                                         <div class="add-schedule-content flex flex-col">
-                                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full" 
+                                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
                                                 (click)="toggleOneAddSchedule()">
                                                 Add One Time Schedule
                                             </div>
-                                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full" 
+                                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
                                                 (click)="toggleWeeklyAddSchedule()">
                                                 Add Recurrence Schedule
                                             </div>
@@ -30,17 +30,32 @@
                 </div>
                 <div class="filter-container">
                     <mat-toolbar class="filter-content">
-                        <div class="select-semester-container">
-                            <mat-select [(value)]="selectedYearSem" id="section"
-                                    name="section" class="bg-transparent
+                      <div class="flex w-full gap-2">
+                        <div class="select-semester-container w-full">
+                          <mat-select [(value)]="selectedAcademicYear" id="academic-year"
+                                      name="section" class="bg-transparent
                                     border-b-2 border-darkGray focus:border-brightRed
                                     focus:outline-none transition-colors
-                                    duration-300 w-full py-2 px-1">
-                                    @for(yearSem of yearSemesters; track yearSem) {
-                                        <mat-option [value]="yearSem">{{yearSem}}</mat-option>
-                                    }
-                            </mat-select>
+                                    duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
+                            @for(academicYear of academicYears; track academicYear) {
+                              <mat-option [value]="academicYear.id">
+                               AY {{academicYear.startYear}} - {{ academicYear.endYear }}
+                              </mat-option>
+                            }
+                          </mat-select>
                         </div>
+                        <div class="select-semester-container w-full">
+                          <mat-select [(value)]="selectedSemester" id="semester"
+                                      name="section" class="bg-transparent
+                                      border-b-2 border-darkGray focus:border-brightRed
+                                      focus:outline-none transition-colors
+                                      duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
+                            @for(semester of semesters; track $index) {
+                              <mat-option [value]="$index + 1">{{semester}}</mat-option>
+                            }
+                          </mat-select>
+                        </div>
+                      </div>
                         <div class="dropdown-container">
                             <div class="dropdown-content">
                                 <div class="entry-container">
