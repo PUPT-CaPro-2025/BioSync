@@ -55,7 +55,7 @@ export class ScheduleService {
   }
 
   getTime12HourFormat(time: string): string {
-    const date = new Date(`1970-01-01T${time}Z`);
+    const date = new Date(`1970-01-01T${time}`);
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
   }
 
