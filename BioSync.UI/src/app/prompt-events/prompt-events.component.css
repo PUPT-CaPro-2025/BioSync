@@ -1,0 +1,15 @@
+.dialog-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+mat-icon {
+  font-size: 24px;
+}

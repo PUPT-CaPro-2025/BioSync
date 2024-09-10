@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomepageComponent } from './homepage/homepage.component';
 import { ScheduleComponent } from './schedule/schedule.component';
 import { SubjectComponent } from './subject/subject.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
