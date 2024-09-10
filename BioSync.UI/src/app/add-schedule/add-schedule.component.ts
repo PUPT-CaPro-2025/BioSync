@@ -2,7 +2,7 @@ import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef} from 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
-import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule, DatePipe} from '@angular/common';
 import {SubjectService} from "../../services/subject.service";
 import {Subject} from "../../model/subject-model";
@@ -26,6 +26,7 @@ import {Laboratory} from "../../model/laboratory.model";
 import {LaboratoryService} from "../../services/laboratory.service";
 import {catchError, of} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-add-schedule',
@@ -122,7 +123,7 @@ export class AddScheduleComponent implements OnInit{
     private datePipe: DatePipe,
     private sectionService: SectionService,
     private schoolYearService: SchoolYearService,
-    private laboratoryService: LaboratoryService
+    private laboratoryService: LaboratoryService,
   ) {}
 
   ngOnInit() {
@@ -323,11 +324,17 @@ export class AddScheduleComponent implements OnInit{
   }
 
   openSomethingWentWrong(){
-    this.dialog.open(PromptOkayComponent, {
+    const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Something Went Wrong!',
         message: 'Schedule conflict detected.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.cancelOrAddSchedule();
       }
     })
   }
