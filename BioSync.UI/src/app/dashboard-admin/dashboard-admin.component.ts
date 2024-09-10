@@ -75,7 +75,8 @@ export class DashboardAdminComponent implements OnInit {
     return schedules.map(schedule => ({
       title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.section})`,
       start: `${schedule.scheduleDate}T${schedule.startTime}`,
-      end: `${schedule.scheduleDate}T${schedule.endTime}`
+      end: `${schedule.scheduleDate}T${schedule.endTime}`,
+      laboratory: `${schedule.laboratory?.id}`
     }));
   }
 
@@ -151,9 +152,11 @@ export class DashboardAdminComponent implements OnInit {
     const eventDate = new Intl.DateTimeFormat('en-GB').format(event.start!);
     const [month, day, year] = eventDate.split('/');
     const scheduleDate = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')}`;
+    const laboratory = event.extendedProps['laboratory'];
 
     const scheduledEvent = this.schedules.find(
       schedule => schedule.scheduleDate === scheduleDate && schedule.startTime === startTime
+      && schedule.laboratory?.id === +laboratory
     );
 
     this.dialog.open(PromptScheduleComponent, {
