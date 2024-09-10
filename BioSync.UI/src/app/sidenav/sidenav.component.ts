@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
-import {NavigationEnd, Router, RouterLink} from '@angular/router';
+import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatSelectModule} from '@angular/material/select';
@@ -26,6 +26,7 @@ import {filter} from 'rxjs/operators';
     CommonModule,
     MatIconModule,
     NgOptimizedImage,
+    RouterLinkActive,
   ],
   providers: [LogoutService, CookieService],
   templateUrl: './sidenav.component.html',
