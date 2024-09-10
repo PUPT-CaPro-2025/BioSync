@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
-import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -17,7 +16,7 @@ import {SchoolYear} from "../../model/school.year.model";
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
   providers: [ScheduleService, SchoolYearService],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
@@ -238,22 +237,6 @@ export class ScheduleComponent implements OnInit{
 
   handleEditBackToSchedule(): void {
     this.isEditSchedule = false;
-  }
-
-  toggleViewSchedule(scheduleId: number | undefined): void {
-    this.isViewSchedule = !this.isViewSchedule;
-
-    if(this.isViewSchedule){
-      this.currentSchedule = scheduleId;
-    }
-  }
-
-  setViewId(){
-    return this.currentSchedule;
-  }
-
-  handleViewBackToSchedule(): void {
-    this.isViewSchedule = false;
   }
 
   filteredRepeatedSchedules(): void {

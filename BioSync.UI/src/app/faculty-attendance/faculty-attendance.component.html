@@ -1,6 +1,5 @@
 
 @if(!isEditSchedule) {
-    @if(!isViewSchedule) {
         <div class="header">
             <mat-toolbar class="toolbar-container">
                 <span>List of Subjects and Schedules - ALL</span>
@@ -112,9 +111,6 @@
                 </div>
             </div>
         </div>
-        } @else {
-            <app-view-schedule (viewBackToSchedule)="handleViewBackToSchedule()"></app-view-schedule>
-        }
     } @else {
         <app-edit-schedule (editBackToSchedule)="handleEditBackToSchedule()"/>
 }

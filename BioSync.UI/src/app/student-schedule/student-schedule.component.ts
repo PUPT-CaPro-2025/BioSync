@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -6,10 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
-import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import {MatDialog} from "@angular/material/dialog";
 
 interface Schedule {
   subject: string,
@@ -23,7 +20,7 @@ interface Schedule {
 @Component({
   selector: 'app-student-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
   providers: [ScheduleService],
   templateUrl: './student-schedule.component.html',
   styleUrl: './student-schedule.component.css'
