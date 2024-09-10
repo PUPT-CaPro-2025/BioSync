@@ -29,7 +29,6 @@ export const routes: Routes = [
     { path: "visitor-log", component: LoginVisitorComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
-    { path: "schedule/add", component: AddScheduleComponent },
     { path: "subject", component: SubjectComponent },
     { path: "visitor", component: VisitorComponent },
     { path: "professor", component: ProfessorComponent },
