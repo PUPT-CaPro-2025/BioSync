@@ -8,17 +8,25 @@ import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 import {CookieService} from "../../services/cookie.service";
+import {CryptoService} from "../../services/crypto.service";
 
 @Component({
   selector: 'app-login-faculty',
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
-  providers: [LoginService, LoginAdminComponent, AuthService, CookieService],
+  providers: [
+    LoginService,
+    LoginAdminComponent,
+    AuthService,
+    CookieService,
+    CryptoService
+  ],
   templateUrl: './login-faculty.component.html',
   styleUrl: './login-faculty.component.css'
 })
 export class LoginFacultyComponent implements OnInit{
   facultyLoginForm!: FormGroup;
+  credentialsError = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -26,7 +34,8 @@ export class LoginFacultyComponent implements OnInit{
     private alComp: LoginAdminComponent,
     private authService: AuthService,
     private router: Router,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private cryptoService: CryptoService
   ) {}
 
   ngOnInit() {
@@ -45,25 +54,33 @@ export class LoginFacultyComponent implements OnInit{
   }
 
   submit(): void{
-    if(!this.facultyLoginForm.valid) return; //TODO: ADD PROMPT
+    if(!this.facultyLoginForm.valid) return;
 
     const facultyCredentials = this.facultyLoginForm.value;
 
     this.loginService.login(facultyCredentials).subscribe({
       next: (response: Authentication) => {
-        if(response.role !== 'FACULTY') return //TODO: ADD PROMPT
+        if(response.role !== 'FACULTY') {
+          this.credentialsError = !this.credentialsError;
+          return;
+        }
 
         const token = response.token;
 
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
 
+        const encryptedUserId = this.cryptoService.encrypt(response.userId)
+
         this.cookieService.setCookie("authToken", token, expiry)
         this.cookieService.setCookie("role", response.role);
+        this.cookieService.setCookie("user_id", encryptedUserId);
 
         this.alComp.navigateTo('/dashboard');
       },
-      error: err => console.error(err)
+      error: () => {
+        this.credentialsError = !this.credentialsError;
+      }
     })
   }
 

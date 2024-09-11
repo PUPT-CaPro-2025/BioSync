@@ -21,9 +21,15 @@ jobs:
     - name: Install Dependencies
       run: npm ci
 
-    - name: Substitute variables in app.settings
+    - name: Substitute apiUrl in app.settings
       run: |
-           sed -i "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+        sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+      shell: /usr/bin/bash -e {0}
+
+    - name: Substitute cryptoKey in app.settings
+      run: |
+        sed -i -e "s~key: '.*'~key: '${{ secrets.CRYPTO_KEY }}'~" environment/app.setting.ts
+      shell: /usr/bin/bash -e {0}
 
     - name: Build Angular Project
       run: npm run build

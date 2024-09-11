@@ -7,16 +7,17 @@ import { FormsModule } from '@angular/forms';
 import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
-import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
+import {SchoolYearService} from "../../services/school.year.service";
+import {SchoolYear} from "../../model/school.year.model";
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
-  providers: [ScheduleService],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
+  providers: [ScheduleService, SchoolYearService],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -30,13 +31,17 @@ export class ScheduleComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  yearSemesters: string[] = [
-    'School Year 2324 - First Semester', 'School Year 2324 - Second Semester', 'School Year 2324 - Summer'
-  ];
+  academicYears: SchoolYear[] = [];
+  selectedAcademicYear: number | undefined;
 
-  selectedYearSem = 'School Year 2324 - Summer';
+
+  semesters: string[] = [
+    'First Semester', 'Second Semester', 'Summer Semester',
+  ];
+  selectedSemester = 1;
 
   schedules: Schedule[] = [];
+  scheduleContainer: Schedule[] = [];
 
   @Input() totalItems: number = 500;
   itemsPerPage: number = 10;
@@ -54,21 +59,37 @@ export class ScheduleComponent implements OnInit{
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
+    private schoolYearService: SchoolYearService
     ) {}
 
   ngOnInit() {
     this.getAllSchedules();
+    this.getAcademicYears();
   }
 
   getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
       next: (schedules) => {
         this.schedules = schedules;
+        this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
+        this.setLatestSchoolYear();
       },
       error: (err) => console.error(err),
     });
+  }
+
+  setLatestSchoolYear() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedAcademicYear = latestSchedule.schoolYear?.id;
+    }
+  }
+
+  sortSchedulesById(schedules: Schedule[]): Schedule[] {
+    return schedules.sort((a, b) => b.id - a.id);
   }
 
   getRecurrenceDays(recId: string): string[] {
@@ -76,7 +97,7 @@ export class ScheduleComponent implements OnInit{
     if (schedules) {
       const daysSet = new Set<string>();
       schedules.forEach((schedule) => {
-        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString())); // Ensure `day` is of type `string`
+        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString()));
       });
       return Array.from(daysSet);
     }
@@ -89,6 +110,7 @@ export class ScheduleComponent implements OnInit{
     })
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -103,7 +125,7 @@ export class ScheduleComponent implements OnInit{
     const [hours, minutes] = time.split(':').map(Number);
 
     const period = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12; // Convert 0 hours to 12
+    const formattedHours = hours % 12 || 12;
     const formattedMinutes = minutes.toString().padStart(2, '0');
 
     return `${formattedHours}:${formattedMinutes} ${period}`;
@@ -141,6 +163,14 @@ export class ScheduleComponent implements OnInit{
           )
         }
       })
+  }
+
+  getAcademicYears() {
+    this.schoolYearService.getSchoolYears().subscribe({
+      next: (academicYears: SchoolYear[]) => {
+        this.academicYears = academicYears;
+      }
+    })
   }
 
   get pages(): number[] {
@@ -209,22 +239,6 @@ export class ScheduleComponent implements OnInit{
     this.isEditSchedule = false;
   }
 
-  toggleViewSchedule(scheduleId: number | undefined): void {
-    this.isViewSchedule = !this.isViewSchedule;
-
-    if(this.isViewSchedule){
-      this.currentSchedule = scheduleId;
-    }
-  }
-
-  setViewId(){
-    return this.currentSchedule;
-  }
-
-  handleViewBackToSchedule(): void {
-    this.isViewSchedule = false;
-  }
-
   filteredRepeatedSchedules(): void {
     const filteredSchedules: Schedule[] = [];
     const recurrenceIdStorage: string[] = [];
@@ -256,6 +270,16 @@ export class ScheduleComponent implements OnInit{
 
   onAddScheduleClick() {
     this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-    
+
+  }
+
+  onFilterChange() {
+    this.schedules = this.scheduleContainer.filter(
+      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+      && schedule.semester?.id === this.selectedSemester
+    )
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
   }
 }

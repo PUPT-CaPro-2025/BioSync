@@ -6,9 +6,12 @@ public class AuthenticationResponse {
 
     private String role;
 
-    public AuthenticationResponse(String token, String role) {
+    private String userId;
+
+    public AuthenticationResponse(String token, String role, String userId) {
         this.token = token;
         this.role = role;
+        this.userId = userId;
     }
 
     public String getToken() {
@@ -16,4 +19,6 @@ public class AuthenticationResponse {
     }
 
     public String getRole() { return role; }
+
+    public String getUserId() { return userId; }
 }

@@ -1,0 +1,41 @@
+<h1 mat-dialog-title>
+  {{ data.schedule.subject?.code }}
+  - ({{ data.schedule.section?.program?.programAbbreviation }}
+  {{ data.schedule.section?.year }} - {{ data.schedule.section?.section }})
+</h1>
+<div mat-dialog-content>
+  <div class="flex flex-col rounded-lg">
+    <div class="flex justify-between px-2 py-2">
+      <div class="font-semibold">Subject:</div>
+      <div>{{ data.schedule.subject?.name }}</div>
+    </div>
+    <div class="flex justify-between px-2 py-2">
+      <div class="font-semibold">Professor:</div>
+      <div>
+        {{ data.schedule.professor?.firstName }}
+        {{ data.schedule.professor?.lastName }}
+      </div>
+    </div>
+    <div class="flex justify-between px-2 py-2">
+      <div class="font-semibold">Location:</div>
+      <div>{{ data.schedule.laboratory?.name }}</div>
+    </div>
+    <div class="flex justify-between px-2 py-2">
+      <div class="font-semibold">Start</div>
+      <div class="font-semibold">End</div>
+    </div>
+    <div class="flex justify-between px-2 py-2">
+      <div class="flex justify-center gap-2">
+        <mat-icon>access_time</mat-icon>
+        {{ getTime12HourFormat(data.schedule.startTime) }}
+      </div>
+      <div class="flex justify-center gap-2">
+        <mat-icon>access_time</mat-icon>
+        <div>{{ getTime12HourFormat(data.schedule.endTime) }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Okay</button>
+</div>
