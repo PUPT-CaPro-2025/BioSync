@@ -1,45 +1,50 @@
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
         <span class="text-custom-32 text-brightRed">Edit Schedule</span>
-        <p class="text-custom-16 text-lightGray">
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <div class="w-[94%] bg-transparent">
+        <p class="text-custom-16 text-lightGray schedule-reminder">
             Reminder! For scheduling of make-up classes, please make sure
             that the professor, laboratory room, section, and semester are
             the same as the regular class.
         </p>
-    </mat-toolbar>
+    </div>
 </div>
 <div class="flex justify-center items-center">
-    <div class="mt-8 flex justify-between w-[94%]
-            bg-white py-4 px-4 rounded-2xl ">
-        <div class="flex gap-5">
-            <div class="flex flex-col gap-4">
-                <p class="text-brightRed text-custom-16 font-medium">
+    <div class="mt-8 w-[94%] bg-white py-4 px-4 rounded-2xl">
+        <div class="flex flex-col gap-6">
+            <div class="flex justify-start items-start row-content">
+                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
                     Subject Code:
                 </p>
-                <p class="text-brightRed text-custom-16 font-medium">
-                    Subject Name:
-                </p>
-                <p class="text-brightRed text-custom-16 font-medium">
-                    Description:
+                <p class="text-darkGray text-custom-16 w-[80%] data">
+                    {{ scheduleToEdit.subject?.code }}
                 </p>
             </div>
-            <div class="flex flex-col gap-4">
-                <p class="text-darkGray text-custom-16">
-                  {{ scheduleToEdit.subject?.code }}
+            <div class="flex justify-start items-start row-content">
+                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+                    Subject Name:
                 </p>
-                <p class="text-darkGray text-custom-16">
-                  {{ scheduleToEdit.subject?.name }}
+                <p class="text-darkGray text-custom-16 w-[80%] data">
+                    {{ scheduleToEdit.subject?.name }}
                 </p>
-                <p class="text-darkGray text-custom-16">
-                  {{ scheduleToEdit.subject?.description }}
+            </div>
+            <div class="flex justify-start items-start row-content">
+                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+                    Description:
+                </p>
+                <p class="text-darkGray text-custom-16 w-[80%] data">
+                    {{ scheduleToEdit.subject?.description }}
                 </p>
             </div>
         </div>
     </div>
 </div>
 <div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[94%] bg-transparent" [formGroup]="editScheduleForm">
-        <div class="w-[48%] flex flex-col gap-4">
+    <form class="mt-8 flex justify-between w-[94%] bg-transparent form-content" [formGroup]="editScheduleForm">
+        <div class="w-[48%] flex flex-col gap-4 row-block">
             <div class="group flex flex-col gap-1">
                 <label for="section" class="text-custom-16
                     text-darkGray transition-colors duration-300
@@ -59,8 +64,8 @@
                         }
                 </mat-select>
             </div>
-            <div class="flex justify-between">
-                <div class="group flex flex-col gap-1 w-[47%]">
+            <div class="flex justify-between sub-form-content">
+                <div class="group flex flex-col gap-1 w-[47%] sub-row-block">
                     <label for="start-time" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -72,7 +77,7 @@
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 px-1" formControlName="startTime">
                 </div>
-                <div class="group flex flex-col gap-1 w-[47%]">
+                <div class="group flex flex-col gap-1 w-[47%] sub-row-block-two">
                     <label for="end-time" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -85,8 +90,8 @@
                         duration-300 w-full py-2 px-1" formControlName="endTime">
                 </div>
             </div>
-            <div class="flex justify-between">
-              <div class="group flex flex-col gap-1 w-[47%]">
+            <div class="flex justify-between sub-form-content">
+              <div class="group flex flex-col gap-1 w-[47%] sub-row-block">
                 <label for="subject-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -123,7 +128,7 @@
                   <mat-datepicker #picker></mat-datepicker>
                 </div>
               </div>
-                <div class="group flex flex-col gap-1 w-[47%]">
+                <div class="group flex flex-col gap-1 w-[47%] sub-row-block-two">
                     <label for="recurrence" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -160,7 +165,7 @@
                 </mat-select>
             </div>
         </div>
-        <div class="w-[48%] flex flex-col gap-4">
+        <div class="w-[48%] flex flex-col gap-4 row-block-two">
             <div class="group flex flex-col gap-1">
                 <label for="professor" class="text-custom-16
                     text-darkGray transition-colors duration-300
@@ -234,17 +239,17 @@
                         }
                 </mat-select>
             </div>
-            <div class="flex flex-col justify-end gap-4 mt-10">
-                <div class="flex gap-[40px] justify-end">
+            <div class="flex flex-col justify-end gap-4 mt-10 mb-10 button-container">
+                <div class="flex gap-[40px] justify-end button-content">
                     <button class="text-custom-14 text-lightGray py-2
                         px-20 border-2 rounded-full border-lightGray
-                        hover:bg-lightGray hover:text-white"
+                        hover:bg-lightGray hover:text-white form-button"
                         (click)="cancelOrEditSchedule()">
                         Back
                     </button>
                     <button class="text-custom-14 text-white py-2 px-19
                         bg-gradient-red-orange rounded-full
-                        hover:bg-gradient-dark-red-orange hover:text-f4White"
+                        hover:bg-gradient-dark-red-orange hover:text-f4White form-button"
                         (click)="submit()">
                         Save
                     </button>
