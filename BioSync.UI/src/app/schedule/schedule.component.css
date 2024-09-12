@@ -1,11 +1,14 @@
-.header, .filter-container, .table-container, .bottom-container {
+.header,
+.filter-container,
+.table-container,
+.bottom-container {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .toolbar-container {
-    margin-top: 5rem;
+    margin-top: 2rem;
     background: none;
     display: flex;
     justify-content: space-between;
@@ -14,7 +17,7 @@
 
 .toolbar-container span {
     font-size: 32px;
-    color: #D31119;
+    color: #F84C42;
 }
 
 .toolbar-button {
@@ -24,9 +27,9 @@
 }
 
 .print-schedule, .add-schedule-button {
-    font-size: 14px;
-    padding: 8px 50px;
-    background-color: #D31119;
+    font-size: 12px;
+    padding: 4px 40px;
+    background-color: #F84C42;
     color: white;
     border: none;
     border-radius: 40px;
@@ -39,7 +42,7 @@
 
 .dropdown-icon {
     position: absolute;
-    right: 285px;
+    right: 240px;
     top: 50%; 
     transform: translateY(-50%);
 }
@@ -47,7 +50,7 @@
 .add-schedule-content {
     position: absolute;
     top: 100%; 
-    left: 1.5%; 
+    left: 0%; 
     width: 210px;
     background-color: #FFFFFF;
     border-radius: 10px;
@@ -79,6 +82,16 @@
     width: 22%;
 }
 
+.select-semester-container mat-select {
+    color: #7F7F7F;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.select-semester-container mat-select::before {
+    border-bottom-color: #7F7F7F !important;
+}
+
 .dropdown-content {
     display: flex;
     gap: 40px;
@@ -92,8 +105,8 @@
 }
 
 .entry-container span {
-    color: #D31119;
-    font-size: 14px;
+    color: #F84C42;
+    font-size: 12px;
 }
 
 .entry-container select {
@@ -101,17 +114,17 @@
     border: 1px solid #F2E8E9;
     border-radius: 4px;
     padding: 5px 10px;
-    font-size: 14px;
+    font-size: 12px;
     background-color: #f9f9f9;
     cursor: pointer;
 }
 
 .sort-container select {
-    color: #D31119;
+    color: #F84C42;
     border: 1px solid #F2E8E9;
     border-radius: 4px;
     padding: 5px 10px;
-    font-size: 14px;
+    font-size: 12px;
     background-color: #f9f9f9;
     cursor: pointer;
 }
@@ -128,35 +141,39 @@
 
 .attributes {
     font-weight: bold;
-    color: #D31119;
-    padding: 25px;
+    font-size: 12px;
+    color: #F84C42;
+    padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
     display: flex;
-    justify-content: space-between;
 }
 
 .row-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    height: 480px;
+    gap: 8px;
+    height: 50vh;
     overflow-y: auto;
 }
 
 .row {
+    font-size: 12px;
     display: flex;
     align-items: center; 
     padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
-    justify-content: space-between;
 }
 
 .subject-table .cell {
     flex: 1;
+    padding: 0 10px;
     text-align: left;
-    padding: 5px 10px;
+}
+
+.subject-table .cell:last-child {
+    flex: 0 0 180px;
 }
 
 .action-container {
@@ -165,20 +182,26 @@
 }
 
 .view-button, .edit-button, .delete-button {
-    background-color: #393939;
+    background-color: #F84C42;
     color: white;
     border: none;
-    padding: 10px;
+    padding: 4px 4px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 14px;
     cursor: pointer;
-    border-radius: 15px;
+    border-radius: 12px;
 }
 
-.delete-button {
-    background-color: #D31119;
+.view-button mat-icon, .edit-button mat-icon, .delete-button mat-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+}
+
+.view-button, .edit-button {
+    background-color: #393939;
 }
 
 .view-button:hover, .edit-button:hover {
@@ -201,7 +224,7 @@
 }
 
 .paginator {
-    margin-top: 1rem;
+    margin-top: 8px;
     background: none;
     display: flex;
     justify-content: space-between;
@@ -211,6 +234,7 @@
 
 .paginator-info {
     color: #393939;
+    font-size: 12px;
 }
 
 .paginator-controls {
@@ -220,6 +244,7 @@
 
 .paginator-controls span {
     color: #393939;
+    font-size: 12px;
 }
 
 .paginator-controls select {
@@ -227,7 +252,7 @@
     border: 1px solid #393939;
     border-radius: 4px;
     padding: 5px 10px;
-    font-size: 14px;
+    font-size: 12px;
     background-color: #f9f9f9;
     cursor: pointer;
     margin: 0 10px;
@@ -235,23 +260,25 @@
 
 .paginator-button-container {
     display: flex;
+    flex-direction: row;
     gap: 10px;
 }
-  
+
 .paginator-button-container button {
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 10px;
-    font-size: 14px;
+    font-size: 12px;
     padding: 10px 20px;
     color: #7F7F7F;
     border: none;
     border-radius: 40px;
     cursor: pointer;
 }
-  
+
 .paginator-button-container button.active-button {
-    color: #D31119;
+    color: #F84C42;
 }
 
 .paginator-button-container img {
@@ -261,5 +288,24 @@
 
 .paginator-button-container img.active-icon {
     filter: invert(41%) sepia(68%) saturate(6900%) 
-            hue-rotate(336deg) brightness(100%) contrast(101%);
+    hue-rotate(336deg) brightness(100%) contrast(101%);
+}
+
+.row-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.row-container::-webkit-scrollbar-track {
+    background-color: #E3E3E3;
+    border-radius: 10px;
+}
+
+.row-container::-webkit-scrollbar-thumb {
+    background-color: #D33C33;
+    border-radius: 10px;
+    border: 2px solid #E3E3E3;
+}
+
+.row-container::-webkit-scrollbar-thumb:hover {
+    background-color: #F9653F;
 }
