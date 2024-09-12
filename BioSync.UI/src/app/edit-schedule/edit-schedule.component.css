@@ -13,3 +13,141 @@
     -webkit-appearance: none;
     margin: 0;
 }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.row {
+  margin-bottom: 15px;
+}
+
+.bubble-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bubble {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.bubble.selected {
+  background-color: #F84C42;
+  color: white;
+}
+
+@media (max-width: 1160px) {
+    .label {
+        width: 25%;
+    }
+  
+}
+  
+@media (max-width: 1000px) {
+  .label {
+      width: 30%;
+  }
+
+}
+
+@media (max-width: 900px) {
+  .label {
+      width: 25%;
+  }
+}
+
+@media (max-width: 650px) {
+  .toolbar-container span {
+      font-size: 24px;
+  }
+
+  .row-content {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .label, .data {
+      width: 100%;
+  }
+
+  .form-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .row-block {
+    width:100%;
+  }
+
+  .row-block-two {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 550px) {   
+  .schedule-reminder {
+    font-size: 14px;
+  }
+
+  .subject-select {
+    width: 100%;
+  }
+
+  .sub-form-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .sub-row-block {
+    width:100%;
+  }
+
+  .sub-row-block-two {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 510px) {
+  .button-container {
+    justify-content: center;
+  }
+
+  .button-content {
+    justify-content: center;
+    flex-direction: column-reverse;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .form-button {
+    width: 100%;
+  }
+}
