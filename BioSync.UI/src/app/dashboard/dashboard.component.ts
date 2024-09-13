@@ -3,6 +3,7 @@ import {CookieService} from "../../services/cookie.service";
 import {DashboardProfessorComponent} from "../dashboard-professor/dashboard-professor.component";
 import {DashboardStudentComponent} from "../dashboard-student/dashboard-student.component";
 import { DashboardAdminComponent } from '../dashboard-admin/dashboard-admin.component';
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,15 +13,19 @@ import { DashboardAdminComponent } from '../dashboard-admin/dashboard-admin.comp
     DashboardStudentComponent,
     DashboardAdminComponent
   ],
-  providers: [CookieService],
+  providers: [CookieService, CryptoService],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
 
-  constructor(private cookie: CookieService) {}
+  constructor(
+    private cookieService: CookieService, 
+    private cryptoService: CryptoService
+  ) {}
 
   getRole(): string{
-    return <string>this.cookie.getCookie('role');
+    const getTheRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(getTheRole);
   }
 }
