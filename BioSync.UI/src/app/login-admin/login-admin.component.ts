@@ -7,12 +7,18 @@ import {Authentication} from "../../model/authentication.model";
 import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../services/auth/auth.service";
 import {CookieService} from "../../services/cookie.service";
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-login-admin',
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
-  providers: [LoginService, AuthService, CookieService],
+  providers: [
+    LoginService, 
+    AuthService, 
+    CookieService, 
+    CryptoService
+  ],
   templateUrl: './login-admin.component.html',
   styleUrl: './login-admin.component.css'
 })
@@ -25,7 +31,8 @@ export class LoginAdminComponent implements OnInit {
     private formBuilder: FormBuilder,
     private loginService: LoginService,
     private authService: AuthService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private cryptoService: CryptoService
   ) {}
 
   ngOnInit() {
@@ -59,9 +66,10 @@ export class LoginAdminComponent implements OnInit {
 
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
+        const encryptedRole = this.cryptoService.encrypt(response.role);
 
         this.cookieService.setCookie("authToken", token, expiry)
-        this.cookieService.setCookie("role", response.role);
+        this.cookieService.setCookie("role", encryptedRole);
 
         this.navigateTo('/dashboard');
       },
