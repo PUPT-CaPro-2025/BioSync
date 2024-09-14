@@ -41,9 +41,6 @@ public class User implements UserDetails {
     @ManyToOne
     private Section section;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Fingerprint> fingerprints = new ArrayList<>();
-
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;
@@ -157,13 +154,5 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public List<Fingerprint> getFingerprints() {
-        return fingerprints;
-    }
-
-    public void setFingerprints(List<Fingerprint> fingerprints) {
-        this.fingerprints = fingerprints;
     }
 }
