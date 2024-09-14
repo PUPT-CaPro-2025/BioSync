@@ -75,7 +75,7 @@ export class AddStudentComponent implements OnInit{
       usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      middleName: ['', [Validators.required]],
+      middleName: [''],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
       section: ['',Validators.required]

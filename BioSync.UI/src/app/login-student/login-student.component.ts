@@ -56,10 +56,11 @@ export class LoginStudentComponent implements OnInit {
 
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
-        const encryptedUserId = this.cryptoService.encrypt(response.userId)
+        const encryptedUserId = this.cryptoService.encrypt(response.userId);
+        const encryptedRole = this.cryptoService.encrypt(response.role);
 
-        this.cookieService.setCookie("authToken", token, expiry)
-        this.cookieService.setCookie("role", response.role);
+        this.cookieService.setCookie("authToken", token, expiry);
+        this.cookieService.setCookie("role", encryptedRole);
         this.cookieService.setCookie("user_id", encryptedUserId);
 
         this.alComponent.navigateTo('/dashboard');
