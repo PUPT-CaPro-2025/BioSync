@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +40,9 @@ public class User implements UserDetails {
 
     @ManyToOne
     private Section section;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Fingerprint> fingerprints = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     @JsonIgnore
@@ -155,5 +159,11 @@ public class User implements UserDetails {
         this.role = role;
     }
 
+    public List<Fingerprint> getFingerprints() {
+        return fingerprints;
+    }
 
+    public void setFingerprints(List<Fingerprint> fingerprints) {
+        this.fingerprints = fingerprints;
+    }
 }
