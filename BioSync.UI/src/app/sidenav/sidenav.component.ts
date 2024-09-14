@@ -30,8 +30,8 @@ import { CryptoService } from '../../services/crypto.service';
     RouterLinkActive,
   ],
   providers: [
-    LogoutService, 
-    CookieService, 
+    LogoutService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './sidenav.component.html',
@@ -178,7 +178,7 @@ export class SidenavComponent implements OnInit {
   }
 
   getRole(): string {
-    const getTheRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
-    return this.cryptoService.decrypt(getTheRole);
+    const encryptedRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(encryptedRole);
   }
 }
