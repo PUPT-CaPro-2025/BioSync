@@ -26,6 +26,7 @@ public class FingerprintServiceImpl implements FingerprintService {
 
     @Value("${fingerprints.directory}")
     private String fingerprintsDirectory;
+    private final double threshold = 40;
     private final FingerprintRepository fingerprintRepository;
     private final UserRepository userRepository;
 
@@ -98,7 +99,6 @@ public class FingerprintServiceImpl implements FingerprintService {
         var matcher = new FingerprintMatcher(probe);
         double similarity = matcher.match(candidate);
 
-        double threshold = 40;
         return similarity >= threshold;
     }
 
