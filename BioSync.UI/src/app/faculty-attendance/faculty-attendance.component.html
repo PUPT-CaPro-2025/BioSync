@@ -1,8 +1,7 @@
-
 @if(!isEditSchedule) {
         <div class="header">
             <mat-toolbar class="toolbar-container">
-                <span>List of Subjects and Schedules - ALL</span>
+                <span>Attendance Management</span>
                 <div class="toolbar-button">
                     <button class="print-schedule">Print Attendance Reports</button>
                 </div>
@@ -51,8 +50,6 @@
                     <div class="cell">Course Year and Section</div>
                     <div class="cell">Scheduled Date</div>
                     <div class="cell">Laboratory</div>
-                    <div class="cell">Time Started</div>
-                    <div class="cell">Time Ended</div>
                     <div class="cell">Action</div>
                 </div>
                 <div class="row-container text-custom-12">
@@ -62,8 +59,6 @@
                             <div class="cell">{{ attendance.courseYearSection }}</div>
                             <div class="cell">{{ attendance.scheduleDate }}</div>
                             <div class="cell">{{ attendance.laboratory }}</div>
-                            <div class="cell">{{ attendance.timeStarted }}</div>
-                            <div class="cell">{{ attendance.timeEnded }}</div>
                             <div class="cell">
                                 <div class="action-container">
                                     <button class="view-button" (click)="toggleViewSchedule()"><mat-icon>visibility</mat-icon></button>
