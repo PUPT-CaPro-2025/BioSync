@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface FingerprintRepository extends JpaRepository<Fingerprint, Long> {
     List<Fingerprint> getAllBySectionId(Long sectionId);
+    List<Fingerprint> getAllByUserId(Long userId);
 }
