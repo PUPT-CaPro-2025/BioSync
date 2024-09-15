@@ -95,6 +95,44 @@ public class FingerprintServiceImpl implements FingerprintService {
         return false;
     }
 
+    @Override
+    public User verifyStudentFingerprintForAttendance(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
+        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
+
+        if (studentFingerprints.isEmpty()) return null;
+
+        byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
+
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedFingerprintImageBytes));
+
+        var matcher = new FingerprintMatcher(probeTemplate);
+        Fingerprint fingerprint = null;
+        double max = Double.NEGATIVE_INFINITY;
+
+        for (Fingerprint studentFingerprint : studentFingerprints) {
+            byte[] candidateImageBytes = Files.readAllBytes(
+                    Paths.get(studentFingerprint.getFingerprintURL()));
+
+            FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                    new FingerprintImage(candidateImageBytes)
+            );
+
+            double similarity = matcher.match(candidateTemplate);
+
+            if(similarity > max){
+                max = similarity;
+                if(similarity > threshold){
+                    fingerprint = studentFingerprint;
+                }
+            }
+        }
+
+        if(fingerprint == null) return null;
+
+        return userRepository.findByUserId(fingerprint.getUser().getId());
+    }
+
     private boolean match(FingerprintTemplate probe, FingerprintTemplate candidate){
         var matcher = new FingerprintMatcher(probe);
         double similarity = matcher.match(candidate);
