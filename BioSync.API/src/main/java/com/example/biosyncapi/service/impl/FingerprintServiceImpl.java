@@ -5,6 +5,9 @@ import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.FingerprintRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.FingerprintService;
+import com.machinezoo.sourceafis.FingerprintImage;
+import com.machinezoo.sourceafis.FingerprintMatcher;
+import com.machinezoo.sourceafis.FingerprintTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,6 +68,38 @@ public class FingerprintServiceImpl implements FingerprintService {
                 throw new RuntimeException("Failed to store fingerprint file", e);
             }
         }
+    }
+
+    @Override
+    public Boolean verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile scannedFingerprintImage) throws IOException {
+        List<Fingerprint> professorFingerprints = fingerprintRepository.getAllByUserId(professorId);
+
+        if (professorFingerprints.isEmpty()) return false;
+
+        byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
+
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedFingerprintImageBytes));
+
+        for (Fingerprint professorFingerprint : professorFingerprints) {
+            byte[] candidateImageBytes = Files.readAllBytes(
+                    Paths.get(professorFingerprint.getFingerprintURL()));
+            FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                    new FingerprintImage(candidateImageBytes));
+            if (match(probeTemplate, candidateTemplate)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean match(FingerprintTemplate probe, FingerprintTemplate candidate){
+        var matcher = new FingerprintMatcher(probe);
+        double similarity = matcher.match(candidate);
+
+        double threshold = 40;
+        return similarity >= threshold;
     }
 
 }
