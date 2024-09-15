@@ -12,6 +12,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsercode(String usercode);
     boolean existsByUsercode(String usercode);
 
+    @Query("SELECT u FROM User u WHERE u.id = :userId")
+    User findByUserId(Long userId);
+
     @Query("SELECT u FROM User u WHERE u.role = :role")
     List<User> getUsersByRole(Role role);
 }
