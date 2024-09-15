@@ -104,9 +104,15 @@
             </div>
         </div>
     } } @if(getRole() === "FACULTY"){
+        <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
+            <button routerLink="/faculty-schedule" class="menu-content">
+              <mat-icon>calendar_month</mat-icon>
+              <p>Subjects and Schedules</p>
+            </button>
+        </div>
         <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
             <button routerLink="/faculty-attendance" class="menu-content">
-              <mat-icon>calendar_month</mat-icon>
+              <mat-icon>calendar_today</mat-icon>
               <p>Attendance</p>
             </button>
         </div>
@@ -114,7 +120,7 @@
         <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
             <button routerLink="/student-schedule" class="menu-content">
               <mat-icon>calendar_month</mat-icon>
-              <p>Schedule</p>
+              <p>Subjects and Schedules</p>
             </button>
         </div>
     }
