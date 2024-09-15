@@ -19,6 +19,7 @@ import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
 import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
 import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
+import { FacultyScheduleComponent } from './faculty-schedule/faculty-schedule.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -37,6 +38,7 @@ export const routes: Routes = [
     { path: "program", component: ProgramComponent },
     { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
+    { path: "faculty-schedule", component: FacultyScheduleComponent },
     { path: "faculty-attendance", component: FacultyAttendanceComponent },
     { path: "student-schedule", component:StudentScheduleComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
