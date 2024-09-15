@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,6 +36,7 @@ public class FingerprintServiceImpl implements FingerprintService {
         return fingerprintRepository.getAllBySectionId(sectionId);
     }
 
+    @Override
     public void processFingerprints(Long userId, List<MultipartFile> images) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -50,7 +52,7 @@ public class FingerprintServiceImpl implements FingerprintService {
             Path filePath = Paths.get(fingerprintsDirectory, uniqueFileName);
 
             try {
-                Files.write(filePath, uniqueFileName.getBytes());
+                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
                 Fingerprint fingerprint = new Fingerprint();
                 fingerprint.setFingerprintURL(filePath.toAbsolutePath().toString());
