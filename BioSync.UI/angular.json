@@ -87,7 +87,10 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/scripts/fingerprint.sdk.min.js",
+              "src/assets/scripts/websdk.client.bundle.min.js"
+            ]
           }
         }
       }

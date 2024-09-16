@@ -41,6 +41,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId) {
+        return scheduleRepository.getSchedulesByRecurrenceId(recurrenceId);
+    }
+
+    @Override
     public Optional<Schedule> getScheduleById(Long id) {
         return scheduleRepository.findById(id);
     }
