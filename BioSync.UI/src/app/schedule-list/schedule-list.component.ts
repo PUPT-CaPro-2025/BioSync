@@ -14,7 +14,7 @@ import {MatIcon} from "@angular/material/icon";
   ],
   providers: [ScheduleService],
   templateUrl: './schedule-list.component.html',
-  styleUrl: './schedule-list.component.css'
+  styleUrls: ['./schedule-list.component.css', '../schedule/schedule.component.css']
 })
 export class ScheduleListComponent implements OnInit {
   schedules: Schedule[] = [];
