@@ -5,6 +5,7 @@ import {ScheduleService} from "../../services/schedule.service";
 import {MatToolbar} from "@angular/material/toolbar";
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
+import {User} from "../../model/user.model";
 
 @Component({
   selector: 'app-start-attendance',
@@ -23,6 +24,8 @@ export class StartAttendanceComponent implements OnInit{
   fingerprintImageSrc!: Blob;
   instructions = "Scan Professors Fingerprint to Start Attendance";
   reminder = "Scan now";
+  loggedStudent!: User | null;
+  studentVerified = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -44,7 +47,11 @@ export class StartAttendanceComponent implements OnInit{
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-          this.submitProfessor();
+          if(!this.hasProfessorVerified){
+            this.submitProfessor();
+          } else {
+            this.submitStudent();
+          }
         }
       }
     });
@@ -86,7 +93,7 @@ export class StartAttendanceComponent implements OnInit{
             this.hasProfessorVerified = true;
             this.instructions = "Scan Fingerprint to Log Attendance";
             this.reminder = "Scan now"
-          }, 3000);
+          }, 2000);
       },
       error: (err) => {
         console.log(err)
@@ -99,6 +106,31 @@ export class StartAttendanceComponent implements OnInit{
 
   }
 
+  submitStudent(){
+    const formData = new FormData();
 
+    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
+    formData.append('scheduleId', `${this.selectedSchedule.id}`);
+    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png')
+
+    this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
+      next: value => {
+        this.loggedStudent = value.student;
+        console.log(this.loggedStudent);
+        this.reminder = 'Attendance Logged'
+        setTimeout(() => {
+          this.studentVerified = true;
+          this.loggedStudent = null;
+          this.reminder = 'Scan now';
+        }, 3000)
+      },
+      error: err => {
+        this.reminder = err['error'];
+        setTimeout(() => {
+          this.reminder = 'Scan now';
+        }, 2000)
+      }
+    })
+  }
 
 }
