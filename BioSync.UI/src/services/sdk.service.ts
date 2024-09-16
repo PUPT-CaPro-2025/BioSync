@@ -6,7 +6,7 @@ declare const Fingerprint: any;
 @Injectable({
   providedIn: 'root'
 })
-export class FingerprintService {
+export class SdkService {
   private sdk: any;
   private imageSrcSubject = new BehaviorSubject<string | null>(null);
 

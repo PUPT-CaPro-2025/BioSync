@@ -3,7 +3,7 @@ import {Schedule} from "../../model/schedule.model";
 import {ActivatedRoute} from "@angular/router";
 import {ScheduleService} from "../../services/schedule.service";
 import {MatToolbar} from "@angular/material/toolbar";
-import {FingerprintService} from "../../services/fingerprint.service";
+import {SdkService} from "../../services/sdk.service";
 
 @Component({
   selector: 'app-start-attendance',
@@ -11,7 +11,7 @@ import {FingerprintService} from "../../services/fingerprint.service";
   imports: [
     MatToolbar
   ],
-  providers: [ScheduleService, FingerprintService],
+  providers: [ScheduleService, SdkService],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css'
 })
@@ -23,7 +23,7 @@ export class StartAttendanceComponent implements OnInit{
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
-    private fingerprintService: FingerprintService
+    private sdkService: SdkService
   ) {}
 
   ngOnInit() {
@@ -33,9 +33,9 @@ export class StartAttendanceComponent implements OnInit{
         this.getScheduleDetails(scheduleId);
       }
     })
-    this.fingerprintService.loadSDK();
+    this.sdkService.loadSDK();
 
-    this.fingerprintService.getImageSrc().subscribe({
+    this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
@@ -63,7 +63,7 @@ export class StartAttendanceComponent implements OnInit{
   }
 
   private base64ToBlob(base64: string, contentType: string) {
-    return this.fingerprintService.base64ToBlob(base64, contentType);
+    return this.sdkService.base64ToBlob(base64, contentType);
   }
 
   submit(){
