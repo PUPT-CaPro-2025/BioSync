@@ -19,6 +19,13 @@ export class ScheduleService {
     });
   }
 
+  getScheduleById(scheduleId: number){
+    return this.http.get<Schedule>(`${this.url}/${scheduleId}`,{
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
+
   getAllSchedulesByProfessorId(professorId: number){
     return this.http.get<Schedule[]>(`${this.url}/professor/${professorId}`, {
       headers: this.headers,

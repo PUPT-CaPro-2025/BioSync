@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatToolbar} from "@angular/material/toolbar";
 import {Schedule} from "../../model/schedule.model";
 import {ScheduleService} from "../../services/schedule.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {MatIcon} from "@angular/material/icon";
 
 @Component({
@@ -23,11 +23,12 @@ export class ScheduleListComponent implements OnInit {
 
   constructor(
     private scheduleService: ScheduleService,
-    private router: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.router.paramMap.subscribe(params => {
+    this.activatedRoute.paramMap.subscribe(params => {
       this.recurrenceId = params.get('id');
       if(this.recurrenceId)
         this.getSchedulesByRecurrenceId(this.recurrenceId!);
@@ -60,7 +61,7 @@ export class ScheduleListComponent implements OnInit {
     return this.scheduleService.convertTimeFormat(time);
   }
 
-  togglePlaySchedule(schedule: Schedule) {
-
+  toggleStartSchedule(schedule: Schedule) {
+    this.router.navigate(['/attendance/start/', schedule.id]).then();
   }
 }
