@@ -19,6 +19,7 @@ import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
 import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
 import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
+import {ScheduleListComponent} from "./schedule-list/schedule-list.component";
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -41,6 +42,7 @@ export const routes: Routes = [
     { path: "student-schedule", component:StudentScheduleComponent },
     { path: "subject-schedule-professor", component: AttendanceManagementProfessorComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
+    { path: 'schedule/start/:id', component: ScheduleListComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/login' },
 ];

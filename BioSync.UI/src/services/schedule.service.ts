@@ -33,6 +33,13 @@ export class ScheduleService {
     })
   }
 
+  getSchedulesByRecurrenceId(recurrenceId: string | null) {
+    return this.http.get<Schedule[]>(`${this.url}/recurrence/${recurrenceId}`, {
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
+
   updateSchedule(schedule: Schedule){
     return this.http.put<Schedule>(this.url, schedule,{
       headers: this.headers,
@@ -63,5 +70,22 @@ export class ScheduleService {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
+  }
+
+  convertTimeFormat(time: string): string {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes} ${period}`;
+  }
+
+  getDayOfWeek(date: string | Date): string {
+    const newDate = new Date(date);
+    const days = ['SUN', 'MON', 'TUE', 'WED',
+      'THU', 'FRI', 'SAT'];
+    return days[newDate.getDay()];
   }
 }
