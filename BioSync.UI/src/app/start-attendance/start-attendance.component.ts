@@ -4,6 +4,7 @@ import {ActivatedRoute} from "@angular/router";
 import {ScheduleService} from "../../services/schedule.service";
 import {MatToolbar} from "@angular/material/toolbar";
 import {SdkService} from "../../services/sdk.service";
+import {FingerprintService} from "../../services/fingerprint.service";
 
 @Component({
   selector: 'app-start-attendance',
@@ -11,19 +12,23 @@ import {SdkService} from "../../services/sdk.service";
   imports: [
     MatToolbar
   ],
-  providers: [ScheduleService, SdkService],
+  providers: [ScheduleService, SdkService, FingerprintService],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css'
 })
 export class StartAttendanceComponent implements OnInit{
   selectedProfessorId!: number;
+  hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
+  instructions = "Scan Professors Fingerprint to Start Attendance";
+  reminder = "Scan now";
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
-    private sdkService: SdkService
+    private sdkService: SdkService,
+    private fingerprintService: FingerprintService
   ) {}
 
   ngOnInit() {
@@ -39,7 +44,7 @@ export class StartAttendanceComponent implements OnInit{
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-          this.submit();
+          this.submitProfessor();
         }
       }
     });
@@ -50,6 +55,7 @@ export class StartAttendanceComponent implements OnInit{
       next: value => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
+        console.log(this.selectedProfessorId);
       }
     })
   }
@@ -66,16 +72,30 @@ export class StartAttendanceComponent implements OnInit{
     return this.sdkService.base64ToBlob(base64, contentType);
   }
 
-  submit(){
+  submitProfessor(){
     const formData = new FormData();
 
     formData.append('userId', this.selectedProfessorId.toString());
     formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png')
 
-
-    for (let pair of (formData as any).entries()) {
-      console.log(pair[0] + ':', pair[1]);
-    }
+    this.fingerprintService.verifyProfessorFingerprintForAttendance(formData).subscribe({
+      next: value => {
+        if(value)
+          this.reminder = 'Fingerprint verified, Starting Attendance...'
+          setTimeout(() => {
+            this.hasProfessorVerified = true;
+            this.instructions = "Scan Fingerprint to Log Attendance";
+            this.reminder = "Scan now"
+          }, 3000);
+      },
+      error: (err) => {
+        console.log(err)
+        this.reminder = err["error"];
+        setTimeout(() => {
+          this.reminder = 'Scan now'
+        }, 3000);
+      }
+    })
 
   }
 
