@@ -76,7 +76,7 @@ export class EditStudentComponent implements OnInit{
       usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      middleName: ['', [Validators.required]],
+      middleName: [''],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
       section: [0, [Validators.required]]

@@ -4,28 +4,35 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/
 import { Router } from '@angular/router';
 import {LoginService} from "../../services/auth/login.service";
 import {Authentication} from "../../model/authentication.model";
-import {ex} from "@fullcalendar/core/internal-common";
 import {MatInput} from "@angular/material/input";
 import {AuthService} from "../../services/auth/auth.service";
 import {CookieService} from "../../services/cookie.service";
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-login-admin',
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
-  providers: [LoginService, AuthService, CookieService],
+  providers: [
+    LoginService, 
+    AuthService, 
+    CookieService, 
+    CryptoService
+  ],
   templateUrl: './login-admin.component.html',
   styleUrl: './login-admin.component.css'
 })
 export class LoginAdminComponent implements OnInit {
   adminLoginForm!: FormGroup;
+  credentialsError = false;
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
     private loginService: LoginService,
     private authService: AuthService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private cryptoService: CryptoService
   ) {}
 
   ngOnInit() {
@@ -44,25 +51,31 @@ export class LoginAdminComponent implements OnInit {
   }
 
   submit(): void{
-    if(!this.adminLoginForm.valid) return; //TODO: ADD PROMPT
+    if(!this.adminLoginForm.valid) return;
 
     const adminCredentials = this.adminLoginForm.value;
 
     this.loginService.login(adminCredentials).subscribe({
       next: (response: Authentication) => {
-        if(response.role !== 'ADMIN') return //TODO: ADD PROMPT
+        if(response.role !== 'ADMIN') {
+          this.credentialsError = !this.credentialsError;
+          return;
+        }
 
         const token = response.token;
 
         const payload = JSON.parse(atob(token.split('.')[1]));
         const expiry = payload.exp * 1000;
+        const encryptedRole = this.cryptoService.encrypt(response.role);
 
         this.cookieService.setCookie("authToken", token, expiry)
-        this.cookieService.setCookie("role", response.role);
+        this.cookieService.setCookie("role", encryptedRole);
 
         this.navigateTo('/dashboard');
       },
-      error: err => console.error(err)
+      error: () => {
+        this.credentialsError = !this.credentialsError;
+      }
     })
   }
 

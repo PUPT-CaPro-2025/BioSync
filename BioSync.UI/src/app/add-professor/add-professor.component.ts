@@ -59,7 +59,7 @@ export class AddProfessorComponent implements OnInit{
       usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
-      middleName: ['', [Validators.required]],
+      middleName: [''],
       suffix: ['', [Validators.required]]
     });
   }

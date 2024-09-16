@@ -21,45 +21,45 @@
     <div routerLinkActive="router-link-active" class="menu-container" (click)="onButtonClick('dashboard')"
         [class.clicked]="activeButton === 'dashboard'">
         <button routerLink="/dashboard" routerLinkActive="router-link-active" class="menu-content">
-            <img src="../../assets/dashboard.svg" alt="Dashboard Icon" />
-            <p>Dashboard</p>
+          <mat-icon>dashboard</mat-icon>
+          <p>Overview</p>
         </button>
     </div>
     @if(getRole() === "ADMIN") {
     <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
         <button routerLink="/visitor" class="menu-content">
-            <img src="../../assets/visitor.svg" alt="Visitor Icon" />
-            <p>Visitor</p>
+          <mat-icon>home</mat-icon>
+          <p>Visitor</p>
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
         <button routerLink="/schedule" class="menu-content">
-            <img src="../../assets/schedule.svg" alt="Professor Icon" />
-            <p>Schedules</p>
+          <mat-icon>calendar_month</mat-icon>
+          <p>Schedules</p>
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('subject')" [class.clicked]="activeButton === 'subject'">
         <button routerLink="/subject" class="menu-content">
-            <img src="../../assets/subject.svg" alt="Subject Icon" />
-            <p>Subjects</p>
+          <mat-icon>subject</mat-icon>
+          <p>Subjects</p>
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('professor')" [class.clicked]="activeButton === 'professor'">
         <button routerLink="/professor" class="menu-content">
-            <img src="../../assets/professor.svg" alt="Professor Icon" />
-            <p>Professor</p>
+          <mat-icon>school</mat-icon>
+          <p>Professor</p>
         </button>
     </div>
     <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
         <div class="flex justify-between items-center" (click)="toggleStudentDropdown($event)">
             <button class="menu-content">
-                <img src="../../assets/student.svg" alt="Schedule Icon" />
-                <p>Student</p>
-                <div class="schedule-arrow">
-                    <mat-icon>{{
-                        isDropdownOpenStudent ? "keyboard_arrow_up" : "keyboard_arrow_down"
-                        }}</mat-icon>
-                </div>
+              <mat-icon>people</mat-icon>
+              <p>Student</p>
+              <div class="schedule-arrow">
+                <mat-icon>{{
+                    isDropdownOpenStudent ? "keyboard_arrow_up" : "keyboard_arrow_down"
+                  }}</mat-icon>
+              </div>
             </button>
         </div>
     </div>
@@ -76,15 +76,15 @@
     <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
         <div class="flex justify-between items-center" (click)="toggleMaintenanceDropdown($event)">
             <button class="menu-content">
-                <img src="../../assets/maintenance.svg" alt="Maintenance Icon" />
-                <p>Maintenance</p>
-                <div class="schedule-arrow">
-                    <mat-icon>{{
-                        isDropdownOpenMaintenance
-                        ? "keyboard_arrow_up"
-                        : "keyboard_arrow_down"
-                        }}</mat-icon>
-                </div>
+              <mat-icon>settings</mat-icon>
+              <p>Maintenance</p>
+              <div class="schedule-arrow">
+                <mat-icon>{{
+                    isDropdownOpenMaintenance
+                      ? "keyboard_arrow_up"
+                      : "keyboard_arrow_down"
+                  }}</mat-icon>
+              </div>
             </button>
         </div>
     </div>
@@ -106,27 +106,27 @@
     } } @if(getRole() === "FACULTY"){
         <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
             <button routerLink="/faculty-attendance" class="menu-content">
-                <img src="../../assets/schedule.svg" alt="Attendance Icon" />
-                <p>Attendance</p>
+              <mat-icon>calendar_month</mat-icon>
+              <p>Attendance</p>
             </button>
         </div>
         } @if(getRole() === "STUDENT"){
         <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
             <button routerLink="/student-schedule" class="menu-content">
-                <img src="../../assets/schedule.svg" alt="Schedule Icon" />
-                <p>Schedule</p>
+              <mat-icon>calendar_month</mat-icon>
+              <p>Schedule</p>
             </button>
         </div>
     }
 </mat-nav-list>
 <div class="bottom-container">
     <div class="line-container">
-        <img src="../../assets/line.svg" />
+        <img src="../../assets/line.svg" alt="divider"/>
     </div>
     <div class="logout-container">
         <button class="logout-content" (click)="openLogoutDialog()">
-            <img src="../../assets/logout.svg" alt="Logout Icon" />
-            <p>LOGOUT</p>
+          <mat-icon class="text-[#F84C42]">logout</mat-icon>
+          <p>LOGOUT</p>
         </button>
     </div>
 </div>

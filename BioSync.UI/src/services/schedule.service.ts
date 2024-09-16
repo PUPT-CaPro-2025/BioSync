@@ -19,6 +19,13 @@ export class ScheduleService {
     });
   }
 
+  getScheduleById(scheduleId: number){
+    return this.http.get<Schedule>(`${this.url}/${scheduleId}`,{
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
+
   getAllSchedulesByProfessorId(professorId: number){
     return this.http.get<Schedule[]>(`${this.url}/professor/${professorId}`, {
       headers: this.headers,
@@ -31,6 +38,13 @@ export class ScheduleService {
       headers: this.headers,
       withCredentials: true
     })
+  }
+
+  getSchedulesByRecurrenceId(recurrenceId: string | null) {
+    return this.http.get<Schedule[]>(`${this.url}/recurrence/${recurrenceId}`, {
+      headers: this.headers,
+      withCredentials: true
+    });
   }
 
   updateSchedule(schedule: Schedule){
@@ -46,5 +60,39 @@ export class ScheduleService {
       headers: this.headers,
       withCredentials: true
     });
+  }
+
+  getMonth(dateString: string): string {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { month: 'long' };
+    return date.toLocaleDateString(undefined, options);
+  }
+
+  getTime12HourFormat(time: string): string {
+    const date = new Date(`1970-01-01T${time}`);
+    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+  }
+
+  getDay(dateString: string): string {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+  }
+
+  convertTimeFormat(time: string): string {
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes.toString().padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes} ${period}`;
+  }
+
+  getDayOfWeek(date: string | Date): string {
+    const newDate = new Date(date);
+    const days = ['SUN', 'MON', 'TUE', 'WED',
+      'THU', 'FRI', 'SAT'];
+    return days[newDate.getDay()];
   }
 }

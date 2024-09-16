@@ -22,14 +22,12 @@
     background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg"><polyline points="20 40 70 90 120 40" style="fill:none;stroke:%23D31119;stroke-width:20" /></svg>');
 }
 
-
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Custom CSS */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -42,34 +40,128 @@
     align-items: center;
   }
 
-  .modal {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-  }
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
 
-  .row {
-    margin-bottom: 15px;
-  }
+.row {
+  margin-bottom: 15px;
+}
 
-  .bubble-container {
-    display: flex;
-    flex-wrap: wrap;
-  }
+.bubble-container {
+  display: flex;
+  flex-wrap: wrap;
+}
 
-  .bubble {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
+.bubble {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
     border-radius: 50%;
     background-color: #f0f0f0;
     margin-right: 5px;
     cursor: pointer;
+}
+
+.bubble.selected {
+  background-color: #F84C42;
+  color: white;
+}
+
+@media (max-width: 1160px) {
+  .label {
+      width: 25%;
   }
 
-  .bubble.selected {
-    background-color: #F84C42;
-    color: white;
+}
+
+@media (max-width: 1000px) {
+  .label {
+      width: 30%;
   }
+
+}
+
+@media (max-width: 900px) {
+  .label {
+      width: 25%;
+  }
+}
+
+@media (max-width: 650px) {
+  .toolbar-container span {
+      font-size: 24px;
+  }
+
+  .row-content {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .label, .data {
+      width: 100%;
+  }
+
+  .form-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .row-block {
+    width:100%;
+  }
+
+  .row-block-two {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 550px) {   
+  .schedule-reminder {
+    font-size: 14px;
+  }
+
+  .subject-select {
+    width: 100%;
+  }
+
+  .sub-form-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+
+  .sub-row-block {
+    width:100%;
+  }
+
+  .sub-row-block-two {
+    width: 100%;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 510px) {
+  .button-container {
+    justify-content: center;
+  }
+
+  .button-content {
+    justify-content: center;
+    flex-direction: column-reverse;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .form-button {
+    width: 100%;
+  }
+}

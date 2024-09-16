@@ -1,5 +1,5 @@
 import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
-import {NavigationEnd, Router, RouterLink} from '@angular/router';
+import {NavigationEnd, Router, RouterLink, RouterLinkActive} from '@angular/router';
 import {MatIconModule} from '@angular/material/icon';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {MatSelectModule} from '@angular/material/select';
@@ -12,6 +12,7 @@ import {CookieService} from '../../services/cookie.service';
 import {PromptConfirmComponent} from '../prompt-confirm/prompt-confirm.component';
 import {MatDialog} from '@angular/material/dialog';
 import {filter} from 'rxjs/operators';
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -26,8 +27,13 @@ import {filter} from 'rxjs/operators';
     CommonModule,
     MatIconModule,
     NgOptimizedImage,
+    RouterLinkActive,
   ],
-  providers: [LogoutService, CookieService],
+  providers: [
+    LogoutService,
+    CookieService,
+    CryptoService
+  ],
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.css'],
 })
@@ -43,6 +49,7 @@ export class SidenavComponent implements OnInit {
     private logoutService: LogoutService,
     private cookieService: CookieService,
     private dialog: MatDialog,
+    private cryptoService: CryptoService
   ) {}
 
   ngOnInit() {
@@ -170,7 +177,8 @@ export class SidenavComponent implements OnInit {
     });
   }
 
-  getRole(): string{
-    return <string>this.cookieService.getCookie('role');
+  getRole(): string {
+    const encryptedRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(encryptedRole);
   }
 }

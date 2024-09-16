@@ -1,11 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
-import { ViewScheduleComponent } from '../view-schedule/view-schedule.component';
 
 interface Attendance {
   subject: string,
@@ -19,7 +18,7 @@ interface Attendance {
 @Component({
   selector: 'app-faculty-attendance',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule, EditScheduleComponent, ViewScheduleComponent],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule, EditScheduleComponent],
   templateUrl: './faculty-attendance.component.html',
   styleUrl: './faculty-attendance.component.css'
 })
