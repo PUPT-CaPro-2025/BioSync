@@ -61,7 +61,9 @@ public class FingerprintServiceImpl implements FingerprintService {
                 Fingerprint fingerprint = new Fingerprint();
                 fingerprint.setFingerprintURL(filePath.toAbsolutePath().toString());
                 fingerprint.setUser(user);
-                fingerprint.setSectionId(user.getSection().getId());
+                if(user.getSection() != null) {
+                    fingerprint.setSectionId(user.getSection().getId());
+                }
 
                 fingerprintRepository.save(fingerprint);
 
