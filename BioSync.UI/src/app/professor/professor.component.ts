@@ -176,7 +176,6 @@ export class ProfessorComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape');
 
-    // Add a custom header to the PDF
     doc.setFontSize(18);
     doc.text('List of Professors', 14, 20);
 
@@ -212,7 +211,6 @@ export class ProfessorComponent implements OnInit{
       }
     });
 
-    // Save the generated PDF
     doc.save('professor-list.pdf');
   }
 }
