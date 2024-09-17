@@ -10,6 +10,7 @@ import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-student',
@@ -164,5 +165,46 @@ export class StudentComponent implements OnInit{
         this.students = this.students.filter(student => studentToDelete.id !== student.id);
       }
     })
+  }
+
+  generatePdf() {
+    const doc = new jsPDF('landscape');
+
+    doc.setFontSize(18);
+    doc.text('List of Students', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+
+    const columns = ['Student Code','Program', 'First Name', 'Middle Name', 'Last Name', ];
+    const rows = this.students.map(students =>
+      [
+        students.usercode,
+        students.program?.programAbbreviation,
+        students.firstName,
+        students.middleName,
+        students.lastName,
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [248, 76, 66],
+        textColor: 255,
+        fontSize: 12
+      },
+      bodyStyles: {
+        fontSize: 10
+      }
+    });
+
+    doc.save('student-list.pdf');
   }
 }
