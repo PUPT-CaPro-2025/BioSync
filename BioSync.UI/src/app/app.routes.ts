@@ -17,7 +17,6 @@ import { ProgramComponent } from './program/program.component';
 import { LaboratoryComponent } from './laboratory/laboratory.component';
 import { SectionComponent } from './section/section.component';
 import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attendance.component';
-import { StudentScheduleComponent } from './student-schedule/student-schedule.component';
 import {ScheduleListComponent} from "./schedule-list/schedule-list.component";
 import {StartAttendanceComponent} from "./start-attendance/start-attendance.component";
 import {ViewScheduleComponent} from "./view-schedule/view-schedule.component";
@@ -41,7 +40,6 @@ export const routes: Routes = [
     { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
     { path: "faculty-attendance", component: FacultyAttendanceComponent },
-    { path: "student-schedule", component:StudentScheduleComponent },
     { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: 'schedule/start/:id', component: ScheduleListComponent },
     { path: 'view/schedule/:id', component: ViewScheduleComponent },
