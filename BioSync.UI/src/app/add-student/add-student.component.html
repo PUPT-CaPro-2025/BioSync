@@ -1,131 +1,152 @@
-
-<div class="flex justify-center items-center">
-    <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">Add New Student</span>
-    </mat-toolbar>
+<div>
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">Add New Student</span>
+  </mat-toolbar>
 </div>
-<div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="studentForm">
-        <div class="w-[55%] flex flex-col gap-4 row-block">
-            <div class="group flex flex-col gap-1">
-                <label for="student-number" class="text-custom-20
+<div class="h-[80vh] mt-16 flex items-center justify-center mb-32">
+  <mat-stepper [linear]="false" #stepper class="flex items-center justify-center align-middle rounded-2xl w-2/3">
+    <mat-step [stepControl]="studentForm">
+      <div class="flex justify-center align-middle mt-5">
+        <form [formGroup]="studentForm" class="w-[55%] flex flex-col gap-4 row-block justify-center align-middle">
+          <ng-template matStepLabel>Setup Information</ng-template>
+          <div class="group flex flex-col gap-1">
+            <label for="student-number" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Student Number
-                </label>
-                <input matInput id="student-number" name="student-number"
-                    placeholder="Enter Student number" class="bg-transparent
+              Student Number
+            </label>
+            <input matInput id="student-number" name="student-number"
+                   placeholder="Enter Student number" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="usercode">
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="first-name" class="text-custom-20
+                   formControlName="usercode">
+          </div>
+
+          <div class="group flex flex-col gap-1">
+            <label for="first-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    First Name
-                </label>
-                <input matInput id="first_name" name="first-name"
-                    placeholder="Enter student's first name" class="bg-transparent
+              First Name
+            </label>
+            <input matInput id="first-name" name="first-name"
+                   placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1" formControlName="firstName">
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="last-name" class="text-custom-20
+          </div>
+
+          <div class="group flex flex-col gap-1">
+            <label for="last-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Last Name
-                </label>
-                <input matInput id="last_name" name="last-name"
-                    placeholder="Enter student's last name" class="bg-transparent
+              Last Name
+            </label>
+            <input matInput id="last-name" name="last-name"
+                   placeholder="Enter student's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1" formControlName="lastName">
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="middle-name" class="text-custom-20
+          </div>
+
+
+          <div class="group flex flex-col gap-1">
+            <label for="middle-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Middle Name
-                </label>
-                <input matInput id="middle_name" name="middle-name"
-                    placeholder="Enter student's first name" class="bg-transparent
+              Middle Name
+            </label>
+            <input matInput id="middle-name" name="middle-name"
+                   placeholder="Enter student's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1" formControlName="middleName">
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="suffix" class="text-custom-20
+          </div>
+          <div class="group flex flex-col gap-1">
+            <label for="suffix" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Suffix
-                </label>
-                <mat-select id="suffix" name="suffix"
-                            placeholder="Choose a student's suffix" class="bg-transparent
+              Suffix
+            </label>
+            <mat-select id="suffix" name="suffix"
+                        placeholder="Choose a student's suffix" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="suffix">
-                            @for(suffix of allSuffix; track suffix) {
-                                <mat-option [value]="suffix">{{suffix}}</mat-option>
-                            }
-                </mat-select>
-            </div>
-            <div class="group flex flex-col gap-1">
-                <label for="program" class="text-custom-20
+              @for(suffix of allSuffix; track suffix) {
+                <mat-option [value]="suffix">{{suffix}}</mat-option>
+              }
+            </mat-select>
+          </div>
+          <div class="group flex flex-col gap-1">
+            <label for="program" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
-                    Program
-                </label>
-                <mat-select id="program" name="program"
-                            placeholder="Choose a student's program" class="bg-transparent
+              Program
+            </label>
+            <mat-select id="program" name="program"
+                        placeholder="Choose a student's program" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="program"
-                            (selectionChange)="onProgramChange($event)">
-                            @for(program of allPrograms; track program) {
-                                <mat-option [value]="program.id">{{program.programAbbreviation}}</mat-option>
-                            }
-                </mat-select>
-            </div>
-            <div class="flex justify-between">
-                <div class="group flex flex-col gap-1 w-full">
-                    <label for="Year" class="text-custom-16
+                        (selectionChange)="onProgramChange($event)">
+              @for(program of allPrograms; track program) {
+                <mat-option [value]="program.id">{{program.programAbbreviation}}</mat-option>
+              }
+            </mat-select>
+          </div>
+          <div class="flex justify-between">
+            <div class="group flex flex-col gap-1 w-full">
+              <label for="Year" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
-                        Year & Section
-                    </label>
-                    <mat-select id="year" name="year"
-                            placeholder="Choose a student's year" class="bg-transparent
+                Year & Section
+              </label>
+              <mat-select id="year" name="year"
+                          placeholder="Choose a student's year" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                                formControlName="section">
-                            @for(section of filteredSections; track section) {
-                                <mat-option [value]="section.id">
-                                  {{section.year}} - {{section.section}}
-                                </mat-option>
-                            }
-                    </mat-select>
-                </div>
+                          formControlName="section">
+                @for(section of filteredSections; track section) {
+                  <mat-option [value]="section.id">
+                    {{section.year}} - {{section.section}}
+                  </mat-option>
+                }
+              </mat-select>
             </div>
-            <div class="flex flex-col justify-end gap-4 mt-10">
-                <div class="flex gap-[40px] justify-end button-content">
-                    <button class="text-custom-14 text-lightGray py-2
-                        px-20 border-2 rounded-full border-lightGray
-                        hover:bg-lightGray hover:text-white back-button"
-                        (click)="returnToStudentView()">
-                        Cancel
-                    </button>
-                    <button class="text-custom-14 text-white py-2 px-19
-                        bg-gradient-red-orange rounded-full
-                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
-                        (click)="submit()">
-                        Add Student
-                    </button>
-                </div>
-            </div>
+          </div>
+          <div>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="imageFormGroup" label="Profile Picture">
+      <form [formGroup]="imageFormGroup">
+        <div>
+          <input type="file">
         </div>
-    </form>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Get Fingerprint</ng-template>
+      <p>Scan Right Thumb Fingerprint</p>
+      <p>{{ rightThumbState }}</p>
+
+      @if(hasRightThumb){
+        <p>Scan Right Index Fingerprint</p>
+        <p>{{ rightIndexState }}</p>
+      }
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="submit()">Reset</button>
+      </div>
+    </mat-step>
+  </mat-stepper>
 </div>
+
