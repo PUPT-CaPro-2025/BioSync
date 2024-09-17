@@ -14,6 +14,7 @@ import { Laboratory } from '../../model/laboratory.model';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import { ViewLaboratoryComponent } from '../view-laboratory/view-laboratory.component';
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-laboratory',
@@ -57,7 +58,7 @@ export class LaboratoryComponent implements OnInit {
   currentLaboratory: number | undefined;
 
   constructor(
-    private laboratoryService: LaboratoryService, 
+    private laboratoryService: LaboratoryService,
     private dialog: MatDialog) {}
 
   ngOnInit() {
@@ -187,5 +188,44 @@ export class LaboratoryComponent implements OnInit {
 
   handleBackToViewLaboratory(): void {
     this.isViewLaboratory = false;
+  }
+
+  generatePdf() {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text('List of Laboratories', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+
+    const columns = ['Room Code', 'Laboratory Name', 'Capacity'];
+    const rows = this.laboratories.map(laboratory =>
+      [
+        laboratory.roomCode,
+        laboratory.name,
+        laboratory.capacity
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [248, 76, 66],
+        textColor: 255,
+        fontSize: 12
+      },
+      bodyStyles: {
+        fontSize: 10
+      }
+    });
+
+    doc.save('laboratory-list.pdf');
   }
 }
