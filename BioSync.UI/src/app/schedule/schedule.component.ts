@@ -13,6 +13,8 @@ import {MatDialog} from "@angular/material/dialog";
 import {SchoolYearService} from "../../services/school.year.service";
 import {SchoolYear} from "../../model/school.year.model";
 import {Router} from "@angular/router";
+import {CryptoService} from "../../services/crypto.service";
+import {CookieService} from "../../services/cookie.service";
 
 @Component({
   selector: 'app-schedule',
@@ -54,16 +56,25 @@ export class ScheduleComponent implements OnInit{
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
   isDropdownOpenAddSchedule: boolean = false;
+  userId!: number;
 
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
-    private router : Router
+    private router : Router,
+    private cryptoService: CryptoService,
+    private cookieService: CookieService
     ) {}
 
   ngOnInit() {
-    this.getAllSchedules();
+    if(this.getRole() === "ADMIN"){
+      this.getAllSchedules();
+    } else if (this.getRole() === "FACULTY"){
+      this.getUserId();
+      this.getFacultySchedule(this.userId);
+    }
+    console.log(this.getRole())
     this.getAcademicYears();
   }
 
@@ -79,6 +90,29 @@ export class ScheduleComponent implements OnInit{
       },
       error: (err) => console.error(err),
     });
+  }
+
+  getUserId(){
+    const encryptedUserId = decodeURIComponent(this.cookieService.getCookie("user_id")!);
+    this.userId = +this.cryptoService.decrypt(encryptedUserId);
+  }
+
+  getRole(){
+    return this.cryptoService.decrypt(
+      decodeURIComponent(this.cookieService.getCookie("role")!));
+  }
+
+  getFacultySchedule(facultyId: number) {
+    this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
+      next: (schedules: Schedule[]) => {
+        this.schedules = schedules;
+        this.scheduleContainer = schedules;
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
+        this.setLatestSchoolYear();
+      }
+    })
   }
 
   setLatestSchoolYear() {
@@ -277,5 +311,9 @@ export class ScheduleComponent implements OnInit{
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+  }
+
+  toggleViewSchedule(schedule: Schedule) {
+    this.router.navigate(["/view/schedule", schedule.id]).then();
   }
 }

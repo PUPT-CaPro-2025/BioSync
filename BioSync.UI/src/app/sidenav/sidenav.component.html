@@ -105,9 +105,9 @@
         </div>
     } } @if(getRole() === "FACULTY"){
         <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
-            <button routerLink="/faculty-attendance" class="menu-content">
+            <button routerLink="/schedule" class="menu-content">
               <mat-icon>calendar_month</mat-icon>
-              <p>Attendance</p>
+              <p>Schedule</p>
             </button>
         </div>
         } @if(getRole() === "STUDENT"){
