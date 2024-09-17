@@ -3,6 +3,7 @@ package com.example.biosyncapi.controller;
 import com.example.biosyncapi.model.Attendance;
 import com.example.biosyncapi.model.Schedule;
 import com.example.biosyncapi.model.User;
+import com.example.biosyncapi.repository.AttendanceRepository;
 import com.example.biosyncapi.service.AttendanceService;
 import com.example.biosyncapi.service.FingerprintService;
 import com.example.biosyncapi.service.ScheduleService;
@@ -22,11 +23,13 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
     private final FingerprintService fingerprintService;
     private final ScheduleService scheduleService;
+    private final AttendanceRepository attendanceRepository;
 
-    public AttendanceController(AttendanceService attendanceService, FingerprintService fingerprintService, ScheduleService scheduleService) {
+    public AttendanceController(AttendanceService attendanceService, FingerprintService fingerprintService, ScheduleService scheduleService, AttendanceRepository attendanceRepository) {
         this.attendanceService = attendanceService;
         this.fingerprintService = fingerprintService;
         this.scheduleService = scheduleService;
+        this.attendanceRepository = attendanceRepository;
     }
 
     @GetMapping("/{id}")
@@ -74,6 +77,10 @@ public class AttendanceController {
 
         Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
         if(schedule.isEmpty()) return ResponseEntity.status(400).body("Schedule not found.");
+
+        List<Attendance> hasExistingAttendance = attendanceRepository.findByScheduleIdAndUserId(scheduleId, student.getId());
+        boolean hasLogged = !hasExistingAttendance.isEmpty();
+        if(hasLogged) return ResponseEntity.status(409).body("User has already logged.");
 
         Attendance attendance = new Attendance("PRESENT", student, schedule.get());
 
