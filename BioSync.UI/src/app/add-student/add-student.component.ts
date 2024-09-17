@@ -144,7 +144,7 @@ export class AddStudentComponent implements OnInit{
   }
 
   submit(){
-    //if(!this.studentForm.valid || !this.studentForm.touched) return;
+    if(!this.studentForm.valid || !this.studentForm.touched) return;
 
     let studentToAdd = this.studentForm.value;
 
