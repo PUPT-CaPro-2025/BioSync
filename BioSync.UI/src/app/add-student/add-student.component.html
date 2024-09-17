@@ -122,10 +122,10 @@
         </form>
       </div>
     </mat-step>
-    <mat-step [stepControl]="imageFormGroup" label="Profile Picture">
-      <form [formGroup]="imageFormGroup">
+    <mat-step [stepControl]="imageForm" label="Profile Picture">
+      <form [formGroup]="imageForm">
         <div>
-          <input type="file">
+          <input type="file" formControlName="profileImage" (change)="onFileChange($event)">
         </div>
         <div>
           <button mat-button matStepperPrevious>Back</button>

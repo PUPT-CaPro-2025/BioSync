@@ -4,6 +4,7 @@ import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {User} from "../model/user.model";
 import {Observable} from "rxjs";
+import {Form} from "@angular/forms";
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,13 @@ export class UserService {
 
   createUser(user: User): Observable<User> {
     return this.http.post<User>(`${this.url}/auth/register`, user, {
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
+
+  processProfileImage(formData: FormData){
+    return this.http.post<User>(`${this.url}/users/profile-image`, formData, {
       headers: this.headers,
       withCredentials: true
     });

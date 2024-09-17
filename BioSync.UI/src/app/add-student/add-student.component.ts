@@ -1,5 +1,5 @@
-import {Component, Output, EventEmitter, OnInit, inject} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -58,13 +58,10 @@ export class AddStudentComponent implements OnInit{
   sections: Section[] = [];
   filteredSections: Section[] = [];
   studentForm!: FormGroup;
+  imageForm!: FormGroup;
+  selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  private _formBuilder = inject(FormBuilder);
-
-  imageFormGroup = this._formBuilder.group({
-    secondCtrl: ['', Validators.required],
-  });
   rightThumbState = 'waiting for scanned data..';
   hasRightThumb = false;
   rightIndexState = 'waiting for scanned data..';
@@ -112,6 +109,10 @@ export class AddStudentComponent implements OnInit{
       program: ['', [Validators.required]],
       section: ['',Validators.required]
     });
+
+    this.imageForm = this.formBuilder.group({
+      profileImage: [null, Validators.required]
+    })
   }
 
   onProgramChange(event: MatSelectChange){
@@ -143,7 +144,7 @@ export class AddStudentComponent implements OnInit{
   }
 
   submit(){
-    if(!this.studentForm.valid || !this.studentForm.touched) return;
+    //if(!this.studentForm.valid || !this.studentForm.touched) return;
 
     let studentToAdd = this.studentForm.value;
 
@@ -162,6 +163,7 @@ export class AddStudentComponent implements OnInit{
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
         if(!student.id) return;
+        this.processProfileImage(student.id)
         this.registerFingerprintData(student);
         this.openSuccessDialog();
         this.addedStudent.emit(student);
@@ -171,6 +173,14 @@ export class AddStudentComponent implements OnInit{
 
     return;
   }
+
+  processProfileImage(studentId: number) {
+    const formData = new FormData();
+    formData.append('userId', `${studentId}`);
+    formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
+    this.userService.processProfileImage(formData).subscribe();
+  }
+
 
   registerFingerprintData(student: User){
     const formData = new FormData();
@@ -200,4 +210,13 @@ export class AddStudentComponent implements OnInit{
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
   }
+
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedProfileImage = input.files[0];
+      this.imageForm.get('file')?.updateValueAndValidity();
+    }
+  }
+
 }
