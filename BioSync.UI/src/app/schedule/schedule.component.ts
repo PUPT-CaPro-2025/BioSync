@@ -17,6 +17,7 @@ import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-schedule',
@@ -343,5 +344,50 @@ export class ScheduleComponent implements OnInit{
         this.setLatestSchoolYear();
       }
     })
+  }
+
+  generatePdf() {
+    const doc = new jsPDF('landscape');
+
+    // Add a custom header to the PDF
+    doc.setFontSize(18);
+    doc.text('List of Schedules', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+
+    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
+    const rows = this.schedules.map(schedule =>
+      [
+        schedule.subject?.code,
+        schedule.subject?.name,
+        schedule.recurrenceDays,
+        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
+        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
+        schedule.laboratory?.name
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [248, 76, 66],
+        textColor: 255,
+        fontSize: 12
+      },
+      bodyStyles: {
+        fontSize: 10
+      }
+    });
+
+    // Save the generated PDF
+    doc.save('schedule-list.pdf');
   }
 }
