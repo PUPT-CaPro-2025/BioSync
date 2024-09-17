@@ -16,6 +16,7 @@ import {SectionService} from "../../services/section.service";
 import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'app-add-student',
@@ -216,6 +217,25 @@ export class AddStudentComponent implements OnInit{
     if (input.files && input.files.length > 0) {
       this.selectedProfileImage = input.files[0];
       this.imageForm.get('file')?.updateValueAndValidity();
+    }
+  }
+
+  currentStepLabel: string = 'Set Up Information';
+
+  onStepChange(event: StepperSelectionEvent): void {
+    switch (event.selectedIndex) {
+      case 0:
+        this.currentStepLabel = 'Set Up Information';
+        break;
+      case 1:
+        this.currentStepLabel = 'Student\'s Picture';
+        break;
+      case 2:
+        this.currentStepLabel = 'Student\'s Biometrics';
+        break;
+      default:
+        this.currentStepLabel = 'Unknown Step';
+        break;
     }
   }
 
