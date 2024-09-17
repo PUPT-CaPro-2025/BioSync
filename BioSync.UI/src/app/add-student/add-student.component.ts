@@ -1,5 +1,5 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
@@ -13,6 +13,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {Section} from "../../model/section.model";
 import {SectionService} from "../../services/section.service";
+import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
+import {SdkService} from "../../services/sdk.service";
+import {FingerprintService} from "../../services/fingerprint.service";
 
 @Component({
   selector: 'app-add-student',
@@ -23,7 +26,7 @@ import {SectionService} from "../../services/section.service";
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule],
+    MatSelectModule, MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious],
   providers: [
     ProgramService,
     UserService,
@@ -55,6 +58,14 @@ export class AddStudentComponent implements OnInit{
   sections: Section[] = [];
   filteredSections: Section[] = [];
   studentForm!: FormGroup;
+  imageForm!: FormGroup;
+  selectedProfileImage!: Blob;
+  rightThumbFingerprintImageSrc!: Blob;
+  rightIndexFingerprintImageSrc!: Blob;
+  rightThumbState = 'waiting for scanned data..';
+  hasRightThumb = false;
+  rightIndexState = 'waiting for scanned data..';
+
 
   constructor(
     private formBuilder: FormBuilder,
@@ -62,12 +73,30 @@ export class AddStudentComponent implements OnInit{
     private userService: UserService,
     private dialog: MatDialog,
     private sectionService: SectionService,
+    private sdkService: SdkService,
+    private fingerprintService: FingerprintService
   ) {}
 
   ngOnInit() {
     this.getAllPrograms();
     this.initForm();
     this.getAllSections();
+    this.sdkService.loadSDK();
+
+    this.sdkService.getImageSrc().subscribe({
+      next: (src) => {
+        if (src) {
+          if(this.rightThumbFingerprintImageSrc == null){
+            this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.rightThumbState = 'Right Thumb Captured';
+            this.hasRightThumb = true;
+          } else {
+            this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.rightIndexState = 'Right Index Captured';
+          }
+        }
+      }
+    });
   }
 
   initForm(){
@@ -80,6 +109,10 @@ export class AddStudentComponent implements OnInit{
       program: ['', [Validators.required]],
       section: ['',Validators.required]
     });
+
+    this.imageForm = this.formBuilder.group({
+      profileImage: [null, Validators.required]
+    })
   }
 
   onProgramChange(event: MatSelectChange){
@@ -130,6 +163,8 @@ export class AddStudentComponent implements OnInit{
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
         if(!student.id) return;
+        this.processProfileImage(student.id)
+        this.registerFingerprintData(student);
         this.openSuccessDialog();
         this.addedStudent.emit(student);
         this.returnToStudentView();
@@ -137,6 +172,29 @@ export class AddStudentComponent implements OnInit{
     })
 
     return;
+  }
+
+  processProfileImage(studentId: number) {
+    const formData = new FormData();
+    formData.append('userId', `${studentId}`);
+    formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
+    this.userService.processProfileImage(formData).subscribe();
+  }
+
+
+  registerFingerprintData(student: User){
+    const formData = new FormData();
+    formData.append('userId', `${student.id}`);
+    formData.append('fingerprint', this.rightIndexFingerprintImageSrc,
+      `right-index-${student.lastName}.png`)
+    formData.append('fingerprint', this.rightThumbFingerprintImageSrc,
+      `right-thumb-${student.lastName}.png`)
+
+    this.fingerprintService.registerFingerprint(formData).subscribe({
+      next: (value) => {
+        console.log(value);
+      }
+    })
   }
 
   openSuccessDialog(){
@@ -147,6 +205,18 @@ export class AddStudentComponent implements OnInit{
         message: 'Student has been added successfully.'
       }
     })
+  }
+
+  private base64ToBlob(src: string, imagePng: string) {
+    return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedProfileImage = input.files[0];
+      this.imageForm.get('file')?.updateValueAndValidity();
+    }
   }
 
 }
