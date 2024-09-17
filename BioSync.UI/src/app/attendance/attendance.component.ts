@@ -81,7 +81,6 @@ export class AttendanceComponent implements OnInit{
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
-        //this.filteredRepeatedSchedules();
         this.setLatestSchoolYear();
       },
       error: (err) => console.error(err),
@@ -102,8 +101,7 @@ export class AttendanceComponent implements OnInit{
     this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
-        this.scheduleContainer = schedules;
-        this.filteredRepeatedSchedules();
+        this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
       }
@@ -202,7 +200,6 @@ export class AttendanceComponent implements OnInit{
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
         && schedule.semester?.id === this.selectedSemester
     )
-    this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
   }
 
@@ -223,9 +220,8 @@ export class AttendanceComponent implements OnInit{
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
         console.log(schedules)
-        this.schedules = schedules;
-        this.scheduleContainer = schedules;
-        this.filteredRepeatedSchedules();
+        this.schedules = schedules.filter(schedule => schedule.hasFinished);
+        this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
       }
