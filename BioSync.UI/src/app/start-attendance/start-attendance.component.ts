@@ -1,17 +1,22 @@
 import {Component, OnInit} from '@angular/core';
 import {Schedule} from "../../model/schedule.model";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {ScheduleService} from "../../services/schedule.service";
 import {MatToolbar} from "@angular/material/toolbar";
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import {User} from "../../model/user.model";
+import {MatButton} from "@angular/material/button";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
   imports: [
-    MatToolbar
+    MatToolbar,
+    MatButton
   ],
   providers: [ScheduleService, SdkService, FingerprintService],
   templateUrl: './start-attendance.component.html',
@@ -31,7 +36,9 @@ export class StartAttendanceComponent implements OnInit{
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -133,4 +140,44 @@ export class StartAttendanceComponent implements OnInit{
     })
   }
 
+  openConfirmationDialog(schedule: Schedule){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Stop Attendance',
+        message: "Are you sure you want to stop attendance? Students that haven't logged will be marked as absent",
+        action: 'Stop'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.stopAttendance(schedule);
+      }
+    })
+  }
+
+  openInformationDialog(message: string) {
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Attendance Stopped',
+        message,
+      }
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.router.navigate(['/schedule']).then();
+      }
+    })
+  }
+
+  stopAttendance(schedule: Schedule){
+    this.fingerprintService.stopAttendance(schedule).subscribe({
+      next: value => {
+        this.openInformationDialog(value);
+      }
+    });
+  }
 }
