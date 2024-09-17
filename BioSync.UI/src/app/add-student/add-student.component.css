@@ -45,6 +45,71 @@
     color: #7F7F7F;
 }
 
+button.mat-stepper-previous {
+    padding: 8px 60px !important;
+    color: #7F7F7F !important;
+    border: 2px solid #7F7F7F !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+}
+
+.cancel-button {
+    padding: 8px 50px !important;
+    color: #7F7F7F !important;
+    border: 2px solid #7F7F7F !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+}
+
+button.mat-stepper-next {
+    color: white !important;
+    padding: 8px 60px !important;
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.add-student-button {
+    color: white !important;
+    padding: 8px 60px !important;
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.drop-area {
+    width: 500px;
+    height: 300px;
+    padding: 20px;
+    background: transparent;
+    text-align: center;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.display-image {
+    width: 80%;
+    height: 80%;
+    border-radius: 20px;
+    border: 2px dashed #393939;
+    background: #F4F4F4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.display-image svg {
+    width: 100px;
+    height: 100px;
+}
+
 @media (max-width: 1462px) {
     .row-block {
         width: 70%;
