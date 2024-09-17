@@ -42,6 +42,14 @@ public class AttendanceController {
         return ResponseEntity.ok(attendance);
     }
 
+    @GetMapping("/schedule/{id}")
+    public ResponseEntity<List<Attendance>> getAttendanceByScheduleId(@PathVariable Long id) {
+        List<Attendance> attendance = attendanceService.getAttendanceByScheduleId(id);
+        if(attendance.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(attendance);
+    }
+
     @GetMapping("count/present/{id}")
     public ResponseEntity<Long> getAttendanceCountByStudentId(@PathVariable Long id) {
         Long presentCount = attendanceService.getAttendanceCountByStudentId(id);
