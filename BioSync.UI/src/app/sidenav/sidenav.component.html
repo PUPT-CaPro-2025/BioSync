@@ -104,11 +104,18 @@
             </div>
         </div>
     } } @if(getRole() === "FACULTY"){
-        <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+        <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
             <button routerLink="/schedule" class="menu-content">
               <mat-icon>calendar_month</mat-icon>
               <p>Schedule</p>
             </button>
+        </div>
+
+        <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+          <button routerLink="/attendance" class="menu-content">
+            <mat-icon>check_circle</mat-icon>
+            <p>Attendance</p>
+          </button>
         </div>
         } @if(getRole() === "STUDENT"){
         <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
@@ -116,6 +123,13 @@
               <mat-icon>calendar_month</mat-icon>
               <p>Schedule</p>
             </button>
+        </div>
+
+        <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
+          <button routerLink="/attendance" class="menu-content">
+            <mat-icon>check_circle</mat-icon>
+            <p>Attendance</p>
+          </button>
         </div>
     }
 </mat-nav-list>
