@@ -2,6 +2,7 @@ package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.User;
+import com.example.biosyncapi.repository.FingerprintRepository;
 import com.example.biosyncapi.repository.TokenRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.UserService;
@@ -15,10 +16,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final FingerprintRepository fingerprintRepository;
 
-    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository) {
+    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, FingerprintRepository fingerprintRepository) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
+        this.fingerprintRepository = fingerprintRepository;
     }
 
     @Override
@@ -49,6 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         this.tokenRepository.deleteByUserId(id);
+        this.fingerprintRepository.deleteByUserId(id);
         this.userRepository.deleteById(id);
     }
 }
