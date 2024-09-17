@@ -18,4 +18,18 @@ export class AttendanceService {
       withCredentials: true
     })
   }
+
+  getPresentCount(userId: number){
+    return this.http.get<number>(`${this.url}/count/present/${userId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  getAbsentCount(userId: number){
+    return this.http.get<number>(`${this.url}/count/absent/${userId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
 }
