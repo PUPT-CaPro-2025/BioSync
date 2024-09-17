@@ -12,7 +12,7 @@
 
 .mat-step-header {
     pointer-events: none;
-    outline: none;
+    background: none !important;
 }
 
 .mat-step-header[aria-selected="true"] .mat-step-icon {
