@@ -130,26 +130,38 @@
           <div class="flex justify-center align-middle mt-5">
             <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
               <div class="flex justify-center items-center">
-                <label for="drop-area" class="drop-area">
-                  <!-- Unhidden This Input and kindly fix it on TS file-->
-                  <input type="file" formControlName="profileImage" (change)="onFileChange($event)" accept="image/*" hidden>
-                  <div class="display-image">
+                <div>
+                  <input type="file" formControlName="profileImage" (change)="onFileChange($event)">
+                </div>
+                <label for="fileInput" class="drop-area">
+                  <input type="file" id="fileInput" 
+                    formControlName="profileImage" (change)="onFileChanges($event)"
+                    accept="image/*" hidden/>
+                  <div class="image-container">
+                    @if(imageSrc) {
+                      <img [src]="imageSrc" alt="Selected Image" class="displayed-image">
+                    }
+                  </div>
+                  <div class="upload-message">
                     <svg
-                    class="w-8 h-8 mb-4 text-gray-500"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16">
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                  </svg>
-                    <p>Drap and Drop or click here to upload image</p>
+                      class="w-8 h-8 mb-4 text-gray-500"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p>Click here to upload image</p>
                   </div>
                 </label>
+                
               </div>
               <div class="mt-4 flex justify-between">
                 <button mat-button matStepperPrevious>Back</button>
@@ -162,13 +174,23 @@
           <div class="flex justify-center align-middle mt-5">
             <div class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
               <ng-template matStepLabel>Get Fingerprint</ng-template>
-              <p>Scan Right Thumb Fingerprint</p>
-              <p>{{ rightThumbState }}</p>
-        
-              @if(hasRightThumb){
-                <p>Scan Right Index Fingerprint</p>
-                <p>{{ rightIndexState }}</p>
-              }
+              <div class="flex justify-center items-center flex-col gap-8">
+                <div class="fingerprint-container">
+                  <div class="fingerprint">Right Thumb</div>
+                  <div class="fingerprint">Right Index</div>
+                </div>
+                <div>
+                  <p>Scan Right Thumb Fingerprint</p>
+                  <p>{{ rightThumbState }}</p>
+                </div>
+          
+                @if(hasRightThumb){
+                  <div>
+                    <p>Scan Right Index Fingerprint</p>
+                    <p>{{ rightIndexState }}</p>
+                  </div>
+                }
+              </div>
               <div class="mt-4 flex justify-between">
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button class="add-student-button" (click)="submit()">Add Student</button>

@@ -67,7 +67,7 @@ export class AddStudentComponent implements OnInit{
   rightThumbState = 'waiting for scanned data..';
   hasRightThumb = false;
   rightIndexState = 'waiting for scanned data..';
-
+  imageSrc: string | ArrayBuffer | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -211,6 +211,18 @@ export class AddStudentComponent implements OnInit{
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  onFileChanges(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   onFileChange(event: Event) {
