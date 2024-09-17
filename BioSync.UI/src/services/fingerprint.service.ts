@@ -5,6 +5,7 @@ import {CookieService} from "./cookie.service";
 import {Attendance} from "../model/timein.model";
 import {Schedule} from "../model/schedule.model";
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,6 +18,14 @@ export class FingerprintService {
     private http: HttpClient,
     private cookieService: CookieService
   ) {}
+
+  registerFingerprint(formData: FormData){
+    return this.http.post(`${environment.apiUrl}/api/v1/fingerprints/upload`, formData, {
+      headers: this.headers,
+      withCredentials: true,
+      responseType: 'text' as 'json'
+    })
+  }
 
   verifyProfessorFingerprintForAttendance(formData: FormData){
     return this.http.post<string>(`${this.url}/verify/start`, formData, {

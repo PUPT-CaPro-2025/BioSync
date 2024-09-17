@@ -3,7 +3,9 @@ package com.example.biosyncapi.controller;
 import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +38,18 @@ public class UserController {
     @PostMapping()
     public User createUser(@RequestBody User user) {
         return this.userService.createUser(user);
+    }
+
+    @PostMapping("/profile-image")
+    public ResponseEntity<?> createUserProfileImage(
+            @RequestParam("userId") Long userId,
+            @RequestParam("profileImage") MultipartFile profileImage) {
+        try {
+            this.userService.processProfileImage(userId, profileImage);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping()
