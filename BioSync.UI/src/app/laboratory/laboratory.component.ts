@@ -30,7 +30,6 @@ import jsPDF from "jspdf";
     CommonModule,
     AddLaboratoryComponent,
     EditLaboratoryComponent,
-    ViewLaboratoryComponent
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
