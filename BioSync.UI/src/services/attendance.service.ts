@@ -12,6 +12,13 @@ export class AttendanceService {
 
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
+  getAttendance(){
+    return this.http.get<Attendance[]>(`${this.url}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getAttendanceByScheduleId(scheduleId: number){
     return this.http.get<Attendance[]>(`${this.url}/schedule/${scheduleId}`, {
       headers: this.headers,
