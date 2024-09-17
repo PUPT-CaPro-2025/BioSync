@@ -20,6 +20,7 @@ import { FacultyAttendanceComponent } from './faculty-attendance/faculty-attenda
 import {ScheduleListComponent} from "./schedule-list/schedule-list.component";
 import {StartAttendanceComponent} from "./start-attendance/start-attendance.component";
 import {ViewScheduleComponent} from "./view-schedule/view-schedule.component";
+import {ViewAttendanceComponent} from "./view-attendance/view-attendance.component";
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
@@ -35,6 +36,7 @@ export const routes: Routes = [
     { path: "student", component: StudentComponent },
     { path: "attendance", component: AttendanceComponent },
     { path: "attendance/start/:id", component: StartAttendanceComponent },
+    { path: "view/attendance/:id", component: ViewAttendanceComponent },
     { path: "school-year", component: SchoolYearComponent },
     { path: "program", component: ProgramComponent },
     { path: "section", component: SectionComponent },
