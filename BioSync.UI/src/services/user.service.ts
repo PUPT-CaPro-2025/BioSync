@@ -45,6 +45,13 @@ export class UserService {
     })
   }
 
+  getUsersBySectionId(sectionId: number): Observable<User[]> {
+    return this.http.get<User[]>(`${this.url}/users/section/${sectionId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getUserById(userId: number) {
     return this.http.get<User>(`${this.url}/users/${userId}`, {
       headers: this.headers,

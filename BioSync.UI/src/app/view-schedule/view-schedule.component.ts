@@ -1,18 +1,63 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatToolbar} from "@angular/material/toolbar";
+import {ActivatedRoute} from "@angular/router";
+import {ScheduleService} from "../../services/schedule.service";
+import {Schedule} from "../../model/schedule.model";
+import {MatIcon} from "@angular/material/icon";
+import {User} from "../../model/user.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-view-schedule',
   standalone: true,
-    imports: [
-        MatToolbar
-    ],
+  imports: [
+    MatToolbar,
+    MatIcon
+  ],
+  providers: [ScheduleService, UserService],
   templateUrl: './view-schedule.component.html',
-  styleUrl: './view-schedule.component.css'
+  styleUrls: ['./view-schedule.component.css', '../schedule/schedule.component.css']
 })
-export class ViewScheduleComponent {
+export class ViewScheduleComponent implements OnInit{
+  schedule!: Schedule;
+  class: User[] = [];
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private scheduleService: ScheduleService,
+    private userService: UserService
+  ) {}
+
+  ngOnInit() {
+    this.activatedRoute.paramMap.subscribe(params => {
+      const id = params.get('id');
+      this.getScheduleDetails(+id!);
+
+    });
+  }
+
+  getScheduleDetails(scheduleId: number){
+    this.scheduleService.getScheduleById(scheduleId).subscribe({
+      next: value => {
+        this.schedule = value;
+        this.getUsersBySectionId(this.schedule.section?.id!);
+      }
+    })
+  }
+
+  getUsersBySectionId(sectionId: number) {
+    this.userService.getUsersBySectionId(sectionId).subscribe({
+      next: value => {
+        this.class = value
+      }
+    })
+  }
+
+  convertTo12HourFormat(string: string){
+    return this.scheduleService.convertTimeFormat(string);
+  }
 
   returnToSchoolYearView() {
-
+    history.back()
   }
 }
