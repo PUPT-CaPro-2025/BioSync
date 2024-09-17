@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {Attendance} from "../model/timein.model";
+import {Schedule} from "../model/schedule.model";
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,14 @@ export class FingerprintService {
     return this.http.post<Attendance>(`${this.url}/student/check-in`, formData, {
       headers: this.headers,
       withCredentials: true,
+    })
+  }
+
+  stopAttendance(schedule: Schedule){
+    return this.http.post<string>(`${this.url}/verify/stop?scheduleId=${schedule.id}`,null, {
+      headers: this.headers,
+      withCredentials: true,
+      responseType: 'text' as 'json'
     })
   }
 
