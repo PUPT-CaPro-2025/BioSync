@@ -208,7 +208,7 @@ export class SectionComponent implements OnInit{
       }
     });
 
-    doc.save('program-list.pdf');
+    doc.save('section-list.pdf');
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

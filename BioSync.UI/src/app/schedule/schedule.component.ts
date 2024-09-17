@@ -363,7 +363,7 @@ export class ScheduleComponent implements OnInit{
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     // Add Title and Date/Time only on the first page
-    const title = 'VISITOR LIST';
+    const title = 'SCHEDULE LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.text(title, pageWidth / 2, 30, { align: 'center' }); // Center aligned header
