@@ -44,7 +44,15 @@
           <div class="cell">{{schedule.laboratory?.name}}</div>
           <div class="cell">
             <div class="action-container">
-              <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
+              @if(isScheduledForFutureOrToday(schedule)) {
+                <button class="edit-button" (click)="toggleStartSchedule(schedule)">
+                  <mat-icon>play_arrow</mat-icon>
+                </button>
+              }@else {
+                <button class="edit-button">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              }
             </div>
           </div>
         </div>

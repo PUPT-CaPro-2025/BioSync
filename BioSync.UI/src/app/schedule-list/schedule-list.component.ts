@@ -20,12 +20,15 @@ export class ScheduleListComponent implements OnInit {
   schedules: Schedule[] = [];
   schedule!: Schedule;
   recurrenceId: string | null | undefined;
+  today: number;
 
   constructor(
     private scheduleService: ScheduleService,
     private activatedRoute: ActivatedRoute,
     private router: Router
-  ) {}
+  ) {
+    this.today = new Date().setHours(0, 0, 0, 0);
+  }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -38,7 +41,7 @@ export class ScheduleListComponent implements OnInit {
   getSchedulesByRecurrenceId(recurrenceId: string){
     this.scheduleService.getSchedulesByRecurrenceId(recurrenceId).subscribe({
       next: (schedules: Schedule[]) => {
-        const today = new Date().setHours(0, 0, 0, 0);
+        const today = this.today;
 
         const futureSchedules = schedules.filter(schedule => new Date(schedule.scheduleDate).getTime() >= today);
         const pastSchedules = schedules.filter(schedule => new Date(schedule.scheduleDate).getTime() < today);
@@ -51,6 +54,10 @@ export class ScheduleListComponent implements OnInit {
         this.schedule = this.schedules[0];
       }
     })
+  }
+
+  isScheduledForFutureOrToday(schedule: Schedule): boolean {
+    return (new Date(schedule.scheduleDate).getTime() >= this.today) && !schedule.hasFinished;
   }
 
   getDayOfWeek(date: string | Date) {
