@@ -112,7 +112,7 @@
         </div>
         } @if(getRole() === "STUDENT"){
         <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
-            <button routerLink="/student-schedule" class="menu-content">
+            <button routerLink="/schedule" class="menu-content">
               <mat-icon>calendar_month</mat-icon>
               <p>Schedule</p>
             </button>
