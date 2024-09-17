@@ -125,10 +125,10 @@
                     <div class="cell">{{schedule.laboratory?.name}}</div>
                     <div class="cell">
                       <div class="action-container">
-                        <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
                         @if(getRole() === "FACULTY"){
-                          <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
+                          <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
                         }
+                        <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
                         @if(getRole() === "ADMIN"){
                           <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
                           <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>

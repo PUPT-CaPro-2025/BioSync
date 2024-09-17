@@ -15,12 +15,14 @@ import {SchoolYear} from "../../model/school.year.model";
 import {Router} from "@angular/router";
 import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
+import {User} from "../../model/user.model";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
   imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
-  providers: [ScheduleService, SchoolYearService],
+  providers: [ScheduleService, SchoolYearService, UserService, CookieService, CryptoService],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -64,7 +66,8 @@ export class ScheduleComponent implements OnInit{
     private schoolYearService: SchoolYearService,
     private router : Router,
     private cryptoService: CryptoService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private userService: UserService
     ) {}
 
   ngOnInit() {
@@ -73,8 +76,10 @@ export class ScheduleComponent implements OnInit{
     } else if (this.getRole() === "FACULTY"){
       this.getUserId();
       this.getFacultySchedule(this.userId);
+    } else {
+      this.getUserId();
+      this.getSectionId(this.userId);
     }
-    console.log(this.getRole())
     this.getAcademicYears();
   }
 
@@ -315,5 +320,28 @@ export class ScheduleComponent implements OnInit{
 
   toggleViewSchedule(schedule: Schedule) {
     this.router.navigate(["/view/schedule", schedule.id]).then();
+  }
+
+  getSectionId(userId: number) {
+    this.userService.getUserById(userId).subscribe({
+      next: (user: User) => {
+        if(!user.id) return;
+        this.getStudentSchedules(+user.section?.id!);
+      }
+    })
+  }
+
+  getStudentSchedules(sectionId: number){
+    this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
+      next: (schedules: Schedule[]) => {
+        console.log(schedules)
+        this.schedules = schedules;
+        this.scheduleContainer = schedules;
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
+        this.setLatestSchoolYear();
+      }
+    })
   }
 }
