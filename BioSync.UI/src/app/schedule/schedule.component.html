@@ -125,7 +125,7 @@
                     <div class="cell">{{schedule.laboratory?.name}}</div>
                     <div class="cell">
                       <div class="action-container">
-                        @if(getRole() === "FACULTY"){
+                        @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
                           <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
                         }
                         <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
