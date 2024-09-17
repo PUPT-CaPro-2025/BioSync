@@ -1,0 +1,40 @@
+@if(!hasProfessorVerified){
+  <div class="header">
+    <mat-toolbar class="toolbar-container flex justify-between">
+      <span>Attendance for {{ selectedSchedule.subject?.name }}</span>
+      @if(selectedSchedule){
+        {{ getMonth(selectedSchedule.scheduleDate!)}} {{ getDay(selectedSchedule.scheduleDate!) }}
+      }
+    </mat-toolbar>
+  </div>
+  <div class="p-3">
+    <p>{{ instructions }}</p>
+  </div>
+  <div class="flex justify-center items-center mt-32">
+    <p>{{ reminder }}</p>
+  </div>
+} @else {
+  <div class="header">
+    <mat-toolbar class="toolbar-container flex justify-between">
+      <span>Attendance for {{ selectedSchedule.subject?.name }}</span>
+      @if(selectedSchedule){
+        {{ getMonth(selectedSchedule.scheduleDate!)}} {{ getDay(selectedSchedule.scheduleDate!) }}
+      }
+    </mat-toolbar>
+  </div>
+  <div class="p-3 flex justify-between">
+    <div>
+      <p>{{ instructions }}</p>
+    </div>
+    <button mat-flat-button (click)="openConfirmationDialog(selectedSchedule)">Stop Attendance</button>
+  </div>
+  <div class="flex justify-center flex-col items-center mt-32">
+    <p>{{ reminder }}</p>
+    @if(loggedStudent){
+      <div>{{ loggedStudent.usercode }}</div>
+      <div>{{ loggedStudent.firstName }} {{ loggedStudent.lastName }}</div>
+    }
+  </div>
+}
+
+

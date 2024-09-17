@@ -73,7 +73,7 @@ export class DashboardAdminComponent implements OnInit {
 
   transformToCalendarEvents(schedules: Schedule[]): { title: string, start: string, end?: string }[] {
     return schedules.map(schedule => ({
-      title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.section})`,
+      title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.year})`,
       start: `${schedule.scheduleDate}T${schedule.startTime}`,
       end: `${schedule.scheduleDate}T${schedule.endTime}`,
       laboratory: `${schedule.laboratory?.id}`

@@ -12,6 +12,7 @@ import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component
 import {MatDialog} from "@angular/material/dialog";
 import {SchoolYearService} from "../../services/school.year.service";
 import {SchoolYear} from "../../model/school.year.model";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-schedule',
@@ -50,8 +51,6 @@ export class ScheduleComponent implements OnInit{
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
   isEditSchedule: boolean = false;
-  isViewSchedule: boolean = false;
-  currentSchedule: number | undefined;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
   isDropdownOpenAddSchedule: boolean = false;
@@ -59,7 +58,8 @@ export class ScheduleComponent implements OnInit{
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
-    private schoolYearService: SchoolYearService
+    private schoolYearService: SchoolYearService,
+    private router : Router
     ) {}
 
   ngOnInit() {
@@ -122,13 +122,7 @@ export class ScheduleComponent implements OnInit{
   }
 
   convertTimeFormat(time: string): string {
-    const [hours, minutes] = time.split(':').map(Number);
-
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = hours % 12 || 12;
-    const formattedMinutes = minutes.toString().padStart(2, '0');
-
-    return `${formattedHours}:${formattedMinutes} ${period}`;
+    return this.scheduleService.convertTimeFormat(time);
   }
 
   openDeleteDialog(schedule: Schedule): void {
@@ -148,10 +142,7 @@ export class ScheduleComponent implements OnInit{
   }
 
   getDayOfWeek(date: string | Date): string {
-    const newDate = new Date(date);
-    const days = ['SUN', 'MON', 'TUE', 'WED',
-      'THU', 'FRI', 'SAT'];
-    return days[newDate.getDay()];
+    return this.scheduleService.getDayOfWeek(date);
   }
 
   deleteSchedule(scheduleToDelete: Schedule){
@@ -228,6 +219,11 @@ export class ScheduleComponent implements OnInit{
   handleBackToSchedule(): void {
     this.isOneAddSchedule = false;
     this.isWeeklyAddSchedule = false;
+  }
+
+  toggleStartSchedule(schedule: Schedule) {
+    if(schedule.recurrenceId)
+      this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
   }
 
   toggleEditSchedule(schedule: Schedule): void {

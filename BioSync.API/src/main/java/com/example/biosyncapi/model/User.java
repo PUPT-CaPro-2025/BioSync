@@ -154,6 +154,4 @@ public class User implements UserDetails {
     public void setRole(Role role) {
         this.role = role;
     }
-
-
 }

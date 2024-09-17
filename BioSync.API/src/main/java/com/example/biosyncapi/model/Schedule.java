@@ -51,6 +51,8 @@ public class Schedule {
 
     private int recurrenceInterval;
 
+    private boolean hasFinished;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
     public List<String> recurrenceDays;
@@ -74,6 +76,7 @@ public class Schedule {
         this.recurrence = recurrence;
         this.recurrenceInterval = recurrenceInterval;
         this.recurrenceDays = recurrenceDays;
+        this.hasFinished = false;
     }
 
     public Long getId() {
@@ -194,5 +197,13 @@ public class Schedule {
 
     public void setRecurrenceId(UUID recurrenceId) {
         this.recurrenceId = recurrenceId;
+    }
+
+    public boolean isHasFinished() {
+        return hasFinished;
+    }
+
+    public void setHasFinished(boolean hasFinished) {
+        this.hasFinished = hasFinished;
     }
 }

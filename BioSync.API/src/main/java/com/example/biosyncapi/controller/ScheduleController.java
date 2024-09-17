@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/schedules")
@@ -33,6 +34,15 @@ public class ScheduleController {
     @GetMapping("/section/{id}")
     public List<Schedule> getSchedulesBySectionId(@PathVariable Long id) {
         return scheduleService.getAllSchedulesBySectionId(id);
+    }
+
+    @GetMapping("/recurrence/{id}")
+    public ResponseEntity<List<Schedule>> getSchedulesByRecurrenceId(@PathVariable UUID id) {
+        List<Schedule> schedules = scheduleService.getSchedulesByRecurrenceId(id);
+
+        if(schedules.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(schedules, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
