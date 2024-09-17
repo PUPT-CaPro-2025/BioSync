@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
@@ -13,8 +13,8 @@ import { LaboratoryService } from '../../services/laboratory.service';
 import { Laboratory } from '../../model/laboratory.model';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import { ViewLaboratoryComponent } from '../view-laboratory/view-laboratory.component';
 import jsPDF from "jspdf";
+import {ViewLaboratoryComponent} from "../view-laboratory/view-laboratory.component";
 
 @Component({
   selector: 'app-laboratory',
@@ -29,7 +29,7 @@ import jsPDF from "jspdf";
     MatSelectModule,
     CommonModule,
     AddLaboratoryComponent,
-    EditLaboratoryComponent,
+    EditLaboratoryComponent, ViewLaboratoryComponent
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',

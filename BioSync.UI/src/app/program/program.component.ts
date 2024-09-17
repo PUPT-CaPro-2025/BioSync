@@ -13,9 +13,8 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import { ViewProgramComponent } from '../view-program/view-program.component';
 import jsPDF from "jspdf";
-import {parseDecoratorInputTransformFunction} from "@angular/compiler-cli/src/ngtsc/annotations/directive";
+import {ViewProgramComponent} from "../view-program/view-program.component";
 
 @Component({
   selector: 'app-program',
@@ -30,7 +29,7 @@ import {parseDecoratorInputTransformFunction} from "@angular/compiler-cli/src/ng
     MatSelectModule,
     CommonModule,
     AddProgramComponent,
-    EditProgramComponent,
+    EditProgramComponent, ViewProgramComponent,
   ],
   providers: [ProgramService],
   templateUrl: './program.component.html',
@@ -65,7 +64,6 @@ export class ProgramComponent implements OnInit{
   ngOnInit() {
     this.getAllPrograms()
 
-    // Load image from assets folder
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
     });
@@ -247,7 +245,7 @@ export class ProgramComponent implements OnInit{
       }
     });
 
-    doc.save('laboratory-list.pdf');
+    doc.save('program-list.pdf');
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
