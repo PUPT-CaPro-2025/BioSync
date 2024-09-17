@@ -17,6 +17,7 @@ import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-schedule',
@@ -59,6 +60,7 @@ export class ScheduleComponent implements OnInit{
   selectedSchedule!: Schedule;
   isDropdownOpenAddSchedule: boolean = false;
   userId!: number;
+  headerImage!: string;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -81,6 +83,10 @@ export class ScheduleComponent implements OnInit{
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getAllSchedules() {
@@ -343,5 +349,80 @@ export class ScheduleComponent implements OnInit{
         this.setLatestSchoolYear();
       }
     })
+  }
+
+  generatePdf() {
+
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const imgWidth = 115; // Width of the image in mm
+    const imgHeight = 15; // Adjust the height accordingly
+    const xOffset = (pageWidth - imgWidth) / 2; // Calculate the xOffset to center the image
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    // Add Title and Date/Time only on the first page
+    const title = 'SCHEDULE LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' }); // Center aligned header
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+
+    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
+    const rows = this.schedules.map(schedule =>
+      [
+        schedule.subject?.code,
+        schedule.subject?.name,
+        schedule.recurrenceDays,
+        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
+        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
+        schedule.laboratory?.name
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('schedule-list.pdf');
+  }
+
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 }

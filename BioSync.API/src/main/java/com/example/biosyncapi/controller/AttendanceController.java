@@ -35,6 +35,13 @@ public class AttendanceController {
         this.scheduleRepository = scheduleRepository;
     }
 
+    @GetMapping()
+    public ResponseEntity<List<Attendance>> getAttendance(@RequestParam Map<String, String> params) {
+        List<Attendance> attendances = attendanceRepository.findAll();
+
+        return ResponseEntity.ok(attendances);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<List<Attendance>> getAttendance(@PathVariable Long id) {
         List<Attendance> attendance = attendanceService.getAttendanceByScheduleId(id);
