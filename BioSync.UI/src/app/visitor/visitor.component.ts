@@ -176,16 +176,15 @@ export class VisitorComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; // Width of the image in mm
-    const imgHeight = 15; // Adjust the height accordingly
-    const xOffset = (pageWidth - imgWidth) / 2; // Calculate the xOffset to center the image
+    const imgWidth = 115; 
+    const imgHeight = 15; 
+    const xOffset = (pageWidth - imgWidth) / 2; 
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
-    // Add Title and Date/Time only on the first page
     const title = 'VISITOR LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); // Center aligned header
+    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
