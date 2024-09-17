@@ -4,7 +4,7 @@
   </mat-toolbar>
 </div>
 <div class="h-[80vh] mt-16 flex items-center justify-center mb-32">
-  <mat-stepper [linear]="false" #stepper class="flex items-center justify-center align-middle rounded-2xl w-2/3" (selectionChange)="onStepChange($event)">
+  <mat-stepper [linear]="false" #stepper class="flex items-center justify-center align-middle rounded-2xl w-2/3" (selectionChange)="onStepChange($event)" labelPosition="bottom">
     <mat-step [stepControl]="studentForm">
       <div class="flex justify-center align-middle mt-5">
         <form [formGroup]="studentForm" class="w-[55%] flex flex-col gap-4 row-block justify-center align-middle">

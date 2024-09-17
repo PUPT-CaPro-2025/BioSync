@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ViewEncapsulation} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -34,7 +34,8 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
     SectionService
   ],
   templateUrl: './add-student.component.html',
-  styleUrl: './add-student.component.css'
+  styleUrl: './add-student.component.css',
+  encapsulation: ViewEncapsulation.None,
 })
 export class AddStudentComponent implements OnInit{
   @Output() backToStudent = new EventEmitter<void>();

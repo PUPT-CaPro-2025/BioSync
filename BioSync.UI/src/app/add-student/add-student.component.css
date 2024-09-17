@@ -10,18 +10,39 @@
   width: 100%;
 }
 
-.form-button button{
-    font-size: 14px;
-    padding: 12px 60px;
-    background-color: #F84C42;
-    color: white;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
+.mat-step-header {
+    pointer-events: none;
+    outline: none;
 }
 
-.form-button button:hover {
-    background-color: #7a2521;
+.mat-step-header[aria-selected="true"] .mat-step-icon {
+    background-color: white;
+    border: 2px solid #F84C42;
+    color: #F84C42;
+}
+  
+.mat-step-header[aria-selected="true"] .mat-step-label {
+    color: #F84C42;
+}
+
+.mat-step-header[ng-reflect-state="edit"] .mat-step-icon {
+    background-color: #F84C42;
+    border: 2px solid #F84C42;
+    color: white;
+}
+
+.mat-step-header[ng-reflect-state="edit"] .mat-step-label {
+    color: #7F7F7F;
+}
+
+.mat-step-header[ng-reflect-state="number"]:not([ng-reflect-state="edit"]):not([aria-selected="true"]) .mat-step-icon {
+    background-color: #E3E3E3;
+    border: 2px solid #E3E3E3;
+    color: #393939;
+}
+
+.mat-step-header[ng-reflect-state="number"]:not([ng-reflect-state="edit"]):not([aria-selected="true"]) .mat-step-label {
+    color: #7F7F7F;
 }
 
 @media (max-width: 1462px) {
