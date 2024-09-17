@@ -3,26 +3,32 @@
         @if(!isEditSchedule) {
           <div class="header">
             <mat-toolbar class="toolbar-container">
-              <span>List of Schedules - ALL</span>
+              @if(getRole() === "ADMIN"){
+                <span>List of Schedules - ALL</span>
+              } @else {
+                <span>List of Schedules</span>
+              }
               <div class="toolbar-button">
-                <div class="flex flex-col items-center">
-                  <div class="add-schedule-button" (click)="onAddScheduleClick()">
-                    Add New Schedule
-                    <mat-icon class="dropdown-icon">{{ isDropdownOpenAddSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-                  </div>
-                  @if(isDropdownOpenAddSchedule) {
-                    <div class="add-schedule-content flex flex-col">
-                      <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                           (click)="toggleOneAddSchedule()">
-                        Add One Time Schedule
-                      </div>
-                      <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                           (click)="toggleWeeklyAddSchedule()">
-                        Add Recurrence Schedule
-                      </div>
+                @if(getRole() === "ADMIN"){
+                  <div class="flex flex-col items-center">
+                    <div class="add-schedule-button" (click)="onAddScheduleClick()">
+                      Add New Schedule
+                      <mat-icon class="dropdown-icon">{{ isDropdownOpenAddSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                     </div>
-                  }
-                </div>
+                    @if(isDropdownOpenAddSchedule) {
+                      <div class="add-schedule-content flex flex-col">
+                        <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                             (click)="toggleOneAddSchedule()">
+                          Add One Time Schedule
+                        </div>
+                        <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                             (click)="toggleWeeklyAddSchedule()">
+                          Add Recurrence Schedule
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
                 <button class="print-schedule">Print Schedule Reports</button>
               </div>
             </mat-toolbar>
@@ -119,9 +125,14 @@
                     <div class="cell">{{schedule.laboratory?.name}}</div>
                     <div class="cell">
                       <div class="action-container">
-                        <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
-                        <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
-                        <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
+                        @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
+                          <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
+                        }
+                        <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
+                        @if(getRole() === "ADMIN"){
+                          <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
+                          <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
+                        }
                       </div>
                     </div>
                   </div>

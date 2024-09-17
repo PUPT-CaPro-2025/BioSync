@@ -25,14 +25,22 @@ public class UserController {
         return this.userService.getAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable long id) {
-        return this.userService.getUserById(id);
-    }
-
     @GetMapping("/role/{role}")
     public List<User> getUsersByRole(@PathVariable Role role) {
         return this.userService.getUsersByRole(role);
+    }
+
+    @GetMapping("/section/{id}")
+    public ResponseEntity<List<User>> getUsersBySectionId(@PathVariable Long id) {
+        List<User> students = this.userService.getUsersBySectionId(id);
+        if (students.isEmpty()) return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(students);
+    }
+
+    @GetMapping("/{id}")
+    public Optional<User> getUserById(@PathVariable long id) {
+        return this.userService.getUserById(id);
     }
 
     @PostMapping()

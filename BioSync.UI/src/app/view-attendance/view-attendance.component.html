@@ -1,0 +1,88 @@
+<div class="flex justify-center items-center">
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">View Schedule Attendance</span>
+  </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+  <div class="mt-2 w-[94%] bg-white py-4 px-4 rounded-2xl">
+    <div class="flex flex-col gap-6">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Subject:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.subject?.name }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Room:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.laboratory?.name }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          When:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ convertTo12HourFormat(schedule.startTime) }} - {{ convertTo12HourFormat(schedule.endTime) }} |
+          {{ schedule.scheduleDate }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Who:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.section?.program?.programAbbreviation }}
+          {{ schedule.section?.year }} - {{ schedule.section?.section }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Professor:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.professor?.firstName }} {{ schedule.professor?.lastName }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex justify-center items-center">
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">Students</span>
+  </mat-toolbar>
+</div>
+<div class="table-container">
+  <div class="subject-table">
+    <div class="attributes text-custom-16">
+      <div class="cell">Student Number</div>
+      <div class="cell">Last Name</div>
+      <div class="cell">First Name</div>
+      <div class="cell">Status</div>
+    </div>
+    <div class="row-container text-custom-12">
+      @for (attendance of class; track attendance) {
+        <div class="row">
+          <div class="cell">{{ attendance.user.usercode }}</div>
+          <div class="cell">{{ attendance.user.lastName }}</div>
+          <div class="cell">{{ attendance.user.firstName }}</div>
+          <div class="cell">{{ attendance.status }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+<div class="flex justify-center items-center">
+  <div class="mb-10 flex justify-end w-[94%] button-content">
+    <button class="text-custom-14 text-white py-2 px-19
+            bg-gradient-red-orange rounded-full
+            hover:bg-gradient-dark-red-orange hover:text-f4White"
+            (click)="returnToSchoolYearView()">
+      Back
+    </button>
+  </div>
+</div>

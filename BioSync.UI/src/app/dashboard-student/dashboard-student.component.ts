@@ -10,6 +10,7 @@ import {UserService} from "../../services/user.service";
 import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
+import {AttendanceService} from "../../services/attendance.service";
 
 @Component({
   selector: 'app-dashboard-student',
@@ -18,7 +19,8 @@ import {User} from "../../model/user.model";
   providers: [
     ScheduleService,
     CryptoService,
-    UserService
+    UserService,
+    AttendanceService
   ],
   templateUrl: './dashboard-student.component.html',
   styleUrl: './dashboard-student.component.css',
@@ -63,11 +65,13 @@ export class DashboardStudentComponent implements OnInit{
     private userService: UserService,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
+    private attendanceService: AttendanceService
   ) {}
 
   ngOnInit() {
     this.getUserId();
     this.getSectionId(+this.userId);
+    this.loadDashboardNumbers();
   }
 
   getUserId(){
@@ -151,6 +155,20 @@ export class DashboardStudentComponent implements OnInit{
 
   handleDateClick(arg: DateClickArg) {
     alert('date click! ' + arg.dateStr);
+  }
+
+  loadDashboardNumbers(){
+    this.attendanceService.getPresentCount(+this.userId).subscribe({
+      next: value => {
+        this.totalAttendance = value;
+      }
+    });
+
+    this.attendanceService.getAbsentCount(+this.userId).subscribe({
+      next: value => {
+        this.totalAbsences = value;
+      }
+    });
   }
 
 }
