@@ -9,6 +9,8 @@ import {SubjectService} from "../../services/subject.service";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 import { EditSubjectComponent } from '../edit-subject/edit-subject.component';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-subject',
@@ -161,5 +163,41 @@ export class SubjectComponent implements OnInit{
 
   handleBackToEditSubject(): void {
     this.isEditSubject = false;
+  }
+
+  generatePdf() {
+    const doc = new jsPDF();
+
+    // Add a custom header to the PDF
+    doc.setFontSize(18);
+    doc.text('List of Subjects', 14, 20);
+
+    doc.setFontSize(12);
+    doc.text('Generated on: ' + new Date().toLocaleDateString(), 14, 30);
+
+    const columns = ['Subject Code', 'Subject Name', 'Description'];
+    const rows = this.subjects.map(subject => [subject.code, subject.name, subject.description]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [248, 76, 66],
+        textColor: 255,
+        fontSize: 12
+      },
+      bodyStyles: {
+        fontSize: 10
+      }
+    });
+
+    // Save the generated PDF
+    doc.save('subjects-list.pdf');
   }
 }
