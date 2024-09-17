@@ -15,7 +15,6 @@ import {Router} from "@angular/router";
 import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
 import {UserService} from "../../services/user.service";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {User} from "../../model/user.model";
 
 @Component({
