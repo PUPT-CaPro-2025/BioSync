@@ -1,0 +1,99 @@
+<div class="flex justify-center items-center">
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">View School Year</span>
+  </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+  <div class="mt-2 w-[94%] bg-white py-4 px-4 rounded-2xl">
+    <div class="flex flex-col gap-6">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Year Start:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ yearStart }}-->
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Year End:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ yearEnd }}-->
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex justify-center items-center mt-3">
+  <div class="mt-2 flex flex-col w-[94%]
+            bg-white py-4 px-4 rounded-2xl ">
+    <h6 class="text-custom-20 text-lightGray font-weight400">First Semester</h6>
+    <div class="flex flex-col gap-5 mt-3">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Start Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ oneStartDate }}-->
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          End Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ oneEndDate }}-->
+        </p>
+      </div>
+    </div>
+    <h6 class="text-custom-20 text-lightGray font-weight400 mt-10">Second Semester</h6>
+    <div class="flex flex-col gap-5 mt-3">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Start Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ twoStartDate }}-->
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          End Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ twoEndDate }}-->
+        </p>
+      </div>
+    </div>
+    <h6 class="text-custom-20 text-lightGray font-weight400 mt-10">Summer Semester</h6>
+    <div class="flex flex-col gap-5 mt-3">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Start Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ summerStartDate }}-->
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          End Date:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+<!--          {{ summerEndDate }}-->
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex justify-center items-center">
+  <div class="mt-28 mb-10 flex justify-end w-[94%] button-content">
+    <button class="text-custom-14 text-white py-2 px-19
+            bg-gradient-red-orange rounded-full
+            hover:bg-gradient-dark-red-orange hover:text-f4White"
+            (click)="returnToSchoolYearView()">
+      Back
+    </button>
+  </div>
+</div>
