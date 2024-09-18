@@ -68,6 +68,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getUsersBySectionId(Long sectionId) {
+        return this.userRepository.findBySectionId(sectionId);
+    }
+
+    @Override
     public void processProfileImage(Long userId, MultipartFile image) {
         Optional<User> user = userRepository.findById(userId);
         if(user.isEmpty()) throw new RuntimeException("User not found");

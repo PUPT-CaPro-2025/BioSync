@@ -6,7 +6,7 @@
                     <span>List of Laboratories - ALL</span>
                     <div class="toolbar-button">
                         <button (click)="toggleAddLaboratory()">Add New Laboratory</button>
-                        <button>Print Laboratory Reports</button>
+                        <button (click)="generatePdf()">Print Laboratory Reports</button>
                     </div>
                 </mat-toolbar>
             </div>
@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="line-container">
                 <img src="../../assets/black-line.svg">
             </div>
@@ -82,33 +82,33 @@
                         }
                       </select>
                       <div class="paginator-button-container">
-                        <button (click)="previousPage()" 
+                        <button (click)="previousPage()"
                                 [disabled]="currentPage === 1"
                                 [ngClass]="{'active-button': currentPage > 1}">
-                            <img src="../../assets/previous.svg" 
-                                    alt="Previous Icon" 
+                            <img src="../../assets/previous.svg"
+                                    alt="Previous Icon"
                                     [ngClass]="{'active-icon': currentPage > 1}">
                             Previous
                         </button>
-                        <button (click)="nextPage()" 
+                        <button (click)="nextPage()"
                                 [disabled]="currentPage === totalPages"
                                 [ngClass]="{'active-button': currentPage < totalPages}">
                             Next
-                            <img src="../../assets/next.svg" 
-                                    alt="Next Icon" 
+                            <img src="../../assets/next.svg"
+                                    alt="Next Icon"
                                     [ngClass]="{'active-icon': currentPage < totalPages}">
                         </button>
                       </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         } @else {
             <app-view-laboratory (backToViewLaboratory)="handleBackToViewLaboratory()" [id]="setViewId()"/>
         }
     } @else {
         <app-edit-laboratory
-            [selectedLaboratory]="laboratoryToEdit" 
-            (updatedLaboratory)="onLaboratoryUpdate($event)" 
+            [selectedLaboratory]="laboratoryToEdit"
+            (updatedLaboratory)="onLaboratoryUpdate($event)"
             (backToEditLaboratory)="handleBackToEditLaboratory()"/>
     }
 } @else {

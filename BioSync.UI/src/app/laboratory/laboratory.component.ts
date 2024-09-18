@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,8 @@ import { LaboratoryService } from '../../services/laboratory.service';
 import { Laboratory } from '../../model/laboratory.model';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import { ViewLaboratoryComponent } from '../view-laboratory/view-laboratory.component';
+import jsPDF from "jspdf";
+import {ViewLaboratoryComponent} from "../view-laboratory/view-laboratory.component";
 
 @Component({
   selector: 'app-laboratory',
@@ -28,8 +29,7 @@ import { ViewLaboratoryComponent } from '../view-laboratory/view-laboratory.comp
     MatSelectModule,
     CommonModule,
     AddLaboratoryComponent,
-    EditLaboratoryComponent,
-    ViewLaboratoryComponent
+    EditLaboratoryComponent, ViewLaboratoryComponent
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
@@ -55,13 +55,18 @@ export class LaboratoryComponent implements OnInit {
   isViewLaboratory: boolean = false;
   laboratoryToEdit!: Laboratory;
   currentLaboratory: number | undefined;
+  headerImage!: string;
 
   constructor(
-    private laboratoryService: LaboratoryService, 
+    private laboratoryService: LaboratoryService,
     private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.getLaboratories()
+    this.getLaboratories();
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getLaboratories(){
@@ -187,5 +192,74 @@ export class LaboratoryComponent implements OnInit {
 
   handleBackToViewLaboratory(): void {
     this.isViewLaboratory = false;
+  }
+
+  generatePdf() {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const imgWidth = 115; // Width of the image in mm
+    const imgHeight = 15; // Adjust the height accordingly
+    const xOffset = (pageWidth - imgWidth) / 2; // Calculate the xOffset to center the image
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    // Add Title and Date/Time only on the first page
+    const title = 'LABORATORY LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' }); // Center aligned header
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+    const columns = ['Room Code', 'Laboratory Name', 'Capacity'];
+    const rows = this.laboratories.map(laboratory =>
+      [
+        laboratory.roomCode,
+        laboratory.name,
+        laboratory.capacity
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('laboratory-list.pdf');
+  }
+
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 }
