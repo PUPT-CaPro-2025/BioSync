@@ -4,7 +4,7 @@
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center mt-8 w-[90%] bg-transparent form-content">
-      <mat-stepper [linear]="false" #stepper class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
+      <mat-stepper [linear]="true" #stepper class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
         <mat-step [stepControl]="studentForm">
           <div class="flex justify-center align-middle mt-5">
             <form [formGroup]="studentForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
@@ -22,7 +22,7 @@
                         duration-300 w-full py-2 px-1"
                        formControlName="usercode">
               </div>
-    
+
               <div class="group flex flex-col gap-1">
                 <label for="first-name" class="text-custom-20
                         text-darkGray transition-colors duration-300
@@ -35,7 +35,7 @@
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 px-1" formControlName="firstName">
               </div>
-    
+
               <div class="group flex flex-col gap-1">
                 <label for="last-name" class="text-custom-20
                         text-darkGray transition-colors duration-300
@@ -48,7 +48,7 @@
                         focus:outline-none transition-colors
                         duration-300 w-full py-2 px-1" formControlName="lastName">
               </div>
-  
+
               <div class="group flex flex-col gap-1">
                 <label for="middle-name" class="text-custom-20
                         text-darkGray transition-colors duration-300
@@ -130,12 +130,8 @@
           <div class="flex justify-center align-middle mt-5">
             <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
               <div class="flex justify-center items-center">
-                <div>
-                  <input type="file" formControlName="profileImage" (change)="onFileChange($event)">
-                </div>
-                <!-- Click to upload image -->
                 <label for="fileInput" class="drop-area">
-                  <input type="file" id="fileInput" 
+                  <input type="file" id="fileInput"
                     formControlName="profileImage" (change)="onFileChanges($event)"
                     accept="image/*" hidden/>
                   <div class="image-container">
@@ -160,7 +156,7 @@
                     <p>Click here to upload image</p>
                   </div>
                 </label>
-                
+
               </div>
               <div class="mt-4 flex justify-between">
                 <button mat-button matStepperPrevious>Back</button>
@@ -175,20 +171,21 @@
               <ng-template matStepLabel>Get Fingerprint</ng-template>
               <div class="flex justify-center items-center flex-col gap-8">
                 <div class="fingerprint-container">
-                  <div class="fingerprint">Right Thumb</div>
-                  <div class="fingerprint">Right Index</div>
-                </div>
-                <div>
-                  <p>Scan Right Thumb Fingerprint</p>
-                  <p>{{ rightThumbState }}</p>
-                </div>
-          
-                @if(hasRightThumb){
-                  <div>
+                  <div class="flex flex-col gap-2 justify-center">
+                    <p>Scan Right Thumb Fingerprint</p>
+                    <div class="fingerprint">
+                      <p>Right Thumb</p>
+                    </div>
+                    <p>{{ rightThumbState }}</p>
+                  </div>
+                  @if(hasRightThumb){
+                  <div class="flex flex-col gap-2 justify-center">
                     <p>Scan Right Index Fingerprint</p>
+                    <div class="fingerprint">Right Index</div>
                     <p>{{ rightIndexState }}</p>
                   </div>
-                }
+                  }
+                </div>
               </div>
               <div class="mt-4 flex justify-between">
                 <button mat-button matStepperPrevious>Back</button>
