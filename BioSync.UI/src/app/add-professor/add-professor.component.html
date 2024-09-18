@@ -1,11 +1,14 @@
 
 <div class="flex justify-center items-center">
-    <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">Add New Professor</span>
-    </mat-toolbar>
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">Add Professor - {{currentStepLabel}}</span>
+  </mat-toolbar>
 </div>
-<div class="flex justify-center items-center">
-    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="professorForm">
+<div class="flex justify-center items-center mt-8 w-[90%] bg-transparent form-content">
+  <mat-stepper [linear]="true" #stepper class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
+    <mat-step [stepControl]="professorForm">
+      <div class="flex justify-center align-middle mt-5">
+        <form class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle" [formGroup]="professorForm">
         <div class="w-[55%] flex flex-col gap-4 row-block">
             <div class="group flex flex-col gap-1">
                 <label for="usercode" class="text-custom-20
@@ -80,14 +83,85 @@
                         (click)="cancelAddProfessor()">
                         Cancel
                     </button>
-                    <button class="text-custom-14 text-white py-2 px-19
-                        bg-gradient-red-orange rounded-full
-                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
-                        (click)="submit()">
-                        Add Professor
-                    </button>
+                    <button mat-button matStepperNext>Next</button>
                 </div>
             </div>
         </div>
     </form>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="imageForm" label="Profile Picture">
+      <div class="flex justify-center align-middle mt-5">
+        <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
+          <div class="flex justify-center items-center">
+            <label for="fileInput" class="drop-area">
+              <input type="file" id="fileInput"
+                     formControlName="profileImage" (change)="onFileChanges($event)"
+                     accept="image/*" hidden/>
+              <div class="image-container">
+                @if(imageSrc) {
+                  <img [src]="imageSrc" alt="Selected Image" class="displayed-image">
+                }
+              </div>
+              <div class="upload-message">
+                <svg
+                  class="w-8 h-8 mb-4 text-gray-500"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16">
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p>Click here to upload image</p>
+              </div>
+            </label>
+
+          </div>
+          <div class="mt-4 flex justify-between">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </form>
+      </div>
+    </mat-step>
+    <mat-step>
+      <div class="flex justify-center align-middle mt-5">
+        <div class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
+          <ng-template matStepLabel>Get Fingerprint</ng-template>
+          <div class="flex justify-center items-center flex-col gap-8">
+            <div class="fingerprint-container">
+              <div class="flex flex-col gap-2 justify-center">
+                <p>Scan Right Thumb Fingerprint</p>
+                <div class="fingerprint">
+                  <p>Right Thumb</p>
+                </div>
+                <p>{{ rightThumbState }}</p>
+              </div>
+              @if(hasRightThumb){
+                <div class="flex flex-col gap-2 justify-center">
+                  <p>Scan Right Index Fingerprint</p>
+                  <div class="fingerprint">Right Index</div>
+                  <p>{{ rightIndexState }}</p>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="mt-4 flex justify-between">
+            <button mat-button matStepperPrevious>Back</button>
+            <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red-orange rounded-full
+                        hover:bg-gradient-dark-red-orange hover:text-f4White add-button"
+                    (click)="submit()">
+              Add Professor
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-step>
+  </mat-stepper>
 </div>
