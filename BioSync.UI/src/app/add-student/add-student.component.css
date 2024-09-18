@@ -10,18 +10,148 @@
   width: 100%;
 }
 
-.form-button button{
-    font-size: 14px;
-    padding: 12px 60px;
-    background-color: #F84C42;
-    color: white;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
+.mat-step-header {
+    pointer-events: none;
+    background: none !important;
 }
 
-.form-button button:hover {
-    background-color: #7a2521;
+.mat-step-header[aria-selected="true"] .mat-step-icon {
+    background-color: white;
+    border: 2px solid #F84C42;
+    color: #F84C42;
+}
+  
+.mat-step-header[aria-selected="true"] .mat-step-label {
+    color: #F84C42;
+}
+
+.mat-step-header[ng-reflect-state="edit"] .mat-step-icon {
+    background-color: #F84C42;
+    border: 2px solid #F84C42;
+    color: white;
+}
+
+.mat-step-header[ng-reflect-state="edit"] .mat-step-label {
+    color: #7F7F7F;
+}
+
+.mat-step-header[ng-reflect-state="number"]:not([ng-reflect-state="edit"]):not([aria-selected="true"]) .mat-step-icon {
+    background-color: #E3E3E3;
+    border: 2px solid #E3E3E3;
+    color: #393939;
+}
+
+.mat-step-header[ng-reflect-state="number"]:not([ng-reflect-state="edit"]):not([aria-selected="true"]) .mat-step-label {
+    color: #7F7F7F;
+}
+
+button.mat-stepper-previous {
+    padding: 8px 60px !important;
+    color: #7F7F7F !important;
+    border: 2px solid #7F7F7F !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+}
+
+.cancel-button {
+    padding: 8px 50px !important;
+    color: #7F7F7F !important;
+    border: 2px solid #7F7F7F !important;
+    border-radius: 20px !important;
+    background: transparent !important;
+}
+
+button.mat-stepper-next {
+    color: white !important;
+    padding: 8px 60px !important;
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.add-student-button {
+    color: white !important;
+    padding: 8px 60px !important;
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+}
+
+.drop-area {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 275px;
+    height: 275px;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+  
+.image-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.displayed-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 2;
+}
+  
+.upload-message {
+  position: relative;
+  z-index: 1;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.display-image svg {
+    width: 100px;
+    height: 100px;
+}
+
+.fingerprint-container {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+}
+
+.fingerprint {
+    width: 200px;
+    height: 300px;
+    padding: 20px;
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C);
+    text-align: center;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
 }
 
 @media (max-width: 1462px) {
