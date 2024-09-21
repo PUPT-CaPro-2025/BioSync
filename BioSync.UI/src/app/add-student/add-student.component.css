@@ -71,6 +71,10 @@ button.mat-stepper-next {
     font-weight: 500 !important;
 }
 
+button.mat-stepper-next:hover {
+    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
+}
+
 .add-button {
     color: white !important;
     padding: 8px 60px !important;
@@ -79,6 +83,10 @@ button.mat-stepper-next {
     border-radius: 20px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
+}
+
+.add-button:hover {
+    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
 }
 
 .drop-area {
@@ -187,13 +195,14 @@ button.mat-stepper-next {
         align-items: center;
         justify-content: center;
     }
-    .form-button button{
-        font-size: 8px;
-        padding: 1px 2px;
-    }
 
     .row-block {
         width: 80%;
+    }
+
+    .starting-button {
+        padding: 8px 40px;
+        font-size: 14px;
     }
 }
 
@@ -202,6 +211,11 @@ button.mat-stepper-next {
         justify-content: center;
         flex-direction: column-reverse;
         gap: 20px;
+    }
+
+    .add-button {
+        font-size: 14px !important;
+        padding: 8px 20px !important;
     }
 
     .row-block {
