@@ -71,7 +71,7 @@ button.mat-stepper-next {
     font-weight: 500 !important;
 }
 
-.add-student-button {
+.add-button {
     color: white !important;
     padding: 8px 60px !important;
     background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
@@ -171,7 +171,7 @@ button.mat-stepper-next {
         padding: 4px 30px !important;
     }
 
-    .cancel-button, .add-student-button {
+    .cancel-button, .add-button {
         font-size: 14px !important;
         padding: 4px 20px !important;
     }
