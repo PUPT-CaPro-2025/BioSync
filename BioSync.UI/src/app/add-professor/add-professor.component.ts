@@ -13,6 +13,7 @@ import {StepperSelectionEvent} from "@angular/cdk/stepper";
 import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-add-professor',
@@ -23,7 +24,14 @@ import {FingerprintService} from "../../services/fingerprint.service";
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, MatStep, MatStepper, MatStepLabel, MatStepperNext, MatStepperPrevious],
+    MatSelectModule, 
+    MatStep, 
+    MatStepper, 
+    MatStepLabel, 
+    MatStepperNext, 
+    MatStepperPrevious, 
+    MatIconModule
+  ],
   providers: [UserService, SdkService, FingerprintService],
   templateUrl: './add-professor.component.html',
   styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css'],
