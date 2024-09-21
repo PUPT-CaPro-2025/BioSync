@@ -89,7 +89,8 @@ button.mat-stepper-next {
     width: 275px;
     height: 275px;
     justify-content: center;
-    border: 2px dashed #ccc;
+    background-color: #D9D9D9;
+    border-radius: 20px;
     padding: 20px;
     position: relative;
     overflow: hidden;
@@ -121,18 +122,22 @@ button.mat-stepper-next {
 .upload-message {
   position: relative;
   z-index: 1;
-  color: #555;
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   pointer-events: none;
+  gap: 30px;
 }
 
-.display-image svg {
-    width: 100px;
-    height: 100px;
+.camera-icon {
+    color: white;
+    font-size: 75px;
+    width: 75px;
+    height: 75px;
+    display: inline-block;
 }
 
 .fingerprint-container {
@@ -160,10 +165,15 @@ button.mat-stepper-next {
     }
 }
 
-@media (max-width: 1100px) {
-    .back-button, .add-button {
-        font-size: 14px;
-        padding: 8px 45px;
+@media (max-width: 1200px) {
+    button[matStepperPrevious], button[matStepperNext] {
+        font-size: 14px !important;
+        padding: 4px 30px !important;
+    }
+
+    .cancel-button, .add-student-button {
+        font-size: 14px !important;
+        padding: 4px 20px !important;
     }
 }
 

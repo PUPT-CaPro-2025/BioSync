@@ -17,6 +17,7 @@ import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} f
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-add-student',
@@ -27,7 +28,14 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious],
+    MatSelectModule, 
+    MatStep, 
+    MatStepLabel, 
+    MatStepper, 
+    MatStepperNext, 
+    MatStepperPrevious, 
+    MatIconModule
+  ],
   providers: [
     ProgramService,
     UserService,
@@ -244,5 +252,4 @@ export class AddStudentComponent implements OnInit{
         break;
     }
   }
-
 }
