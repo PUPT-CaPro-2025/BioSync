@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -26,7 +26,8 @@ import {FingerprintService} from "../../services/fingerprint.service";
     MatSelectModule, MatStep, MatStepper, MatStepLabel, MatStepperNext, MatStepperPrevious],
   providers: [UserService, SdkService, FingerprintService],
   templateUrl: './add-professor.component.html',
-  styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css']
+  styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AddProfessorComponent implements OnInit{
   @Output() backToProfessor = new EventEmitter<void>();
@@ -167,10 +168,10 @@ export class AddProfessorComponent implements OnInit{
         this.currentStepLabel = 'Set Up Information';
         break;
       case 1:
-        this.currentStepLabel = 'Student\'s Picture';
+        this.currentStepLabel = 'Professors\'s Picture';
         break;
       case 2:
-        this.currentStepLabel = 'Student\'s Biometrics';
+        this.currentStepLabel = 'Professor\'s Biometrics';
         break;
       default:
         this.currentStepLabel = 'Unknown Step';
