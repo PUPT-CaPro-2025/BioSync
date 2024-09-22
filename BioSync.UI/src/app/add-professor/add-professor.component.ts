@@ -14,6 +14,7 @@ import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} f
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-professor',
@@ -30,7 +31,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatStepLabel, 
     MatStepperNext, 
     MatStepperPrevious, 
-    MatIconModule
+    MatIconModule,
+    CommonModule
   ],
   providers: [UserService, SdkService, FingerprintService],
   templateUrl: './add-professor.component.html',
@@ -64,7 +66,9 @@ export class AddProfessorComponent implements OnInit{
   rightIndexFingerprintImageSrc!: Blob;
   rightThumbState = 'waiting for scanned data..';
   hasRightThumb = false;
+  isRightThumb = false;
   rightIndexState = 'waiting for scanned data..';
+  isRightIndex = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -84,10 +88,12 @@ export class AddProfessorComponent implements OnInit{
         if (src) {
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightThumb = true;
             this.rightThumbState = 'Right Thumb Captured';
             this.hasRightThumb = true;
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }
