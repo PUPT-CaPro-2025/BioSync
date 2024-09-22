@@ -107,7 +107,8 @@ export class AddProfessorComponent implements OnInit{
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       middleName: [''],
-      suffix: ['', [Validators.required]]
+      suffix: ['', [Validators.required]],
+      email: ['',Validators.required]
     });
 
     this.imageForm = this.formBuilder.group({

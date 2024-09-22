@@ -75,6 +75,18 @@
                           }
                   </mat-select>
           </div>
+          <div class="group flex flex-col gap-1">
+            <label for="email" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+              Email
+            </label>
+            <input matInput id="email" name="email"
+                   placeholder="Enter professor's email" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="email">
+          </div>
           <div class="flex justify-between mt-4 button-content">
             <button mat-button class="cancel-button" 
                 (click)="cancelAddProfessor()">
