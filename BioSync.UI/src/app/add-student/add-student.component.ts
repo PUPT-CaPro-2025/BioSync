@@ -18,6 +18,7 @@ import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-student',
@@ -34,7 +35,8 @@ import { MatIconModule } from '@angular/material/icon';
     MatStepper, 
     MatStepperNext, 
     MatStepperPrevious, 
-    MatIconModule
+    MatIconModule,
+    CommonModule
   ],
   providers: [
     ProgramService,
@@ -74,7 +76,9 @@ export class AddStudentComponent implements OnInit{
   rightIndexFingerprintImageSrc!: Blob;
   rightThumbState = 'waiting for scanned data..';
   hasRightThumb = false;
+  isRightThumb = false;
   rightIndexState = 'waiting for scanned data..';
+  isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
 
   constructor(
@@ -98,10 +102,12 @@ export class AddStudentComponent implements OnInit{
         if (src) {
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightThumb = true;
             this.rightThumbState = 'Right Thumb Captured';
             this.hasRightThumb = true;
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }

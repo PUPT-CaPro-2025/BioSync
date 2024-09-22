@@ -165,16 +165,34 @@
               <div class="flex justify-center items-center flex-col gap-8">
                 <div class="fingerprint-container">
                   <div class="flex flex-col gap-2 justify-center">
-                    <p>Scan Right Thumb Fingerprint</p>
-                    <div class="fingerprint">
-                      <p>Right Thumb</p>
+                    <p>Right Thumb Fingerprint</p>
+                    <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightThumb}">
+                      @if(isRightThumb) {
+                        <div class="check-container">
+                          <div class="check-background">
+                            <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </div>
+                        </div> 
+                      }
                     </div>
                     <p>{{ rightThumbState }}</p>
                   </div>
                   @if(hasRightThumb){
                   <div class="flex flex-col gap-2 justify-center">
-                    <p>Scan Right Index Fingerprint</p>
-                    <div class="fingerprint">Right Index</div>
+                    <p>Right Index Fingerprint</p>
+                    <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightIndex}">
+                      @if(isRightIndex) {
+                        <div class="check-container">
+                          <div class="check-background">
+                            <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </div>
+                        </div>                        
+                      }
+                    </div>
                     <p>{{ rightIndexState }}</p>
                   </div>
                   }
