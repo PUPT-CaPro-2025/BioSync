@@ -123,7 +123,8 @@ export class AddStudentComponent implements OnInit{
       middleName: [''],
       suffix: ['', [Validators.required]],
       program: ['', [Validators.required]],
-      section: ['',Validators.required]
+      section: ['',Validators.required],
+      email: ['',Validators.required]
     });
 
     this.imageForm = this.formBuilder.group({
