@@ -19,7 +19,7 @@
               <option value="barcode">Barcode Scanner</option>
           </select>
       </div>
-      @if(selectedDevice === 'biometrics') {
+      @if(hasProfessorVerified) {
         <div>
             <button mat-flat-button 
                 (click)="openConfirmationDialog(selectedSchedule)" 
