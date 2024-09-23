@@ -29,12 +29,12 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, 
-    MatStep, 
-    MatStepLabel, 
-    MatStepper, 
-    MatStepperNext, 
-    MatStepperPrevious, 
+    MatSelectModule,
+    MatStep,
+    MatStepLabel,
+    MatStepper,
+    MatStepperNext,
+    MatStepperPrevious,
     MatIconModule,
     CommonModule
   ],
@@ -74,12 +74,13 @@ export class AddStudentComponent implements OnInit{
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'waiting for scanned data..';
+  rightThumbState = 'Scan Right Thumb';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'waiting for scanned data..';
+  rightIndexState = 'Scan Right Index';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
+  photoButtonLabel = 'Skip';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -103,8 +104,10 @@ export class AddStudentComponent implements OnInit{
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightThumb = true;
-            this.rightThumbState = 'Right Thumb Captured';
-            this.hasRightThumb = true;
+            setTimeout(() => {
+              this.rightThumbState = 'Right Thumb Captured';
+              this.hasRightThumb = true;
+            }, 2000)
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightIndex = true;
@@ -122,9 +125,9 @@ export class AddStudentComponent implements OnInit{
       lastName: ['', [Validators.required]],
       middleName: [''],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       program: ['', [Validators.required]],
       section: ['',Validators.required],
-      email: ['',Validators.required]
     });
 
     this.imageForm = this.formBuilder.group({
@@ -168,14 +171,18 @@ export class AddStudentComponent implements OnInit{
     let selectedProgram = this.allPrograms.find(
       (program: Program) => program.id === studentToAdd.program);
 
+    const generatedPassword = this.userService.generatePassword();
+
     studentToAdd = {
       ...studentToAdd,
       section: this.sections.find((section: Section) =>
         section.id === this.studentForm.get('section')?.value),
       program: selectedProgram,
       role: 'STUDENT',
-      password: 'student123'
+      password: generatedPassword
     }
+
+    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
 
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
@@ -238,6 +245,8 @@ export class AddStudentComponent implements OnInit{
         this.imageSrc = reader.result;
       };
       reader.readAsDataURL(file);
+
+      this.photoButtonLabel = 'Next';
     }
   }
 
