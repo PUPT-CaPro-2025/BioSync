@@ -19,6 +19,8 @@ import {FingerprintService} from "../../services/fingerprint.service";
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import {MailService} from "../../services/mail.service";
+import {Mail} from "../../model/mail.model";
 
 @Component({
   selector: 'app-add-student',
@@ -89,7 +91,8 @@ export class AddStudentComponent implements OnInit{
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private mailService: MailService
   ) {}
 
   ngOnInit() {
@@ -182,8 +185,6 @@ export class AddStudentComponent implements OnInit{
       password: generatedPassword
     }
 
-    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
-
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
         if(!student.id) return;
@@ -198,6 +199,17 @@ export class AddStudentComponent implements OnInit{
         this.returnToStudentView();
       }
     })
+
+    const mailContent: Mail = {
+      to: studentToAdd.email,
+      subject: `BioSync Account Credentials`,
+      text: `
+        Hello! Welcome to BioSync. Please save your account credentials below\n\n
+        Usercode: ${studentToAdd.usercode} \n
+        Password: ${generatedPassword}`
+    }
+
+    this.mailService.sendMail(mailContent).subscribe();
 
     return;
   }
