@@ -139,8 +139,12 @@ export class AddProfessorComponent implements OnInit{
     this.userService.createUser(professorToCreate).subscribe({
       next: (userCreated: User) => {
         if(!userCreated.id) return;
-        this.processProfileImage(+userCreated.id);
-        this.registerFingerprintData(userCreated);
+        if(this.selectedProfileImage){
+          this.processProfileImage(+userCreated.id);
+        }
+        if(this.isRightIndex && this.isRightThumb){
+          this.registerFingerprintData(userCreated);
+        }
         this.displaySuccess()
         this.professorAdded.emit(userCreated);
       },
@@ -190,7 +194,7 @@ export class AddProfessorComponent implements OnInit{
         this.currentStepLabel = 'Set Up Information';
         break;
       case 1:
-        this.currentStepLabel = 'Professors\'s Picture';
+        this.currentStepLabel = 'Professor\'s Picture';
         break;
       case 2:
         this.currentStepLabel = 'Professor\'s Biometrics';

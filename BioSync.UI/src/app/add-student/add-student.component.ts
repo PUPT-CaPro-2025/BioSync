@@ -187,8 +187,12 @@ export class AddStudentComponent implements OnInit{
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
         if(!student.id) return;
-        this.processProfileImage(student.id)
-        this.registerFingerprintData(student);
+        if(this.selectedProfileImage){
+          this.processProfileImage(student.id)
+        }
+        if(this.isRightIndex && this.isRightThumb){
+          this.registerFingerprintData(student);
+        }
         this.openSuccessDialog();
         this.addedStudent.emit(student);
         this.returnToStudentView();
