@@ -25,12 +25,12 @@ import { CommonModule } from '@angular/common';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, 
-    MatStep, 
-    MatStepper, 
-    MatStepLabel, 
-    MatStepperNext, 
-    MatStepperPrevious, 
+    MatSelectModule,
+    MatStep,
+    MatStepper,
+    MatStepLabel,
+    MatStepperNext,
+    MatStepperPrevious,
     MatIconModule,
     CommonModule
   ],
@@ -64,11 +64,12 @@ export class AddProfessorComponent implements OnInit{
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'waiting for scanned data..';
+  rightThumbState = 'Scan Right Thumb';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'waiting for scanned data..';
+  rightIndexState = 'Scan Right Index';
   isRightIndex = false;
+  imageButtonLabel = 'Skip';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -89,8 +90,10 @@ export class AddProfessorComponent implements OnInit{
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightThumb = true;
-            this.rightThumbState = 'Right Thumb Captured';
-            this.hasRightThumb = true;
+            setTimeout(() => {
+              this.rightThumbState = 'Right Thumb Captured';
+              this.hasRightThumb = true;
+            }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightIndex = true;
@@ -108,7 +111,7 @@ export class AddProfessorComponent implements OnInit{
       lastName: ['', [Validators.required]],
       middleName: [''],
       suffix: ['', [Validators.required]],
-      email: ['',Validators.required]
+      email: ['',Validators.required, Validators.email]
     });
 
     this.imageForm = this.formBuilder.group({
@@ -123,11 +126,15 @@ export class AddProfessorComponent implements OnInit{
   submit(){
     if(!this.professorForm.valid) return;
 
+    const generatedPassword = this.userService.generatePassword();
+
     const professorToCreate = {
       ...this.professorForm.value,
       role: 'FACULTY',
-      password: 'test123'
+      password: generatedPassword
     }
+
+    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
 
     this.userService.createUser(professorToCreate).subscribe({
       next: (userCreated: User) => {
@@ -204,6 +211,8 @@ export class AddProfessorComponent implements OnInit{
         this.imageSrc = reader.result;
       };
       reader.readAsDataURL(file);
+
+      this.imageButtonLabel = 'Next';
     }
   }
 

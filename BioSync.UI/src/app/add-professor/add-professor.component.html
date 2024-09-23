@@ -88,7 +88,7 @@
                     duration-300 w-full py-2 px-1" formControlName="email">
           </div>
           <div class="flex justify-between mt-4 button-content">
-            <button mat-button class="cancel-button" 
+            <button mat-button class="cancel-button"
                 (click)="cancelAddProfessor()">
                 Cancel
             </button>
@@ -97,7 +97,7 @@
         </form>
       </div>
     </mat-step>
-    <mat-step [stepControl]="imageForm" label="Profile Picture">
+    <mat-step [stepControl]="imageForm" label="Profile Picture" [completed]="true">
       <div class="flex justify-center align-middle mt-5">
         <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
           <div class="flex justify-center items-center">
@@ -121,7 +121,7 @@
           </div>
           <div class="mt-4 flex justify-between button-content">
             <button mat-button matStepperPrevious>Back</button>
-            <button mat-button matStepperNext>Next</button>
+            <button mat-button matStepperNext>{{ imageButtonLabel }}</button>
           </div>
         </form>
       </div>
@@ -133,7 +133,6 @@
           <div class="flex justify-center items-center flex-col gap-8">
             <div class="fingerprint-container">
               <div class="flex flex-col gap-2 justify-center">
-                <p>Right Thumb Fingerprint</p>
                 <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightThumb}">
                   @if(isRightThumb) {
                     <div class="check-container">
@@ -142,14 +141,13 @@
                           <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                       </div>
-                    </div> 
+                    </div>
                   }
                 </div>
-                <p>{{ rightThumbState }}</p>
+                <p class="text-center">{{ rightThumbState }}</p>
               </div>
               @if(hasRightThumb){
                 <div class="flex flex-col gap-2 justify-center">
-                  <p>Right Index Fingerprint</p>
                   <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightIndex}">
                     @if(isRightIndex) {
                       <div class="check-container">
@@ -158,16 +156,13 @@
                             <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
                           </svg>
                         </div>
-                      </div> 
+                      </div>
                     }
                   </div>
-                  <p>{{ rightIndexState }}</p>
+                  <p class="text-center">{{ rightIndexState }}</p>
                 </div>
               }
             </div>
-          </div>
-          <div class="mt-4 flex items-center justify-center">
-            <button class="bg-brightRed rounded-xl py-2 px-16 text-white starting-button">Start Capturing</button>
           </div>
           <div class="mt-4 flex justify-between button-content">
             <button mat-button matStepperPrevious>Back</button>
