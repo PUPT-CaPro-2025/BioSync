@@ -43,7 +43,8 @@ import {Mail} from "../../model/mail.model";
   providers: [
     ProgramService,
     UserService,
-    SectionService
+    SectionService,
+    MailService
   ],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',

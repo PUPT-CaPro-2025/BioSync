@@ -15,6 +15,8 @@ import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import {Mail} from "../../model/mail.model";
+import {MailService} from "../../services/mail.service";
 
 @Component({
   selector: 'app-add-professor',
@@ -34,7 +36,7 @@ import { CommonModule } from '@angular/common';
     MatIconModule,
     CommonModule
   ],
-  providers: [UserService, SdkService, FingerprintService],
+  providers: [UserService, SdkService, FingerprintService, MailService],
   templateUrl: './add-professor.component.html',
   styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css'],
   encapsulation: ViewEncapsulation.None,
@@ -76,7 +78,8 @@ export class AddProfessorComponent implements OnInit{
     private userService: UserService,
     private dialog: MatDialog,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private mailService: MailService
   ) {}
 
   ngOnInit() {
@@ -134,8 +137,6 @@ export class AddProfessorComponent implements OnInit{
       password: generatedPassword
     }
 
-    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
-
     this.userService.createUser(professorToCreate).subscribe({
       next: (userCreated: User) => {
         if(!userCreated.id) return;
@@ -150,6 +151,17 @@ export class AddProfessorComponent implements OnInit{
       },
       error: error => { console.log(error); }
     });
+
+    const mailContent: Mail = {
+      to: professorToCreate.email,
+      subject: `BioSync Account Credentials`,
+      text: `
+        Hello! Welcome to BioSync. Please save your account credentials below\n\n
+        Usercode: ${professorToCreate.usercode} \n
+        Password: ${generatedPassword}`
+    }
+
+    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(professorId: number) {
