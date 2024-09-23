@@ -19,6 +19,8 @@ import {FingerprintService} from "../../services/fingerprint.service";
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import {MailService} from "../../services/mail.service";
+import {Mail} from "../../model/mail.model";
 
 @Component({
   selector: 'app-add-student',
@@ -41,7 +43,8 @@ import { CommonModule } from '@angular/common';
   providers: [
     ProgramService,
     UserService,
-    SectionService
+    SectionService,
+    MailService
   ],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',
@@ -89,7 +92,8 @@ export class AddStudentComponent implements OnInit{
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private mailService: MailService
   ) {}
 
   ngOnInit() {
@@ -182,18 +186,31 @@ export class AddStudentComponent implements OnInit{
       password: generatedPassword
     }
 
-    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
-
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
         if(!student.id) return;
-        this.processProfileImage(student.id)
-        this.registerFingerprintData(student);
+        if(this.selectedProfileImage){
+          this.processProfileImage(student.id)
+        }
+        if(this.isRightIndex && this.isRightThumb){
+          this.registerFingerprintData(student);
+        }
         this.openSuccessDialog();
         this.addedStudent.emit(student);
         this.returnToStudentView();
       }
     })
+
+    const mailContent: Mail = {
+      to: studentToAdd.email,
+      subject: `BioSync Account Credentials`,
+      text: `
+        Hello! Welcome to BioSync. Please save your account credentials below\n\n
+        Usercode: ${studentToAdd.usercode} \n
+        Password: ${generatedPassword}`
+    }
+
+    this.mailService.sendMail(mailContent).subscribe();
 
     return;
   }

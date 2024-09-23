@@ -30,6 +30,9 @@ public class User implements UserDetails {
 
     private String suffix;
 
+    @Column(unique = true)
+    private String email;
+
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
@@ -92,6 +95,14 @@ public class User implements UserDetails {
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Section getSection() {
