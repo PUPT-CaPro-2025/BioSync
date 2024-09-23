@@ -4,7 +4,7 @@
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center mt-8 w-[90%] bg-transparent form-content">
-      <mat-stepper [linear]="true" #stepper class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
+      <mat-stepper [linear]="true" class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
         <mat-step [stepControl]="studentForm">
           <div class="flex justify-center align-middle mt-5">
             <form [formGroup]="studentForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
@@ -80,6 +80,19 @@
               </div>
 
               <div class="group flex flex-col gap-1">
+                <label for="email" class="text-custom-20
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                  Email Address
+                </label>
+                <input matInput id="email" name="email"
+                       placeholder="Enter student's email" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="email">
+              </div>
+
+              <div class="group flex flex-col gap-1">
                 <label for="program" class="text-custom-20
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -118,15 +131,17 @@
                   </mat-select>
                 </div>
               </div>
-
-              <div class="flex justify-between mt-4">
-                <button mat-button class="cancel-button">Cancel</button>
+              <div class="flex justify-between mt-4 button-content">
+                <button mat-button class="cancel-button"
+                    (click)="returnToStudentView()">
+                    Cancel
+                </button>
                 <button mat-button matStepperNext>Next</button>
               </div>
             </form>
           </div>
         </mat-step>
-        <mat-step [stepControl]="imageForm" label="Profile Picture">
+        <mat-step [stepControl]="imageForm" label="Profile Picture" [completed]="true">
           <div class="flex justify-center align-middle mt-5">
             <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
               <div class="flex justify-center items-center">
@@ -140,27 +155,17 @@
                     }
                   </div>
                   <div class="upload-message">
-                    <svg
-                      class="w-8 h-8 mb-4 text-gray-500"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 20 16">
-                      <path
-                        stroke="currentColor"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                    </svg>
+                    <mat-icon class="camera-icon">camera_alt</mat-icon>
                     <p>Click here to upload image</p>
                   </div>
                 </label>
-
               </div>
-              <div class="mt-4 flex justify-between">
+              <div class="mt-4 flex items-center justify-center">
+                <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button">Take Photo</button>
+              </div>
+              <div class="mt-4 flex justify-between button-content">
                 <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
+                <button mat-button matStepperNext>{{  photoButtonLabel }}</button>
               </div>
             </form>
           </div>
@@ -172,24 +177,40 @@
               <div class="flex justify-center items-center flex-col gap-8">
                 <div class="fingerprint-container">
                   <div class="flex flex-col gap-2 justify-center">
-                    <p>Scan Right Thumb Fingerprint</p>
-                    <div class="fingerprint">
-                      <p>Right Thumb</p>
+                    <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightThumb}">
+                      @if(isRightThumb) {
+                        <div class="check-container">
+                          <div class="check-background">
+                            <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </div>
+                        </div>
+                      }
                     </div>
-                    <p>{{ rightThumbState }}</p>
+                    <p class="text-center">{{ rightThumbState }}</p>
                   </div>
                   @if(hasRightThumb){
                   <div class="flex flex-col gap-2 justify-center">
-                    <p>Scan Right Index Fingerprint</p>
-                    <div class="fingerprint">Right Index</div>
-                    <p>{{ rightIndexState }}</p>
+                    <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightIndex}">
+                      @if(isRightIndex) {
+                        <div class="check-container">
+                          <div class="check-background">
+                            <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                    <p class="text-center">{{ rightIndexState }}</p>
                   </div>
                   }
                 </div>
               </div>
-              <div class="mt-4 flex justify-between">
+              <div class="mt-4 flex justify-between button-content">
                 <button mat-button matStepperPrevious>Back</button>
-                <button mat-button class="add-student-button" (click)="submit()">Add Student</button>
+                <button mat-button class="add-button" (click)="submit()">Add Student</button>
               </div>
             </div>
           </div>

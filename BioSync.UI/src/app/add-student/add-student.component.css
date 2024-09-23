@@ -71,7 +71,11 @@ button.mat-stepper-next {
     font-weight: 500 !important;
 }
 
-.add-student-button {
+button.mat-stepper-next:hover {
+    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
+}
+
+.add-button {
     color: white !important;
     padding: 8px 60px !important;
     background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
@@ -79,6 +83,10 @@ button.mat-stepper-next {
     border-radius: 20px !important;
     font-size: 16px !important;
     font-weight: 500 !important;
+}
+
+.add-button:hover {
+    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
 }
 
 .drop-area {
@@ -89,7 +97,8 @@ button.mat-stepper-next {
     width: 275px;
     height: 275px;
     justify-content: center;
-    border: 2px dashed #ccc;
+    background-color: #D9D9D9;
+    border-radius: 20px;
     padding: 20px;
     position: relative;
     overflow: hidden;
@@ -121,18 +130,22 @@ button.mat-stepper-next {
 .upload-message {
   position: relative;
   z-index: 1;
-  color: #555;
+  color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   pointer-events: none;
+  gap: 30px;
 }
 
-.display-image svg {
-    width: 100px;
-    height: 100px;
+.camera-icon {
+    color: white;
+    font-size: 75px;
+    width: 75px;
+    height: 75px;
+    display: inline-block;
 }
 
 .fingerprint-container {
@@ -154,16 +167,109 @@ button.mat-stepper-next {
     color: white;
 }
 
+.fingerprint-scanned {
+    background: #54C98B;
+}
+
+.check-container {
+	width: 6.25rem;
+	height: 7.5rem;
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.check-background {
+	width: 100%;
+	height: calc(100% - 1.25rem);
+	background: white;
+	box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset,
+		0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+	transform: scale(0.84);
+	border-radius: 50%;
+	animation: animateContainer 0.65s ease-out forwards 0.65s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0;
+}
+
+.check-background svg {
+	width: 65%;
+	transform: translateY(0.25rem);
+	stroke-dasharray: 80;
+	stroke-dashoffset: 80;
+	animation: animateCheck 0.25s forwards 1.15s ease-out;
+}
+
+@keyframes animateContainer {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+		box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+	}
+	25% {
+		opacity: 1;
+		transform: scale(0.9);
+		box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+	}
+	43.75% {
+		transform: scale(1.15);
+		box-shadow: 0px 0px 0px 43.334px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+	}
+	62.5% {
+		transform: scale(1);
+		box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 21.667px rgba(255, 255, 255, 0.25) inset;
+	}
+	81.25% {
+		box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset;
+	}
+	100% {
+		opacity: 1;
+		box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+			0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset;
+	}
+}
+
+@keyframes animateCheck {
+	from {
+		stroke-dashoffset: 80;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
 @media (max-width: 1462px) {
     .row-block {
         width: 70%;
     }
 }
 
+@media (max-width: 1200px) {
+    button[matStepperPrevious], button[matStepperNext] {
+        font-size: 14px !important;
+        padding: 4px 30px !important;
+    }
+
+    .cancel-button, .add-button {
+        font-size: 14px !important;
+        padding: 4px 20px !important;
+    }
+}
+
 @media (max-width: 1100px) {
-    .back-button, .add-button {
-        font-size: 14px;
-        padding: 8px 45px;
+    .fingerprint-container {
+        justify-content: center;
+        flex-direction: column;
+        gap: 80px;
+
     }
 }
 
@@ -177,13 +283,14 @@ button.mat-stepper-next {
         align-items: center;
         justify-content: center;
     }
-    .form-button button{
-        font-size: 8px;
-        padding: 1px 2px;
-    }
 
     .row-block {
         width: 80%;
+    }
+
+    .starting-button {
+        padding: 8px 40px;
+        font-size: 14px;
     }
 }
 
@@ -192,6 +299,11 @@ button.mat-stepper-next {
         justify-content: center;
         flex-direction: column-reverse;
         gap: 20px;
+    }
+
+    .add-button {
+        font-size: 14px !important;
+        padding: 8px 20px !important;
     }
 
     .row-block {

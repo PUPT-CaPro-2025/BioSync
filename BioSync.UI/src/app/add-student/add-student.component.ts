@@ -17,6 +17,8 @@ import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} f
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-student',
@@ -27,7 +29,15 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious],
+    MatSelectModule,
+    MatStep,
+    MatStepLabel,
+    MatStepper,
+    MatStepperNext,
+    MatStepperPrevious,
+    MatIconModule,
+    CommonModule
+  ],
   providers: [
     ProgramService,
     UserService,
@@ -64,10 +74,13 @@ export class AddStudentComponent implements OnInit{
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'waiting for scanned data..';
+  rightThumbState = 'Scan Right Thumb';
   hasRightThumb = false;
-  rightIndexState = 'waiting for scanned data..';
+  isRightThumb = false;
+  rightIndexState = 'Scan Right Index';
+  isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
+  photoButtonLabel = 'Skip';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -90,10 +103,14 @@ export class AddStudentComponent implements OnInit{
         if (src) {
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-            this.rightThumbState = 'Right Thumb Captured';
-            this.hasRightThumb = true;
+            this.isRightThumb = true;
+            setTimeout(() => {
+              this.rightThumbState = 'Right Thumb Captured';
+              this.hasRightThumb = true;
+            }, 2000)
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }
@@ -108,8 +125,9 @@ export class AddStudentComponent implements OnInit{
       lastName: ['', [Validators.required]],
       middleName: [''],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       program: ['', [Validators.required]],
-      section: ['',Validators.required]
+      section: ['',Validators.required],
     });
 
     this.imageForm = this.formBuilder.group({
@@ -153,14 +171,18 @@ export class AddStudentComponent implements OnInit{
     let selectedProgram = this.allPrograms.find(
       (program: Program) => program.id === studentToAdd.program);
 
+    const generatedPassword = this.userService.generatePassword();
+
     studentToAdd = {
       ...studentToAdd,
       section: this.sections.find((section: Section) =>
         section.id === this.studentForm.get('section')?.value),
       program: selectedProgram,
       role: 'STUDENT',
-      password: 'student123'
+      password: generatedPassword
     }
+
+    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
 
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
@@ -223,6 +245,8 @@ export class AddStudentComponent implements OnInit{
         this.imageSrc = reader.result;
       };
       reader.readAsDataURL(file);
+
+      this.photoButtonLabel = 'Next';
     }
   }
 
@@ -244,5 +268,4 @@ export class AddStudentComponent implements OnInit{
         break;
     }
   }
-
 }

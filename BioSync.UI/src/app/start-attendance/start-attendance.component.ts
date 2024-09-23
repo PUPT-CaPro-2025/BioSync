@@ -10,13 +10,17 @@ import {MatButton} from "@angular/material/button";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
   imports: [
     MatToolbar,
-    MatButton
+    MatButton,
+    FormsModule,
+    MatIconModule
   ],
   providers: [ScheduleService, SdkService, FingerprintService],
   templateUrl: './start-attendance.component.html',
@@ -29,8 +33,10 @@ export class StartAttendanceComponent implements OnInit{
   fingerprintImageSrc!: Blob;
   instructions = "Scan Professors Fingerprint to Start Attendance";
   reminder = "Scan now";
+  loggedProfessor!: User | null;
   loggedStudent!: User | null;
   studentVerified = false;
+  selectedDevice: string = '';
 
   constructor(
     private activatedRoute: ActivatedRoute,

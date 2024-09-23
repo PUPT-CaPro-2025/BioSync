@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -13,6 +13,8 @@ import {StepperSelectionEvent} from "@angular/cdk/stepper";
 import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
 import {SdkService} from "../../services/sdk.service";
 import {FingerprintService} from "../../services/fingerprint.service";
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-professor',
@@ -23,10 +25,19 @@ import {FingerprintService} from "../../services/fingerprint.service";
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule, MatStep, MatStepper, MatStepLabel, MatStepperNext, MatStepperPrevious],
+    MatSelectModule,
+    MatStep,
+    MatStepper,
+    MatStepLabel,
+    MatStepperNext,
+    MatStepperPrevious,
+    MatIconModule,
+    CommonModule
+  ],
   providers: [UserService, SdkService, FingerprintService],
   templateUrl: './add-professor.component.html',
-  styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css']
+  styleUrls: ['./add-professor.component.css', '../add-student/add-student.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AddProfessorComponent implements OnInit{
   @Output() backToProfessor = new EventEmitter<void>();
@@ -53,9 +64,12 @@ export class AddProfessorComponent implements OnInit{
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'waiting for scanned data..';
+  rightThumbState = 'Scan Right Thumb';
   hasRightThumb = false;
-  rightIndexState = 'waiting for scanned data..';
+  isRightThumb = false;
+  rightIndexState = 'Scan Right Index';
+  isRightIndex = false;
+  imageButtonLabel = 'Skip';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -75,10 +89,14 @@ export class AddProfessorComponent implements OnInit{
         if (src) {
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-            this.rightThumbState = 'Right Thumb Captured';
-            this.hasRightThumb = true;
+            this.isRightThumb = true;
+            setTimeout(() => {
+              this.rightThumbState = 'Right Thumb Captured';
+              this.hasRightThumb = true;
+            }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }
@@ -92,7 +110,8 @@ export class AddProfessorComponent implements OnInit{
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       middleName: [''],
-      suffix: ['', [Validators.required]]
+      suffix: ['', [Validators.required]],
+      email: ['',Validators.required, Validators.email]
     });
 
     this.imageForm = this.formBuilder.group({
@@ -107,11 +126,15 @@ export class AddProfessorComponent implements OnInit{
   submit(){
     if(!this.professorForm.valid) return;
 
+    const generatedPassword = this.userService.generatePassword();
+
     const professorToCreate = {
       ...this.professorForm.value,
       role: 'FACULTY',
-      password: 'test123'
+      password: generatedPassword
     }
+
+    //TODO: SEND CREDENTIALS VIA EMAIL SERVICE
 
     this.userService.createUser(professorToCreate).subscribe({
       next: (userCreated: User) => {
@@ -167,10 +190,10 @@ export class AddProfessorComponent implements OnInit{
         this.currentStepLabel = 'Set Up Information';
         break;
       case 1:
-        this.currentStepLabel = 'Student\'s Picture';
+        this.currentStepLabel = 'Professors\'s Picture';
         break;
       case 2:
-        this.currentStepLabel = 'Student\'s Biometrics';
+        this.currentStepLabel = 'Professor\'s Biometrics';
         break;
       default:
         this.currentStepLabel = 'Unknown Step';
@@ -188,6 +211,8 @@ export class AddProfessorComponent implements OnInit{
         this.imageSrc = reader.result;
       };
       reader.readAsDataURL(file);
+
+      this.imageButtonLabel = 'Next';
     }
   }
 
