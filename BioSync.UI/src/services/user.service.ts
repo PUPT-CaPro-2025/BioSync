@@ -4,7 +4,6 @@ import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {User} from "../model/user.model";
 import {Observable} from "rxjs";
-import {Form} from "@angular/forms";
 
 @Injectable()
 export class UserService {
@@ -65,5 +64,20 @@ export class UserService {
       headers: this.headers,
       withCredentials: true
     })
+  }
+
+  generatePassword(length: number = 8): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const specialCharacters = '!@#$%^&*()_+[]{}|;:,.<>?';
+
+    const allCharacters = characters + specialCharacters;
+    let password = '';
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * allCharacters.length);
+      password += allCharacters[randomIndex];
+    }
+
+    return password;
   }
 }
