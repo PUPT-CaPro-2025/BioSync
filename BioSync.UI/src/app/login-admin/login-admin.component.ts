@@ -14,9 +14,9 @@ import { CryptoService } from '../../services/crypto.service';
   standalone: true,
   imports: [MatIconModule, ReactiveFormsModule, MatInput],
   providers: [
-    LoginService, 
-    AuthService, 
-    CookieService, 
+    LoginService,
+    AuthService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './login-admin.component.html',
@@ -69,7 +69,7 @@ export class LoginAdminComponent implements OnInit {
         const encryptedRole = this.cryptoService.encrypt(response.role);
 
         this.cookieService.setCookie("authToken", token, expiry)
-        this.cookieService.setCookie("role", encryptedRole);
+        this.cookieService.setCookie("role", encryptedRole, expiry);
 
         this.navigateTo('/dashboard');
       },

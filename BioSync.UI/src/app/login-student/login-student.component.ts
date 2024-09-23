@@ -7,6 +7,7 @@ import {LoginService} from "../../services/auth/login.service";
 import {CookieService} from "../../services/cookie.service";
 import {LoginAdminComponent} from "../login-admin/login-admin.component";
 import {CryptoService} from "../../services/crypto.service";
+import {ex} from "@fullcalendar/core/internal-common";
 
 @Component({
   selector: 'app-login-student',
@@ -60,8 +61,8 @@ export class LoginStudentComponent implements OnInit {
         const encryptedRole = this.cryptoService.encrypt(response.role);
 
         this.cookieService.setCookie("authToken", token, expiry);
-        this.cookieService.setCookie("role", encryptedRole);
-        this.cookieService.setCookie("user_id", encryptedUserId);
+        this.cookieService.setCookie("role", encryptedRole, expiry);
+        this.cookieService.setCookie("user_id", encryptedUserId, expiry);
 
         this.alComponent.navigateTo('/dashboard');
       },
