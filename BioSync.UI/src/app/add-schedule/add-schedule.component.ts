@@ -12,7 +12,6 @@ import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
-import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
 import {MatDatepicker, MatDatepickerInput} from "@angular/material/datepicker";
 import {MatButton} from "@angular/material/button";
 import {provideNativeDateAdapter} from "@angular/material/core";
@@ -36,7 +35,6 @@ import {HttpErrorResponse} from "@angular/common/http";
     CommonModule,
     MatInput,
     ReactiveFormsModule,
-    CustomRecurrenceModalComponent,
     MatDatepicker,
     MatDatepickerInput,
     MatButton,
