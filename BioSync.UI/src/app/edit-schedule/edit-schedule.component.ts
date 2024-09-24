@@ -4,7 +4,6 @@ import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {CommonModule, DatePipe} from '@angular/common';
-import { CustomRecurrenceModalComponent } from '../custom-recurrence-modal/custom-recurrence-modal.component';
 import {Schedule} from "../../model/schedule.model";
 import {Section} from "../../model/section.model";
 import {Laboratory} from "../../model/laboratory.model";
@@ -25,7 +24,7 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 @Component({
   selector: 'app-edit-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, CustomRecurrenceModalComponent, MatDatepicker, MatDatepickerInput, MatIcon],
+  imports: [MatToolbarModule, MatSelectModule, CommonModule, MatInput, ReactiveFormsModule, MatDatepicker, MatDatepickerInput, MatIcon],
   providers: [
     SectionService,
     DatePipe,

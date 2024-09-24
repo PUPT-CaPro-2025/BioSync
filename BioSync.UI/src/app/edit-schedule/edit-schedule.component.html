@@ -258,19 +258,3 @@
         </div>
     </form>
 </div>
-
-@if(isCustomRecurrenceVisible) {
-    <app-custom-recurrence-modal [customRecurrence]="customRecurrence"
-                  [weekDays]="weekDays"
-                  [todayDay]="todayDay"
-                  [weekAndDay]="weekAndDay"
-                  [todayDayText]="todayDayText"
-                  [weekAndDayText]="weekAndDayText"
-                  (close)="closeModal()"
-                  (save)="setCustomRecurrence()"
-                  (repeatEveryChange)="onRepeatEveryChange($event)"
-                  (periodChange)="onPeriodChange($event)"
-                  (specificDayChange)="onSpecificDayChange($event)"
-                  (dayToggle)="toggleDaySelection($event)">
-    </app-custom-recurrence-modal>
-}
