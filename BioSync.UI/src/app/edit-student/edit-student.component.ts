@@ -1,18 +1,26 @@
-import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {Component, EventEmitter, OnInit, Output, Input, ViewEncapsulation} from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
-import {User} from "../../model/user.model";
-import { Program } from '../../model/program.model';
 import {ProgramService} from "../../services/program.service";
+import {Program} from "../../model/program.model";
 import {UserService} from "../../services/user.service";
+import {User} from "../../model/user.model";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {Section} from "../../model/section.model";
 import {SectionService} from "../../services/section.service";
+import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
+import {SdkService} from "../../services/sdk.service";
+import {FingerprintService} from "../../services/fingerprint.service";
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import {MailService} from "../../services/mail.service";
+import {Mail} from "../../model/mail.model";
 
 @Component({
   selector: 'app-edit-student',
@@ -23,14 +31,24 @@ import {SectionService} from "../../services/section.service";
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule],
+    MatSelectModule,
+    MatStep,
+    MatStepLabel,
+    MatStepper,
+    MatStepperNext,
+    MatStepperPrevious,
+    MatIconModule,
+    CommonModule
+  ],
   providers: [
-    UserService,
     ProgramService,
-    SectionService
+    UserService,
+    SectionService,
+    MailService
   ],
   templateUrl: './edit-student.component.html',
-  styleUrl: './edit-student.component.css'
+  styleUrls: ['./edit-student.component.css', '../add-student/add-student.component.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class EditStudentComponent implements OnInit{
   @Output() backToEditStudent = new EventEmitter<void>();
@@ -55,6 +73,18 @@ export class EditStudentComponent implements OnInit{
   sections: Section[] = [];
   filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
+  studentForm!: FormGroup;
+  imageForm!: FormGroup;
+  selectedProfileImage!: Blob;
+  rightThumbFingerprintImageSrc!: Blob;
+  rightIndexFingerprintImageSrc!: Blob;
+  rightThumbState = 'Scan Right Thumb';
+  hasRightThumb = false;
+  isRightThumb = false;
+  rightIndexState = 'Scan Right Index';
+  isRightIndex = false;
+  imageSrc: string | ArrayBuffer | null = null;
+  photoButtonLabel = 'Skip';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -62,6 +92,9 @@ export class EditStudentComponent implements OnInit{
     private programService: ProgramService,
     private dialog: MatDialog,
     private sectionService: SectionService,
+    private sdkService: SdkService,
+    private fingerprintService: FingerprintService,
+    private mailService: MailService
   ) {}
 
   ngOnInit() {
@@ -69,6 +102,26 @@ export class EditStudentComponent implements OnInit{
     this.getAllPrograms();
     this.setFormValues();
     this.getAllSections();
+    this.sdkService.loadSDK();
+
+    this.sdkService.getImageSrc().subscribe({
+      next: (src) => {
+        if (src) {
+          if(this.rightThumbFingerprintImageSrc == null){
+            this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightThumb = true;
+            setTimeout(() => {
+              this.rightThumbState = 'Right Thumb Captured';
+              this.hasRightThumb = true;
+            }, 2000)
+          } else {
+            this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.isRightIndex = true;
+            this.rightIndexState = 'Right Index Captured';
+          }
+        }
+      }
+    });
   }
 
   initForm(){
@@ -78,6 +131,7 @@ export class EditStudentComponent implements OnInit{
       lastName: ['', [Validators.required]],
       middleName: [''],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       program: ['', [Validators.required]],
       section: [0, [Validators.required]]
     });
@@ -168,5 +222,66 @@ export class EditStudentComponent implements OnInit{
         this.returnToStudentView();
       }
     })
+  }
+
+  processProfileImage(studentId: number) {
+    const formData = new FormData();
+    formData.append('userId', `${studentId}`);
+    formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
+    this.userService.processProfileImage(formData).subscribe();
+  }
+
+
+  registerFingerprintData(student: User){
+    const formData = new FormData();
+    formData.append('userId', `${student.id}`);
+    formData.append('fingerprint', this.rightIndexFingerprintImageSrc,
+      `right-index-${student.lastName}.png`)
+    formData.append('fingerprint', this.rightThumbFingerprintImageSrc,
+      `right-thumb-${student.lastName}.png`)
+
+    this.fingerprintService.registerFingerprint(formData).subscribe({
+      next: (value) => {
+        console.log(value);
+      }
+    })
+  }
+
+  private base64ToBlob(src: string, imagePng: string) {
+    return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  onFileChanges(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.selectedProfileImage = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+      this.photoButtonLabel = 'Next';
+    }
+  }
+
+  currentStepLabel: string = 'Set Up Information';
+
+  onStepChange(event: StepperSelectionEvent): void {
+    switch (event.selectedIndex) {
+      case 0:
+        this.currentStepLabel = 'Set Up Information';
+        break;
+      case 1:
+        this.currentStepLabel = 'Student\'s Picture';
+        break;
+      case 2:
+        this.currentStepLabel = 'Student\'s Biometrics';
+        break;
+      default:
+        this.currentStepLabel = 'Unknown Step';
+        break;
+    }
   }
 }
