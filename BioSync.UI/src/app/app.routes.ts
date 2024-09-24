@@ -21,9 +21,11 @@ import {ScheduleListComponent} from "./schedule-list/schedule-list.component";
 import {StartAttendanceComponent} from "./start-attendance/start-attendance.component";
 import {ViewScheduleComponent} from "./view-schedule/view-schedule.component";
 import {ViewAttendanceComponent} from "./view-attendance/view-attendance.component";
+import { UserLoginComponent } from './user-login/user-login.component';
 
 export const routes: Routes = [
     { path: "login", component: LandingComponent },
+    { path: "user-login", component: UserLoginComponent},
     { path: "admin-login", component: LoginAdminComponent },
     { path: "faculty-login", component: LoginFacultyComponent },
     { path: "student-login", component: LoginStudentComponent },
