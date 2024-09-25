@@ -78,7 +78,8 @@ export class UserLoginComponent implements OnInit{
       })
     }
 
-  navigateTo(route: string) {
-    this.router.navigate([route]).then();
-  }
+    navigateTo(route: string) {
+      this.router.navigate([route]).then();
+    }
+
 }
