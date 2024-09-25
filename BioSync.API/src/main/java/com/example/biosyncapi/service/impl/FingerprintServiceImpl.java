@@ -1,8 +1,5 @@
 package com.example.biosyncapi.service.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.biosyncapi.model.Fingerprint;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.FingerprintRepository;
@@ -14,6 +11,12 @@ import com.machinezoo.sourceafis.FingerprintTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,15 +34,15 @@ public class FingerprintServiceImpl implements FingerprintService {
     private String fingerprintsDirectory;
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
     private final double threshold = 40;
     private final FingerprintRepository fingerprintRepository;
     private final UserRepository userRepository;
 
-    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository, AmazonS3 amazonS3) {
+    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository, S3Client s3Client1) {
         this.fingerprintRepository = fingerprintRepository;
         this.userRepository = userRepository;
-        this.amazonS3 = amazonS3;
+        this.s3Client = s3Client1;
     }
 
     @Override
@@ -88,9 +91,14 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         for (MultipartFile image : images) {
             String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
-            amazonS3.putObject(bucketName, uniqueFileName, image.getInputStream(), null);
+            s3Client.putObject(PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(uniqueFileName)
+                            .build(),
+                    RequestBody.fromInputStream(image.getInputStream(), image.getSize()));
 
-            String s3Url = amazonS3.getUrl(bucketName, uniqueFileName).toString();
+            String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
+
             Fingerprint fingerprint = new Fingerprint();
             fingerprint.setFingerprintURL(s3Url);
             fingerprint.setUser(user);
@@ -142,9 +150,12 @@ public class FingerprintServiceImpl implements FingerprintService {
 
             String objectKey = extractObjectKeyFromS3Url(professorFingerprint.getFingerprintURL());
 
-            S3Object s3Object = amazonS3.getObject(bucketName, objectKey);
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
 
-            try(S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
+            try (ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
                 byte[] candidateImageBytes = objectInputStream.readAllBytes();
 
                 FingerprintTemplate candidateTemplate = new FingerprintTemplate(
@@ -219,11 +230,14 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         for (Fingerprint studentFingerprint : studentFingerprints) {
 
-            String ObjectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
+            String objectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
 
-            S3Object s3Object = amazonS3.getObject(bucketName, ObjectKey);
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
 
-            try(S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
+            try(ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
                 byte[] candidateImageBytes = objectInputStream.readAllBytes();
 
                 FingerprintTemplate candidateTemplate = new FingerprintTemplate(
@@ -257,8 +271,7 @@ public class FingerprintServiceImpl implements FingerprintService {
     }
 
     private String extractObjectKeyFromS3Url(String s3Url) {
-        return Paths.get(s3Url.split(".com/")[1]).toString(); // Returns the object key
+        return Paths.get(s3Url.split(".com/")[1]).toString();
     }
-
 
 }
