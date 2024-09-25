@@ -2,19 +2,27 @@
 <div class="flex justify-center items-center h-screen">
     <div class="flex flex-row justify-center items-center shadow-xl">
         <div class="flex justify-center bg-white w-[350px] h-[450px] rounded-tl-2xl rounded-bl-2xl">
-            <div class="flex flex-col w-[85%]">
-                <div class="mt-16 flex flex-col gap-2">              
-                    <p class="text-custom-24 text-black font-weight700">Login</p>        
-                    <p class="text-custom-12 text-lightGray font-weight400">Welcome to PUPT BioSync, please log in to continue.</p>  
+            <form class="flex flex-col w-[85%]" (ngSubmit)="submit()" [formGroup]="userLoginForm">
+                <div class="mt-16 flex flex-col gap-2">
+                    <p class="text-custom-24 text-black font-weight700">Login</p>
+                    <p class="text-custom-12 text-lightGray font-weight400">Welcome to PUP-T BioSync, please log in to continue.</p>
                 </div>
+                @if(credentialsError){
+                  <div class="h-0.5 mt-2">
+                    <p class="text-xs text-brightRed mt-2 text-center">
+                      Incorrect Usercode or Password
+                    </p>
+                  </div>
+                }
                 <div class="flex flex-col mt-10 gap-2">
                     <div class="group relative flex items-center">
                         <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300 group-focus-within:text-brightRed">supervised_user_circle</mat-icon>
-                        <input matInput id="email" name="email"
-                            placeholder="email" class="bg-transparent
+                        <input matInput id="usercode" name="usercode"
+                            placeholder="Faculty/Student Code" class="bg-transparent
                             border-b-2 border-lightGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full pl-12 pr-20 py-1 md:py-2 text-sm" formControlName="email">
+                            duration-300 w-full pl-12 pr-20 py-1 md:py-2 text-sm" formControlName="usercode"
+                               (input)="credentialsError = false">
                     </div>
                     <div class="group relative flex items-center">
                         <mat-icon class="absolute left-2 text-lightGray transition-colors duration-300 group-focus-within:text-brightRed">key</mat-icon>
@@ -22,14 +30,15 @@
                             placeholder="Password" class="bg-transparent
                             border-b-2 border-lightGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full pl-12 pr-20 py-1 md:py-2 text-sm" formControlName="password">
+                            duration-300 w-full pl-12 pr-20 py-1 md:py-2 text-sm" formControlName="password"
+                               (input)="credentialsError = false">
                     </div>
                 </div>
                 <div class="flex justify-end mt-2">
                     <a class="text-custom-12 text-gradient">Forgot Password?</a>
                 </div>
                 <button class="text-custom-14 mt-8 text-white py-2 px-10
-                        bg-gradient-red-orange rounded-xl hover:bg-gradient-dark-red-orange 
+                        bg-gradient-red-orange rounded-xl hover:bg-gradient-dark-red-orange
                         hover:text-f4White add-button">
                         Login
                 </button>
@@ -40,7 +49,7 @@
                         <p class="text-custom-12 text-lightGray font-semibold">Login In Here</p>
                     </div>
                 </div>
-            </div>         
+            </form>
          </div>
         <div class="login-image flex justify-center items-center w-[350px] h-[450px] rounded-tr-2xl rounded-br-2xl"></div>
     </div>

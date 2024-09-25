@@ -24,7 +24,7 @@ import {ViewAttendanceComponent} from "./view-attendance/view-attendance.compone
 import { UserLoginComponent } from './user-login/user-login.component';
 
 export const routes: Routes = [
-    { path: "login", component: LandingComponent },
+    { path: "login", component: UserLoginComponent },
     { path: "user-login", component: UserLoginComponent},
     { path: "admin-login", component: LoginAdminComponent },
     { path: "faculty-login", component: LoginFacultyComponent },
