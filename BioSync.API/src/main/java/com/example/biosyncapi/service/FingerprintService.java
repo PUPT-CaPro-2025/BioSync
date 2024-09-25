@@ -10,6 +10,9 @@ import java.util.List;
 public interface FingerprintService {
     List<Fingerprint> getAllBySectionId(Long sectionId);
     void processFingerprints(Long userId, List<MultipartFile> images);
+    void processFingerprintsToBucket(Long userId, List<MultipartFile> images) throws IOException;
     Boolean verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile image) throws IOException;
+    User verifyProfessorFingerprintForAttendanceInBucket(Long professorId, MultipartFile image) throws IOException;
     User verifyStudentFingerprintForAttendance(Long sectionId, MultipartFile image) throws IOException;
+    User verifyStudentFingerprintForAttendanceInBucket(Long sectionId, MultipartFile image) throws IOException;
 }
