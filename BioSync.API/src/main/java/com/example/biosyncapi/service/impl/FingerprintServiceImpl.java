@@ -1,5 +1,8 @@
 package com.example.biosyncapi.service.impl;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.biosyncapi.model.Fingerprint;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.FingerprintRepository;
@@ -26,13 +29,17 @@ public class FingerprintServiceImpl implements FingerprintService {
 
     @Value("${fingerprints.directory}")
     private String fingerprintsDirectory;
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
+    private final AmazonS3 amazonS3;
     private final double threshold = 40;
     private final FingerprintRepository fingerprintRepository;
     private final UserRepository userRepository;
 
-    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository) {
+    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository, AmazonS3 amazonS3) {
         this.fingerprintRepository = fingerprintRepository;
         this.userRepository = userRepository;
+        this.amazonS3 = amazonS3;
     }
 
     @Override
@@ -40,6 +47,7 @@ public class FingerprintServiceImpl implements FingerprintService {
         return fingerprintRepository.getAllBySectionId(sectionId);
     }
 
+    //system file storage support for when it isn't hosted
     @Override
     public void processFingerprints(Long userId, List<MultipartFile> images) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -73,6 +81,27 @@ public class FingerprintServiceImpl implements FingerprintService {
         }
     }
 
+    //uploading to S3
+    @Override
+    public void processFingerprintsToBucket(Long userId, List<MultipartFile> images) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        for (MultipartFile image : images) {
+            String uniqueFileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            amazonS3.putObject(bucketName, uniqueFileName, image.getInputStream(), null);
+
+            String s3Url = amazonS3.getUrl(bucketName, uniqueFileName).toString();
+            Fingerprint fingerprint = new Fingerprint();
+            fingerprint.setFingerprintURL(s3Url);
+            fingerprint.setUser(user);
+            if(user.getSection() != null) {
+                fingerprint.setSectionId(user.getSection().getId());
+            }
+
+            fingerprintRepository.save(fingerprint);
+        }
+    }
+
     @Override
     public Boolean verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile scannedFingerprintImage) throws IOException {
         List<Fingerprint> professorFingerprints = fingerprintRepository.getAllByUserId(professorId);
@@ -95,6 +124,43 @@ public class FingerprintServiceImpl implements FingerprintService {
         }
 
         return false;
+    }
+
+    @Override
+    public User verifyProfessorFingerprintForAttendanceInBucket(Long professorId, MultipartFile scannedFingerprintImage) throws IOException {
+        List<Fingerprint> professorFingerprints = fingerprintRepository.getAllByUserId(professorId);
+
+        if (professorFingerprints.isEmpty()) return null;
+
+        byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
+
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedFingerprintImageBytes)
+        );
+
+        for(Fingerprint professorFingerprint : professorFingerprints){
+
+            String objectKey = extractObjectKeyFromS3Url(professorFingerprint.getFingerprintURL());
+
+            S3Object s3Object = amazonS3.getObject(bucketName, objectKey);
+
+            try(S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
+                byte[] candidateImageBytes = objectInputStream.readAllBytes();
+
+                FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                        new FingerprintImage(candidateImageBytes)
+                );
+
+                if (match(probeTemplate, candidateTemplate)) {
+                    return professorFingerprint.getUser();
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to retrieve fingerprint", e);
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -135,11 +201,64 @@ public class FingerprintServiceImpl implements FingerprintService {
         return userRepository.findByUserId(fingerprint.getUser().getId());
     }
 
+    @Override
+    public User verifyStudentFingerprintForAttendanceInBucket(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
+        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
+
+        if (studentFingerprints.isEmpty()) return null;
+
+        byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
+
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedImageBytes)
+        );
+
+        var matcher = new FingerprintMatcher(probeTemplate);
+        double max = Double.NEGATIVE_INFINITY;
+        Fingerprint fingerprint = null;
+
+        for (Fingerprint studentFingerprint : studentFingerprints) {
+
+            String ObjectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
+
+            S3Object s3Object = amazonS3.getObject(bucketName, ObjectKey);
+
+            try(S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
+                byte[] candidateImageBytes = objectInputStream.readAllBytes();
+
+                FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                        new FingerprintImage(candidateImageBytes)
+                );
+
+                double similarity = matcher.match(candidateTemplate);
+
+                if(similarity > max){
+                    max = similarity;
+                    if(similarity > threshold){
+                        fingerprint = studentFingerprint;
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to retrieve fingerprint", e);
+            }
+        }
+
+        if(fingerprint == null) return null;
+
+        return userRepository.findByUserId(fingerprint.getUser().getId());
+    }
+
     private boolean match(FingerprintTemplate probe, FingerprintTemplate candidate){
         var matcher = new FingerprintMatcher(probe);
         double similarity = matcher.match(candidate);
 
         return similarity >= threshold;
     }
+
+    private String extractObjectKeyFromS3Url(String s3Url) {
+        return Paths.get(s3Url.split(".com/")[1]).toString(); // Returns the object key
+    }
+
 
 }
