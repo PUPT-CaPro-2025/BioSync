@@ -29,9 +29,14 @@ public class FingerprintController {
     @PostMapping("/upload")
     public ResponseEntity<?> upload(
             @RequestParam("userId") Long userId,
-            @RequestParam("fingerprint") List<MultipartFile> fingerprintImage) {
+            @RequestParam("fingerprint") List<MultipartFile> fingerprintImage,
+            @RequestParam(value = "method", defaultValue = "toBucket") String method) {
         try{
-            fingerprintService.processFingerprints(userId, fingerprintImage);
+            if(method.equals("toBucket")) {
+                fingerprintService.processFingerprintsToBucket(userId, fingerprintImage);
+            } else {
+                fingerprintService.processFingerprints(userId, fingerprintImage);
+            }
             return ResponseEntity.ok("Fingerprint uploaded successfully");
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
