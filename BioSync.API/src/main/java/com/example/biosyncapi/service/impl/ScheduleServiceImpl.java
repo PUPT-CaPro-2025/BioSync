@@ -2,6 +2,7 @@ package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.*;
 import com.example.biosyncapi.repository.ScheduleRepository;
+import com.example.biosyncapi.repository.ScheduleStudentRepository;
 import com.example.biosyncapi.repository.SubjectRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.ScheduleService;
@@ -21,11 +22,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
+    private final ScheduleStudentRepository scheduleStudentRepository;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository, UserRepository userRepository) {
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository, UserRepository userRepository, ScheduleStudentRepository scheduleStudentRepository) {
         this.scheduleRepository = scheduleRepository;
         this.subjectRepository = subjectRepository;
         this.userRepository = userRepository;
+        this.scheduleStudentRepository = scheduleStudentRepository;
     }
 
     @Override
@@ -77,15 +80,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
         List<Schedule> schedules = new ArrayList<>();
-        List<ScheduleStudent> scheduleStudents = new ArrayList<>();
         List<User> students = userRepository.findBySectionId(schedule.getSection().getId());
 
-        for (User student : students){
-            ScheduleStudent scheduleStudent = new ScheduleStudent(schedule, student);
-            scheduleStudents.add(scheduleStudent);
-        }
-
         if(schedule.getRecurrence() == Recurrence.NONE) {
+            List<ScheduleStudent> scheduleStudents = new ArrayList<>();
+            for (User student : students){
+                ScheduleStudent scheduleStudent = new ScheduleStudent(schedule, student);
+                scheduleStudents.add(scheduleStudent);
+            }
+
             schedule.setScheduleStudents(scheduleStudents);
             schedules.add(schedule);
             scheduleRepository.saveAll(schedules);
@@ -118,7 +121,13 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
-                schedule.setScheduleStudents(scheduleStudents);
+
+                List<ScheduleStudent> scheduleStudents = new ArrayList<>();
+                for (User student : students) {
+                    ScheduleStudent scheduleStudent = new ScheduleStudent(newSchedule, student);
+                    scheduleStudents.add(scheduleStudent);
+                }
+                newSchedule.setScheduleStudents(scheduleStudents);
 
                 // Set recurrenceDays to the current index day
                 newSchedule.setRecurrenceDays(Collections.singletonList(day));
@@ -238,8 +247,15 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow();
 
         if(schedule.getRecurrence() != Recurrence.NONE) {
+            List<Schedule> schedules = scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
+
+            for (Schedule scheduleItem : schedules) {
+                scheduleStudentRepository.deleteByScheduleId(scheduleItem.getId());
+            }
+
             scheduleRepository.deleteByRecurrenceId(schedule.getRecurrenceId());
         } else {
+            scheduleStudentRepository.deleteByScheduleId(id);
             scheduleRepository.deleteById(id);
         }
     }

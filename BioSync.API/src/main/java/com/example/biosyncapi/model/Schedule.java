@@ -1,5 +1,6 @@
 package com.example.biosyncapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.sql.Time;
@@ -52,7 +53,8 @@ public class Schedule {
 
     private boolean hasFinished;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<ScheduleStudent> scheduleStudents;
 
     @ElementCollection(fetch = FetchType.EAGER)
