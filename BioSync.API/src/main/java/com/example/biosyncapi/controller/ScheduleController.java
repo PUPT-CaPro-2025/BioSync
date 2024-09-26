@@ -1,7 +1,11 @@
 package com.example.biosyncapi.controller;
 
 import com.example.biosyncapi.model.Schedule;
+import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.service.ScheduleService;
+import com.example.biosyncapi.service.ScheduleStudentService;
+import com.example.biosyncapi.service.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +20,13 @@ import java.util.UUID;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final ScheduleStudentService scheduleStudentService;
+    private final UserService userService;
 
-    public ScheduleController(ScheduleService scheduleService) {
+    public ScheduleController(ScheduleService scheduleService, ScheduleStudentService scheduleStudentService, UserService userService) {
         this.scheduleService = scheduleService;
+        this.scheduleStudentService = scheduleStudentService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -59,6 +67,25 @@ public class ScheduleController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("student/add")
+    public ResponseEntity<?> addStudent(
+            @RequestParam("schedule_id") Long scheduleId,
+            @RequestParam("student_id") Long studentId) {
+        try {
+            Schedule schedule = scheduleService.getScheduleById(scheduleId).orElse(null);
+            if(schedule == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            User student = userService.getUserById(studentId).orElse(null);
+            if(student == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            this.scheduleStudentService.addStudentToSchedule(schedule, student);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
