@@ -33,7 +33,7 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         if(schedule == null) throw new RuntimeException("Schedule not found");
 
-        List<ScheduleStudent> scheduleStudents = schedule.getScheduleStudents();
+        List<ScheduleStudent> scheduleStudents = scheduleStudentRepository.findByScheduleId(schedule.getId());
 
         List<User> users = new ArrayList<>();
 
