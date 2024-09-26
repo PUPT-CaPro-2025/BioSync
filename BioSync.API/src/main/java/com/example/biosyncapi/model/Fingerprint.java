@@ -15,16 +15,13 @@ public class Fingerprint {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private Long sectionId;
-
     public Fingerprint() {
     }
 
-    public Fingerprint(Long id, String fingerprintURL, User user, Long sectionId) {
+    public Fingerprint(Long id, String fingerprintURL, User user) {
         this.id = id;
         this.fingerprintURL = fingerprintURL;
         this.user = user;
-        this.sectionId = sectionId;
     }
 
     public Long getId() {
@@ -51,11 +48,4 @@ public class Fingerprint {
         this.user = user;
     }
 
-    public Long getSectionId() {
-        return sectionId;
-    }
-
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
-    }
 }
