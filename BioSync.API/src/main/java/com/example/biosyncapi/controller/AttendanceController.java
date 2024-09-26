@@ -36,7 +36,7 @@ public class AttendanceController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Attendance>> getAttendance(@RequestParam Map<String, String> params) {
+    public ResponseEntity<List<Attendance>> getAttendance() {
         List<Attendance> attendances = attendanceRepository.findAll();
 
         return ResponseEntity.ok(attendances);
@@ -74,9 +74,17 @@ public class AttendanceController {
     @PostMapping("/verify/start")
     public ResponseEntity<?> verifyProfessorFingerprintForAttendance(
             @RequestParam("userId") Long userId,
-            @RequestParam("fingerprint") MultipartFile fingerprint
+            @RequestParam("fingerprint") MultipartFile fingerprint,
+            @RequestParam(value = "method", defaultValue = "toBucket") String method
     ) throws IOException {
-        Boolean match = fingerprintService.verifyProfessorFingerprintForAttendance(userId,fingerprint);
+        Boolean match;
+
+        if(method.equals("toBucket")) {
+            User user = fingerprintService.verifyProfessorFingerprintForAttendanceInBucket(userId, fingerprint);
+            match = user != null;
+        } else {
+            match = fingerprintService.verifyProfessorFingerprintForAttendance(userId,fingerprint);
+        }
 
         if (match) return ResponseEntity.ok("Fingerprint verified.");
 
@@ -85,12 +93,19 @@ public class AttendanceController {
 
     @PostMapping("/student/check-in")
     public ResponseEntity<?> verifyStudentTimeInAttendance(
-            @RequestParam("sectionId") Long sectionId,
             @RequestParam("scheduleId") Long scheduleId,
-            @RequestParam("fingerprint") MultipartFile fingerprint
+            @RequestParam("fingerprint") MultipartFile fingerprint,
+            @RequestParam(value = "method", defaultValue = "toBucket") String method
     ) throws IOException {
 
-        User student = fingerprintService.verifyStudentFingerprintForAttendance(sectionId,fingerprint);
+        User student;
+
+        if(method.equals("toBucket")) {
+            student = fingerprintService.verifyStudentFingerprintForAttendanceInBucket(scheduleId,fingerprint);
+        } else {
+            student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId,fingerprint);
+        }
+
         if (student == null) return ResponseEntity.status(401).body("Fingerprint verification failed.");
 
         Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
@@ -116,7 +131,7 @@ public class AttendanceController {
         if(schedule.isEmpty()) return ResponseEntity.status(400).body("Schedule not found.");
         schedule.get().setHasFinished(true);
         scheduleRepository.save(schedule.get());
-        attendanceService.markAttendanceAsAbsent(schedule.get());
+        attendanceService.setTimeOut(schedule.get());
         return ResponseEntity.ok().body("Attendance stopped.");
     }
 

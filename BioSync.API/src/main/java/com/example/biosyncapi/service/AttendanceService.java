@@ -11,5 +11,5 @@ public interface AttendanceService {
     Long getAbsentCountByStudentId(Long studentId);
     Attendance saveAttendance(Attendance attendance);
     Attendance updateAttendance(Attendance attendance);
-    void markAttendanceAsAbsent(Schedule schedule);
+    void setTimeOut(Schedule schedule);
 }
