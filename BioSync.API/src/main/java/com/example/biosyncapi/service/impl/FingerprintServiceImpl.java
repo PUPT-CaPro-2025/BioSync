@@ -1,8 +1,12 @@
 package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.Fingerprint;
+import com.example.biosyncapi.model.Schedule;
+import com.example.biosyncapi.model.ScheduleStudent;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.FingerprintRepository;
+import com.example.biosyncapi.repository.ScheduleRepository;
+import com.example.biosyncapi.repository.ScheduleStudentRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.FingerprintService;
 import com.machinezoo.sourceafis.FingerprintImage;
@@ -30,6 +34,7 @@ import java.util.UUID;
 @Service
 public class FingerprintServiceImpl implements FingerprintService {
 
+    private final ScheduleRepository scheduleRepository;
     @Value("${fingerprints.directory}")
     private String fingerprintsDirectory;
     @Value("${aws.s3.bucket.name}")
@@ -38,16 +43,19 @@ public class FingerprintServiceImpl implements FingerprintService {
     private final double threshold = 40;
     private final FingerprintRepository fingerprintRepository;
     private final UserRepository userRepository;
+    private final ScheduleStudentRepository scheduleStudentRepository;
 
-    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository, S3Client s3Client1) {
+    public FingerprintServiceImpl(FingerprintRepository fingerprintRepository, UserRepository userRepository, S3Client s3Client1, ScheduleRepository scheduleRepository, ScheduleStudentRepository scheduleStudentRepository) {
         this.fingerprintRepository = fingerprintRepository;
         this.userRepository = userRepository;
         this.s3Client = s3Client1;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleStudentRepository = scheduleStudentRepository;
     }
 
     @Override
-    public List<Fingerprint> getAllBySectionId(Long sectionId) {
-        return fingerprintRepository.getAllBySectionId(sectionId);
+    public List<Fingerprint> getAllByUserId(Long userId) {
+        return fingerprintRepository.getAllByUserId(userId);
     }
 
     //system file storage support for when it isn't hosted
@@ -72,9 +80,6 @@ public class FingerprintServiceImpl implements FingerprintService {
                 Fingerprint fingerprint = new Fingerprint();
                 fingerprint.setFingerprintURL(filePath.toAbsolutePath().toString());
                 fingerprint.setUser(user);
-                if(user.getSection() != null) {
-                    fingerprint.setSectionId(user.getSection().getId());
-                }
 
                 fingerprintRepository.save(fingerprint);
 
@@ -102,9 +107,6 @@ public class FingerprintServiceImpl implements FingerprintService {
             Fingerprint fingerprint = new Fingerprint();
             fingerprint.setFingerprintURL(s3Url);
             fingerprint.setUser(user);
-            if(user.getSection() != null) {
-                fingerprint.setSectionId(user.getSection().getId());
-            }
 
             fingerprintRepository.save(fingerprint);
         }
@@ -175,10 +177,12 @@ public class FingerprintServiceImpl implements FingerprintService {
     }
 
     @Override
-    public User verifyStudentFingerprintForAttendance(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
-        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
+    public User verifyStudentFingerprintForAttendance(Long scheduleId, MultipartFile scannedFingerprintImage) throws IOException {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
+        if (schedule == null) return null;
 
-        if (studentFingerprints.isEmpty()) return null;
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        if (students.isEmpty()) return null;
 
         byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
 
@@ -189,56 +193,13 @@ public class FingerprintServiceImpl implements FingerprintService {
         Fingerprint fingerprint = null;
         double max = Double.NEGATIVE_INFINITY;
 
-        for (Fingerprint studentFingerprint : studentFingerprints) {
-            byte[] candidateImageBytes = Files.readAllBytes(
-                    Paths.get(studentFingerprint.getFingerprintURL()));
+        for (ScheduleStudent student : students) {
+            List<Fingerprint> studentFingerprints = fingerprintRepository.getAllByUserId(student.getStudent().getId());
+            if (studentFingerprints.isEmpty()) { continue; }
 
-            FingerprintTemplate candidateTemplate = new FingerprintTemplate(
-                    new FingerprintImage(candidateImageBytes)
-            );
-
-            double similarity = matcher.match(candidateTemplate);
-
-            if(similarity > max){
-                max = similarity;
-                if(similarity > threshold){
-                    fingerprint = studentFingerprint;
-                }
-            }
-        }
-
-        if(fingerprint == null) return null;
-
-        return userRepository.findByUserId(fingerprint.getUser().getId());
-    }
-
-    @Override
-    public User verifyStudentFingerprintForAttendanceInBucket(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
-        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
-
-        if (studentFingerprints.isEmpty()) return null;
-
-        byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
-
-        FingerprintTemplate probeTemplate = new FingerprintTemplate(
-                new FingerprintImage(scannedImageBytes)
-        );
-
-        var matcher = new FingerprintMatcher(probeTemplate);
-        double max = Double.NEGATIVE_INFINITY;
-        Fingerprint fingerprint = null;
-
-        for (Fingerprint studentFingerprint : studentFingerprints) {
-
-            String objectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
-
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .build();
-
-            try(ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
-                byte[] candidateImageBytes = objectInputStream.readAllBytes();
+            for(Fingerprint studentFingerprint : studentFingerprints){
+                byte[] candidateImageBytes = Files.readAllBytes(
+                        Paths.get(studentFingerprint.getFingerprintURL()));
 
                 FingerprintTemplate candidateTemplate = new FingerprintTemplate(
                         new FingerprintImage(candidateImageBytes)
@@ -252,14 +213,73 @@ public class FingerprintServiceImpl implements FingerprintService {
                         fingerprint = studentFingerprint;
                     }
                 }
-
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to retrieve fingerprint", e);
             }
         }
 
         if(fingerprint == null) return null;
 
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        scheduleStudent.setHasLogged(true);
+        scheduleStudentRepository.save(scheduleStudent);
+        return userRepository.findByUserId(fingerprint.getUser().getId());
+    }
+
+    @Override
+    public User verifyStudentFingerprintForAttendanceInBucket(Long scheduleId, MultipartFile scannedFingerprintImage) throws IOException {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
+        if (schedule == null) return null;
+
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        if (students.isEmpty()) return null;
+
+        byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedImageBytes)
+        );
+
+        var matcher = new FingerprintMatcher(probeTemplate);
+        double max = Double.NEGATIVE_INFINITY;
+        Fingerprint fingerprint = null;
+
+        for (ScheduleStudent student : students) {
+            List<Fingerprint> studentFingerprints = fingerprintRepository.getAllByUserId(student.getStudent().getId());
+            if (studentFingerprints.isEmpty()){ continue; }
+
+            for(Fingerprint studentFingerprint : studentFingerprints){
+                String objectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
+
+                GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(objectKey)
+                        .build();
+
+                try(ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
+                    byte[] candidateImageBytes = objectInputStream.readAllBytes();
+
+                    FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                            new FingerprintImage(candidateImageBytes)
+                    );
+
+                    double similarity = matcher.match(candidateTemplate);
+
+                    if(similarity > max){
+                        max = similarity;
+                        if(similarity > threshold){
+                            fingerprint = studentFingerprint;
+                        }
+                    }
+
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to retrieve fingerprint", e);
+                }
+            }
+        }
+
+        if(fingerprint == null) return null;
+
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        scheduleStudent.setHasLogged(true);
+        scheduleStudentRepository.save(scheduleStudent);
         return userRepository.findByUserId(fingerprint.getUser().getId());
     }
 

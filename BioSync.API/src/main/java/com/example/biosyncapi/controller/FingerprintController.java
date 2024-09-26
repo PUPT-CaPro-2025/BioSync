@@ -1,28 +1,38 @@
 package com.example.biosyncapi.controller;
 
 import com.example.biosyncapi.model.Fingerprint;
+import com.example.biosyncapi.model.ScheduleStudent;
 import com.example.biosyncapi.service.FingerprintService;
+import com.example.biosyncapi.service.ScheduleStudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/fingerprints")
 public class FingerprintController {
     private final FingerprintService fingerprintService;
+    private final ScheduleStudentService scheduleStudentService;
 
-    public FingerprintController(FingerprintService fingerprintService) {
+    public FingerprintController(FingerprintService fingerprintService, ScheduleStudentService scheduleStudentService) {
         this.fingerprintService = fingerprintService;
+        this.scheduleStudentService = scheduleStudentService;
     }
 
-    @GetMapping("section/{id}")
-    public ResponseEntity<List<Fingerprint>> getAllBySectionId(@PathVariable Long id) {
-        List<Fingerprint> sectionFingerprints = fingerprintService.getAllBySectionId(id);
+    @GetMapping("schedule/{id}")
+    public ResponseEntity<List<Fingerprint>> getAllByScheduleId(@PathVariable Long id) {
+        List<ScheduleStudent> students = scheduleStudentService.getAllByScheduleId(id);
+        List<Fingerprint> fingerprints = new ArrayList<>();
 
-        if (!sectionFingerprints.isEmpty()) return ResponseEntity.ok(sectionFingerprints);
+        for (ScheduleStudent student : students) {
+            List<Fingerprint> studentFingerprints = fingerprintService.getAllByUserId(student.getStudent().getId());
+            fingerprints.addAll(studentFingerprints);
+        }
 
+        if (!fingerprints.isEmpty()) return ResponseEntity.ok(fingerprints);
         return ResponseEntity.noContent().build();
     }
 
