@@ -131,7 +131,7 @@ public class AttendanceController {
         if(schedule.isEmpty()) return ResponseEntity.status(400).body("Schedule not found.");
         schedule.get().setHasFinished(true);
         scheduleRepository.save(schedule.get());
-        attendanceService.markAttendanceAsAbsent(schedule.get());
+        attendanceService.setTimeOut(schedule.get());
         return ResponseEntity.ok().body("Attendance stopped.");
     }
 
