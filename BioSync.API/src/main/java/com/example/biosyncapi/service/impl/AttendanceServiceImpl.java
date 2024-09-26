@@ -2,24 +2,29 @@ package com.example.biosyncapi.service.impl;
 
 import com.example.biosyncapi.model.Attendance;
 import com.example.biosyncapi.model.Schedule;
+import com.example.biosyncapi.model.ScheduleStudent;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.AttendanceRepository;
-import com.example.biosyncapi.repository.UserRepository;
+import com.example.biosyncapi.repository.ScheduleStudentRepository;
 import com.example.biosyncapi.service.AttendanceService;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
-    private final UserRepository userRepository;
+    private final ScheduleStudentRepository scheduleStudentRepository;
 
-    public AttendanceServiceImpl(AttendanceRepository attendanceRepository, UserRepository userRepository) {
+    public AttendanceServiceImpl(AttendanceRepository attendanceRepository, ScheduleStudentRepository scheduleStudentRepository) {
         this.attendanceRepository = attendanceRepository;
-        this.userRepository = userRepository;
+        this.scheduleStudentRepository = scheduleStudentRepository;
     }
 
     @Override
@@ -57,15 +62,29 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public void markAttendanceAsAbsent(Schedule schedule) {
-        List<User> studentsInSection = userRepository.findBySectionId(schedule.getSection().getId());
+    public void setTimeOut(Schedule schedule) {
+        List<ScheduleStudent> scheduleStudents = scheduleStudentRepository.findByScheduleId(schedule.getId());
+
         List<Attendance> existingAttendances = attendanceRepository.findByScheduleId(schedule.getId());
 
-        for (User student : studentsInSection) {
-            boolean hasAttendance = existingAttendances.stream()
-                    .anyMatch(attendance -> attendance.getUser().getId().equals(student.getId()));
+        Set<Long> studentsWithAttendance = existingAttendances.stream()
+                .map(attendance -> attendance.getUser().getId())
+                .collect(Collectors.toSet());
 
-            if (!hasAttendance) {
+        for (ScheduleStudent scheduleStudent : scheduleStudents) {
+            User student = scheduleStudent.getStudent();
+
+            if (studentsWithAttendance.contains(student.getId())) {
+                Attendance existingAttendance = existingAttendances.stream()
+                        .filter(attendance -> attendance.getUser().getId().equals(student.getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (existingAttendance != null) {
+                    existingAttendance.setTimeOut(LocalDateTime.from(Instant.now()));
+                    attendanceRepository.save(existingAttendance);
+                }
+            } else {
                 Attendance absentAttendance = new Attendance();
                 absentAttendance.setStatus("ABSENT");
                 absentAttendance.setUser(student);
