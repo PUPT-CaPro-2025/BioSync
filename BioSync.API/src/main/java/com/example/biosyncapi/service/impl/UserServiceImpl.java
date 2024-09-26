@@ -9,6 +9,9 @@ import com.example.biosyncapi.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,11 +31,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final FingerprintRepository fingerprintRepository;
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
+    private final S3Client s3Client;
 
-    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, FingerprintRepository fingerprintRepository) {
+    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, FingerprintRepository fingerprintRepository, S3Client s3Client) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.fingerprintRepository = fingerprintRepository;
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -95,4 +102,27 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Failed to store fingerprint file", e);
         }
     }
+
+    @Override
+    public void processProfileImageToBucket(Long userId, MultipartFile image) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String uniqueFileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
+
+        s3Client.putObject(
+                PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(uniqueFileName)
+                        .build(),
+                RequestBody.fromInputStream(image.getInputStream(), image.getSize())
+        );
+
+        String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
+
+        user.setUserImagePath(s3Url);
+
+        userRepository.save(user);
+    }
+
 }
