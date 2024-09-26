@@ -3,6 +3,7 @@ package com.example.biosyncapi.service.impl;
 import com.example.biosyncapi.model.*;
 import com.example.biosyncapi.repository.ScheduleRepository;
 import com.example.biosyncapi.repository.SubjectRepository;
+import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final SubjectRepository subjectRepository;
+    private final UserRepository userRepository;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository) {
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository, UserRepository userRepository) {
         this.scheduleRepository = scheduleRepository;
         this.subjectRepository = subjectRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -74,8 +77,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
         List<Schedule> schedules = new ArrayList<>();
+        List<ScheduleStudent> scheduleStudents = new ArrayList<>();
+        List<User> students = userRepository.findBySectionId(schedule.getSection().getId());
+
+        for (User student : students){
+            ScheduleStudent scheduleStudent = new ScheduleStudent(schedule, student);
+            scheduleStudents.add(scheduleStudent);
+        }
 
         if(schedule.getRecurrence() == Recurrence.NONE) {
+            schedule.setScheduleStudents(scheduleStudents);
             schedules.add(schedule);
             scheduleRepository.saveAll(schedules);
             return schedules;
@@ -107,6 +118,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
+                schedule.setScheduleStudents(scheduleStudents);
 
                 // Set recurrenceDays to the current index day
                 newSchedule.setRecurrenceDays(Collections.singletonList(day));
