@@ -93,7 +93,6 @@ public class AttendanceController {
 
     @PostMapping("/student/check-in")
     public ResponseEntity<?> verifyStudentTimeInAttendance(
-            @RequestParam("sectionId") Long sectionId,
             @RequestParam("scheduleId") Long scheduleId,
             @RequestParam("fingerprint") MultipartFile fingerprint,
             @RequestParam(value = "method", defaultValue = "toBucket") String method
@@ -102,9 +101,9 @@ public class AttendanceController {
         User student;
 
         if(method.equals("toBucket")) {
-            student = fingerprintService.verifyStudentFingerprintForAttendanceInBucket(sectionId,fingerprint);
+            student = fingerprintService.verifyStudentFingerprintForAttendanceInBucket(scheduleId,fingerprint);
         } else {
-            student = fingerprintService.verifyStudentFingerprintForAttendance(sectionId,fingerprint);
+            student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId,fingerprint);
         }
 
         if (student == null) return ResponseEntity.status(401).body("Fingerprint verification failed.");
