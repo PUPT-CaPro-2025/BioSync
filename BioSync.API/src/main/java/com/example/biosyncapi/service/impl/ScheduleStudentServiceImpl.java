@@ -9,6 +9,7 @@ import com.example.biosyncapi.service.ScheduleStudentService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,6 +29,21 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
         return scheduleStudentRepository.findByScheduleId(userId);
     }
 
+    public List<User> getStudentsByScheduleId(Long scheduleId) throws RuntimeException {
+        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
+        if(schedule == null) throw new RuntimeException("Schedule not found");
+
+        List<ScheduleStudent> scheduleStudents = schedule.getScheduleStudents();
+
+        List<User> users = new ArrayList<>();
+
+        for (ScheduleStudent scheduleStudent : scheduleStudents) {
+            users.add(scheduleStudent.getStudent());
+        }
+
+        return users;
+    }
+
     @Override
     public void addStudentToSchedule(Schedule schedule, User student) throws DataAccessException {
         if(schedule.getRecurrenceId() == null){
@@ -44,6 +60,5 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
         }
 
     }
-
 
 }

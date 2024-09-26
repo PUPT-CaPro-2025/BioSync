@@ -44,6 +44,11 @@ public class ScheduleController {
         return scheduleService.getAllSchedulesBySectionId(id);
     }
 
+    @GetMapping("/students/{id}")
+    public List<User> getSchedulesByStudentId(@PathVariable Long id) {
+        return scheduleStudentService.getStudentsByScheduleId(id);
+    }
+
     @GetMapping("/recurrence/{id}")
     public ResponseEntity<List<Schedule>> getSchedulesByRecurrenceId(@PathVariable UUID id) {
         List<Schedule> schedules = scheduleService.getSchedulesByRecurrenceId(id);
