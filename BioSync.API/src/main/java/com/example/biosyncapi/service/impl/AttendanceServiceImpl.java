@@ -9,7 +9,6 @@ import com.example.biosyncapi.repository.ScheduleStudentRepository;
 import com.example.biosyncapi.service.AttendanceService;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

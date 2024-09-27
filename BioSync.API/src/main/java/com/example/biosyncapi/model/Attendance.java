@@ -67,7 +67,7 @@ public class Attendance {
         this.schedule = schedule;
     }
 
-    public LocalDateTime getTimestamp() {
+    public LocalDateTime getTimeIn() {
         return timeIn;
     }
 
