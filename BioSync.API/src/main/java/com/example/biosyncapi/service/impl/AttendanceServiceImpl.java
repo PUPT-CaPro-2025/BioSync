@@ -81,7 +81,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         .orElse(null);
 
                 if (existingAttendance != null) {
-                    existingAttendance.setTimeOut(LocalDateTime.from(Instant.now()));
+                    existingAttendance.setTimeOut(LocalDateTime.now());
                     attendanceRepository.save(existingAttendance);
                 }
             } else {
