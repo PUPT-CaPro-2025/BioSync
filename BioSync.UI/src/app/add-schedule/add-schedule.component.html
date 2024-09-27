@@ -88,7 +88,7 @@
                                 group-focus-within:text-brightRed">
                                 Start Time
                             </label>
-                            <input matInput id="start_time" name="start-time"
+                            <input matInput id="start-time" name="start-time"
                                 value="00:00" type="time" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
@@ -100,7 +100,7 @@
                                 group-focus-within:text-brightRed">
                                 End Time
                             </label>
-                            <input matInput id="end_time" name="end-time"
+                            <input matInput id="end-time" name="end-time"
                                 value="00:00" type="time" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
@@ -123,7 +123,7 @@
                               value="{{formattedDateString}}"
                               readonly
                             >
-                            <input matInput id="schedule_date"
+                            <input matInput id="subject-date"
                                    placeholder="Select Date"
                                    name="schedule-date"
                                    [matDatepicker]="picker"
@@ -176,8 +176,7 @@
                                     Recurrence
                                 </label>
                                 <select id="recurrence" name="recurrence"
-                                    [value]="selectedRecurrence" (change)="onRecurrenceChange($event)"
-                                    placeholder="Select the date's recurrence" class="bg-transparent
+                                    [value]="selectedRecurrence" (change)="onRecurrenceChange($event)" class="bg-transparent
                                     border-b-2 border-darkGray focus:border-brightRed
                                     focus:outline-none transition-colors
                                     duration-300 w-full py-2 px-1" formControlName="recurrence">
@@ -268,7 +267,7 @@
                             group-focus-within:text-brightRed">
                             Remarks
                         </label>
-                        <mat-select id="remark" name="remark"
+                        <mat-select id="remarks" name="remark"
                                 placeholder="Select a type of class" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
@@ -305,19 +304,3 @@
         </div>
     </div>
 </div>
-
-@if(isCustomRecurrenceVisible) {
-    <app-custom-recurrence-modal [customRecurrence]="customRecurrence"
-                  [weekDays]="weekDays"
-                  [todayDay]="todayDay"
-                  [weekAndDay]="weekAndDay"
-                  [todayDayText]="todayDayText"
-                  [weekAndDayText]="weekAndDayText"
-                  (close)="closeModal()"
-                  (save)="setCustomRecurrence()"
-                  (repeatEveryChange)="onRepeatEveryChange($event)"
-                  (periodChange)="onPeriodChange($event)"
-                  (specificDayChange)="onSpecificDayChange($event)"
-                  (dayToggle)="toggleDaySelection($event)">
-    </app-custom-recurrence-modal>
-}

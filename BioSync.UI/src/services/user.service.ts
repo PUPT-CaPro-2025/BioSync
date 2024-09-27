@@ -51,6 +51,13 @@ export class UserService {
     })
   }
 
+  getUsersByScheduleId(scheduleId: number) : Observable<User[]> {
+    return this.http.get<User[]>(`${this.url}/schedules/students/${scheduleId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getUserById(userId: number) {
     return this.http.get<User>(`${this.url}/users/${userId}`, {
       headers: this.headers,

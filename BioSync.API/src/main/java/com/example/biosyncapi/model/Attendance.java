@@ -20,7 +20,6 @@ public class Attendance {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
-    @Column(nullable = false, updatable = false)
     private LocalDateTime timeIn;
 
     private LocalDateTime timeOut;
@@ -68,7 +67,7 @@ public class Attendance {
         this.schedule = schedule;
     }
 
-    public LocalDateTime getTimestamp() {
+    public LocalDateTime getTimeIn() {
         return timeIn;
     }
 
