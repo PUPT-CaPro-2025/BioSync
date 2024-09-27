@@ -9,7 +9,7 @@ import java.util.List;
 public interface ScheduleStudentRepository extends JpaRepository<ScheduleStudent, Long> {
     List<ScheduleStudent> findByScheduleIdAndHasLoggedFalse(Long scheduleId);
     List<ScheduleStudent> findByScheduleId(Long scheduleId);
-    ScheduleStudent findByStudentId(Long studentId);
+    ScheduleStudent findByStudentIdAndScheduleId(Long student_id, Long schedule_id);
     @Transactional
     void deleteByScheduleId(Long scheduleId);
 }

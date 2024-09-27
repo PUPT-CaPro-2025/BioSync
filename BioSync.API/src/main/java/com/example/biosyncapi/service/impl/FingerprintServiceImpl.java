@@ -181,7 +181,7 @@ public class FingerprintServiceImpl implements FingerprintService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         if (schedule == null) return null;
 
-        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleId(schedule.getId());
         if (students.isEmpty()) return null;
 
         byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
@@ -218,7 +218,8 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         if(fingerprint == null) return null;
 
-        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentIdAndScheduleId(
+                fingerprint.getUser().getId(), schedule.getId());
         scheduleStudent.setHasLogged(true);
         scheduleStudentRepository.save(scheduleStudent);
         return userRepository.findByUserId(fingerprint.getUser().getId());
@@ -229,7 +230,8 @@ public class FingerprintServiceImpl implements FingerprintService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         if (schedule == null) return null;
 
-        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        // Switched to findByScheduleId (prev findByScheduleIdAndHasLoggedFalse) to notify user already logged in.
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleId(schedule.getId());
         if (students.isEmpty()) return null;
 
         byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
@@ -277,7 +279,8 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         if(fingerprint == null) return null;
 
-        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentIdAndScheduleId(
+                fingerprint.getUser().getId(), schedule.getId());
         scheduleStudent.setHasLogged(true);
         scheduleStudentRepository.save(scheduleStudent);
         return userRepository.findByUserId(fingerprint.getUser().getId());
