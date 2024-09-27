@@ -3,6 +3,7 @@ package com.example.biosyncapi.controller;
 import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,10 +52,15 @@ public class UserController {
     @PostMapping("/profile-image")
     public ResponseEntity<?> createUserProfileImage(
             @RequestParam("userId") Long userId,
-            @RequestParam("profileImage") MultipartFile profileImage) {
+            @RequestParam("profileImage") MultipartFile profileImage,
+            @RequestParam(value = "method", defaultValue = "toBucket") String method) {
         try {
-            this.userService.processProfileImage(userId, profileImage);
-            return ResponseEntity.ok().build();
+            if (method.equals("toBucket")) {
+                this.userService.processProfileImageToBucket(userId, profileImage);
+            } else {
+                this.userService.processProfileImage(userId, profileImage);
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

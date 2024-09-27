@@ -20,18 +20,19 @@ public class Attendance {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime timestamp;
+    private LocalDateTime timeIn;
+
+    private LocalDateTime timeOut;
 
     public Attendance() {
-        this.timestamp = LocalDateTime.now();
+        this.timeIn = LocalDateTime.now();
     }
 
     public Attendance(String status, User user, Schedule schedule) {
         this.status = status;
         this.user = user;
         this.schedule = schedule;
-        this.timestamp = LocalDateTime.now();
+        this.timeIn = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -66,8 +67,15 @@ public class Attendance {
         this.schedule = schedule;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getTimeIn() {
+        return timeIn;
     }
 
+    public LocalDateTime getTimeOut() {
+        return timeOut;
+    }
+
+    public void setTimeOut(LocalDateTime timeOut) {
+        this.timeOut = timeOut;
+    }
 }

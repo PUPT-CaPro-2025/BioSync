@@ -1,12 +1,12 @@
 package com.example.biosyncapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.sql.Time;
 import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
-
 
 @Entity
 @Table(name="schedules")
@@ -53,14 +53,17 @@ public class Schedule {
 
     private boolean hasFinished;
 
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ScheduleStudent> scheduleStudents;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
     public List<String> recurrenceDays;
 
-    public Schedule() {
-    }
+    public Schedule() {}
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<String> recurrenceDays) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<ScheduleStudent> students, List<String> recurrenceDays) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -75,6 +78,7 @@ public class Schedule {
         this.recurrenceId = recurrenceId;
         this.recurrence = recurrence;
         this.recurrenceInterval = recurrenceInterval;
+        this.scheduleStudents = students;
         this.recurrenceDays = recurrenceDays;
         this.hasFinished = false;
     }
@@ -205,5 +209,13 @@ public class Schedule {
 
     public void setHasFinished(boolean hasFinished) {
         this.hasFinished = hasFinished;
+    }
+
+    public List<ScheduleStudent> getScheduleStudents() {
+        return scheduleStudents;
+    }
+
+    public void setScheduleStudents(List<ScheduleStudent> scheduleStudents) {
+        this.scheduleStudents = scheduleStudents;
     }
 }
