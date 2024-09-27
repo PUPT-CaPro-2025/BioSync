@@ -18,17 +18,17 @@ jobs:
 
       - name: Update application.properties
         run: |
-          sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${{ secrets.DATABASE_URL }}|" \
-                 -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
-                 -e "s|spring.datasource.password=.*|spring.datasource.password=${{ secrets.DATABASE_PASSWORD }}|" \
-                 -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
-                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${{ secrets.ALLOWED_ORIGIN }}|" \
-                 -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
-                 -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
-                 -e "s|aws.access.key=.*|aws.access.key=${{ secrets.AWS_ACCESS_KEY }}|" \
-                 -e "s|aws.secret.access.key=.*|aws.secret.access.key=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" \
-                 -e "s|aws.s3.region=.*|aws.s3.region=${{ secrets.AWS_REGION }}|" \
-                 -e "s|aws.s3.bucket.name=.*|aws.s3.bucket.name=${{ secrets.AWS_BUCKET_NAME }}|" \
+          sed -i -e "s@spring.datasource.url=.*@spring.datasource.url=${{ secrets.DATABASE_URL }}@" \
+                 -e "s@spring.datasource.username=.*@spring.datasource.username=${{ secrets.DATABASE_USERNAME }}@" \
+                 -e "s@spring.datasource.password=.*@spring.datasource.password=${{ secrets.DATABASE_PASSWORD }}@" \
+                 -e "s@app.secret.key=.*@app.secret.key=${{ secrets.AUTH_KEY }}@" \
+                 -e "s@cors.allowed.origins=.*@cors.allowed.origins=${{ secrets.ALLOWED_ORIGIN }}@" \
+                 -e "s@spring.mail.username=.*@spring.mail.username=${{ secrets.MAIL_USERNAME }}@" \
+                 -e "s@spring.mail.password=.*@spring.mail.password=${{ secrets.MAIL_PASSWORD }}@" \
+                 -e "s@aws.access.key=.*@aws.access.key=${{ secrets.AWS_ACCESS_KEY }}@" \
+                 -e "s@aws.secret.access.key=.*@aws.secret.access.key=${{ secrets.AWS_SECRET_ACCESS_KEY }}@" \
+                 -e "s@aws.s3.region=.*@aws.s3.region=${{ secrets.AWS_REGION }}@" \
+                 -e "s@aws.s3.bucket.name=.*@aws.s3.bucket.name=${{ secrets.AWS_BUCKET_NAME }}@" \
                  ./BioSync.API/src/main/resources/application.properties
 
       - name: Build Project
