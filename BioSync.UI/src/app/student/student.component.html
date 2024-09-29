@@ -4,7 +4,11 @@
             <mat-toolbar class="toolbar-container">
                 <span>List of Students - ALL</span>
                 <div class="toolbar-button">
-                    <button (click)="toggleAddStudent()">Add New Student</button>
+                    <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
+                    <mat-menu #menu="matMenu">
+                      <button mat-menu-item (click)="toggleAddStudent()">Add Single Student</button>
+                      <button mat-menu-item>Add Multiple Student</button>
+                    </mat-menu>
                     <button (click)="generatePdf()">Print Student Report</button>
                 </div>
             </mat-toolbar>
