@@ -38,7 +38,8 @@ import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
   styleUrl: './edit-schedule.component.css'
 })
 export class EditScheduleComponent implements OnInit{
-
+  @Input() isOneSchedule = true;
+  @Input() isWeeklySchedule!: boolean;
 
   @Output() editBackToSchedule = new EventEmitter<void>();
   @Output() editedSchedule = new EventEmitter<Schedule>();
@@ -272,7 +273,7 @@ export class EditScheduleComponent implements OnInit{
     const selectedValue = (event.target as HTMLSelectElement).value;
     this.selectedRecurrence = selectedValue;
 
-    if (selectedValue === 'custom') {
+    if (selectedValue === '') {
       this.openCustomModal();
     } else {
       this.previousRecurrence = selectedValue;
@@ -307,6 +308,18 @@ export class EditScheduleComponent implements OnInit{
 
   cancelOrEditSchedule(): void {
     this.editBackToSchedule.emit();
+  }
+
+  toggleDaySelection(day: string) {
+    const index = this.customRecurrence.days.indexOf(day);
+    if (index === -1) {
+      this.customRecurrence.days.push(day);
+    } else {
+      this.customRecurrence.days.splice(index, 1);
+    }
+
+    this.customRecurrence.days.sort((a, b) =>
+      this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
   }
 
   updateSchedule(schedule: Schedule) {

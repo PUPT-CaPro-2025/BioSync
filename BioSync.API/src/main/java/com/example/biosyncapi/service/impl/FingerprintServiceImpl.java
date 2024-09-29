@@ -107,7 +107,7 @@ public class FingerprintServiceImpl implements FingerprintService {
             Fingerprint fingerprint = new Fingerprint();
             fingerprint.setFingerprintURL(s3Url);
             fingerprint.setUser(user);
-
+          
             fingerprintRepository.save(fingerprint);
         }
     }

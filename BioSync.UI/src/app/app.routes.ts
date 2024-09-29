@@ -6,12 +6,7 @@ import { VisitorComponent } from './visitor/visitor.component';
 import { ProfessorComponent } from './professor/professor.component';
 import { StudentComponent } from './student/student.component';
 import { AttendanceComponent } from './attendance/attendance.component';
-import { LandingComponent } from './landing/landing.component';
-import { LoginAdminComponent } from './login-admin/login-admin.component';
-import { LoginFacultyComponent } from './login-faculty/login-faculty.component';
-import { LoginStudentComponent } from './login-student/login-student.component';
 import { LoginVisitorComponent } from './login-visitor/login-visitor.component';
-import { SubjectScheduleStudentComponent } from './subject-schedule-student/subject-schedule-student.component';
 import { SchoolYearComponent } from './school-year/school-year.component';
 import { ProgramComponent } from './program/program.component';
 import { LaboratoryComponent } from './laboratory/laboratory.component';
@@ -21,12 +16,11 @@ import {ScheduleListComponent} from "./schedule-list/schedule-list.component";
 import {StartAttendanceComponent} from "./start-attendance/start-attendance.component";
 import {ViewScheduleComponent} from "./view-schedule/view-schedule.component";
 import {ViewAttendanceComponent} from "./view-attendance/view-attendance.component";
+import { UserLoginComponent } from './user-login/user-login.component';
 
 export const routes: Routes = [
-    { path: "login", component: LandingComponent },
-    { path: "admin-login", component: LoginAdminComponent },
-    { path: "faculty-login", component: LoginFacultyComponent },
-    { path: "student-login", component: LoginStudentComponent },
+    { path: "login", component: UserLoginComponent },
+    { path: "user-login", component: UserLoginComponent},
     { path: "visitor-log", component: LoginVisitorComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
@@ -42,7 +36,6 @@ export const routes: Routes = [
     { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
     { path: "faculty-attendance", component: FacultyAttendanceComponent },
-    { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: 'schedule/start/:id', component: ScheduleListComponent },
     { path: 'view/schedule/:id', component: ViewScheduleComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
