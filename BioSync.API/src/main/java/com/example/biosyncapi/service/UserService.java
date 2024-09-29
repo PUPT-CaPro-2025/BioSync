@@ -18,4 +18,5 @@ public interface UserService {
     void deleteUser(Long id);
     void processProfileImage(Long userId, MultipartFile image);
     void processProfileImageToBucket(Long userId, MultipartFile image) throws IOException;
+    void processEditProfileImageToBucket(Long userId, MultipartFile image) throws IOException;
 }
