@@ -43,7 +43,7 @@ export class StudentComponent implements OnInit{
   ];
 
   sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
+    'Section', 'Program'
   ];
 
   yearSemesters: string[] = [
@@ -60,6 +60,7 @@ export class StudentComponent implements OnInit{
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
+  sortBy = ''
 
   constructor(
     private userService: UserService,
@@ -169,6 +170,20 @@ export class StudentComponent implements OnInit{
 
   handleEditBackToStudent(): void {
     this.isEditStudent = false;
+  }
+
+  sortStudents() {
+    if(this.sortBy === 'Section') {
+      this.students.sort((a, b) => {
+        return a.section?.id! - b.section?.id!
+      })
+    } else if (this.sortBy === 'Program'){
+      this.students.sort((a, b) => {
+        return a.program?.id! - b.program?.id!
+      })
+    } else {
+      this.getStudents();
+    }
   }
 
   private deleteStudent(studentToDelete: User) {
