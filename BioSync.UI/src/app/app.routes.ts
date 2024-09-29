@@ -7,9 +7,6 @@ import { ProfessorComponent } from './professor/professor.component';
 import { StudentComponent } from './student/student.component';
 import { AttendanceComponent } from './attendance/attendance.component';
 import { LandingComponent } from './landing/landing.component';
-import { LoginAdminComponent } from './login-admin/login-admin.component';
-import { LoginFacultyComponent } from './login-faculty/login-faculty.component';
-import { LoginStudentComponent } from './login-student/login-student.component';
 import { LoginVisitorComponent } from './login-visitor/login-visitor.component';
 import { SubjectScheduleStudentComponent } from './subject-schedule-student/subject-schedule-student.component';
 import { SchoolYearComponent } from './school-year/school-year.component';
@@ -26,9 +23,6 @@ import { UserLoginComponent } from './user-login/user-login.component';
 export const routes: Routes = [
     { path: "login", component: UserLoginComponent },
     { path: "user-login", component: UserLoginComponent},
-    { path: "admin-login", component: LoginAdminComponent },
-    { path: "faculty-login", component: LoginFacultyComponent },
-    { path: "student-login", component: LoginStudentComponent },
     { path: "visitor-log", component: LoginVisitorComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
