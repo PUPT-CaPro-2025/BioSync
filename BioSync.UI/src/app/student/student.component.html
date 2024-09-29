@@ -17,7 +17,7 @@
             <mat-toolbar class="filter-content">
                 <div class="search-container">
                     <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH">
+                    <input type="text" placeholder="SEARCH" [(ngModel)]="searchQuery" (input)="searchStudentList()">
                 </div>
                 <div class="dropdown-container">
                     <div class="dropdown-content">
@@ -49,10 +49,7 @@
             <div class="subject-table">
                 <div class="attributes text-custom-16">
                     <div class="cell">Student Number</div>
-                    <div class="cell">First Name</div>
-                    <div class="cell">Last Name</div>
-                    <div class="cell">Middle Name</div>
-                    <div class="cell">Suffix</div>
+                    <div class="cell">Student Name</div>
                     <div class="cell">Program</div>
                     <div class="cell">Year</div>
                     <div class="cell">Section</div>
@@ -62,10 +59,7 @@
                     @for (student of filteredStudents; track student) {
                         <div class="row">
                             <div class="cell">{{ student.usercode }}</div>
-                            <div class="cell">{{ student.firstName }}</div>
-                            <div class="cell">{{ student.lastName }}</div>
-                            <div class="cell">{{ student.middleName }}</div>
-                            <div class="cell">{{ student.suffix }}</div>
+                            <div class="cell">{{ student.firstName }} {{ student.lastName }}</div>
                             <div class="cell">{{ student.program?.programAbbreviation }}</div>
                             <div class="cell">{{ student.section?.year }}</div>
                             <div class="cell">{{ student.section?.section }}</div>
