@@ -286,57 +286,6 @@ public class FingerprintServiceImpl implements FingerprintService {
         return userRepository.findByUserId(fingerprint.getUser().getId());
     }
 
-    @Override
-    public User verifyStudentFingerprintForAttendanceInBucket(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
-        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
-
-        if (studentFingerprints.isEmpty()) return null;
-
-        byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
-
-        FingerprintTemplate probeTemplate = new FingerprintTemplate(
-                new FingerprintImage(scannedImageBytes)
-        );
-
-        var matcher = new FingerprintMatcher(probeTemplate);
-        double max = Double.NEGATIVE_INFINITY;
-        Fingerprint fingerprint = null;
-
-        for (Fingerprint studentFingerprint : studentFingerprints) {
-
-            String objectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
-
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(objectKey)
-                    .build();
-
-            try(ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
-                byte[] candidateImageBytes = objectInputStream.readAllBytes();
-
-                FingerprintTemplate candidateTemplate = new FingerprintTemplate(
-                        new FingerprintImage(candidateImageBytes)
-                );
-
-                double similarity = matcher.match(candidateTemplate);
-
-                if(similarity > max){
-                    max = similarity;
-                    if(similarity > threshold){
-                        fingerprint = studentFingerprint;
-                    }
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to retrieve fingerprint", e);
-            }
-        }
-
-        if(fingerprint == null) return null;
-
-        return userRepository.findByUserId(fingerprint.getUser().getId());
-    }
-
     private boolean match(FingerprintTemplate probe, FingerprintTemplate candidate){
         var matcher = new FingerprintMatcher(probe);
         double similarity = matcher.match(candidate);
