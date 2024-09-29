@@ -89,17 +89,17 @@ export class StudentComponent implements OnInit{
   }
 
   onStudentAdded(newStudent: User){
-    this.students.push(newStudent);
+    this.queriedStudents.push(newStudent);
   }
 
   onStudentUpdate(updatedStudent: User){
-    const index = this.students.findIndex(
+    const index = this.queriedStudents.findIndex(
       student => student.id === updatedStudent.id
     );
 
     if(index === -1) return;
 
-    this.students[index] = updatedStudent;
+    this.queriedStudents[index] = updatedStudent;
   }
 
   openConfirmationDialog(student: User){
