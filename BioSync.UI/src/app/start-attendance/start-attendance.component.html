@@ -9,10 +9,10 @@
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-  <div class="mt-8 flex justify-between w-[94%] bg-transparent">
+  <div class="flex justify-between w-[94%] bg-transparent">
       <div class="w-[48%] subject-select">
-          <select [(ngModel)]="selectedDevice" id="subject" name="subject" 
-                  class="bg-white custom-select w-full py-2 px-2 
+          <select [(ngModel)]="selectedDevice" id="subject" name="subject"
+                  class="bg-white custom-select w-full py-2 px-2
                   rounded-xl text-lightGray">
               <option value="">Please select a device to use</option>
               <option value="biometrics">Biometrics Scanner</option>
@@ -21,8 +21,8 @@
       </div>
       @if(hasProfessorVerified) {
         <div>
-            <button mat-flat-button 
-                (click)="openConfirmationDialog(selectedSchedule)" 
+            <button mat-flat-button
+                (click)="openConfirmationDialog(selectedSchedule)"
                 class="stop-attendance">
                 Stop Attendance
             </button>
@@ -61,7 +61,7 @@
                     <p class="text-lightGray text-custom-12">Professor's Name</p>
                     <p class="text-brightRed text-custom-24 font-weight400">John Doe</p>
                   </div>
-                </div>         
+                </div>
               </div>
             </div>
           </div>
@@ -77,13 +77,15 @@
       </div>
     </div>
     <div class="w-[94%] bg-transparent flex justify-center items-center flex-col">
-      <div class="flex justify-center flex-col items-center mt-32">
-        <p>{{ reminder }}</p>
-      </div>
+      @if(!loggedStudent){
+        <div class="flex justify-center flex-col items-center mt-32">
+          <p>{{ reminder }}</p>
+        </div>
+      }
       @if(loggedStudent) {
         <div class="flex">
-          <div class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-32"></div>
-          <div class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-32">
+          <div class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-12"></div>
+          <div class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-12">
             <div class="flex flex-col">
               <div class="flex justify-center items-center mb-4 mt-16">
                 <div class="drop-area">
@@ -105,7 +107,7 @@
                   <p class="text-lightGray text-custom-12">Course Year & Section</p>
                   <p class="text-darkGray text-custom-16 font-weight400">BSIT 4-1</p>
                 </div>
-              </div>         
+              </div>
             </div>
           </div>
         </div>
