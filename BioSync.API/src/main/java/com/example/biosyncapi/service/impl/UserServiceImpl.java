@@ -128,7 +128,8 @@ public class UserServiceImpl implements UserService {
 
     /*
      * process to update the profile picture of the user
-     * should delete the current profile picture from the database - not implemented yet
+     * should delete the current profile picture from the s3 bucket - not implemented yet
+     * getUserImagePath always returns null
      * might need to redesign db structure for it to be deleted then updated
      *
      * @param userId The ID of the user whose profile image is being updated.
