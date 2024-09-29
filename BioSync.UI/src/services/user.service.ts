@@ -31,10 +31,17 @@ export class UserService {
   }
 
   updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.url}/users`, user, {
+    return this.http.put<User>(`${this.url}/users/edit-user`, user, {
       headers: this.headers,
       withCredentials: true
     })
+  }
+
+  editProfileImage(formData: FormData){
+    return this.http.put(`${this.url}/users/edit-profile-image`, formData, {
+      headers: this.headers,
+      withCredentials: true
+    });
   }
 
   getUsersByRole(role: string): Observable<User[]> {
