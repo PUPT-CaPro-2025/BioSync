@@ -15,7 +15,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
+          
       - name: Update application.properties
         run: |
           sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${{ secrets.DATABASE_URL }}|" \
