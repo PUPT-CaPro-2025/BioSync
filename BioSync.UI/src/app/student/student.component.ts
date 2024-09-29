@@ -35,8 +35,8 @@ import {MatButton} from "@angular/material/button";
   styleUrl: './student.component.css'
 })
 export class StudentComponent implements OnInit{
-
-  students: User[] = []
+  queriedStudents: User[] = [];
+  students: User[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
@@ -60,7 +60,9 @@ export class StudentComponent implements OnInit{
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
-  sortBy = ''
+  sortBy = '';
+  searchQuery!: string;
+
 
   constructor(
     private userService: UserService,
@@ -79,8 +81,11 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        this.queriedStudents = [...this.students]
       }
     })
+
+    this.queriedStudents = [...this.students];
   }
 
   onStudentAdded(newStudent: User){
@@ -126,7 +131,7 @@ export class StudentComponent implements OnInit{
   get filteredStudents(): User[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.students.slice(startIndex, endIndex);
+    return this.queriedStudents.slice(startIndex, endIndex);
   }
 
   onPageChange(): void {
@@ -174,16 +179,31 @@ export class StudentComponent implements OnInit{
 
   sortStudents() {
     if(this.sortBy === 'Section') {
-      this.students.sort((a, b) => {
+      this.queriedStudents.sort((a, b) => {
         return a.section?.id! - b.section?.id!
       })
     } else if (this.sortBy === 'Program'){
-      this.students.sort((a, b) => {
+      this.queriedStudents.sort((a, b) => {
         return a.program?.id! - b.program?.id!
       })
     } else {
       this.getStudents();
     }
+  }
+
+  searchStudentList() {
+    const query = this.searchQuery.toLowerCase();
+
+    this.queriedStudents = this.students.filter(student => {
+      return (
+        student.firstName.toLowerCase().includes(query) ||
+        student.lastName.toLowerCase().includes(query) ||
+        student.middleName?.toLowerCase().includes(query) ||
+        student.usercode.toLowerCase().includes(query)
+      );
+    });
+
+    this.currentPage = 1;
   }
 
   private deleteStudent(studentToDelete: User) {
