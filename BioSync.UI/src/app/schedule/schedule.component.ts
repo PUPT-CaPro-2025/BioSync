@@ -267,8 +267,11 @@ export class ScheduleComponent implements OnInit{
   }
 
   toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId)
+    if(schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
+    } else {
+      this.router.navigate(['/attendance/start/', schedule.id]).then();
+    }
   }
 
   toggleEditSchedule(schedule: Schedule): void {
@@ -357,15 +360,15 @@ export class ScheduleComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'SCHEDULE LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
