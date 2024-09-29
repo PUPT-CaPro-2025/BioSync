@@ -11,6 +11,8 @@ import {UserService} from "../../services/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-student',
@@ -22,7 +24,12 @@ import jsPDF from "jspdf";
     FormsModule,
     MatSelectModule,
     AddStudentComponent,
-    EditStudentComponent],
+    EditStudentComponent,
+    MatMenu,
+    MatMenuTrigger,
+    MatButton,
+    MatMenuItem
+  ],
   providers: [UserService],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css'
@@ -177,15 +184,15 @@ export class StudentComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'STUDENT LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
