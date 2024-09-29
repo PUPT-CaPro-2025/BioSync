@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,9 +67,22 @@ public class UserController {
         }
     }
 
-    @PutMapping()
+    @PutMapping("/edit-user")
     public User updateUser(@RequestBody User user) {
         return this.userService.updateUser(user);
+    }
+
+    @PutMapping("/edit-profile-image")
+    public ResponseEntity<?> updateUserProfileImage(
+            @RequestParam("userId") Long userId,
+            @RequestParam("profileImage") MultipartFile profileImage)  {
+        try {
+            this.userService.processEditProfileImageToBucket(userId, profileImage);
+
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping()

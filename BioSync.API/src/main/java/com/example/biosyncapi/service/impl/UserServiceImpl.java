@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
@@ -125,4 +126,33 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    /*
+     * process to update the profile picture of the user
+     * should delete the current profile picture from the database - not implemented yet
+     * might need to redesign db structure for it to be deleted then updated
+     *
+     * @param userId The ID of the user whose profile image is being updated.
+     * @param image The new profile image to be uploaded.
+     * @throws IOException If an error occurs while processing the image.
+     */
+    @Override
+    public void processEditProfileImageToBucket(Long userId, MultipartFile image) throws IOException {
+        User user = userRepository.findByUserId(userId);
+
+        if(user == null) throw new RuntimeException("User not found");
+
+        String currentImagePath = user.getUserImagePath();
+
+        if(currentImagePath != null){
+            String existingFileName = currentImagePath.replace("https://pupt-biosync-team.s3.amazonaws.com/", "");
+
+            s3Client.deleteObject(
+                    DeleteObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(existingFileName)
+                            .build()
+            );
+        }
+        processProfileImageToBucket(userId, image);
+    }
 }
