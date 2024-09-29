@@ -130,7 +130,6 @@ export class StartAttendanceComponent implements OnInit{
       next: value => {
         this.loggedStudent = value.student;
         console.log(this.loggedStudent);
-        this.reminder = 'Attendance Logged'
         setTimeout(() => {
           this.studentVerified = true;
           this.loggedStudent = null;
