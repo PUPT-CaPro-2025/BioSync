@@ -38,7 +38,6 @@ export const routes: Routes = [
     { path: "section", component: SectionComponent },
     { path: "laboratory", component: LaboratoryComponent },
     { path: "faculty-attendance", component: FacultyAttendanceComponent },
-    { path: "subject-schedule-student", component: SubjectScheduleStudentComponent },
     { path: 'schedule/start/:id', component: ScheduleListComponent },
     { path: 'view/schedule/:id', component: ViewScheduleComponent },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
