@@ -63,7 +63,7 @@ public class ScheduleController {
         return scheduleService.getScheduleById(id);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<List<Schedule>> createSchedule(@RequestBody Schedule schedule) {
         try{
             List<Schedule> createdSchedule = scheduleService.createSchedule(schedule);
@@ -73,6 +73,16 @@ public class ScheduleController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/conflicts")
+    public ResponseEntity<List<Schedule>> getScheduleConflicts(@RequestBody Schedule schedule) {
+        List<Schedule> conflictingSchedules = scheduleService
+                .findConflictingSchedules(schedule.getScheduleDate(),
+                        schedule.getStartTime(), schedule.getEndTime(),
+                        schedule.getLaboratory());
+
+        return new ResponseEntity<>(conflictingSchedules, HttpStatus.OK);
     }
 
     @PostMapping("student/add")

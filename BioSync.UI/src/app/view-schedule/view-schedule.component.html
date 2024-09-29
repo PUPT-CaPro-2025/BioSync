@@ -29,7 +29,11 @@
         </p>
         <p class="text-darkGray text-custom-16 w-[80%] data">
           {{ convertTo12HourFormat(schedule.startTime) }} - {{ convertTo12HourFormat(schedule.endTime) }} |
-          {{ schedule.recurrenceDays }} / {{ schedule.recurrence }}
+          @if(schedule.recurrenceId){
+            {{ schedule.recurrenceDays }} / {{ schedule.recurrence }}
+          } @else {
+            {{ getReadableDate(schedule.scheduleDate) }}
+          }
         </p>
       </div>
       <div class="flex justify-start items-start row-content">

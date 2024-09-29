@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Date;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -49,6 +51,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId) {
         return scheduleRepository.getSchedulesByRecurrenceId(recurrenceId);
+    }
+
+    @Override
+    public List<Schedule> findConflictingSchedules(Date scheduleDate, Time startTime, Time endTime, Laboratory laboratory) {
+        return scheduleRepository.findConflictingSchedules(scheduleDate, startTime, endTime, laboratory);
     }
 
     @Override

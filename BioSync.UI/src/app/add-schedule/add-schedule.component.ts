@@ -1,5 +1,5 @@
-import {Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
@@ -23,8 +23,10 @@ import {SchoolYear} from "../../model/school.year.model";
 import {Semester} from "../../model/semester.model";
 import {Laboratory} from "../../model/laboratory.model";
 import {LaboratoryService} from "../../services/laboratory.service";
-import {catchError, of} from "rxjs";
+import {catchError, debounceTime, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
+import {MatCardTitle} from "@angular/material/card";
+import {ScheduleService} from "../../services/schedule.service";
 
 @Component({
   selector: 'app-add-schedule',
@@ -38,7 +40,8 @@ import {HttpErrorResponse} from "@angular/common/http";
     MatDatepicker,
     MatDatepickerInput,
     MatButton,
-    MatIcon
+    MatIcon,
+    MatCardTitle
   ],
   providers: [
     SubjectService,
@@ -48,12 +51,13 @@ import {HttpErrorResponse} from "@angular/common/http";
     DatePipe,
     SectionService,
     SchoolYearService,
-    LaboratoryService
+    LaboratoryService,
+    ScheduleService
   ],
   templateUrl: './add-schedule.component.html',
   styleUrl: './add-schedule.component.css'
 })
-export class AddScheduleComponent implements OnInit{
+export class  AddScheduleComponent implements OnInit{
   @Input() isOneSchedule!: boolean;
   @Input() isWeeklySchedule!: boolean;
   @Output() backToSchedule = new EventEmitter<void>();
@@ -91,11 +95,6 @@ export class AddScheduleComponent implements OnInit{
 
   customOption: { value: string, display: string } | null = null;
 
-  todayDay: number = new Date().getDate();
-  todayDayText: string = `Monthly on day ${this.todayDay}`;
-  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
-  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
-
   scheduleForm!: FormGroup;
   today!: string;
   subjects: Subject[] = [];
@@ -103,6 +102,9 @@ export class AddScheduleComponent implements OnInit{
   formattedDateString!: string;
   schoolYear: SchoolYear[] = [];
   selectedSY: SchoolYear | undefined;
+  isScheduleValid = false;
+  showConflictAlert = false;
+  conflictSchedule!: Schedule[];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -110,10 +112,10 @@ export class AddScheduleComponent implements OnInit{
     private addScheduleService: AddScheduleService,
     private dialog: MatDialog,
     private userService: UserService,
-    private cdr: ChangeDetectorRef,
     private datePipe: DatePipe,
     private sectionService: SectionService,
     private schoolYearService: SchoolYearService,
+    private scheduleService: ScheduleService,
     private laboratoryService: LaboratoryService,
   ) {}
 
@@ -143,6 +145,56 @@ export class AddScheduleComponent implements OnInit{
         schoolYear: ['', [Validators.required]]
       }
     )
+
+    this.handleFormChanges();
+  }
+
+  handleFormChanges(): void {
+    this.scheduleForm.valueChanges
+      .pipe(
+        debounceTime(500),
+        switchMap(formValues => {
+          if (this.isWeeklySchedule && formValues.schoolYear && formValues.semester) {
+            const dayValues: string[] = this.customRecurrence.days.map(day => this.getDayAbbreviation(day));
+
+            if (dayValues.length === 0) {
+              return of([]);
+            }
+
+            const scheduleDay: Date = this.getScheduleDay(dayValues);
+
+            if (isNaN(scheduleDay.getTime())) {
+              return of([]);
+            }
+
+            formValues.scheduleDate = this.convertToISOFormat(scheduleDay.toString())?.split('T')[0];
+
+            this.scheduleForm.patchValue({
+              scheduleDate: this.convertToISOFormat(scheduleDay.toString())?.split('T')[0],
+            })
+          }
+
+          if (this.isFormValid(formValues)) {
+            this.prepareFormValues(formValues);
+            return this.addScheduleService.detectConflict(formValues);
+          } else {
+            return of([]);
+          }
+        })
+      )
+      .subscribe({
+        next: value => {
+          if(value.length !== 0) {
+            this.conflictSchedule = value;
+            this.showConflictAlert = true;
+            console.log(this.conflictSchedule);
+            this.isScheduleValid = false;
+          } else {
+              this.isScheduleValid = this.areAllControlsValid(this.scheduleForm);
+              this.showConflictAlert = false;
+          }
+        }
+      });
   }
 
   getCurrentDate () {
@@ -282,13 +334,13 @@ export class AddScheduleComponent implements OnInit{
 
     const startTime = this.scheduleForm.get('startTime')?.value;
     const endTime = this.scheduleForm.get('endTime')?.value;
-    const scheduleDay = this.selectedSY?.firstSemester.startDate;
 
     let dayValues: string[] = [];
 
     this.customRecurrence.days.forEach(day => {
       dayValues.push(this.getDayAbbreviation(day));
     });
+    let scheduleDay = this.getScheduleDay(dayValues);
 
     newSchedule = {
       ...newSchedule,
@@ -307,12 +359,13 @@ export class AddScheduleComponent implements OnInit{
         ...newSchedule,
         recurrenceDays: dayValues,
         recurrenceInterval: 0,
-        scheduleDate: scheduleDay?.toString().split('T')[0]
+        scheduleDate: this.convertToISOFormat(scheduleDay.toString())?.split('T')[0]
       }
     }
 
     this.createSchedule(newSchedule);
   }
+
 
   openSomethingWentWrong(){
     const ref = this.dialog.open(PromptOkayComponent, {
@@ -330,19 +383,6 @@ export class AddScheduleComponent implements OnInit{
     })
   }
 
-  getFullWeekDayName(abbreviation: string): string {
-    const weekDaysMap: { [key: string]: string } = {
-      'SU': 'Sunday',
-      'M': 'Monday',
-      'T': 'Tuesday',
-      'W': 'Wednesday',
-      'TH': 'Thursday',
-      'F': 'Friday',
-      'S': 'Saturday'
-    };
-    return weekDaysMap[abbreviation] || abbreviation;
-  }
-
   onDateChange(event: any): void {
     const selectedDate = new Date(event.value);
     const formattedDayOfWeek = this.getDayOfWeek(selectedDate);
@@ -352,6 +392,10 @@ export class AddScheduleComponent implements OnInit{
     this.scheduleForm.patchValue({
       scheduleDate: this.datePipe.transform(selectedDate, 'yyyy-MM-dd') // raw value for form control
     });
+  }
+
+  getTime12HourFormat(time: string) {
+    return this.scheduleService.getTime12HourFormat(time);
   }
 
   updateSelectedDayOfWeek() {
@@ -402,6 +446,10 @@ export class AddScheduleComponent implements OnInit{
     }
   }
 
+  convertToISOFormat(dateString: string) {
+    const dateObject = new Date(dateString);
+    return dateObject.toISOString().replace('Z', '+08:00');
+  }
 
   getDayOfWeek(date: Date): string {
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday',
@@ -421,4 +469,63 @@ export class AddScheduleComponent implements OnInit{
     const weekNames = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
     return weekNames[Math.min(weekNumber - 1, weekNames.length - 1)] || 'Unknown';
   }
+
+  private getScheduleDay(dayValues: string[]) {
+    const selectedDay = dayValues[0];
+    const currentDate = new Date();
+    const currentDayIndex = currentDate.getDay();
+    const dayIndexMap: { [key: string]: number } = {
+      MON: 1,
+      TUE: 2,
+      WED: 3,
+      THU: 4,
+      FRI: 5,
+      SAT: 6,
+      SUN: 0
+    };
+
+    const selectedDayIndex = dayIndexMap[selectedDay];
+
+    let scheduleDay: Date;
+
+    if (selectedDayIndex === currentDayIndex) {
+      scheduleDay = currentDate;
+    } else {
+      let daysUntilNext = (selectedDayIndex - currentDayIndex + 7) % 7;
+      if (daysUntilNext > 0) {
+        scheduleDay = new Date(currentDate);
+        scheduleDay.setDate(currentDate.getDate() + daysUntilNext);
+      } else {
+        scheduleDay = new Date(currentDate);
+        scheduleDay.setDate(currentDate.getDate() + (7 + daysUntilNext));
+      }
+    }
+    return scheduleDay;
+  }
+
+  private isFormValid(formValues: Partial<Schedule>): "" | undefined | Laboratory {
+    return (
+      formValues.scheduleDate &&
+      formValues.startTime &&
+      formValues.endTime &&
+      formValues.laboratory
+    );
+  }
+
+  private prepareFormValues(formValues: any): void {
+    formValues.subject = null;
+    formValues.section = null;
+    formValues.professor = null;
+    formValues.remarks = null;
+    formValues.semester = null;
+    formValues.schoolYear = null;
+    formValues.startTime = `${formValues.startTime}:00`;
+    formValues.endTime = `${formValues.endTime}:00`;
+    formValues.laboratory = this.labs.find(laboratory => laboratory.id === formValues.laboratory);
+  }
+
+  private areAllControlsValid(form: FormGroup): boolean {
+    return Object.values(form.controls).every(control => control.valid);
+  }
+
 }

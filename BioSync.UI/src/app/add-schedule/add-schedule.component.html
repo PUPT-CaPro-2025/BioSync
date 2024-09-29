@@ -18,7 +18,7 @@
             <div class="w-[48%] subject-select">
                 <select id="subject" name="subject" class="bg-white custom-select
                         w-full py-2 px-2 rounded-xl text-lightGray"
-                        (change)="onSubjectChange($event)" formGroupName="subject">
+                        (change)="onSubjectChange($event)" formControlName="subject">
                     <option value="">Select a Subject</option>
                     @for(subject of subjects; track subject){
                       <option [value]="subject.id">
@@ -282,6 +282,19 @@
         </div>
     }
 </form>
+@if(showConflictAlert){
+  <div class="flex flex-col text-red-400 p-6 gap-4" >
+    <div class="flex flex-row align middle gap-2">
+      <mat-icon>error</mat-icon>
+      <mat-card-title>Schedule Conflict Detected:</mat-card-title>
+    </div>
+    @for(conflict of conflictSchedule; track conflict){
+      <div class="indent-4">{{ conflict.subject?.name }} -
+        {{ getTime12HourFormat(conflict.startTime) }} - {{ getTime12HourFormat(conflict.endTime) }}
+        | {{ conflict.laboratory?.name }}</div>
+    }
+  </div>
+}
 <div class="flex justify-center items-center">
     <div class="mt-8 mb-10 flex justify-end w-[94%] bg-transparent button-container">
         <div class="flex gap-[40px] button-content">
@@ -295,10 +308,10 @@
                 bg-gradient-red-orange rounded-full form-button"
                 (click)="submit()"
                 [ngClass]="{
-                    'bg-gradient-red-orange text-white hover:bg-gradient-dark-red-orange hover:text-f4White': selectedSubject,
-                    'bg-gray-600 text-gray-300 cursor-not-allowed': !selectedSubject
+                    'bg-gradient-red-orange text-white hover:bg-gradient-dark-red-orange hover:text-f4White': isScheduleValid,
+                    'bg-gray-600 text-gray-300 cursor-not-allowed': !isScheduleValid
                   }"
-                [disabled]="!selectedSubject">
+                [disabled]="!isScheduleValid">
                 Add Schedule
             </button>
         </div>

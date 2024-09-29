@@ -57,6 +57,17 @@ export class ViewScheduleComponent implements OnInit{
     return this.scheduleService.convertTimeFormat(string);
   }
 
+  getReadableDate(dateStr: string){
+    const date = new Date(dateStr);
+
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+  }
+
+
   returnToSchoolYearView() {
     history.back()
   }
