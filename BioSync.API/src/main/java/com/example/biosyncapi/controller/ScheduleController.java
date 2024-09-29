@@ -63,7 +63,7 @@ public class ScheduleController {
         return scheduleService.getScheduleById(id);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<List<Schedule>> createSchedule(@RequestBody Schedule schedule) {
         try{
             List<Schedule> createdSchedule = scheduleService.createSchedule(schedule);
