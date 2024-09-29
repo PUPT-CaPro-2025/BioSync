@@ -71,7 +71,7 @@
                         group-focus-within:text-brightRed">
                         Start Time
                     </label>
-                    <input matInput id="start_time" name="start-time"
+                    <input matInput id="start-time" name="start-time"
                         value="00:00" type="time" class="bg-transparent
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
@@ -83,7 +83,7 @@
                         group-focus-within:text-brightRed">
                         End Time
                     </label>
-                    <input matInput id="end_time" name="end-time"
+                    <input matInput id="end-time" name="end-time"
                         value="00:00" type="time" class="bg-transparent
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
@@ -92,7 +92,7 @@
             </div>
             <div class="flex justify-between sub-form-content">
               <div class="group flex flex-col gap-1 w-[47%] sub-row-block">
-                <label for="subject-date" class="text-custom-16
+                <label for="schedule-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
                   Schedule Date
@@ -106,7 +106,7 @@
                     value="{{formattedDateString}}"
                     readonly
                   >
-                  <input matInput id="schedule_date"
+                  <input matInput id="schedule-date"
                          placeholder="Select Date"
                          name="schedule-date"
                          [matDatepicker]="picker"
@@ -229,7 +229,7 @@
                     group-focus-within:text-brightRed">
                     Remarks
                 </label>
-                <mat-select id="remark" name="remark"
+                <mat-select id="remarks" name="remark"
                         placeholder="Select a type of class" class="bg-transparent
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors

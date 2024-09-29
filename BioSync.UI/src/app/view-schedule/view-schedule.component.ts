@@ -40,13 +40,13 @@ export class ViewScheduleComponent implements OnInit{
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: value => {
         this.schedule = value;
-        this.getUsersBySectionId(this.schedule.section?.id!);
+        this.getUsersBySectionId(this.schedule.id!);
       }
     })
   }
 
-  getUsersBySectionId(sectionId: number) {
-    this.userService.getUsersBySectionId(sectionId).subscribe({
+  getUsersBySectionId(scheduleId: number) {
+    this.userService.getUsersByScheduleId(scheduleId).subscribe({
       next: value => {
         this.class = value
       }

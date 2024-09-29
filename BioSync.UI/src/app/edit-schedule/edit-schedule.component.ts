@@ -78,9 +78,7 @@ export class EditScheduleComponent implements OnInit{
   customOption: { value: string, display: string } | null = null;
 
   todayDay: number = new Date().getDate();
-  todayDayText: string = `Monthly on day ${this.todayDay}`;
   weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
-  weekAndDayText: string = `Monthly on the ${this.weekAndDay}`;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -286,72 +284,6 @@ export class EditScheduleComponent implements OnInit{
 
   openCustomModal() {
     this.isCustomRecurrenceVisible = true;
-  }
-
-  closeModal() {
-    this.isCustomRecurrenceVisible = false;
-    this.selectedRecurrence = this.previousRecurrence;
-  }
-
-  setCustomRecurrence() {
-    const newOptionValue = `custom-${Date.now()}`;
-    const newOptionDisplay = this.formatCustomRecurrence();
-
-    this.customOption = { value: newOptionValue, display: newOptionDisplay };
-
-    this.cdr.detectChanges();
-
-    this.selectedRecurrence = newOptionValue;
-
-    this.isCustomRecurrenceVisible = false;
-  }
-
-  onRepeatEveryChange(event: Event) {
-    this.customRecurrence.repeatEvery =
-    parseInt((event.target as HTMLInputElement).value, 10);
-  }
-
-  onPeriodChange(event: Event) {
-    this.customRecurrence.period = (
-      event.target as HTMLSelectElement).value;
-  }
-
-  onSpecificDayChange(event: Event) {
-    this.customRecurrence.specificDay =
-      (event.target as HTMLSelectElement).value;
-  }
-
-  toggleDaySelection(day: string) {
-    const index = this.customRecurrence.days.indexOf(day);
-    if (index === -1) {
-      this.customRecurrence.days.push(day);
-    } else {
-      this.customRecurrence.days.splice(index, 1);
-    }
-
-    this.customRecurrence.days.sort((a, b) =>
-      this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
-  }
-
-  formatCustomRecurrence(): string {
-    let formatted = `Every ${this.customRecurrence.repeatEvery}
-      ${this.customRecurrence.period}(s)`;
-    if (this.customRecurrence.period === 'week') {
-      const daysFormatted = this.customRecurrence.days.length > 0
-        ? this.customRecurrence.days
-            .map(day => this.getFullWeekDayName(day)).join(', ')
-        : 'No specific days';
-      formatted += ` on ${daysFormatted}`;
-    } else if (this.customRecurrence.period === 'month') {
-      if (this.customRecurrence.specificDay) {
-        if (this.customRecurrence.specificDay === `${this.weekAndDay}`) {
-          formatted += ` on the ${this.weekAndDay}`;
-        } else {
-          formatted += ` on day ${this.customRecurrence.specificDay}`;
-        }
-      }
-    }
-    return formatted;
   }
 
   getDayOfWeek(date: Date): string {

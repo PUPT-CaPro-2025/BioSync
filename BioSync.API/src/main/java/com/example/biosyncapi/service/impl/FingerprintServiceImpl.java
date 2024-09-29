@@ -107,7 +107,7 @@ public class FingerprintServiceImpl implements FingerprintService {
             Fingerprint fingerprint = new Fingerprint();
             fingerprint.setFingerprintURL(s3Url);
             fingerprint.setUser(user);
-
+          
             fingerprintRepository.save(fingerprint);
         }
     }
@@ -181,7 +181,7 @@ public class FingerprintServiceImpl implements FingerprintService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         if (schedule == null) return null;
 
-        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleId(schedule.getId());
         if (students.isEmpty()) return null;
 
         byte[] scannedFingerprintImageBytes = scannedFingerprintImage.getBytes();
@@ -218,7 +218,8 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         if(fingerprint == null) return null;
 
-        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentIdAndScheduleId(
+                fingerprint.getUser().getId(), schedule.getId());
         scheduleStudent.setHasLogged(true);
         scheduleStudentRepository.save(scheduleStudent);
         return userRepository.findByUserId(fingerprint.getUser().getId());
@@ -229,7 +230,8 @@ public class FingerprintServiceImpl implements FingerprintService {
         Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
         if (schedule == null) return null;
 
-        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleIdAndHasLoggedFalse(schedule.getId());
+        // Switched to findByScheduleId (prev findByScheduleIdAndHasLoggedFalse) to notify user already logged in.
+        List<ScheduleStudent> students = scheduleStudentRepository.findByScheduleId(schedule.getId());
         if (students.isEmpty()) return null;
 
         byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
@@ -277,9 +279,61 @@ public class FingerprintServiceImpl implements FingerprintService {
 
         if(fingerprint == null) return null;
 
-        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentId(fingerprint.getUser().getId());
+        ScheduleStudent scheduleStudent = scheduleStudentRepository.findByStudentIdAndScheduleId(
+                fingerprint.getUser().getId(), schedule.getId());
         scheduleStudent.setHasLogged(true);
         scheduleStudentRepository.save(scheduleStudent);
+        return userRepository.findByUserId(fingerprint.getUser().getId());
+    }
+
+    @Override
+    public User verifyStudentFingerprintForAttendanceInBucket(Long sectionId, MultipartFile scannedFingerprintImage) throws IOException {
+        List<Fingerprint> studentFingerprints = fingerprintRepository.getAllBySectionId(sectionId);
+
+        if (studentFingerprints.isEmpty()) return null;
+
+        byte[] scannedImageBytes = scannedFingerprintImage.getBytes();
+
+        FingerprintTemplate probeTemplate = new FingerprintTemplate(
+                new FingerprintImage(scannedImageBytes)
+        );
+
+        var matcher = new FingerprintMatcher(probeTemplate);
+        double max = Double.NEGATIVE_INFINITY;
+        Fingerprint fingerprint = null;
+
+        for (Fingerprint studentFingerprint : studentFingerprints) {
+
+            String objectKey = extractObjectKeyFromS3Url(studentFingerprint.getFingerprintURL());
+
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(objectKey)
+                    .build();
+
+            try(ResponseInputStream<GetObjectResponse> objectInputStream = s3Client.getObject(getObjectRequest)) {
+                byte[] candidateImageBytes = objectInputStream.readAllBytes();
+
+                FingerprintTemplate candidateTemplate = new FingerprintTemplate(
+                        new FingerprintImage(candidateImageBytes)
+                );
+
+                double similarity = matcher.match(candidateTemplate);
+
+                if(similarity > max){
+                    max = similarity;
+                    if(similarity > threshold){
+                        fingerprint = studentFingerprint;
+                    }
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to retrieve fingerprint", e);
+            }
+        }
+
+        if(fingerprint == null) return null;
+
         return userRepository.findByUserId(fingerprint.getUser().getId());
     }
 
