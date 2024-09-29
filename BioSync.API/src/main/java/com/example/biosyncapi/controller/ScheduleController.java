@@ -75,6 +75,16 @@ public class ScheduleController {
         }
     }
 
+    @PostMapping("/conflicts")
+    public ResponseEntity<List<Schedule>> getScheduleConflicts(@RequestBody Schedule schedule) {
+        List<Schedule> conflictingSchedules = scheduleService
+                .findConflictingSchedules(schedule.getScheduleDate(),
+                        schedule.getStartTime(), schedule.getEndTime(),
+                        schedule.getLaboratory());
+
+        return new ResponseEntity<>(conflictingSchedules, HttpStatus.OK);
+    }
+
     @PostMapping("student/add")
     public ResponseEntity<?> addStudent(
             @RequestParam("schedule_id") Long scheduleId,
