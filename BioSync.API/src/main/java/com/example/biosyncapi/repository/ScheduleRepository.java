@@ -17,7 +17,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId);
 
     @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate AND s.laboratory = :laboratory AND s.startTime < :endTime AND s.endTime > :startTime")
-    List<Schedule> findConflictingSchedules(Date scheduleDate, Time startTime, Time endTime, Laboratory laboratory);
+    List<Schedule> findConflictingSchedules(
+            @Param("scheduleDate") Date scheduleDate,
+            @Param("startTime") Time startTime,
+            @Param("endTime") Time endTime,
+            @Param("laboratory") Laboratory laboratory);
 
     @Query("SELECT s FROM Schedule s WHERE s.recurrenceId = :recurrenceId")
     List<Schedule> findByRecurrenceId(@Param("recurrenceId") UUID recurrenceId);
