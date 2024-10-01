@@ -1,42 +1,39 @@
-import {Component, OnInit} from '@angular/core';
-import {Schedule} from "../../model/schedule.model";
-import {ActivatedRoute, Router} from "@angular/router";
-import {ScheduleService} from "../../services/schedule.service";
-import {MatToolbar} from "@angular/material/toolbar";
-import {SdkService} from "../../services/sdk.service";
-import {FingerprintService} from "../../services/fingerprint.service";
-import {User} from "../../model/user.model";
-import {MatButton} from "@angular/material/button";
-import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import { Component, OnInit } from '@angular/core';
+import { Schedule } from '../../model/schedule.model';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ScheduleService } from '../../services/schedule.service';
+import { MatToolbar } from '@angular/material/toolbar';
+import { SdkService } from '../../services/sdk.service';
+import { FingerprintService } from '../../services/fingerprint.service';
+import { User } from '../../model/user.model';
+import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { PromptConfirmComponent } from '../prompt-confirm/prompt-confirm.component';
+import { PromptOkayComponent } from '../prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import {NgOptimizedImage} from "@angular/common";
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
-  imports: [
-    MatToolbar,
-    MatButton,
-    FormsModule,
-    MatIconModule
-  ],
+  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
   providers: [ScheduleService, SdkService, FingerprintService],
   templateUrl: './start-attendance.component.html',
-  styleUrl: './start-attendance.component.css'
+  styleUrl: './start-attendance.component.css',
 })
-export class StartAttendanceComponent implements OnInit{
+export class StartAttendanceComponent implements OnInit {
   selectedProfessorId!: number;
   hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
-  instructions = "Scan Professors Fingerprint to Start Attendance";
-  reminder = "Scan now";
+  instructions = 'Scan Professors Fingerprint to Start Attendance';
+  reminder = 'Scan now';
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
   studentVerified = false;
   selectedDevice: string = '';
+  profileImageUrl!: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -44,47 +41,47 @@ export class StartAttendanceComponent implements OnInit{
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe({
-      next: params => {
+      next: (params) => {
         const scheduleId = +params.get('id')!;
         this.getScheduleDetails(scheduleId);
-      }
-    })
+      },
+    });
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-          if(!this.hasProfessorVerified){
+          if (!this.hasProfessorVerified) {
             this.submitProfessor();
           } else {
             this.submitStudent();
           }
         }
-      }
+      },
     });
   }
 
-  getScheduleDetails(scheduleId: number){
+  getScheduleDetails(scheduleId: number) {
     this.scheduleService.getScheduleById(scheduleId).subscribe({
-      next: value => {
+      next: (value) => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
         console.log(this.selectedProfessorId);
-      }
-    })
+      },
+    });
   }
 
-  getMonth(date: string){
+  getMonth(date: string) {
     return this.scheduleService.getMonth(date);
   }
 
-  getDay(date: string){
+  getDay(date: string) {
     return this.scheduleService.getDay(date);
   }
 
@@ -92,74 +89,85 @@ export class StartAttendanceComponent implements OnInit{
     return this.sdkService.base64ToBlob(base64, contentType);
   }
 
-  submitProfessor(){
+  submitProfessor() {
     const formData = new FormData();
 
     formData.append('userId', this.selectedProfessorId.toString());
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png')
+    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
 
-    this.fingerprintService.verifyProfessorFingerprintForAttendance(formData).subscribe({
-      next: value => {
-        if(value)
-          this.reminder = 'Fingerprint verified, Starting Attendance...'
+    this.fingerprintService
+      .verifyProfessorFingerprintForAttendance(formData)
+      .subscribe({
+        next: (value) => {
+          if (value)
+            this.reminder = 'Fingerprint verified, Starting Attendance...';
           setTimeout(() => {
             this.hasProfessorVerified = true;
-            this.instructions = "Scan Fingerprint to Log Attendance";
-            this.reminder = "Scan now"
+            this.instructions = 'Scan Fingerprint to Log Attendance';
+            this.reminder = 'Scan now';
           }, 2000);
-      },
-      error: (err) => {
-        console.log(err)
-        this.reminder = err["error"];
-        setTimeout(() => {
-          this.reminder = 'Scan now'
-        }, 3000);
-      }
-    })
-
+        },
+        error: (err) => {
+          console.log(err);
+          this.reminder = err['error'];
+          setTimeout(() => {
+            this.reminder = 'Scan now';
+          }, 3000);
+        },
+      });
   }
 
-  submitStudent(){
+  submitStudent() {
     const formData = new FormData();
 
     formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
     formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png')
+    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
-      next: value => {
+      next: (value) => {
         this.loggedStudent = value.student;
-        console.log(this.loggedStudent);
+        this.getUserProfileImage(value.student.id);
         setTimeout(() => {
           this.studentVerified = true;
           this.loggedStudent = null;
+          this.profileImageUrl = "";
           this.reminder = 'Scan now';
-        }, 3000)
+        }, 3000);
       },
-      error: err => {
+      error: (err) => {
         this.reminder = err['error'];
         setTimeout(() => {
           this.reminder = 'Scan now';
-        }, 2000)
-      }
-    })
+        }, 2000);
+      },
+    });
   }
 
-  openConfirmationDialog(schedule: Schedule){
+  getUserProfileImage(userId: number) {
+    this.fingerprintService.getProfileImageUrl(userId).subscribe({
+      next: (value: { profileImageUrl: string }) => {
+        this.profileImageUrl = value.profileImageUrl;
+      },
+    });
+  }
+
+  openConfirmationDialog(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
         title: 'Stop Attendance',
-        message: "Are you sure you want to stop attendance? Students that haven't logged will be marked as absent",
-        action: 'Stop'
-      }
-    })
+        message:
+          "Are you sure you want to stop attendance? Students that haven't logged will be marked as absent",
+        action: 'Stop',
+      },
+    });
 
     ref.afterClosed().subscribe({
       next: () => {
         this.stopAttendance(schedule);
-      }
-    })
+      },
+    });
   }
 
   openInformationDialog(message: string) {
@@ -168,21 +176,21 @@ export class StartAttendanceComponent implements OnInit{
       data: {
         title: 'Attendance Stopped',
         message,
-      }
+      },
     });
 
     ref.afterClosed().subscribe({
       next: () => {
         this.router.navigate(['/schedule']).then();
-      }
-    })
+      },
+    });
   }
 
-  stopAttendance(schedule: Schedule){
+  stopAttendance(schedule: Schedule) {
     this.fingerprintService.stopAttendance(schedule).subscribe({
-      next: value => {
+      next: (value) => {
         this.openInformationDialog(value);
-      }
+      },
     });
   }
 }
