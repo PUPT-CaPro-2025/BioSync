@@ -6,76 +6,76 @@ import java.time.LocalDateTime;
 @Entity
 public class Attendance {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String status;
+  private String status;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+  @ManyToOne
+  @JoinColumn(name = "schedule_id", nullable = false)
+  private Schedule schedule;
 
-    private LocalDateTime timeIn;
+  private LocalDateTime timeIn;
 
-    private LocalDateTime timeOut;
+  private LocalDateTime timeOut;
 
-    public Attendance() {
-        this.timeIn = LocalDateTime.now();
-    }
+  public Attendance() {
+    this.timeIn = LocalDateTime.now();
+  }
 
-    public Attendance(String status, User user, Schedule schedule) {
-        this.status = status;
-        this.user = user;
-        this.schedule = schedule;
-        this.timeIn = LocalDateTime.now();
-    }
+  public Attendance(String status, User user, Schedule schedule, LocalDateTime timeIn) {
+    this.status = status;
+    this.user = user;
+    this.schedule = schedule;
+    this.timeIn = timeIn;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    public Schedule getSchedule() {
-        return schedule;
-    }
+  public Schedule getSchedule() {
+    return schedule;
+  }
 
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
+  public void setSchedule(Schedule schedule) {
+    this.schedule = schedule;
+  }
 
-    public LocalDateTime getTimeIn() {
-        return timeIn;
-    }
+  public LocalDateTime getTimeIn() {
+    return timeIn;
+  }
 
-    public LocalDateTime getTimeOut() {
-        return timeOut;
-    }
+  public LocalDateTime getTimeOut() {
+    return timeOut;
+  }
 
-    public void setTimeOut(LocalDateTime timeOut) {
-        this.timeOut = timeOut;
-    }
+  public void setTimeOut(LocalDateTime timeOut) {
+    this.timeOut = timeOut;
+  }
 }
