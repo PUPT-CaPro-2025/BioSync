@@ -43,8 +43,6 @@ public class User implements UserDetails {
     @ManyToOne
     private Section section;
 
-    private String userImagePath;
-
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;
@@ -166,13 +164,5 @@ public class User implements UserDetails {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public String getUserImagePath() {
-        return userImagePath;
-    }
-
-    public void setUserImagePath(String userImagePath) {
-        this.userImagePath = userImagePath;
     }
 }
