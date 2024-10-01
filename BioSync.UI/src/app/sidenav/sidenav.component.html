@@ -71,6 +71,9 @@
             <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/attendance')">List of Attendance</button>
             </div>
+            <div class="hover:bg-semiGray hover:text-dark">
+                <button (click)="navigateTo('/violation')">Violations</button>
+            </div>
         </div>
     }
     <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
