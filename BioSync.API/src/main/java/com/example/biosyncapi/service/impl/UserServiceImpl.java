@@ -1,8 +1,10 @@
 package com.example.biosyncapi.service.impl;
 
+import com.example.biosyncapi.model.ProfileImage;
 import com.example.biosyncapi.model.Role;
 import com.example.biosyncapi.model.User;
 import com.example.biosyncapi.repository.FingerprintRepository;
+import com.example.biosyncapi.repository.ProfileImageRepository;
 import com.example.biosyncapi.repository.TokenRepository;
 import com.example.biosyncapi.repository.UserRepository;
 import com.example.biosyncapi.service.UserService;
@@ -32,15 +34,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     private final FingerprintRepository fingerprintRepository;
+    private final ProfileImageRepository profileImageRepository;
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
     private final S3Client s3Client;
 
-    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, FingerprintRepository fingerprintRepository, S3Client s3Client) {
+    public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.fingerprintRepository = fingerprintRepository;
         this.s3Client = s3Client;
+        this.profileImageRepository = profileImageRepository;
     }
 
     @Override
@@ -96,9 +100,9 @@ public class UserServiceImpl implements UserService {
         Path filePath = Paths.get(profileImageDirectory, uniqueFileName);
         try {
             Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            User userToUpdate = user.get();
-            userToUpdate.setUserImagePath(filePath.toAbsolutePath().toString());
-            userRepository.save(userToUpdate);
+            String imagePath = filePath.toAbsolutePath().toString();
+            ProfileImage profileImage = new ProfileImage(imagePath, user.get());
+            profileImageRepository.save(profileImage);
         }catch (IOException e) {
             throw new RuntimeException("Failed to store fingerprint file", e);
         }
@@ -121,16 +125,13 @@ public class UserServiceImpl implements UserService {
 
         String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
 
-        user.setUserImagePath(s3Url);
+        ProfileImage profileImage = new ProfileImage(s3Url, user);
 
-        userRepository.save(user);
+        profileImageRepository.save(profileImage);
     }
 
     /*
      * process to update the profile picture of the user
-     * should delete the current profile picture from the s3 bucket - not implemented yet
-     * getUserImagePath always returns null
-     * might need to redesign db structure for it to be deleted then updated
      *
      * @param userId The ID of the user whose profile image is being updated.
      * @param image The new profile image to be uploaded.
@@ -142,7 +143,9 @@ public class UserServiceImpl implements UserService {
 
         if(user == null) throw new RuntimeException("User not found");
 
-        String currentImagePath = user.getUserImagePath();
+        ProfileImage profileImage = profileImageRepository.findByUserId(user.getId());
+
+        String currentImagePath = profileImage.getImageUrl();
 
         if(currentImagePath != null){
             String existingFileName = currentImagePath.replace("https://pupt-biosync-team.s3.amazonaws.com/", "");
