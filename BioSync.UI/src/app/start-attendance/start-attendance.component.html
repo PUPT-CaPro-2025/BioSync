@@ -90,7 +90,11 @@
               <div class="flex justify-center items-center mb-4 mt-16">
                 <div class="drop-area">
                   <div class="upload-message">
-                    <mat-icon class="camera-icon">camera_alt</mat-icon>
+                    @if(profileImageUrl){
+                      <img ngSrc="{{ profileImageUrl }}" fill alt="user profile image"/>
+                    }@else{
+                      <mat-icon class="camera-icon">camera_alt</mat-icon>
+                    }
                   </div>
                 </div>
               </div>
