@@ -1,5 +1,5 @@
 .toolbar-container {
-    margin-top: 5rem;
+    margin-top: 3rem;
     background: none;
     display: flex;
     justify-content: space-between;
@@ -11,7 +11,7 @@
 .stop-attendance {
     color: white !important;
     padding: 8px 60px !important;
-    background: #FB7E3C !important; 
+    background: #FB7E3C !important;
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -32,7 +32,7 @@
     overflow: hidden;
     text-align: center;
 }
-  
+
 .upload-message {
   position: relative;
   z-index: 1;

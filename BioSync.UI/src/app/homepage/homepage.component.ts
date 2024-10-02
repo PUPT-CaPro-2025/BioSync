@@ -20,9 +20,7 @@ export class HomepageComponent implements AfterViewInit {
 
   private hideSideNavRoutes = [
     '/login',
-    '/admin-login',
-    '/student-login',
-    '/faculty-login',
+    '/forgot-password',
     '/visitor-log'
   ];
 

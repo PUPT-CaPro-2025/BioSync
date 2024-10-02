@@ -12,4 +12,5 @@ export interface User {
   password?: string;
   program?: Program;
   section?: Section;
+  email: string;
 }

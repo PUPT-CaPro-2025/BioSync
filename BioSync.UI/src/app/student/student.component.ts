@@ -11,6 +11,8 @@ import {UserService} from "../../services/user.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-student',
@@ -22,21 +24,26 @@ import jsPDF from "jspdf";
     FormsModule,
     MatSelectModule,
     AddStudentComponent,
-    EditStudentComponent],
+    EditStudentComponent,
+    MatMenu,
+    MatMenuTrigger,
+    MatButton,
+    MatMenuItem
+  ],
   providers: [UserService],
   templateUrl: './student.component.html',
   styleUrl: './student.component.css'
 })
 export class StudentComponent implements OnInit{
-
-  students: User[] = []
+  queriedStudents: User[] = [];
+  students: User[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
 
   sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
+    'Section', 'Program'
   ];
 
   yearSemesters: string[] = [
@@ -53,6 +60,9 @@ export class StudentComponent implements OnInit{
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
+  sortBy = '';
+  searchQuery!: string;
+
 
   constructor(
     private userService: UserService,
@@ -71,22 +81,25 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        this.queriedStudents = [...this.students]
       }
     })
+
+    this.queriedStudents = [...this.students];
   }
 
   onStudentAdded(newStudent: User){
-    this.students.push(newStudent);
+    this.queriedStudents.push(newStudent);
   }
 
   onStudentUpdate(updatedStudent: User){
-    const index = this.students.findIndex(
+    const index = this.queriedStudents.findIndex(
       student => student.id === updatedStudent.id
     );
 
     if(index === -1) return;
 
-    this.students[index] = updatedStudent;
+    this.queriedStudents[index] = updatedStudent;
   }
 
   openConfirmationDialog(student: User){
@@ -118,7 +131,7 @@ export class StudentComponent implements OnInit{
   get filteredStudents(): User[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.students.slice(startIndex, endIndex);
+    return this.queriedStudents.slice(startIndex, endIndex);
   }
 
   onPageChange(): void {
@@ -164,6 +177,35 @@ export class StudentComponent implements OnInit{
     this.isEditStudent = false;
   }
 
+  sortStudents() {
+    if(this.sortBy === 'Section') {
+      this.queriedStudents.sort((a, b) => {
+        return a.section?.id! - b.section?.id!
+      })
+    } else if (this.sortBy === 'Program'){
+      this.queriedStudents.sort((a, b) => {
+        return a.program?.id! - b.program?.id!
+      })
+    } else {
+      this.getStudents();
+    }
+  }
+
+  searchStudentList() {
+    const query = this.searchQuery.toLowerCase();
+
+    this.queriedStudents = this.students.filter(student => {
+      return (
+        student.firstName.toLowerCase().includes(query) ||
+        student.lastName.toLowerCase().includes(query) ||
+        student.middleName?.toLowerCase().includes(query) ||
+        student.usercode.toLowerCase().includes(query)
+      );
+    });
+
+    this.currentPage = 1;
+  }
+
   private deleteStudent(studentToDelete: User) {
     this.userService.deleteUser(studentToDelete).subscribe({
       next: () => {
@@ -177,15 +219,15 @@ export class StudentComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'STUDENT LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');

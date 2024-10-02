@@ -152,6 +152,7 @@ export class EditStudentComponent implements OnInit{
       lastName: this.selectedStudent.lastName,
       middleName: this.selectedStudent.middleName,
       suffix: this.selectedStudent.suffix,
+      email: this.selectedStudent.email,
       program: this.selectedStudent.program?.id,
       section: this.selectedStudent.section?.id,
     })
@@ -162,7 +163,7 @@ export class EditStudentComponent implements OnInit{
   }
 
   submit(){
-    if(!this.editStudentForm.valid || !this.editStudentForm.touched) return;
+    if(!this.editStudentForm.valid || !this.editStudentForm.touched || !this.selectedProfileImage) return;
 
     const updatedValues = this.editStudentForm.value;
 
@@ -184,6 +185,12 @@ export class EditStudentComponent implements OnInit{
     this.userService.updateUser(studentToUpdate).subscribe({
       next: (updatedUser: User) => {
         if(!updatedUser.id) return;
+        if(this.selectedProfileImage) {
+          this.processProfileImage(updatedUser.id);
+        }
+        if(this.isRightIndex && this.isRightThumb){
+          this.registerFingerprintData(updatedUser)
+        }
         this.editedStudent.emit(updatedUser);
         this.openSuccessDialog();
       }
@@ -228,9 +235,8 @@ export class EditStudentComponent implements OnInit{
     const formData = new FormData();
     formData.append('userId', `${studentId}`);
     formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
-    this.userService.processProfileImage(formData).subscribe();
+    this.userService.editProfileImage(formData).subscribe();
   }
-
 
   registerFingerprintData(student: User){
     const formData = new FormData();
