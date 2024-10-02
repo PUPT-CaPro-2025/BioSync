@@ -17,11 +17,15 @@ import {StartAttendanceComponent} from "./start-attendance/start-attendance.comp
 import {ViewScheduleComponent} from "./view-schedule/view-schedule.component";
 import {ViewAttendanceComponent} from "./view-attendance/view-attendance.component";
 import { UserLoginComponent } from './user-login/user-login.component';
+import { PasswordForgotComponent } from './password-forgot/password-forgot.component';
+import { PasswordResetComponent } from './password-reset/password-reset.component';
 
 export const routes: Routes = [
     { path: "login", component: UserLoginComponent },
     { path: "user-login", component: UserLoginComponent},
     { path: "visitor-log", component: LoginVisitorComponent },
+    { path: "forgot-password", component: PasswordForgotComponent },
+    { path: "reset-password", component: PasswordResetComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
     { path: "subject", component: SubjectComponent },

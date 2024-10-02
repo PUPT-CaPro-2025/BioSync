@@ -34,6 +34,9 @@ export class StartAttendanceComponent implements OnInit {
   studentVerified = false;
   selectedDevice: string = '';
   profileImageUrl!: string;
+  hasFingerprintScanner = false;
+  hasBarcodeScanner = false;
+  hasDevice = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -51,7 +54,10 @@ export class StartAttendanceComponent implements OnInit {
         this.getScheduleDetails(scheduleId);
       },
     });
-    this.sdkService.loadSDK();
+    this.hasFingerprintScanner = this.sdkService.loadSDK();
+    console.log(this.hasFingerprintScanner);
+    this.hasBarcodeScanner = false; // TODO: initiate barcode reader
+    this.hasDevice = this.hasBarcodeScanner || this.hasFingerprintScanner;
 
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {

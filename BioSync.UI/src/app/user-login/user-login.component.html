@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end mt-2">
-                    <a class="text-custom-16 text-gradient">Forgot Password?</a>
+                    <a class="text-custom-16 text-gradient cursor-pointer" (click)="navigateTo('forgot-password')">Forgot Password?</a>
                 </div>
                 <button class="text-custom-20 mt-16 text-white py-2 px-10
                         bg-gradient-red-orange rounded-xl hover:bg-gradient-dark-red-orange
@@ -44,16 +44,25 @@
                 </button>
                 <div class="flex justify-center items-center flex-col gap-2 mt-14">
                     <img src="../../assets/gray-line.svg" alt="gray-line">
-                    <div class="flex flex-row gap-1 items-center">
+                    <div class="flex flex-row gap-1 items-center justify-center">
                         <p class="text-custom-16 text-lightGray">Visitor?</p>
-                        <p class="text-custom-16 text-lightGray font-semibold text-gradient cursor-pointer"
+                        <p class="text-custom-16 text-lightGray font-medium cursor-pointer"
                            (click)="navigateTo('visitor-log')">
-                          Log Here
+                          Log In Here
                         </p>
                     </div>
                 </div>
             </form>
          </div>
-        <div class="login-image flex justify-center items-center w-[500px] h-[600px] rounded-tr-2xl rounded-br-2xl"></div>
+        <div class="login-image flex justify-center items-end w-[500px] h-[600px] rounded-tr-2xl rounded-br-2xl">
+            <div class="flex justify-center items-center mb-4 gap-4">
+                <img class="w-12 h-12" src="../../assets/PUP-logo.png" alt="PUP logo">
+                <div class="border-l-4 border-white h-12"></div>
+                <div class="flex flex-col text-white">
+                    <p class="text-custom-24 font-medium">BioSync</p>
+                    <p class="text-custom-14 font-weight400">Polytechnic University of the Philippines - Taguig Branch</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
