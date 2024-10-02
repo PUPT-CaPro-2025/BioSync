@@ -1,53 +1,72 @@
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
-      <span class="text-custom-32 text-brightRed">
-        Attendance for {{ selectedSchedule.subject?.name }}
-      </span>
-      @if(selectedSchedule){
-        {{ getMonth(selectedSchedule.scheduleDate!)}} {{ getDay(selectedSchedule.scheduleDate!) }}
-      }
+    <span class="text-custom-32 text-brightRed">
+      Attendance for {{ selectedSchedule.subject?.name }}
+    </span>
+    @if (selectedSchedule) {
+      {{ getMonth(selectedSchedule.scheduleDate!) }}
+      {{ getDay(selectedSchedule.scheduleDate!) }}
+    }
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
   <div class="flex justify-between w-[94%] bg-transparent">
-      <div class="w-[48%] subject-select">
-          <select [(ngModel)]="selectedDevice" id="subject" name="subject"
-                  class="bg-white custom-select w-full py-2 px-2
-                  rounded-xl text-lightGray">
-              <option value="">Please select a device to use</option>
-              <option value="biometrics">Biometrics Scanner</option>
-              <option value="faceRecognition">Face Recognition</option>
-          </select>
+    <div class="w-[48%] subject-select">
+      <select
+        [(ngModel)]="selectedDevice"
+        id="subject"
+        name="subject"
+        class="bg-white custom-select w-full py-2 px-2 rounded-xl text-lightGray"
+      >
+        <option value="">Please select a device to use</option>
+        @if (hasFingerprintScanner) {
+          <option value="biometrics">Biometrics Scanner</option>
+        }
+        @if (hasBarcodeScanner) {
+          <option value="faceRecognition">Barcode Scanner</option>
+        }
+        @if (!hasDevice) {
+          <option value="">No Valid Scanner Detected</option>
+        }
+      </select>
+    </div>
+    @if (hasProfessorVerified) {
+      <div>
+        <button
+          mat-flat-button
+          (click)="openConfirmationDialog(selectedSchedule)"
+          class="stop-attendance"
+        >
+          Stop Attendance
+        </button>
       </div>
-      @if(hasProfessorVerified) {
-        <div>
-            <button mat-flat-button
-                (click)="openConfirmationDialog(selectedSchedule)"
-                class="stop-attendance">
-                Stop Attendance
-            </button>
-        </div>
-      }
+    }
   </div>
 </div>
-@if(selectedDevice === 'biometrics') {
-  @if(!hasProfessorVerified) {
+@if (selectedDevice === "biometrics") {
+  @if (!hasProfessorVerified) {
     <div class="flex justify-center items-center mt-8">
       <div class="w-[94%] bg-transparent">
-          <p class="text-custom-16 text-lightGray">
-              {{ instructions }}
-          </p>
+        <p class="text-custom-16 text-lightGray">
+          {{ instructions }}
+        </p>
       </div>
     </div>
     <div class="flex justify-center items-center mt-8">
-      <div class="w-[94%] bg-transparent flex justify-center items-center flex-col">
+      <div
+        class="w-[94%] bg-transparent flex justify-center items-center flex-col"
+      >
         <div class="flex justify-center items-center mt-32">
           <p>{{ reminder }}</p>
         </div>
-        @if(loggedProfessor) {
+        @if (loggedProfessor) {
           <div class="flex">
-            <div class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-32"></div>
-            <div class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-32">
+            <div
+              class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-32"
+            ></div>
+            <div
+              class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-32"
+            >
               <div class="flex flex-col">
                 <div class="flex justify-center items-center mb-4 mt-16">
                   <div class="drop-area">
@@ -58,8 +77,12 @@
                 </div>
                 <div class="flex mt-24 gap-6 flex-col">
                   <div class="flex flex-col">
-                    <p class="text-lightGray text-custom-12">Professor's Name</p>
-                    <p class="text-brightRed text-custom-24 font-weight400">John Doe</p>
+                    <p class="text-lightGray text-custom-12">
+                      Professor's Name
+                    </p>
+                    <p class="text-brightRed text-custom-24 font-weight400">
+                      John Doe
+                    </p>
                   </div>
                 </div>
               </div>
@@ -71,28 +94,38 @@
   } @else {
     <div class="flex justify-center items-center mt-8">
       <div class="w-[94%] bg-transparent">
-          <p class="text-custom-16 text-lightGray">
-              {{ instructions }}
-          </p>
+        <p class="text-custom-16 text-lightGray">
+          {{ instructions }}
+        </p>
       </div>
     </div>
-    <div class="w-[94%] bg-transparent flex justify-center items-center flex-col">
-      @if(!loggedStudent){
+    <div
+      class="w-[94%] bg-transparent flex justify-center items-center flex-col"
+    >
+      @if (!loggedStudent) {
         <div class="flex justify-center flex-col items-center mt-32">
           <p>{{ reminder }}</p>
         </div>
       }
-      @if(loggedStudent) {
+      @if (loggedStudent) {
         <div class="flex">
-          <div class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-12"></div>
-          <div class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-12">
+          <div
+            class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-12"
+          ></div>
+          <div
+            class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-12"
+          >
             <div class="flex flex-col">
               <div class="flex justify-center items-center mb-4 mt-16">
                 <div class="drop-area">
                   <div class="upload-message">
-                    @if(profileImageUrl){
-                      <img ngSrc="{{ profileImageUrl }}" fill alt="user profile image"/>
-                    }@else{
+                    @if (profileImageUrl) {
+                      <img
+                        ngSrc="{{ profileImageUrl }}"
+                        fill
+                        alt="user profile image"
+                      />
+                    } @else {
                       <mat-icon class="camera-icon">camera_alt</mat-icon>
                     }
                   </div>
@@ -101,15 +134,23 @@
               <div class="flex mt-24 gap-6 flex-col">
                 <div class="flex flex-col">
                   <p class="text-lightGray text-custom-12">Student's Name</p>
-                  <p class="text-brightRed text-custom-24 font-weight400">{{ loggedStudent.firstName }} {{ loggedStudent.lastName }}</p>
+                  <p class="text-brightRed text-custom-24 font-weight400">
+                    {{ loggedStudent.firstName }} {{ loggedStudent.lastName }}
+                  </p>
                 </div>
                 <div class="flex flex-col">
                   <p class="text-lightGray text-custom-12">Student Number</p>
-                  <p class="text-darkGray text-custom-16 font-weight400">{{ loggedStudent.usercode }}</p>
+                  <p class="text-darkGray text-custom-16 font-weight400">
+                    {{ loggedStudent.usercode }}
+                  </p>
                 </div>
                 <div class="flex flex-col">
-                  <p class="text-lightGray text-custom-12">Course Year & Section</p>
-                  <p class="text-darkGray text-custom-16 font-weight400">BSIT 4-1</p>
+                  <p class="text-lightGray text-custom-12">
+                    Course Year & Section
+                  </p>
+                  <p class="text-darkGray text-custom-16 font-weight400">
+                    BSIT 4-1
+                  </p>
                 </div>
               </div>
             </div>
@@ -118,20 +159,16 @@
       }
     </div>
   }
-} @else if (selectedDevice === 'barcode') {
+} @else if (selectedDevice === "barcode") {
   <div class="flex justify-center items-center mt-8">
     <div class="w-[94%] bg-transparent">
-        <p class="text-custom-16 text-lightGray">
-            Barcode
-        </p>
+      <p class="text-custom-16 text-lightGray">Barcode</p>
     </div>
   </div>
 } @else {
   <div class="flex justify-center items-center mt-8">
     <div class="w-[94%] bg-transparent">
-        <p class="text-custom-16 text-lightGray">
-            No device selected.
-        </p>
+      <p class="text-custom-16 text-lightGray">No device selected.</p>
     </div>
   </div>
 }
