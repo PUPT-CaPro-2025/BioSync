@@ -13,8 +13,7 @@ import {AuthService} from "../services/auth/auth.service";
 })
 export class AppComponent implements OnInit{
 
-  private publicRoutes = ['/login', '/admin-login', '/faculty-login', '/student-login', '/visitor-log'];
-
+  private publicRoutes = ['/login', '/forgot-password', '/visitor-log'];
 
   constructor(
     private authService: AuthService,
