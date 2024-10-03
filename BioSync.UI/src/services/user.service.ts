@@ -4,6 +4,7 @@ import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {User} from "../model/user.model";
 import {Observable} from "rxjs";
+import {CsvResponse} from "../model/csvResponse.model";
 
 @Injectable()
 export class UserService {
@@ -21,6 +22,13 @@ export class UserService {
       headers: this.headers,
       withCredentials: true
     });
+  }
+
+  createBulkUserOrSchedule(formData: FormData) {
+    return this.http.post<CsvResponse>(`${this.url}/users/students`, formData, {
+      headers: this.headers,
+      withCredentials: true
+    })
   }
 
   processProfileImage(formData: FormData){
