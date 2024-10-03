@@ -13,6 +13,7 @@ import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.co
 import jsPDF from "jspdf";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatButton} from "@angular/material/button";
+import {PromptCsvComponent} from "../prompt/prompt-csv/prompt-csv.component";
 
 @Component({
   selector: 'app-student',
@@ -189,6 +190,16 @@ export class StudentComponent implements OnInit{
     } else {
       this.getStudents();
     }
+  }
+
+  toggleBulkAddStudent() {
+    const ref = this.dialog.open(PromptCsvComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        scheduleId: null,
+      }
+    })
   }
 
   searchStudentList() {

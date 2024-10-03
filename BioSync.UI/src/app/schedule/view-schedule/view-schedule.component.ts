@@ -8,6 +8,9 @@ import {User} from "../../../model/user.model";
 import {UserService} from "../../../services/user.service";
 import {MatButton} from "@angular/material/button";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatDialog} from "@angular/material/dialog";
+import {AddStudentComponent} from "../../student/add-student/add-student.component";
+import {PromptCsvComponent} from "../../prompt/prompt-csv/prompt-csv.component";
 
 @Component({
   selector: 'app-view-schedule',
@@ -31,7 +34,8 @@ export class ViewScheduleComponent implements OnInit{
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
-    private userService: UserService
+    private userService: UserService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -80,5 +84,15 @@ export class ViewScheduleComponent implements OnInit{
 
   toggleAddStudent() {
 
+  }
+
+  toggleBulkAddStudent() {
+    const ref = this.dialog.open(PromptCsvComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        scheduleId: this.schedule.id,
+      }
+    })
   }
 }
