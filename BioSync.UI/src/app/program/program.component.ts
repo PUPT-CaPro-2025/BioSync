@@ -178,21 +178,6 @@ export class ProgramComponent implements OnInit{
     this.isEditProgram = false;
   }
 
-  toggleViewProgram(programId: number | undefined): void {
-    this.isViewProgram = !this.isViewProgram;
-    if(this.isViewProgram){
-      this.currentProgram = programId;
-    }
-  }
-
-  setViewId(){
-    return this.currentProgram;
-  }
-
-  handleBackToViewProgram(): void {
-    this.isViewProgram = false;
-  }
-
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
