@@ -1,7 +1,7 @@
 package com.example.biosyncapi.config;
 
-import com.example.biosyncapi.model.Token;
-import com.example.biosyncapi.repository.TokenRepository;
+import com.example.biosyncapi.authentication.token.Token;
+import com.example.biosyncapi.authentication.token.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
