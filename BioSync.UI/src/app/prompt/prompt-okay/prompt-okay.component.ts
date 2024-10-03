@@ -26,6 +26,5 @@ export class PromptOkayComponent {
   constructor(
     public dialogRef: MatDialogRef<PromptOkayComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { title: string, message: string }
-  ) {
-  }
+  ) {}
 }
