@@ -52,6 +52,11 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
         List<Schedule> scheduleList = scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
 
         for (Schedule scheduleItem : scheduleList) {
+            List<User> students = this.getStudentsByScheduleId(scheduleItem.getId());
+
+            boolean isUserOnList = students.contains(student);
+            if(isUserOnList) continue;
+
             ScheduleStudent scheduleStudent = new ScheduleStudent(scheduleItem, student);
             scheduleStudentRepository.save(scheduleStudent);
         }

@@ -1,5 +1,6 @@
 package com.example.biosyncapi.user;
 
+import com.example.biosyncapi.schedule.Schedule;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public interface UserService {
 
   String getProfileImageUrl(Long userId);
 
-  HashMap<User, String> processCSV(MultipartFile file) throws Exception;
+  HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception;
 
   User mapToUser(String[] csvRow, String password);
 

@@ -3,6 +3,8 @@ package com.example.biosyncapi.user;
 import com.example.biosyncapi.authentication.AuthenticationServiceImpl;
 import com.example.biosyncapi.program.Program;
 import com.example.biosyncapi.program.ProgramRepository;
+import com.example.biosyncapi.schedule.Schedule;
+import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentService;
 import com.example.biosyncapi.section.Section;
 import com.example.biosyncapi.section.SectionRepository;
 import com.example.biosyncapi.user.profile_image.ProfileImage;
@@ -44,11 +46,12 @@ public class UserServiceImpl implements UserService {
   private final ProgramRepository programRepository;
   private final SectionRepository sectionRepository;
   private final AuthenticationServiceImpl authenticationService;
+  private final ScheduleStudentService scheduleStudentService;
 
   public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
       FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository,
                          ProgramRepository programRepository, SectionRepository sectionRepository,
-                         AuthenticationServiceImpl authenticationService) {
+                         AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService) {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.fingerprintRepository = fingerprintRepository;
@@ -57,6 +60,7 @@ public class UserServiceImpl implements UserService {
     this.programRepository = programRepository;
     this.sectionRepository = sectionRepository;
     this.authenticationService = authenticationService;
+    this.scheduleStudentService = scheduleStudentService;
   }
 
   @Override
@@ -182,8 +186,14 @@ public class UserServiceImpl implements UserService {
     return profileImage.getImageUrl();
   }
 
+  /*
+   * for adding multiple students
+   *
+   * @param file - csv of student data
+   * @param <optional> schedule id - include student in schedule
+   */
   @Override
-  public HashMap<User, String> processCSV(MultipartFile file) throws Exception {
+  public HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule ) throws Exception {
     HashMap<User, String> mailPassword = new HashMap<>();
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
@@ -196,14 +206,16 @@ public class UserServiceImpl implements UserService {
         }
         String[] csvRow = line.split(",");
 
-        boolean doesUserExist = this.userRepository.findByUsercode(csvRow[0]).isPresent();
+        Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
-        if (doesUserExist) {
+        if (user.isPresent()) {
+          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, user.get()));
           continue;
         }
         System.out.println(Arrays.toString(csvRow));
         String generatedPassword = generatePassword(8);
         User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
+        schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
 
         mailPassword.put(createdUser, generatedPassword);
       }
