@@ -1,5 +1,10 @@
 package com.example.biosyncapi.user;
 
+import com.example.biosyncapi.authentication.AuthenticationServiceImpl;
+import com.example.biosyncapi.program.Program;
+import com.example.biosyncapi.program.ProgramRepository;
+import com.example.biosyncapi.section.Section;
+import com.example.biosyncapi.section.SectionRepository;
 import com.example.biosyncapi.user.profile_image.ProfileImage;
 import com.example.biosyncapi.fingerprint.FingerprintRepository;
 import com.example.biosyncapi.user.profile_image.ProfileImageRepository;
@@ -12,15 +17,17 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.security.SecureRandom;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,14 +41,22 @@ public class UserServiceImpl implements UserService {
   @Value("${aws.s3.bucket.name}")
   private String bucketName;
   private final S3Client s3Client;
+  private final ProgramRepository programRepository;
+  private final SectionRepository sectionRepository;
+  private final AuthenticationServiceImpl authenticationService;
 
   public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
-      FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository) {
+      FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository,
+                         ProgramRepository programRepository, SectionRepository sectionRepository,
+                         AuthenticationServiceImpl authenticationService) {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.fingerprintRepository = fingerprintRepository;
     this.s3Client = s3Client;
     this.profileImageRepository = profileImageRepository;
+    this.programRepository = programRepository;
+    this.sectionRepository = sectionRepository;
+    this.authenticationService = authenticationService;
   }
 
   @Override
@@ -167,4 +182,107 @@ public class UserServiceImpl implements UserService {
     return profileImage.getImageUrl();
   }
 
+  @Override
+  public HashMap<User, String> processCSV(MultipartFile file) throws Exception {
+    HashMap<User, String> mailPassword = new HashMap<>();
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+      String line;
+      boolean isHeader = true;
+      while ((line = reader.readLine()) != null) {
+        if (isHeader) {
+          isHeader = false;
+          continue;
+        }
+        String[] csvRow = line.split(",");
+
+        boolean doesUserExist = this.userRepository.findByUsercode(csvRow[0]).isPresent();
+
+        if (doesUserExist) {
+          continue;
+        }
+        System.out.println(Arrays.toString(csvRow));
+        String generatedPassword = generatePassword(8);
+        User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
+
+        mailPassword.put(createdUser, generatedPassword);
+      }
+    }
+
+    return mailPassword;
+  }
+
+  @Override
+  public User mapToUser(String[] csvRow, String password) {
+    User user = new User();
+    user.setUsercode(getValue(csvRow[0]));
+    user.setLastName(getValue(csvRow[1]));
+    user.setFirstName(getValue(csvRow[2]));
+    user.setMiddleName(getValue(csvRow[3]));
+    user.setSection(getSection(csvRow[5]));
+    user.setProgram(getProgram(csvRow[5]));
+    user.setEmail(getEmail(csvRow[6]));
+    user.setPassword(password);
+    user.setRole(Role.STUDENT);
+    return user;
+  }
+
+  //region Helper methods
+  private String getValue(String value) {
+    if (value.isEmpty())
+      return null;
+
+    return value;
+  }
+
+  private String getEmail(String value){
+    if(!value.contains("(locked)")) return value;
+
+    int extraIndex = value.indexOf("(locked)");
+
+    return value.substring(0, extraIndex);
+  }
+
+  private Section getSection(String sectionCode){
+    int tgIndex = sectionCode.indexOf("TG");
+
+    String yearSection = sectionCode.substring(tgIndex + 2).trim();
+    String[] yearSectionArr = yearSection.split("-");
+
+    Program program = getProgram(sectionCode);
+
+    if(program == null) return null;
+
+    int section = Integer.parseInt(yearSectionArr[0]);
+    String year = yearSectionArr[1];
+
+    return this.sectionRepository.findByProgramAndSectionAndYear(program, section, year);
+  }
+
+  private Program getProgram(String sectionCode) {
+    int tgIndex = sectionCode.indexOf("TG");
+
+    String programAbb = sectionCode.substring(0, tgIndex).trim();
+
+    return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
+  }
+
+
+  private String generatePassword(int length) {
+    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    String specialCharacters = "!@#$%^&*()_+[]{}|;:,.<>?";
+
+    String allCharacters = characters + specialCharacters;
+
+    SecureRandom random = new SecureRandom();
+    StringBuilder password = new StringBuilder(length);
+
+    for (int i = 0; i < length; i++) {
+      int randomIndex = random.nextInt(allCharacters.length());
+      password.append(allCharacters.charAt(randomIndex));
+    }
+
+    return password.toString();
+  }
+  //endregion
 }

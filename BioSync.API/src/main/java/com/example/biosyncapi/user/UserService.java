@@ -3,6 +3,7 @@ package com.example.biosyncapi.user;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +29,9 @@ public interface UserService {
   void processEditProfileImageToBucket(Long userId, MultipartFile image) throws IOException;
 
   String getProfileImageUrl(Long userId);
+
+  HashMap<User, String> processCSV(MultipartFile file) throws Exception;
+
+  User mapToUser(String[] csvRow, String password);
+
 }

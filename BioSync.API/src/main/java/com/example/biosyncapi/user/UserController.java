@@ -1,5 +1,6 @@
 package com.example.biosyncapi.user;
 
+import com.example.biosyncapi.mail.MailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,11 @@ import java.util.Optional;
 public class UserController {
 
   private final UserService userService;
+  private final MailService mailService;
 
-  public UserController(UserService userService) {
+  public UserController(UserService userService, MailService mailService) {
     this.userService = userService;
+    this.mailService = mailService;
   }
 
   @GetMapping()
@@ -75,6 +78,20 @@ public class UserController {
         this.userService.processProfileImage(userId, profileImage);
       }
       return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
+  @PostMapping("/multiple")
+  public ResponseEntity<?> addUsers(@RequestParam("file") MultipartFile file) {
+    try {
+      HashMap<User, String> mailPasswords = this.userService.processCSV(file);
+      mailService.autoSendCredentials(mailPasswords);
+      return ResponseEntity.ok().body(Map.ofEntries(
+              Map.entry("success", true),
+              Map.entry("count", mailPasswords.size())
+      ));
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
