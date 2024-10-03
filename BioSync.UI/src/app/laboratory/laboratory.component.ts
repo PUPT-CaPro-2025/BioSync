@@ -7,14 +7,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { AddLaboratoryComponent } from '../add-laboratory/add-laboratory.component';
-import { EditLaboratoryComponent } from '../edit-laboratory/edit-laboratory.component';
+import { AddLaboratoryComponent } from './add-laboratory/add-laboratory.component';
+import { EditLaboratoryComponent } from './edit-laboratory/edit-laboratory.component';
 import { LaboratoryService } from '../../services/laboratory.service';
 import { Laboratory } from '../../model/laboratory.model';
 import { MatDialog } from '@angular/material/dialog';
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
-import {ViewLaboratoryComponent} from "../view-laboratory/view-laboratory.component";
 
 @Component({
   selector: 'app-laboratory',
@@ -29,7 +28,7 @@ import {ViewLaboratoryComponent} from "../view-laboratory/view-laboratory.compon
     MatSelectModule,
     CommonModule,
     AddLaboratoryComponent,
-    EditLaboratoryComponent, ViewLaboratoryComponent
+    EditLaboratoryComponent
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
@@ -201,13 +200,13 @@ export class LaboratoryComponent implements OnInit {
 
     const imgWidth = 115;
     const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'LABORATORY LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');

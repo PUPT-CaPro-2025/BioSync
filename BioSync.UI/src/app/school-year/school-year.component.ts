@@ -10,10 +10,10 @@ import { CommonModule } from '@angular/common';
 import { SchoolYearService } from '../../services/school.year.service';
 import { SchoolYear } from '../../model/school.year.model';
 import { MatDialog } from '@angular/material/dialog';
-import { EditSchoolYearComponent } from '../edit-school-year/edit-school-year.component';
-import { AddSchoolYearComponent } from '../add-school-year/add-school-year.component';
-import { ViewSchoolYearComponent } from '../view-school-year/view-school-year.component';
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import { EditSchoolYearComponent } from './edit-school-year/edit-school-year.component';
+import { AddSchoolYearComponent } from './add-school-year/add-school-year.component';
+import { ViewSchoolYearComponent } from './view-school-year/view-school-year.component';
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
 
 @Component({
@@ -198,15 +198,15 @@ export class SchoolYearComponent implements OnInit {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'ACADEMIC YEAR LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');

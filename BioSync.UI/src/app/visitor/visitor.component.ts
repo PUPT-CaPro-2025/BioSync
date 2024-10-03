@@ -4,10 +4,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EditVisitorComponent } from '../edit-visitor/edit-visitor.component';
+import { EditVisitorComponent } from './edit-visitor/edit-visitor.component';
 import {VisitorService} from "../../services/visitor.service";
 import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
 
 @Component({
@@ -176,15 +176,15 @@ export class VisitorComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'VISITOR LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');

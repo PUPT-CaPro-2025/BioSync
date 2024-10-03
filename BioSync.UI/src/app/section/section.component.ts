@@ -9,9 +9,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
-import { AddSectionComponent } from '../add-section/add-section.component';
+import { AddSectionComponent } from './add-section/add-section.component';
 import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
 
 
@@ -159,17 +159,16 @@ export class SectionComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'SECTION LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');

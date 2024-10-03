@@ -3,13 +3,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AddProfessorComponent } from '../add-professor/add-professor.component';
-import { EditProfessorComponent } from '../edit-professor/edit-professor.component';
+import { AddProfessorComponent } from './add-professor/add-professor.component';
+import { EditProfessorComponent } from './edit-professor/edit-professor.component';
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
 import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 import jsPDF from "jspdf";
 
 @Component({
@@ -182,15 +182,15 @@ export class ProfessorComponent implements OnInit{
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    const imgWidth = 115; 
-    const imgHeight = 15; 
-    const xOffset = (pageWidth - imgWidth) / 2; 
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
     const title = 'PROFESSOR LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' }); 
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
