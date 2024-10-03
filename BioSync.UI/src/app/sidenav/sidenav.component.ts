@@ -9,7 +9,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {LogoutService} from '../../services/auth/logout.service';
 import {CookieService} from '../../services/cookie.service';
-import {PromptConfirmComponent} from '../prompt-confirm/prompt-confirm.component';
+import {PromptConfirmComponent} from '../prompt/prompt-confirm/prompt-confirm.component';
 import {MatDialog} from '@angular/material/dialog';
 import {filter} from 'rxjs/operators';
 import { CryptoService } from '../../services/crypto.service';
