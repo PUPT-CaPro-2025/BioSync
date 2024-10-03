@@ -265,10 +265,10 @@ public class UserServiceImpl implements UserService {
 
     if(program == null) return null;
 
-    int section = Integer.parseInt(yearSectionArr[0]);
-    String year = yearSectionArr[1];
+    String year = yearSectionArr[0];
+    int section = Integer.parseInt(yearSectionArr[1]);
 
-    return this.sectionRepository.findByProgramAndSectionAndYear(program, section, year);
+    return this.sectionRepository.findByProgramAndYearAndSection(program, year, section);
   }
 
   private Program getProgram(String sectionCode) {
