@@ -54,7 +54,9 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
         for (Schedule scheduleItem : scheduleList) {
             List<User> students = this.getStudentsByScheduleId(scheduleItem.getId());
 
-            boolean isUserOnList = students.contains(student);
+            boolean isUserOnList = students.stream()
+                    .anyMatch(existingStudent -> existingStudent.getId().equals(student.getId()));
+
             if(isUserOnList) continue;
 
             ScheduleStudent scheduleStudent = new ScheduleStudent(scheduleItem, student);
