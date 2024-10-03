@@ -6,13 +6,19 @@ import {Schedule} from "../../../model/schedule.model";
 import {MatIcon} from "@angular/material/icon";
 import {User} from "../../../model/user.model";
 import {UserService} from "../../../services/user.service";
+import {MatButton} from "@angular/material/button";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-view-schedule',
   standalone: true,
   imports: [
     MatToolbar,
-    MatIcon
+    MatIcon,
+    MatButton,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger
   ],
   providers: [ScheduleService, UserService],
   templateUrl: './view-schedule.component.html',
@@ -70,5 +76,9 @@ export class ViewScheduleComponent implements OnInit{
 
   returnToSchoolYearView() {
     history.back()
+  }
+
+  toggleAddStudent() {
+
   }
 }
