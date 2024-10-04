@@ -14,4 +14,10 @@ export class PasswordService {
       responseType: 'text' as 'json',
     })
   }
+
+  resetPassword(token: string, password: string) {
+    return this.http.post(`${this.url}/reset`, { token, password }, {
+      withCredentials: true,
+    });
+  }
 }
