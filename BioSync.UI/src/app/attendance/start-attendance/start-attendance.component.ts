@@ -47,15 +47,14 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
         const scheduleId = +params.get('id')!;
         this.getScheduleDetails(scheduleId);
       },
     });
-    this.hasFingerprintScanner = this.sdkService.loadSDK();
-    console.log(this.hasFingerprintScanner);
+    this.hasFingerprintScanner = await this.sdkService.loadSDK();
     this.hasBarcodeScanner = false; // TODO: initiate barcode reader
     this.hasDevice = this.hasBarcodeScanner || this.hasFingerprintScanner;
 
