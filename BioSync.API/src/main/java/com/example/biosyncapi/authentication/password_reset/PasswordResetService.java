@@ -33,6 +33,9 @@ public class PasswordResetService {
   }
 
   public String createPasswordResetToken(User user) {
+      PasswordResetToken hasExistingToken = tokenRepository.findByUser(user);
+
+      if(hasExistingToken != null) tokenRepository.deleteByUser(user);
 
       String token = UUID.randomUUID().toString();
 
@@ -50,7 +53,6 @@ public class PasswordResetService {
     String subject = "Password Reset Request";
     String text = "Click the link to reset your password: " + resetUrl;
 
-    // You can reuse the sendMail method you previously implemented
     mailService.sendMail(user.getEmail(), subject, text);
   }
 
