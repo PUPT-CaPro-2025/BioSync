@@ -21,13 +21,14 @@ jobs:
           # Set environment variables based on the branch
           DB_URL=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_URL || secrets.DATABASE_URL_TEST }}
           DB_PASSWORD=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_PASSWORD || secrets.DATABASE_PASSWORD_TEST }}
+          ALLOWED_ORIGIN=${{ github.ref == 'refs/heads/main' && secrets.ALLOWED_ORIGIN || secrets.ALLOWED_ORIGIN_TEST }}
 
           # Update application.properties using sed
           sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${DB_URL}|" \
                  -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
                  -e "s|spring.datasource.password=.*|spring.datasource.password=${DB_PASSWORD}|" \
                  -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
-                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${{ secrets.ALLOWED_ORIGIN }}|" \
+                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${ALLOWED_ORIGIN}|" \
                  -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
                  -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
                  -e "s|aws.access.key=.*|aws.access.key=${{ secrets.AWS_ACCESS_KEY }}|" \
@@ -72,5 +73,3 @@ jobs:
             docker run -d -p 8080:8080 --name bio-sync-api-container jheankhendrick/bio-sync-api:latest
           EOF
         shell: /usr/bin/bash -e {0}
-
-
