@@ -18,9 +18,14 @@ jobs:
           
       - name: Update application.properties
         run: |
-          sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${{ secrets.DATABASE_URL }}|" \
+          # Set environment variables based on the branch
+          DB_URL=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_URL || secrets.DATABASE_URL_TEST }}
+          DB_PASSWORD=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_PASSWORD || secrets.DATABASE_PASSWORD_TEST }}
+
+          # Update application.properties using sed
+          sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${DB_URL}|" \
                  -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
-                 -e "s|spring.datasource.password=.*|spring.datasource.password=${{ secrets.DATABASE_PASSWORD }}|" \
+                 -e "s|spring.datasource.password=.*|spring.datasource.password=${DB_PASSWORD}|" \
                  -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
                  -e "s|cors.allowed.origins=.*|cors.allowed.origins=${{ secrets.ALLOWED_ORIGIN }}|" \
                  -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
@@ -30,6 +35,7 @@ jobs:
                  -e "s|aws.s3.region=.*|aws.s3.region=${{ secrets.AWS_REGION }}|" \
                  -e "s|aws.s3.bucket.name=.*|aws.s3.bucket.name=${{ secrets.AWS_BUCKET_NAME }}|" \
                  ./BioSync.API/src/main/resources/application.properties
+        shell: /usr/bin/bash -e {0}
 
       - name: Build Project
         run: mvn clean install -DskipTests
@@ -54,12 +60,17 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets[github.ref == 'refs/heads/main' && 'EC2_PRIVATE_KEY' || 'EC2_PRIVATE_KEY_TEST'] }}
 
       - name: Deploy to EC2 Instance
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_HOST }} << 'EOF'
+          EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST_MAIN' || 'EC2_HOST_STAGING'] }}
+
+          ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
             docker pull jheankhendrick/bio-sync-api:latest
             docker rm -f bio-sync-api-container || true
             docker run -d -p 8080:8080 --name bio-sync-api-container jheankhendrick/bio-sync-api:latest
           EOF
+        shell: /usr/bin/bash -e {0}
+
+
