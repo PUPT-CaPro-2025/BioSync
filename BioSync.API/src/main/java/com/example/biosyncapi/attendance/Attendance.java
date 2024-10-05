@@ -26,9 +26,7 @@ public class Attendance {
 
   private LocalDateTime timeOut;
 
-  public Attendance() {
-    this.timeIn = LocalDateTime.now();
-  }
+  public Attendance() {}
 
   public Attendance(String status, User user, Schedule schedule, LocalDateTime timeIn) {
     this.status = status;
