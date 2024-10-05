@@ -64,7 +64,7 @@ jobs:
 
       - name: Deploy to EC2 Instance
         run: |
-          EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST_MAIN' || 'EC2_HOST_TEST'] }}
+          EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
 
           ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
             docker pull jheankhendrick/bio-sync-api:latest
