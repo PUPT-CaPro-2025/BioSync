@@ -26,10 +26,9 @@ jobs:
         if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
           sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
         elif [[ "${GITHUB_REF}" == "refs/heads/staging" ]]; then
-          sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+          sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL_TEST }}'~" environment/app.setting.ts
         fi
       shell: /usr/bin/bash -e {0}
-
 
     - name: Substitute cryptoKey in app.settings
       run: |
