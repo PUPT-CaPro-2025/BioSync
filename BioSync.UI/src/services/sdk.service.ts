@@ -10,22 +10,38 @@ export class SdkService {
   private sdk: any;
   private imageSrcSubject = new BehaviorSubject<string | null>(null);
 
-  loadSDK() {
-    let isDeviceOkay = false;
-    const script = document.createElement('script');
-    script.src = './assets/scripts/websdk.client.bundle.min.js';
-    script.onload = () => {
-      console.log('SDK script loaded successfully.');
-      this.initSDK();
-      isDeviceOkay = this.startCapture();
-    };
-    script.onerror = () => {
-      isDeviceOkay = false;
-    };
-    document.body.appendChild(script);
+  async loadSDK(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      let isDeviceOkay = false;
+      const script = document.createElement('script');
+      script.src = './assets/scripts/websdk.client.bundle.min.js';
 
-    return isDeviceOkay;
+      script.onload = async () => {
+        try {
+          console.log('SDK script loaded successfully.');
+
+          // Initialize the SDK
+          this.initSDK();
+
+          // Wait for startCapture to finish and return the result
+          isDeviceOkay = await this.startCapture();
+          resolve(isDeviceOkay);
+        } catch (error) {
+          console.error("Error in startCapture:", error);
+          reject(false); // Reject the promise in case of any error
+        }
+      };
+
+      script.onerror = () => {
+        console.error('Failed to load the SDK script.');
+        reject(false); // Reject if the script fails to load
+      };
+
+      // Append the script to the body to start loading
+      document.body.appendChild(script);
+    });
   }
+
 
   base64ToBlob(base64: string, contentType: string): Blob {
     const byteCharacters = atob(base64);

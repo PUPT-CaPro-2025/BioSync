@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewProgramComponent } from './view-program.component';
+import { PromptCsvComponent } from './prompt-csv.component';
 
-describe('ViewProgramComponent', () => {
-  let component: ViewProgramComponent;
-  let fixture: ComponentFixture<ViewProgramComponent>;
+describe('PromptCsvComponent', () => {
+  let component: PromptCsvComponent;
+  let fixture: ComponentFixture<PromptCsvComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViewProgramComponent]
+      imports: [PromptCsvComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViewProgramComponent);
+    fixture = TestBed.createComponent(PromptCsvComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

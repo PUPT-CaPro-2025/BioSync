@@ -1,6 +1,5 @@
 @if(!isAddLaboratory) {
     @if(!isEditLaboratory) {
-        @if(!isViewLaboratory) {
             <div class="header">
                 <mat-toolbar class="toolbar-container">
                     <span>List of Laboratories - ALL</span>
@@ -55,7 +54,6 @@
                                 <div class="cell">{{ laboratory.capacity }}</div>
                                 <div class="cell">
                                     <div class="action-container">
-                                        <button class="view-button" (click)="toggleViewLaboratory(laboratory.id)"><mat-icon>visibility</mat-icon></button>
                                         <button class="edit-button" (click)="toggleEditLaboratory(laboratory)"><mat-icon>edit</mat-icon></button>
                                         <button class="delete-button" (click)="openDeleteDialog(laboratory)"><mat-icon>delete</mat-icon></button>
                                     </div>
@@ -102,9 +100,6 @@
                     </div>
                 </div>
             </div>
-        } @else {
-            <app-view-laboratory (backToViewLaboratory)="handleBackToViewLaboratory()" [id]="setViewId()"/>
-        }
     } @else {
         <app-edit-laboratory
             [selectedLaboratory]="laboratoryToEdit"

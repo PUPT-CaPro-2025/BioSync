@@ -21,6 +21,7 @@ export class HomepageComponent implements AfterViewInit {
   private hideSideNavRoutes = [
     '/login',
     '/forgot-password',
+    '/reset-password',
     '/visitor-log'
   ];
 

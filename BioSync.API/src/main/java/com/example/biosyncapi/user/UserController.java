@@ -1,6 +1,9 @@
 package com.example.biosyncapi.user;
 
 import com.example.biosyncapi.mail.MailService;
+import com.example.biosyncapi.schedule.Schedule;
+import com.example.biosyncapi.schedule.ScheduleService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +21,12 @@ public class UserController {
 
   private final UserService userService;
   private final MailService mailService;
+  private final ScheduleService scheduleService;
 
-  public UserController(UserService userService, MailService mailService) {
+  public UserController(UserService userService, MailService mailService, ScheduleService scheduleService) {
     this.userService = userService;
     this.mailService = mailService;
+    this.scheduleService = scheduleService;
   }
 
   @GetMapping()
@@ -83,19 +88,28 @@ public class UserController {
     }
   }
 
-  @PostMapping("/multiple")
-  public ResponseEntity<?> addUsers(@RequestParam("file") MultipartFile file) {
+  @PostMapping("/students")
+  public ResponseEntity<Map<String, Object>> addStudents(
+          @RequestParam("file") MultipartFile file,
+          @RequestParam(value = "scheduleId", required = false) Long scheduleId) {
     try {
-      HashMap<User, String> mailPasswords = this.userService.processCSV(file);
+      Optional<Schedule> schedule = scheduleId != null ? scheduleService.getScheduleById(scheduleId) : Optional.empty();
+      HashMap<User, String> mailPasswords = userService.processCSV(file, schedule);
+
       mailService.autoSendCredentials(mailPasswords);
+
       return ResponseEntity.ok().body(Map.ofEntries(
               Map.entry("success", true),
               Map.entry("count", mailPasswords.size())
       ));
     } catch (Exception e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      return ResponseEntity.badRequest().body(Map.ofEntries(
+              Map.entry("success", false),
+              Map.entry("error", e.getMessage())
+      ));
     }
   }
+
 
   @PutMapping("/edit-user")
   public User updateUser(@RequestBody User user) {

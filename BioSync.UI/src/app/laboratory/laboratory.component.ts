@@ -178,21 +178,6 @@ export class LaboratoryComponent implements OnInit {
     this.isEditLaboratory = false;
   }
 
-  toggleViewLaboratory(laboratoryId: number | undefined): void {
-    this.isViewLaboratory = !this.isViewLaboratory;
-    if(this.isViewLaboratory){
-      this.currentLaboratory = laboratoryId;
-    }
-  }
-
-  setViewId(){
-    return this.currentLaboratory;
-  }
-
-  handleBackToViewLaboratory(): void {
-    this.isViewLaboratory = false;
-  }
-
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();

@@ -63,6 +63,8 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/visitors")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/password/**")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 ).userDetailsService(userDetailsServiceImpl)
