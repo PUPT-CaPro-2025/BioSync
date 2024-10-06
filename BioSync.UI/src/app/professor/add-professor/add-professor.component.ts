@@ -146,12 +146,17 @@ export class AddProfessorComponent implements OnInit{
         if(this.isRightIndex && this.isRightThumb){
           this.registerFingerprintData(userCreated);
         }
-        this.displaySuccess()
+        this.displayMessage(true);
         this.professorAdded.emit(userCreated);
+        this.mailCredentials(professorToCreate, generatedPassword);
       },
-      error: error => { console.log(error); }
+      error: error => {
+        this.displayMessage(false, error.error);
+      }
     });
+  }
 
+  private mailCredentials(professorToCreate: User, generatedPassword: string) {
     const mailContent: Mail = {
       to: professorToCreate.email,
       subject: `BioSync Account Credentials`,
@@ -186,17 +191,18 @@ export class AddProfessorComponent implements OnInit{
     })
   }
 
-  displaySuccess() {
+  displayMessage(success: boolean, message?: string) {
     const dialogRef = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
-        title: 'Professor Successfully Added!',
-        message: 'Professor has been added to the system successfully.'
+        title: success ? 'Professor Successfully Added!' : 'Something went wrong',
+        message: success ? 'Professor has been added to the system successfully.' : message
       }
     })
 
     dialogRef.afterClosed().subscribe(() => {
-       this.backToProfessor.emit();
+      if(!success) return;
+      this.backToProfessor.emit();
     })
   }
 

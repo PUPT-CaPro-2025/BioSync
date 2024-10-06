@@ -1,9 +1,12 @@
 package com.example.biosyncapi.user;
 
 import com.example.biosyncapi.authentication.AuthenticationServiceImpl;
+import com.example.biosyncapi.authentication.password_reset.PasswordResetRepository;
 import com.example.biosyncapi.program.Program;
 import com.example.biosyncapi.program.ProgramRepository;
 import com.example.biosyncapi.schedule.Schedule;
+import com.example.biosyncapi.schedule.ScheduleRepository;
+import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentService;
 import com.example.biosyncapi.section.Section;
 import com.example.biosyncapi.section.SectionRepository;
@@ -47,11 +50,14 @@ public class UserServiceImpl implements UserService {
   private final SectionRepository sectionRepository;
   private final AuthenticationServiceImpl authenticationService;
   private final ScheduleStudentService scheduleStudentService;
+  private final PasswordResetRepository resetTokenRepository;
+  private final ScheduleStudentRepository scheduleStudentRepository;
 
   public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
       FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository,
                          ProgramRepository programRepository, SectionRepository sectionRepository,
-                         AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService) {
+                         AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService,
+                          ScheduleStudentRepository scheduleStudentRepository, PasswordResetRepository resetTokenRepository) {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.fingerprintRepository = fingerprintRepository;
@@ -61,6 +67,8 @@ public class UserServiceImpl implements UserService {
     this.sectionRepository = sectionRepository;
     this.authenticationService = authenticationService;
     this.scheduleStudentService = scheduleStudentService;
+    this.scheduleStudentRepository = scheduleStudentRepository;
+    this.resetTokenRepository = resetTokenRepository;
   }
 
   @Override
@@ -90,6 +98,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void deleteUser(Long id) {
+    Optional<User> user = this.userRepository.findById(id);
+    if (user.isEmpty()) throw new IllegalArgumentException("User does not exist");
+
+    this.profileImageRepository.deleteByUserId(id);
+    this.scheduleStudentRepository.deleteAllByUserId(user.get());
+    this.resetTokenRepository.deleteByUser(user.get());
     this.tokenRepository.deleteByUserId(id);
     this.fingerprintRepository.deleteByUserId(id);
     this.userRepository.deleteById(id);

@@ -37,6 +37,10 @@ public class AuthenticationServiceImpl {
             throw new IllegalArgumentException("Usercode already exists");
         }
 
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new IllegalArgumentException("Email already exists");
+        }
+
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setMiddleName(request.getMiddleName());
