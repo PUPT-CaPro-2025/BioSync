@@ -14,6 +14,7 @@ import jsPDF from "jspdf";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatButton} from "@angular/material/button";
 import {PromptCsvComponent} from "../prompt/prompt-csv/prompt-csv.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-student',
@@ -119,6 +120,16 @@ export class StudentComponent implements OnInit{
     })
   }
 
+  openMessageDialog(success: boolean, message?: string){
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: success ? 'Student Deleted' : 'Something went wrong',
+        message: success ? 'Successfully deleted student.' : message,
+      }
+    })
+  }
+
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
   }
@@ -193,7 +204,7 @@ export class StudentComponent implements OnInit{
   }
 
   toggleBulkAddStudent() {
-    const ref = this.dialog.open(PromptCsvComponent, {
+    this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
@@ -220,7 +231,12 @@ export class StudentComponent implements OnInit{
   private deleteStudent(studentToDelete: User) {
     this.userService.deleteUser(studentToDelete).subscribe({
       next: () => {
-        this.students = this.students.filter(student => studentToDelete.id !== student.id);
+        this.queriedStudents = this.queriedStudents.filter(student => studentToDelete.id !== student.id);
+        this.openMessageDialog(true);
+      },
+      error: err => {
+        console.log(err.error);
+        this.openMessageDialog(false, err.error)
       }
     })
   }

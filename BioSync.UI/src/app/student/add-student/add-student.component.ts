@@ -195,12 +195,17 @@ export class AddStudentComponent implements OnInit{
         if(this.isRightIndex && this.isRightThumb){
           this.registerFingerprintData(student);
         }
-        this.openSuccessDialog();
+        this.openMessageDialog(true);
         this.addedStudent.emit(student);
-        this.returnToStudentView();
+        this.sendCredentials(studentToAdd, generatedPassword);
+      },
+      error: error => {
+        this.openMessageDialog(false, error.error);
       }
     })
+  }
 
+  private sendCredentials(studentToAdd: User, generatedPassword: string) {
     const mailContent: Mail = {
       to: studentToAdd.email,
       subject: `BioSync Account Credentials`,
@@ -211,8 +216,6 @@ export class AddStudentComponent implements OnInit{
     }
 
     this.mailService.sendMail(mailContent).subscribe();
-
-    return;
   }
 
   processProfileImage(studentId: number) {
@@ -238,13 +241,20 @@ export class AddStudentComponent implements OnInit{
     })
   }
 
-  openSuccessDialog(){
-    this.dialog.open(PromptOkayComponent, {
+  openMessageDialog(success: boolean, message?: string){
+    const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
-        title: 'Student Added!',
-        message: 'Student has been added successfully.'
+        title: success ? 'Student Added!' : 'Something went wrong',
+        message: success ? 'Student has been added successfully.' : message,
       }
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        if(!success) return;
+        this.returnToStudentView();
+      },
     })
   }
 
