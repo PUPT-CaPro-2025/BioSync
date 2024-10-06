@@ -2,7 +2,8 @@ package com.example.biosyncapi.visitor;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="visitors")
@@ -20,17 +21,17 @@ public class Visitor {
 
     private String destination;
 
-    private LocalDateTime visitDate;
+    private ZonedDateTime visitDate;
 
     @PrePersist
     protected void onCreate() {
-        visitDate = LocalDateTime.now();
+        visitDate = ZonedDateTime.now(ZoneId.of("UTC+8"));
     }
 
     public Visitor() {
     }
 
-    public Visitor(Long id, String name, String purposeOfVisit, String otherDetails, String destination, LocalDateTime visitDate) {
+    public Visitor(Long id, String name, String purposeOfVisit, String otherDetails, String destination, ZonedDateTime visitDate) {
         this.id = id;
         this.name = name;
         this.purposeOfVisit = purposeOfVisit;
@@ -79,11 +80,11 @@ public class Visitor {
         this.destination = destination;
     }
 
-    public LocalDateTime getVisitDate() {
+    public ZonedDateTime getVisitDate() {
         return visitDate;
     }
 
-    public void setVisitDate(LocalDateTime visitDate) {
+    public void setVisitDate(ZonedDateTime visitDate) {
         this.visitDate = visitDate;
     }
 }
