@@ -3,7 +3,7 @@ package com.example.biosyncapi.attendance;
 import com.example.biosyncapi.schedule.Schedule;
 import com.example.biosyncapi.user.User;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 public class Attendance {
@@ -22,13 +22,13 @@ public class Attendance {
   @JoinColumn(name = "schedule_id", nullable = false)
   private Schedule schedule;
 
-  private LocalDateTime timeIn;
+  private ZonedDateTime timeIn;
 
-  private LocalDateTime timeOut;
+  private ZonedDateTime timeOut;
 
   public Attendance() {}
 
-  public Attendance(String status, User user, Schedule schedule, LocalDateTime timeIn) {
+  public Attendance(String status, User user, Schedule schedule, ZonedDateTime timeIn) {
     this.status = status;
     this.user = user;
     this.schedule = schedule;
@@ -67,15 +67,15 @@ public class Attendance {
     this.schedule = schedule;
   }
 
-  public LocalDateTime getTimeIn() {
+  public ZonedDateTime getTimeIn() {
     return timeIn;
   }
 
-  public LocalDateTime getTimeOut() {
+  public ZonedDateTime getTimeOut() {
     return timeOut;
   }
 
-  public void setTimeOut(LocalDateTime timeOut) {
+  public void setTimeOut(ZonedDateTime timeOut) {
     this.timeOut = timeOut;
   }
 }

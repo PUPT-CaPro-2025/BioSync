@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -119,7 +120,7 @@ public class AttendanceController {
     if (hasLogged)
       return ResponseEntity.status(409).body("User has already logged.");
 
-    Attendance attendance = new Attendance("PRESENT", student, schedule.get(), LocalDateTime.now());
+    Attendance attendance = new Attendance("PRESENT", student, schedule.get(), ZonedDateTime.now(ZoneId.of("UTC+8")));
 
     Attendance recordedAttendance = attendanceService.saveAttendance(attendance);
 

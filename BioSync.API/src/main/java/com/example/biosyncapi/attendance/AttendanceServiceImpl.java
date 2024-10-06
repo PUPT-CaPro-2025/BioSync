@@ -6,7 +6,8 @@ import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -77,7 +78,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         .orElse(null);
 
                 if (existingAttendance != null) {
-                    existingAttendance.setTimeOut(LocalDateTime.now());
+                    existingAttendance.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));
                     attendanceRepository.save(existingAttendance);
                 }
             } else {
