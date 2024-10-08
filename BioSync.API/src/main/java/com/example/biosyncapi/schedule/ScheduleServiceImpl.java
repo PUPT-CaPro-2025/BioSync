@@ -50,10 +50,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     return scheduleRepository.findSchedulesByProfessorId(professorId);
   }
 
-  @Override
-  public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
-    return scheduleRepository.findSchedulesBySectionId(sectionId);
-  }
+    @Override
+    public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
+        return scheduleRepository.findSchedulesBySectionId(sectionId);
+    }
+
+    public List<Schedule> getAllRequestedSchedules(Long requesterId){
+        return scheduleRepository.findByRequesterId(requesterId);
+    }
 
   @Override
   public List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId) {

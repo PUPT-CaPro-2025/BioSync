@@ -65,6 +65,7 @@
         <div class="cell">Schedule</div>
         <div class="cell">Time</div>
         <div class="cell">Laboratory</div>
+        <div class="cell">Status</div>
         <div class="cell">Action</div>
       </div>
       <div class="row-container text-custom-12">
@@ -96,6 +97,7 @@
             <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
               {{convertTimeFormat(schedule.endTime)}}</div>
             <div class="cell">{{schedule.laboratory?.name}}</div>
+            <div class="cell">{{schedule.status}}</div>
             <div class="cell">
               <div class="action-container">
                 <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>

@@ -20,16 +20,16 @@ import jsPDF from "jspdf";
 @Component({
   selector: 'app-faculty-my-request',
   standalone: true,
-  imports: [MatToolbarModule, 
-    MatIconModule, 
-    CommonModule, 
-    FormsModule, 
-    MatSelectModule, 
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    MatSelectModule,
   ],
-  providers: [ScheduleService, 
-    SchoolYearService, 
-    UserService, 
-    CookieService, 
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './faculty-my-request.component.html',
@@ -124,7 +124,7 @@ export class FacultyMyRequestComponent implements OnInit {
   }
 
   getFacultySchedule(facultyId: number) {
-    this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
+    this.scheduleService.getAllRequestedSchedules(facultyId).subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;

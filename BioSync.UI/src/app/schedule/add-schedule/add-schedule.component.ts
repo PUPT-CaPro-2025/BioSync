@@ -27,6 +27,9 @@ import {catchError, debounceTime, of, switchMap} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {MatCardTitle} from "@angular/material/card";
 import {ScheduleService} from "../../../services/schedule.service";
+import {CryptoService} from "../../../services/crypto.service";
+import {CookieService} from "../../../services/cookie.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-add-schedule',
@@ -117,6 +120,9 @@ export class  AddScheduleComponent implements OnInit{
     private schoolYearService: SchoolYearService,
     private scheduleService: ScheduleService,
     private laboratoryService: LaboratoryService,
+    private cryptoService: CryptoService,
+    private cookieService: CookieService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -128,9 +134,6 @@ export class  AddScheduleComponent implements OnInit{
     this.getSections();
     this.getLaboratories();
     this.getSchoolYear();
-    if(this.isRequest){
-
-    }
   }
 
   initForm(): void{
@@ -214,12 +217,6 @@ export class  AddScheduleComponent implements OnInit{
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
   }
 
-  setRequestingProfessor(){
-    this.scheduleForm.patchValue({
-      professor: []
-    })
-  }
-
   onSchoolYearChange(event: MatSelectChange){
     const selectedId = Number(event.value)
     this.selectedSY = this.schoolYear.find(s => s.id === selectedId);
@@ -240,7 +237,6 @@ export class  AddScheduleComponent implements OnInit{
     this.isWeeklySchedule = false;
     this.backToSchedule.emit();
   }
-
 
   getSubjects() {
     this.subjectService.getSubjects().subscribe({
@@ -263,24 +259,47 @@ export class  AddScheduleComponent implements OnInit{
     const dialogRef = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
-        title: 'Schedule Successfully Added!',
-        message: 'Schedule has been set successfully.'
+        title: this.isRequest? 'Request Submitted' : 'Schedule Successfully Added!',
+        message: this.isRequest ? 'Request submitted successfully' : 'Schedule has been set successfully.'
       }
     })
 
     dialogRef.afterClosed().subscribe(() => {
-      this.backToSchedule.emit();
+      this.isRequest ? this.toPendingSchedules() : this.backToSchedule.emit();
     })
   }
 
   getProfessors(): void {
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: users => {
-        this.professors = users;
+        if(!this.isRequest){
+          this.professors = users;
+        } else {
+          this.getCurrentProfessor()
+        }
       },
       error: error => { console.error(error); }
     })
   }
+
+  getCurrentProfessor(){
+    let user = this.userService.getUserById(this.getUserId());
+    user.subscribe({
+      next: (user: User) => {
+        this.professors.push(user);
+      }
+    })
+
+    this.scheduleForm.patchValue({
+      professor: this.getUserId()
+    })
+  }
+
+  getUserId(){
+    const encryptedUserId = decodeURIComponent(this.cookieService.getCookie("user_id")!);
+    return +this.cryptoService.decrypt(encryptedUserId);
+  }
+
 
   getSchoolYear(): void {
     this.schoolYearService.getSchoolYears().subscribe({
@@ -356,7 +375,12 @@ export class  AddScheduleComponent implements OnInit{
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
       status: this.isRequest ? 'PENDING' : 'APPROVED',
-      requester: this.isRequest ? selectedProfessor : null,
+      requester: this.isRequest ?  {
+        id: selectedProfessor?.id,
+        firstName: selectedProfessor?.firstName,
+        lastName: selectedProfessor?.lastName,
+        role: selectedProfessor?.role,
+      } : null,
     }
 
     if(this.scheduleForm.get('recurrence')?.value === "NONE"){
@@ -537,6 +561,10 @@ export class  AddScheduleComponent implements OnInit{
 
   private areAllControlsValid(form: FormGroup): boolean {
     return Object.values(form.controls).every(control => control.valid);
+  }
+
+  private toPendingSchedules() {
+    this.router.navigate(['/my-requests']).then();
   }
 
 }
