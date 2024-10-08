@@ -22,6 +22,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByIsActiveTrueAndStatus(Status status);
 
+    List<Schedule> findByIsActiveTrueAndStatus(Status status);
+
     List<Schedule> findByRequesterId(Long requesterId);
 
     List<Schedule> findAllByStatus(Status status);
