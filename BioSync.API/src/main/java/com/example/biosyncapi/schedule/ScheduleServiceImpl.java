@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll();
+        return scheduleRepository.findByIsActiveTrueAndStatus(Status.APPROVED);
     }
 
     @Override

@@ -20,6 +20,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.recurrenceId = :recurrenceId")
     List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId);
 
+    List<Schedule> findByIsActiveTrueAndStatus(Status status);
+
     @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate AND s.laboratory = :laboratory AND s.startTime < :endTime AND s.endTime > :startTime")
     List<Schedule> findConflictingSchedules(
             @Param("scheduleDate") Date scheduleDate,
