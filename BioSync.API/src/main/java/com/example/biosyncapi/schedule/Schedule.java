@@ -68,9 +68,13 @@ public class Schedule {
     @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
     public List<String> recurrenceDays;
 
+    public Status status;
+
+    public boolean isActive;
+
     public Schedule() {}
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<ScheduleStudent> students, List<String> recurrenceDays) {
+    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<ScheduleStudent> students, List<String> recurrenceDays, Status status, boolean isActive) {
         this.id = id;
         this.subject = subject;
         this.section = section;
@@ -87,6 +91,8 @@ public class Schedule {
         this.recurrenceInterval = recurrenceInterval;
         this.scheduleStudents = students;
         this.recurrenceDays = recurrenceDays;
+        this.status = status;
+        this.isActive = true;
         this.hasFinished = false;
     }
 
@@ -224,5 +230,21 @@ public class Schedule {
 
     public void setScheduleStudents(List<ScheduleStudent> scheduleStudents) {
         this.scheduleStudents = scheduleStudents;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
