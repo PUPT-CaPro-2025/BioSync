@@ -134,9 +134,6 @@ export class  AddScheduleComponent implements OnInit{
     this.getSections();
     this.getLaboratories();
     this.getSchoolYear();
-    if(this.isRequest){
-
-    }
   }
 
   initForm(): void{
@@ -218,12 +215,6 @@ export class  AddScheduleComponent implements OnInit{
     const target = event.target as HTMLSelectElement;
     const selectedId = Number(target.value)
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
-  }
-
-  setRequestingProfessor(){
-    this.scheduleForm.patchValue({
-      professor: []
-    })
   }
 
   onSchoolYearChange(event: MatSelectChange){
