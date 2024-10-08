@@ -40,10 +40,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     this.scheduleStudentRepository = scheduleStudentRepository;
   }
 
-  @Override
-  public List<Schedule> getAllSchedules() {
-    return scheduleRepository.findAll();
-  }
+    @Override
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findByIsActiveTrueAndStatus(Status.APPROVED);
+    }
 
   @Override
   public List<Schedule> getAllSchedulesByProfessorId(Long professorId) {
