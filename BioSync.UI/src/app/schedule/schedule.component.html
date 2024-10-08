@@ -29,6 +29,9 @@
                     }
                   </div>
                 }
+                @if(getRole() === "FACULTY") {
+                  <button class="print-schedule">Request Schedule</button>
+                }
                 <button class="print-schedule" (click)="generatePdf()">Print Schedule Reports</button>
               </div>
             </mat-toolbar>
