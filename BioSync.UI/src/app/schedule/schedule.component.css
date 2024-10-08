@@ -181,7 +181,7 @@
     gap: 10px;
 }
 
-.view-button, .edit-button, .delete-button {
+.view-button, .edit-button, .delete-button, .accept-button {
     background-color: #F84C42;
     color: white;
     border: none;
@@ -193,11 +193,20 @@
     border-radius: 12px;
 }
 
-.view-button mat-icon, .edit-button mat-icon, .delete-button mat-icon {
+.view-button mat-icon, .edit-button mat-icon, 
+.delete-button mat-icon, .accept-button mat-icon {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 16px;
+}
+
+.accept-button {
+    background-color: rgb(0, 168, 0);
+}
+
+.accept-button:hover {
+    background-color: rgb(0, 73, 0);
 }
 
 .view-button, .edit-button {
