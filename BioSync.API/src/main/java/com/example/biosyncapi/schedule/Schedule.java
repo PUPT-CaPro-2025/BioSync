@@ -65,13 +65,13 @@ public class Schedule {
   @JsonIgnore
   private List<ScheduleStudent> scheduleStudents;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
-    public List<String> recurrenceDays;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+  public List<String> recurrenceDays;
 
-    public Status status;
+  public Status status;
 
-    public boolean isActive;
+  public boolean isActive;
 
   public Schedule() {}
 
@@ -248,19 +248,27 @@ public class Schedule {
     this.scheduleStudents = scheduleStudents;
   }
 
-    public Status getStatus() {
-        return status;
-    }
+  public Status getStatus() {
+    return status;
+  }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+  public void setStatus(Status status) {
+    this.status = status;
+  }
 
-    public boolean isActive() {
-        return isActive;
-    }
+  public boolean isActive() {
+    return isActive;
+  }
 
-    public void setActive(boolean active) {
-        isActive = active;
-    }
+  public void setActive(boolean active) {
+    isActive = active;
+  }
+
+  public User getRequester() {
+    return requester;
+  }
+
+  public void setRequester(User requester) {
+    this.requester = requester;
+  }
 }

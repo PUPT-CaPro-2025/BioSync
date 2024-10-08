@@ -356,6 +356,7 @@ export class  AddScheduleComponent implements OnInit{
       startTime: `${startTime}:00`,
       endTime: `${endTime}:00`,
       status: this.isRequest ? 'PENDING' : 'APPROVED',
+      requester: this.isRequest ? selectedProfessor : null,
     }
 
     if(this.scheduleForm.get('recurrence')?.value === "NONE"){
