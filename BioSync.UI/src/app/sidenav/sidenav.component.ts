@@ -39,6 +39,7 @@ import { CryptoService } from '../../services/crypto.service';
 })
 export class SidenavComponent implements OnInit {
   activeButton: string | null = 'dashboard';
+  isDropdownOpenSchedule = false;
   isDropdownOpenStudent = false;
   isDropdownOpenMaintenance = false;
 
@@ -70,13 +71,25 @@ export class SidenavComponent implements OnInit {
   }
 
   onButtonClick(buttonName: string) {
-    if (buttonName === 'student' || buttonName === 'maintenance') {
+    if (buttonName === 'student' || buttonName === 'maintenance' || 
+    buttonName === 'schedule') {
       this.activeButton = buttonName;
       localStorage.setItem('activeButton', buttonName);
     } else {
       this.activeButton = buttonName;
       localStorage.setItem('activeButton', buttonName);
+      this.isDropdownOpenSchedule = false;
       this.isDropdownOpenStudent = false;
+      this.isDropdownOpenMaintenance = false;
+    }
+  }
+
+  toggleScheduleDropdown(event: Event) {
+    event.stopPropagation();
+    this.isDropdownOpenSchedule = !this.isDropdownOpenSchedule;
+    if (this.isDropdownOpenSchedule) {
+      this.activeButton = 'schedule';
+      localStorage.setItem('activeButton', 'schedule');
       this.isDropdownOpenMaintenance = false;
     }
   }
@@ -107,6 +120,10 @@ export class SidenavComponent implements OnInit {
         this.activeButton = 'student';
         localStorage.setItem('activeButton', 'student');
       } else if (
+        route.startsWith('/schedule') || route.startsWith('requests')) {
+        this.activeButton = 'schedule';
+        localStorage.setItem('activeButton', 'schedule');
+      } else if (
         route.startsWith('/program') || route.startsWith('/laboratory') ||
         route.startsWith('/school-year') || route.startsWith('/section')
       ) {
@@ -127,6 +144,14 @@ export class SidenavComponent implements OnInit {
   closeDropdownOnClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (
+      this.isDropdownOpenSchedule &&
+      !target.closest('.menu-container') &&
+      !target.closest('.dropdown-content')
+    ) {
+      this.isDropdownOpenSchedule = false;
+      this.activeButton = null;
+      localStorage.removeItem('activeButton');
+    } else if (
       this.isDropdownOpenStudent &&
       !target.closest('.menu-container') &&
       !target.closest('.dropdown-content')
