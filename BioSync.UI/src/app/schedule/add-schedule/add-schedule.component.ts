@@ -60,6 +60,7 @@ import {ScheduleService} from "../../../services/schedule.service";
 export class  AddScheduleComponent implements OnInit{
   @Input() isOneSchedule!: boolean;
   @Input() isWeeklySchedule!: boolean;
+  @Input() isRequest!: boolean;
   @Output() backToSchedule = new EventEmitter<void>();
   @Output() createdSchedule = new EventEmitter<Schedule[]>();
 
@@ -81,7 +82,6 @@ export class  AddScheduleComponent implements OnInit{
   previousRecurrence = 'none';
   currentDayOfWeek = this.getDayOfWeek(new Date());
   currentDate = this.getFormattedDate(new Date());
-  currentWeekOfMonth = this.getWeekOfMonth(new Date());
   isCustomRecurrenceVisible = false;
 
   customRecurrence = {
@@ -128,6 +128,9 @@ export class  AddScheduleComponent implements OnInit{
     this.getSections();
     this.getLaboratories();
     this.getSchoolYear();
+    if(this.isRequest){
+
+    }
   }
 
   initForm(): void{
@@ -209,6 +212,12 @@ export class  AddScheduleComponent implements OnInit{
     const target = event.target as HTMLSelectElement;
     const selectedId = Number(target.value)
     this.selectedSubject = this.subjects.find(subject => subject.id === selectedId);
+  }
+
+  setRequestingProfessor(){
+    this.scheduleForm.patchValue({
+      professor: []
+    })
   }
 
   onSchoolYearChange(event: MatSelectChange){
@@ -345,7 +354,8 @@ export class  AddScheduleComponent implements OnInit{
     newSchedule = {
       ...newSchedule,
       startTime: `${startTime}:00`,
-      endTime: `${endTime}:00`
+      endTime: `${endTime}:00`,
+      status: this.isRequest ? 'PENDING' : 'APPROVED',
     }
 
     if(this.scheduleForm.get('recurrence')?.value === "NONE"){

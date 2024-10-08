@@ -1,6 +1,6 @@
 @if(!isOneAddSchedule) {
     @if(!isWeeklyAddSchedule) {
-        @if(!isEditSchedule) { 
+        @if(!isEditSchedule) {
           @if(!isRequestOneSchedule) {
             @if(!isRequestWeeklySchedule) {
               <div class="header">
@@ -199,10 +199,20 @@
                 </div>
               </div>
             } @else {
-              <app-request-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()" [isRequestWeeklySchedule]="isRequestWeeklySchedule"></app-request-schedule>
+              <app-add-schedule
+                (createdSchedule)="onScheduleCreation($event)"
+                (backToSchedule)="handleBackToSchedule()"
+                [isWeeklySchedule]="isRequestWeeklySchedule"
+                [isRequest]="true">
+              </app-add-schedule>
             }
           } @else {
-            <app-request-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()" [isRequestOneSchedule]="isRequestOneSchedule"></app-request-schedule>
+            <app-add-schedule
+              (createdSchedule)="onScheduleCreation($event)"
+              (backToSchedule)="handleBackToSchedule()"
+              [isOneSchedule]="isRequestOneSchedule"
+              [isRequest]="true">
+            </app-add-schedule>
           }
         } @else {
             <app-edit-schedule
