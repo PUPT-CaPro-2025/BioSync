@@ -120,7 +120,9 @@ export class SidenavComponent implements OnInit {
         this.activeButton = 'student';
         localStorage.setItem('activeButton', 'student');
       } else if (
-        route.startsWith('/schedule') || route.startsWith('requests')) {
+        route.startsWith('/schedule') || route.startsWith('requests') || 
+        route.startsWith('my-requests')
+      ) {
         this.activeButton = 'schedule';
         localStorage.setItem('activeButton', 'schedule');
       } else if (
