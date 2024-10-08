@@ -18,6 +18,8 @@ import { ViewAttendanceComponent } from "./attendance/view-attendance/view-atten
 import { UserLoginComponent } from './user-login/user-login.component';
 import { PasswordForgotComponent } from './password/password-forgot/password-forgot.component';
 import { PasswordResetComponent } from './password/password-reset/password-reset.component';
+import { FacultyMyRequestComponent } from './faculty-my-request/faculty-my-request.component';
+import { RequestListScheduleComponent } from './request-list-schedule/request-list-schedule.component';
 
 export const routes: Routes = [
     { path: "login", component: UserLoginComponent },
@@ -26,6 +28,8 @@ export const routes: Routes = [
     { path: "reset-password", component: PasswordResetComponent },
     { path: "dashboard", component: DashboardComponent },
     { path: "schedule", component: ScheduleComponent },
+    { path: "requests", component: RequestListScheduleComponent },
+    { path: "my-requests", component: FacultyMyRequestComponent },
     { path: "subject", component: SubjectComponent },
     { path: "visitor", component: VisitorComponent },
     { path: "professor", component: ProfessorComponent },
