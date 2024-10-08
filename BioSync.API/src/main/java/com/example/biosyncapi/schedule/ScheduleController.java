@@ -37,6 +37,13 @@ public class ScheduleController {
         return scheduleService.getAllSchedulesByProfessorId(id);
     }
 
+    @GetMapping("/professor/requests/{id}")
+    public ResponseEntity<?> getRequestedSchedules(@PathVariable Long id){
+        List<Schedule> requestedSchedules = scheduleService.getAllRequestedSchedules(id);
+
+        return new ResponseEntity<>(requestedSchedules, HttpStatus.OK);
+    }
+
     @GetMapping("/section/{id}")
     public List<Schedule> getSchedulesBySectionId(@PathVariable Long id) {
         return scheduleService.getAllSchedulesBySectionId(id);

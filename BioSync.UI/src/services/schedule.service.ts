@@ -33,6 +33,13 @@ export class ScheduleService {
     })
   }
 
+  getAllRequestedSchedules(requestId: number){
+    return this.http.get<Schedule[]>(`${this.url}/professor/requests/${requestId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getAllSchedulesBySectionId(sectionId: number){
     return this.http.get<Schedule[]>(`${this.url}/section/${sectionId}`, {
       headers: this.headers,
