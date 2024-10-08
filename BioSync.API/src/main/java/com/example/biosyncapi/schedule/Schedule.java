@@ -68,6 +68,7 @@ public class Schedule {
   @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
   public List<String> recurrenceDays;
 
+  @Enumerated(value = EnumType.STRING)
   public Status status;
 
   public boolean isActive;
