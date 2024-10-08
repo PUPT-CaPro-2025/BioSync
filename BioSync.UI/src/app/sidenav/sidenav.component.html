@@ -125,12 +125,28 @@
         </div>
     } } @if(getRole() === "FACULTY"){
         <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
-            <button routerLink="/schedule" class="menu-content">
-              <mat-icon>calendar_month</mat-icon>
-              <p>Schedule</p>
-            </button>
+            <div class="flex justify-between items-center" (click)="toggleScheduleDropdown($event)">
+                <button class="menu-content">
+                  <mat-icon>calendar_month</mat-icon>
+                  <p>Schedules</p>
+                  <div class="schedule-arrow">
+                    <mat-icon>{{
+                        isDropdownOpenSchedule ? "keyboard_arrow_up" : "keyboard_arrow_down"
+                      }}</mat-icon>
+                  </div>
+                </button>
+            </div>
         </div>
-
+        @if(isDropdownOpenSchedule) {
+            <div class="dropdown-content flex flex-col">
+                <div class="hover:bg-semiGray hover:text-dark">
+                    <button (click)="navigateTo('/schedule')">List of Schedules</button>
+                </div>
+                <div class="hover:bg-semiGray hover:text-dark">
+                    <button (click)="navigateTo('/my-requests')">My Requests</button>
+                </div>
+            </div>
+        }
         <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
           <button routerLink="/attendance" class="menu-content">
             <mat-icon>check_circle</mat-icon>
