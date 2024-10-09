@@ -24,6 +24,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByRequesterId(Long requesterId);
 
+    List<Schedule> findAllByStatus(Status status);
+
   @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate AND " +
       "s.laboratory = :laboratory AND s.startTime < :endTime AND s.endTime >" +
       " :startTime")
