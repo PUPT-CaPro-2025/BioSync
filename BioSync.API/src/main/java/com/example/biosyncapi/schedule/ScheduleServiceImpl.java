@@ -277,6 +277,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(existingSchedule);
     }
 
+    public Schedule updatePartialSchedule(Long id, Status updates) {
+        Schedule existingSchedule = scheduleRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+        existingSchedule.setStatus(updates);
+        return scheduleRepository.save(existingSchedule);
+    }
+
   private LocalDate convertToLocalDate(java.sql.Date date) {
       if (date == null) {
           return null;
