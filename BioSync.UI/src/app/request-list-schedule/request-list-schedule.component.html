@@ -98,8 +98,8 @@
             <div class="cell">{{schedule.laboratory?.name}}</div>
             <div class="cell">
               <div class="action-container">
-                <button class="accept-button" (click)="toggleViewSchedule(schedule)"><mat-icon>check_circle</mat-icon></button>
-                <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>remove_circle</mat-icon></button>
+                <button class="accept-button" (click)="toggleAcceptSchedule(schedule)"><mat-icon>check_circle</mat-icon></button>
+                <button class="delete-button" (click)="toggleRejectSchedule(schedule)"><mat-icon>remove_circle</mat-icon></button>
               </div>
             </div>
           </div>

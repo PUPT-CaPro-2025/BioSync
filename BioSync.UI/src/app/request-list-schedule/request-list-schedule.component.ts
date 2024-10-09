@@ -19,16 +19,16 @@ import jsPDF from "jspdf";
 @Component({
   selector: 'app-request-list-schedule',
   standalone: true,
-  imports: [MatToolbarModule, 
-    MatIconModule, 
-    CommonModule, 
-    FormsModule, 
-    MatSelectModule, 
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    MatSelectModule,
   ],
-  providers: [ScheduleService, 
-    SchoolYearService, 
-    UserService, 
-    CookieService, 
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './request-list-schedule.component.html',
@@ -99,7 +99,7 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   getAllSchedules() {
-    this.scheduleService.getAllSchedules().subscribe({
+    this.scheduleService.getAllPendingSchedules().subscribe({
       next: (schedules) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;
@@ -177,22 +177,6 @@ export class RequestListScheduleComponent implements OnInit {
 
   convertTimeFormat(time: string): string {
     return this.scheduleService.convertTimeFormat(time);
-  }
-
-  openDeleteDialog(schedule: Schedule): void {
-    const dialogRef = this.dialog.open(PromptConfirmComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete Schedule',
-        message: 'Are you sure you want to delete this schedule?',
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.deleteSchedule(schedule);
-      }
-    });
   }
 
   getDayOfWeek(date: string | Date): string {
@@ -450,5 +434,31 @@ export class RequestListScheduleComponent implements OnInit {
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  toggleAcceptSchedule(schedule: Schedule) {
+    this.openAcceptDialog(schedule);
+  }
+
+  openAcceptDialog(schedule: Schedule): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Accept Schedule',
+        message: 'Are you sure you want to accept this schedule?',
+        action: 'Accept'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.scheduleService.processScheduleDecision(schedule, "APPROVED").subscribe();
+    });
+  }
+
+  openMessageDialog(){
+  }
+
+  toggleRejectSchedule(schedule: Schedule) {
+
   }
 }

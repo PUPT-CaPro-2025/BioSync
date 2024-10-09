@@ -32,6 +32,11 @@ public class ScheduleController {
         return scheduleService.getAllSchedules();
     }
 
+    @GetMapping("/pending")
+    public List<Schedule> getPendingSchedules() {
+        return scheduleService.getAllPendingSchedules();
+    }
+
     @GetMapping("/professor/{id}")
     public List<Schedule> getSchedulesByProfessorId(@PathVariable Long id) {
         return scheduleService.getAllSchedulesByProfessorId(id);
@@ -112,6 +117,13 @@ public class ScheduleController {
     @PutMapping
     public Schedule updateSchedule(@RequestBody Schedule schedule) {
         return scheduleService.updateSchedule(schedule);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchSchedule(@PathVariable Long id, @RequestParam String status) {
+        Status statusReq = Status.valueOf(status);
+        Schedule schedule = scheduleService.updatePartialSchedule(id, statusReq);
+        return new ResponseEntity<>(schedule, HttpStatus.OK);
     }
 
     @DeleteMapping
