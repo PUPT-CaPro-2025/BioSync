@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
 from sqlalchemy.sql.functions import user
 from sqlalchemy import text
+from functools import lru_cache
 
 app = Flask(__name__)
 CORS(
@@ -48,7 +49,6 @@ with app.app_context():
 def test():
     return jsonify({"message": "Test Working"})
 
-
 @app.route("/encode_face", methods=["POST"])
 def encode_face():
     data = request.json
@@ -84,6 +84,13 @@ def encode_face():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@lru_cache(maxsize=1000)
+def get_face_encoding(user_id):
+    face_encoding_entry = db.session.query(FaceEncoding).filter(FaceEncoding.user_id == user_id).first()
+    if face_encoding_entry:
+        return np.frombuffer(face_encoding_entry.encoding)
+    return None
+
 @app.route("/recognize_face", methods=['POST'])
 def recognize_face():
     data = request.json
@@ -97,52 +104,43 @@ def recognize_face():
         }), 400
         
     try: 
-        image_data = image_data.split(",")[1]
-        image_data = base64.b64decode(image_data);
-        
+        image_data = base64.b64decode(image_data.split(",")[1])
         image = face_recognition.load_image_file(BytesIO(image_data))
-        unknown_face_encodings = face_recognition.face_encodings(image)
         
-        if len(unknown_face_encodings) == 0:
-            return jsonify({
-                "status": "error",
-                "message": "No Face Found"
-            }), 400
+        face_locations = face_recognition.face_locations(image)
+        if not face_locations:
+            return jsonify({"status": "error", "message": "No Face Found"}), 400
         
-        unknown_face_encodings = unknown_face_encodings[0]
+        unknown_face_encoding = face_recognition.face_encodings(image, face_locations)[0]
         
         students = db.session.execute(
-            text('SELECT * FROM schedule_students WHERE schedule_id = :schedule_id'),
-            { 'schedule_id': schedule_id }
+            text('SELECT DISTINCT ss.student_id FROM schedule_students ss WHERE ss.schedule_id = :schedule_id'),
+            {'schedule_id': schedule_id}
         ).fetchall()
         
-        if len(students) == 0:
-            return jsonify({
-                "status": "error",
-                "message": "No students gathered"
-            })
+        if not students:
+            return jsonify({"status": "error", "message": "No students gathered"})
         
         known_face_encodings = []
-        known_face_user_id = []
+        known_face_user_ids = []
         
         for student in students:
-            print(student)
-            # index 3 is where student id is 1
-            student_id = student[3]
-            face_encoding_entry = db.session.query(FaceEncoding).filter(FaceEncoding.user_id == student_id).first()
-            if face_encoding_entry:
-                known_face_encodings.append(np.frombuffer(face_encoding_entry.encoding))
-                known_face_user_id.append(f"{student_id}")
+            student_id = student[0]
+            face_encoding = get_face_encoding(student_id)
+            if face_encoding is not None:
+                known_face_encodings.append(face_encoding)
+                known_face_user_ids.append(str(student_id))
         
-        matches = face_recognition.compare_faces(known_face_encodings, unknown_face_encodings)
-        response = {"status": "success", "matches": []}
+        if known_face_encodings:
+            matches = face_recognition.compare_faces(known_face_encodings, unknown_face_encoding)
+            matched_ids = [user_id for match, user_id in zip(matches, known_face_user_ids) if match]
         
-        for i, match in enumerate(matches):
-            if match:
-                response["matches"].append(known_face_user_id[i])
-        
-        return jsonify(response), 200
-        
+            if len(matched_ids) == 0:
+                return jsonify({ "status": "error", "message": "Person Not Recognized" }), 401  
+            
+            return jsonify({"status": "success", "match": matched_ids[0]}), 200
+        else:
+            return jsonify({"status": "error", "message": "No face encodings found for students"}), 400
     except   Exception as e:
         return jsonify({
             "status": "error",
