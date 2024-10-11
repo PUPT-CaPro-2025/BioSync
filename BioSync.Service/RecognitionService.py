@@ -56,7 +56,7 @@ def encode_face():
     image_data = data.get("image_data")
 
     if not user or not image_data:
-        return jsonify({"status": "error", "message": "name and image are required"}), 400
+        return jsonify({"status": "error", "message": "user or image required"}), 400
 
     try:
         image_data = image_data.split(",")[1]
