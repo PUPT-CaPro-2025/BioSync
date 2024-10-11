@@ -1,9 +1,7 @@
 <div id="grid">
-  <div id="div1">
-    <div style="position: relative;">
-      <video #videoElement id="videoElement" autoplay></video>
-      <canvas #overlay id="overlay" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
-    </div>
+  <div id="div1" style="position: relative;">
+    <video #videoElement id="videoElement" muted autoplay></video>
+    <canvas #overlay id="overlay" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
   </div>
   <div id="div2" class="flex flex-col justify-center items-center gap-24">
     @if(recognized && !loading){
