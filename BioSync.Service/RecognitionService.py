@@ -15,7 +15,7 @@ from functools import lru_cache
 app = Flask(__name__)
 CORS(
     app,
-    resource={r"*": {"origins": "http://localhost:4200", "supports_credentials": True}},
+    resources={r"*": {"origins": "http://localhost:4200", "supports_credentials": True}},
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:jhean@localhost/BioSync"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
