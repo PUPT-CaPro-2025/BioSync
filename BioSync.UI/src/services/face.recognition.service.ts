@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/app.setting';
 import { User } from '../model/user.model';
+import {RecognitionResponse} from "../model/recognition.response.model";
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,7 @@ export class FaceRecognitionService {
       image_data: base64Image,
     }
 
-    return this.http.post(`${this.url}/recognize_face`, payload, {
+    return this.http.post<RecognitionResponse>(`${this.url}/recognize_face`, payload, {
       withCredentials: true,
     });
   }
