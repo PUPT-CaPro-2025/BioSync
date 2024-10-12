@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
 from sqlalchemy.sql.functions import user
 from sqlalchemy import text
-from functools import lru_cache
 
 app = Flask(__name__)
 CORS(
@@ -84,9 +83,11 @@ def encode_face():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-@lru_cache(maxsize=1000)
+
 def get_face_encoding(user_id):
-    face_encoding_entry = db.session.query(FaceEncoding).filter(FaceEncoding.user_id == user_id).first()
+    face_encoding_entry = db.session.query(FaceEncoding)\
+        .filter(FaceEncoding.user_id == user_id)\
+        .execution_options(no_cache=True).first()
     if face_encoding_entry:
         return np.frombuffer(face_encoding_entry.encoding)
     return None
