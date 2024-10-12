@@ -4,11 +4,17 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import * as faceapi from 'face-api.js';
 import { Schedule } from '../../../model/schedule.model';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
+import {UserService} from "../../../services/user.service";
+import {RecognitionResponse} from "../../../model/recognition.response.model";
+import { CookieService } from '../../../services/cookie.service';
+import { FingerprintService } from '../../../services/fingerprint.service';
+import {finalize, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-start-attendance-face',
   standalone: true,
   imports: [MatIcon, MatProgressSpinner],
+  providers: [UserService],
   templateUrl: './start-attendance-face.component.html',
   styleUrl: './start-attendance-face.component.css',
 })
@@ -16,6 +22,8 @@ export class StartAttendanceFaceComponent implements OnInit {
   @Input() schedulee!: Schedule;
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('overlay') overlay!: ElementRef<HTMLCanvasElement>;
+  profileImageUrl!: string;
+  hasError = false;
   schedule_id = 1;
   schedule: any = {
     id: 1,
@@ -36,14 +44,23 @@ export class StartAttendanceFaceComponent implements OnInit {
   loading = false;
   submitted = false;
   modelsLoaded = false;
-  detectionInterval = 5000;
+  detectionInterval = 700;
   MAX_NO_FACE_COUNT = 20;
   noFaceDetectedCount = 0;
   lastFaceDetection: faceapi.WithFaceDescriptor<
     faceapi.WithFaceLandmarks<faceapi.WithFaceDetection<{}>>
   > | null = null;
+  requestSent = 0;
+  MAX_REQUEST_SEND = 5;
+  matchResponseArray: number[] = [];
+  private subscription!: Subscription;
 
-  constructor(private faceRecognitionService: FaceRecognitionService) {}
+  constructor(
+    private faceRecognitionService: FaceRecognitionService,
+    private userService: UserService,
+    private cookieService: CookieService,
+    private fingerprintService: FingerprintService
+  ) {}
 
   async ngOnInit() {
     await this.loadModels();
@@ -64,6 +81,11 @@ export class StartAttendanceFaceComponent implements OnInit {
     } catch (err) {
       console.error('Error loading models', err);
     }
+
+    this.cookieService.setCookie(
+      'authToken',
+      'eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMDIxLVRFU1QtMCIsImlhdCI6MTcyODQ0NzE0OCwiZXhwIjoxNzI5MDUxOTQ4fQ.wouDKGlp_OOJTniGu2EFFcoxfWQMzlFxy7mNrVMxqepcQKw8piajSAlwD_PXj6vu'
+    );
   }
 
   startVideoFeed() {
@@ -93,14 +115,13 @@ export class StartAttendanceFaceComponent implements OnInit {
 
   waitForModelsAndStartDetection() {
     if (this.modelsLoaded) {
-      this.detectFaces();
+      this.detectFaces().then();
       this.scheduleFaceDataSend();
     } else {
       setTimeout(() => this.waitForModelsAndStartDetection(), 200);
     }
   }
 
-  // Continuously detect faces and draw red boxes
   async detectFaces() {
     const video = this.videoElement.nativeElement;
     const canvas = this.overlay.nativeElement;
@@ -156,15 +177,17 @@ export class StartAttendanceFaceComponent implements OnInit {
 
           drawBox.draw(canvas);
 
-          // Update lastFaceDetection with the full detection object
           this.lastFaceDetection = centerFaceDetection;
         }
       } else {
         this.noFaceDetectedCount++;
         if (this.noFaceDetectedCount >= this.MAX_NO_FACE_COUNT) {
-          console.log('No face detected'); // Log when no face is detected
-          this.lastFaceDetection = null; // Reset if no face detected for MAX_NO_FACE_COUNT
+          this.lastFaceDetection = null;
           this.noFaceDetectedCount = 0;
+          this.requestSent = 0;
+          this.recognized = false;
+          this.hasError = false;
+          this.loading = false;
         }
       }
 
@@ -172,17 +195,14 @@ export class StartAttendanceFaceComponent implements OnInit {
       requestAnimationFrame(checkForFace);
     };
 
-    checkForFace();
+    await checkForFace();
   }
 
-  // Function to send face data every detectionInterval (1 second)
   scheduleFaceDataSend() {
     setInterval(() => {
-      // Send face data only if a face has been detected
-      if (this.lastFaceDetection) {
+      if (this.lastFaceDetection && this.requestSent < this.MAX_REQUEST_SEND) {
+        this.requestSent++;
         this.sendFaceData(this.lastFaceDetection);
-      } else {
-        console.log('No face detected, skipping face data send'); // Log when no face data is sent
       }
     }, this.detectionInterval);
   }
@@ -196,19 +216,90 @@ export class StartAttendanceFaceComponent implements OnInit {
     const base64Image = this.getBase64Image(box);
 
     if (base64Image) {
-      this.faceRecognitionService
+      this.subscription = this.faceRecognitionService
         .compareFaceData(this.schedule_id, base64Image)
+        .pipe(
+          finalize(() => {
+            this.submitted = true;
+            this.loading = true;
+          })
+        )
         .subscribe({
-          next: (value) => {
-            console.log(value)
+          next: (value: RecognitionResponse) => {
+            this.matchResponseArray.push(value.match);
+            if (this.requestSent === this.MAX_REQUEST_SEND) {
+              this.getUserDetails(this.getMostFrequentMatch());
+              this.unsubscribeFromService()
+            }
 
-            //TODO: GET VALUE ID 
-            //TODO: DISPLAY USER DETAILS
             //TODO: LOG ATTENDANCE FOR THAT VALUE ID
           },
-          error: (err) => console.error('something went wrong', err),
+          error: (err) => {
+            if (this.requestSent === this.MAX_REQUEST_SEND) {
+              if(this.matchResponseArray.length === 0){
+                setTimeout(() => {
+                  this.hasError = true;
+                  this.recognized = false;
+                  this.loading = false;
+                  this.submitted = false;
+                }, 0);
+              }
+              this.unsubscribeFromService()
+            }
+          }
         });
     }
+  }
+
+  private unsubscribeFromService() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
+  }
+
+  getUserDetails(userid: number) {
+    this.userService.getUserById(userid).subscribe({
+      next: (value) => {
+        this.name = `${value.firstName} ${value.lastName}`;
+        this.student_code = value.usercode;
+        this.getUserProfileImage(value.id);
+      },
+    });
+  }
+
+  getUserProfileImage(userId: number) {
+    this.fingerprintService.getProfileImageUrl(userId).subscribe({
+      next: (value: { profileImageUrl: string }) => {
+        this.profileImageUrl = value.profileImageUrl;
+        this.matchResponseArray = []
+        this.recognized = true;
+        this.loading = false;
+        this.submitted = false;
+      },
+    });
+  }
+
+  getMostFrequentMatch() {
+    let mostFrequent = this.matchResponseArray[0];
+    let maxCount = 1;
+    const length = this.matchResponseArray.length;
+
+    for (let i = 0; i < length; i++) {
+      let currentCount = 0;
+
+      for (let j = 0; j < length; j++) {
+        if (this.matchResponseArray[i] === this.matchResponseArray[j]) {
+          currentCount++;
+        }
+      }
+
+      if (currentCount > maxCount) {
+        mostFrequent = this.matchResponseArray[i];
+        maxCount = currentCount;
+      }
+    }
+
+    return mostFrequent;
   }
 
   getBase64Image(box: faceapi.Box) {
