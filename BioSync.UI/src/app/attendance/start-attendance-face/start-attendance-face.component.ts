@@ -237,7 +237,7 @@ export class StartAttendanceFaceComponent implements OnInit {
 
             //TODO: LOG ATTENDANCE FOR THAT VALUE ID
           },
-          error: (err) => {
+          error: () => {
             if (this.requestSent === this.MAX_REQUEST_SEND) {
               if(this.matchResponseArray.length === 0){
                 setTimeout(() => {

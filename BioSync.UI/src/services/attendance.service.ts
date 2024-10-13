@@ -4,7 +4,6 @@ import { environment } from '../../environment/app.setting';
 import { CookieService } from './cookie.service';
 import { Attendance } from '../model/attendance.model';
 import {User} from "../model/user.model";
-import {log} from "@angular-devkit/build-angular/src/builders/ssr-dev-server";
 
 @Injectable()
 export class AttendanceService {
