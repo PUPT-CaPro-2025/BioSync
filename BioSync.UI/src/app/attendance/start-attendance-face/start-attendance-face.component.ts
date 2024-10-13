@@ -9,6 +9,7 @@ import {RecognitionResponse} from "../../../model/recognition.response.model";
 import { CookieService } from '../../../services/cookie.service';
 import { FingerprintService } from '../../../services/fingerprint.service';
 import {finalize, Subscription} from "rxjs";
+import {AttendanceService} from "../../../services/attendance.service";
 
 @Component({
   selector: 'app-start-attendance-face',
@@ -59,7 +60,8 @@ export class StartAttendanceFaceComponent implements OnInit {
     private faceRecognitionService: FaceRecognitionService,
     private userService: UserService,
     private cookieService: CookieService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private attendanceService: AttendanceService,
   ) {}
 
   async ngOnInit() {
@@ -82,6 +84,7 @@ export class StartAttendanceFaceComponent implements OnInit {
       console.error('Error loading models', err);
     }
 
+  //test only
     this.cookieService.setCookie(
       'authToken',
       'eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMDIxLVRFU1QtMCIsImlhdCI6MTcyODQ0NzE0OCwiZXhwIjoxNzI5MDUxOTQ4fQ.wouDKGlp_OOJTniGu2EFFcoxfWQMzlFxy7mNrVMxqepcQKw8piajSAlwD_PXj6vu'
@@ -251,6 +254,15 @@ export class StartAttendanceFaceComponent implements OnInit {
     }
   }
 
+  private logAttendance(studentId: number, scheduleId: number, attendanceStatus: string){
+    const formData = new FormData();
+    formData.append('studentId', studentId.toString());
+    formData.append('scheduleId', scheduleId.toString());
+    formData.append('attendanceStatus', attendanceStatus);
+
+    this.attendanceService.logAttendance(formData).subscribe();
+  }
+
   private unsubscribeFromService() {
     if (this.subscription) {
       this.subscription.unsubscribe();
@@ -263,6 +275,7 @@ export class StartAttendanceFaceComponent implements OnInit {
         this.name = `${value.firstName} ${value.lastName}`;
         this.student_code = value.usercode;
         this.getUserProfileImage(value.id);
+        this.logAttendance(value.id, this.schedule_id, "PRESENT");
       },
     });
   }
