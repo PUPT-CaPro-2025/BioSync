@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import * as faceapi from 'face-api.js';
@@ -6,7 +6,6 @@ import { Schedule } from '../../../model/schedule.model';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
 import {UserService} from "../../../services/user.service";
 import {RecognitionResponse} from "../../../model/recognition.response.model";
-import { CookieService } from '../../../services/cookie.service';
 import { FingerprintService } from '../../../services/fingerprint.service';
 import {finalize, Subscription} from "rxjs";
 import {AttendanceService} from "../../../services/attendance.service";
@@ -19,28 +18,15 @@ import {AttendanceService} from "../../../services/attendance.service";
   templateUrl: './start-attendance-face.component.html',
   styleUrl: './start-attendance-face.component.css',
 })
-export class StartAttendanceFaceComponent implements OnInit {
-  @Input() schedulee!: Schedule;
+export class StartAttendanceFaceComponent implements OnInit, AfterViewInit {
+  @Input() schedule!: Schedule;
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('overlay') overlay!: ElementRef<HTMLCanvasElement>;
   profileImageUrl!: string;
   hasError = false;
-  schedule_id = 1;
-  schedule: any = {
-    id: 1,
-    startTime: '10:00AM',
-    endTime: '3:00AM',
-    scheduleDate: 'January 8, 2025',
-    laboratory: 'DOST Laboratory',
-    professor: 'Jhean Professor',
-    semester: 'First Semester',
-    schoolYear: '2024 - 2025',
-    remarks: 'Laboratory',
-    subject: 'Computer Programming 3',
-  };
   message = 'WELCOME';
-  student_code = '2021-00172-TG-0';
-  name = 'Jhean Khendrick C. Galope';
+  student_code!:string;
+  name!: string;
   recognized = false;
   loading = false;
   submitted = false;
@@ -59,7 +45,6 @@ export class StartAttendanceFaceComponent implements OnInit {
   constructor(
     private faceRecognitionService: FaceRecognitionService,
     private userService: UserService,
-    private cookieService: CookieService,
     private fingerprintService: FingerprintService,
     private attendanceService: AttendanceService,
   ) {}
@@ -78,17 +63,10 @@ export class StartAttendanceFaceComponent implements OnInit {
       await faceapi.loadTinyFaceDetectorModel(MODEL_URL);
       await faceapi.loadFaceLandmarkTinyModel(MODEL_URL);
       await faceapi.loadFaceRecognitionModel(MODEL_URL);
-
       this.modelsLoaded = true;
     } catch (err) {
       console.error('Error loading models', err);
     }
-
-  //test only
-    this.cookieService.setCookie(
-      'authToken',
-      'eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMDIxLVRFU1QtMCIsImlhdCI6MTcyODQ0NzE0OCwiZXhwIjoxNzI5MDUxOTQ4fQ.wouDKGlp_OOJTniGu2EFFcoxfWQMzlFxy7mNrVMxqepcQKw8piajSAlwD_PXj6vu'
-    );
   }
 
   startVideoFeed() {
@@ -98,7 +76,7 @@ export class StartAttendanceFaceComponent implements OnInit {
       .getUserMedia({ video: {} })
       .then((stream) => {
         video.srcObject = stream;
-        video.play();
+        video.play().then();
       })
       .catch((err) => console.error('Error accessing a camera', err));
 
@@ -220,7 +198,7 @@ export class StartAttendanceFaceComponent implements OnInit {
 
     if (base64Image) {
       this.subscription = this.faceRecognitionService
-        .compareFaceData(this.schedule_id, base64Image)
+        .compareFaceData(this.schedule.id, base64Image)
         .pipe(
           finalize(() => {
             this.submitted = true;
@@ -234,8 +212,6 @@ export class StartAttendanceFaceComponent implements OnInit {
               this.getUserDetails(this.getMostFrequentMatch());
               this.unsubscribeFromService()
             }
-
-            //TODO: LOG ATTENDANCE FOR THAT VALUE ID
           },
           error: () => {
             if (this.requestSent === this.MAX_REQUEST_SEND) {
@@ -275,7 +251,7 @@ export class StartAttendanceFaceComponent implements OnInit {
         this.name = `${value.firstName} ${value.lastName}`;
         this.student_code = value.usercode;
         this.getUserProfileImage(value.id);
-        this.logAttendance(value.id, this.schedule_id, "PRESENT");
+        this.logAttendance(value.id, this.schedule.id, "PRESENT");
       },
     });
   }
