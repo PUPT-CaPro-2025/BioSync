@@ -4,9 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AddScheduleComponent } from './add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
-import { EditScheduleComponent } from './edit-schedule/edit-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
 import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
@@ -20,15 +18,13 @@ import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
 
 @Component({
-  selector: 'app-schedule',
+  selector: 'app-faculty-my-request',
   standalone: true,
   imports: [MatToolbarModule,
     MatIconModule,
     CommonModule,
     FormsModule,
-    AddScheduleComponent,
     MatSelectModule,
-    EditScheduleComponent
   ],
   providers: [ScheduleService,
     SchoolYearService,
@@ -36,11 +32,10 @@ import jsPDF from "jspdf";
     CookieService,
     CryptoService
   ],
-  templateUrl: './schedule.component.html',
-  styleUrl: './schedule.component.css',
+  templateUrl: './faculty-my-request.component.html',
+  styleUrls: ['./faculty-my-request.component.css', '../schedule/schedule.component.css']
 })
-
-export class ScheduleComponent implements OnInit{
+export class FacultyMyRequestComponent implements OnInit {
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -129,7 +124,7 @@ export class ScheduleComponent implements OnInit{
   }
 
   getFacultySchedule(facultyId: number) {
-    this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
+    this.scheduleService.getAllRequestedSchedules(facultyId).subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;

@@ -16,6 +16,9 @@ public interface ScheduleService {
     List<Schedule> findConflictingSchedules(Date scheduleDate, Time startTime, Time endTime, Laboratory laboratory);
     Optional<Schedule> getScheduleById(Long id);
     List<Schedule> createSchedule(Schedule schedule);
+    List<Schedule> getAllRequestedSchedules(Long requesterId);
+    List<Schedule> getAllPendingSchedules();
     Schedule updateSchedule(Schedule schedule);
+    Schedule updatePartialSchedule(Long id, Status updates);
     void deleteSchedule(Long id);
 }

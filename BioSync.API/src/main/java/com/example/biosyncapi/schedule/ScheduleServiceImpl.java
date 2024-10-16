@@ -37,7 +37,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findAll();
+        return scheduleRepository.findByIsActiveTrueAndStatus(Status.APPROVED);
     }
 
     @Override
@@ -48,6 +48,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
         return scheduleRepository.findSchedulesBySectionId(sectionId);
+    }
+
+    public List<Schedule> getAllPendingSchedules(){
+        return scheduleRepository.findAllByStatus(Status.PENDING);
+    }
+
+    public List<Schedule> getAllRequestedSchedules(Long requesterId){
+        return scheduleRepository.findByRequesterId(requesterId);
     }
 
     @Override
@@ -238,6 +246,13 @@ public class ScheduleServiceImpl implements ScheduleService {
             return schedule;
         }
         return scheduleRepository.save(schedule);
+    }
+
+    public Schedule updatePartialSchedule(Long id, Status updates) {
+        Schedule existingSchedule = scheduleRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+        existingSchedule.setStatus(updates);
+        return scheduleRepository.save(existingSchedule);
     }
 
     private LocalDate convertToLocalDate(java.sql.Date date) {
