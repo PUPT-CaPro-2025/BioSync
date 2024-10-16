@@ -25,12 +25,14 @@ import {AttendanceService} from "../../../services/attendance.service";
   styleUrl: './start-attendance.component.css',
 })
 export class StartAttendanceComponent implements OnInit {
+  currentTime!: string;
+  currentDate!: string;
   selectedProfessorId!: number;
   hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
   instructions = 'Scan Professors Fingerprint to Start Attendance';
-  reminder = 'Scan now';
+  reminder = 'Scanning In-Charge Fingerprint...';
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
   studentVerified = false;
@@ -39,6 +41,8 @@ export class StartAttendanceComponent implements OnInit {
   hasFingerprintScanner = false;
   hasCamera = false;
   hasDevice = false;
+  notRegistered = true;
+  notEnrolled = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -50,6 +54,8 @@ export class StartAttendanceComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.updateTimeAndDate();
+    setInterval(() => this.updateTimeAndDate(), 1000);
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
         const scheduleId = +params.get('id')!;
@@ -72,6 +78,33 @@ export class StartAttendanceComponent implements OnInit {
         }
       },
     });
+  }
+
+  updateTimeAndDate(): void {
+    const now = new Date();
+    this.currentTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    };
+
+    const formattedDate = now.toLocaleDateString('en-US', options);
+
+    const match = formattedDate.match(/^(.*?), (\w+ \d{1,2}, \d{4})$/);
+    if (match) {
+      const [_, weekday, monthDayYear] = match;
+      const [month, day, year] = monthDayYear.split(' ');
+      this.currentDate = `${weekday.toUpperCase()}, ${month.charAt(0).toUpperCase()}${month.slice(1).toLowerCase()} ${day} ${year}`;
+    } else {
+      this.currentDate = formattedDate;
+    }
   }
 
   getScheduleDetails(scheduleId: number) {
@@ -111,14 +144,14 @@ export class StartAttendanceComponent implements OnInit {
           setTimeout(() => {
             this.hasProfessorVerified = true;
             this.instructions = 'Scan Fingerprint to Log Attendance';
-            this.reminder = 'Scan now';
+            this.reminder = 'Scanning...';
           }, 2000);
         },
         error: (err) => {
           console.log(err);
           this.reminder = err['error'];
           setTimeout(() => {
-            this.reminder = 'Scan now';
+            this.reminder = 'Scanning In-charge fingerprint...';
           }, 3000);
         },
       });
@@ -134,18 +167,19 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
         this.loggedStudent = value.student;
+        this.reminder = 'WELCOME';
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
           this.studentVerified = true;
           this.loggedStudent = null;
           this.profileImageUrl = "";
-          this.reminder = 'Scan now';
+          this.reminder = 'Scanning...';
         }, 3000);
       },
       error: (err) => {
         this.reminder = err['error'];
         setTimeout(() => {
-          this.reminder = 'Scan now';
+          this.reminder = 'Scanning...';
         }, 2000);
       },
     });
@@ -200,4 +234,12 @@ export class StartAttendanceComponent implements OnInit {
       },
     });
   }
+
+  //temporary data
+  logstudents = [
+    'Kylie Ross Ayacocho', 
+    'Andronicus Dimasacat', 
+    'Jhean Khendrick Galope', 
+    'Christian Harrel Go'
+  ]
 }
