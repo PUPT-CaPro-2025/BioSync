@@ -13,12 +13,14 @@ import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.compon
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import {NgOptimizedImage} from "@angular/common";
+import {StartAttendanceFaceComponent} from "../start-attendance-face/start-attendance-face.component";
+import {AttendanceService} from "../../../services/attendance.service";
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
-  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
-  providers: [ScheduleService, SdkService, FingerprintService],
+  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage, StartAttendanceFaceComponent],
+  providers: [ScheduleService, SdkService, FingerprintService, AttendanceService],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
 })
@@ -35,7 +37,7 @@ export class StartAttendanceComponent implements OnInit {
   selectedDevice: string = '';
   profileImageUrl!: string;
   hasFingerprintScanner = false;
-  hasBarcodeScanner = false;
+  hasCamera = false;
   hasDevice = false;
 
   constructor(
@@ -55,8 +57,8 @@ export class StartAttendanceComponent implements OnInit {
       },
     });
     this.hasFingerprintScanner = await this.sdkService.loadSDK();
-    this.hasBarcodeScanner = false; // TODO: initiate barcode reader
-    this.hasDevice = this.hasBarcodeScanner || this.hasFingerprintScanner;
+    this.hasCamera = true; // TODO: initiate camera reader
+    this.hasDevice = this.hasCamera || this.hasFingerprintScanner;
 
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {

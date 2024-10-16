@@ -20,10 +20,10 @@
       >
         <option value="">Please select a device to use</option>
         @if (hasFingerprintScanner) {
-          <option value="biometrics">Biometrics Scanner</option>
+          <option value="biometrics">Fingerprint Scanner</option>
         }
-        @if (hasBarcodeScanner) {
-          <option value="faceRecognition">Barcode Scanner</option>
+        @if (hasCamera) {
+          <option value="faceRecognition">Face Recognition</option>
         }
         @if (!hasDevice) {
           <option value="">No Valid Scanner Detected</option>
@@ -158,10 +158,10 @@
       }
     </div>
   }
-} @else if (selectedDevice === "barcode") {
+} @else if (selectedDevice === "faceRecognition") {
   <div class="flex justify-center items-center mt-8">
     <div class="w-[94%] bg-transparent">
-      <p class="text-custom-16 text-lightGray">Barcode</p>
+      <app-start-attendance-face [schedule]="selectedSchedule"/>
     </div>
   </div>
 } @else {
