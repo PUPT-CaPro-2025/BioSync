@@ -13,18 +13,16 @@ import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.compon
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import {NgOptimizedImage} from "@angular/common";
-import {StartAttendanceFaceComponent} from "../start-attendance-face/start-attendance-face.component";
-import {AttendanceService} from "../../../services/attendance.service";
 
 @Component({
-  selector: 'app-start-attendance',
+  selector: 'app-face-recognition-attendance',
   standalone: true,
-  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage, StartAttendanceFaceComponent],
-  providers: [ScheduleService, SdkService, FingerprintService, AttendanceService],
-  templateUrl: './start-attendance.component.html',
-  styleUrl: './start-attendance.component.css',
+  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
+  providers: [ScheduleService, SdkService, FingerprintService],
+  templateUrl: './face-recognition-attendance.component.html',
+  styleUrls: ['./face-recognition-attendance.component.css', '../start-attendance/start-attendance.component.css']
 })
-export class StartAttendanceComponent implements OnInit {
+export class FaceRecognitionAttendanceComponent implements OnInit {
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
@@ -39,7 +37,7 @@ export class StartAttendanceComponent implements OnInit {
   selectedDevice: string = '';
   profileImageUrl!: string;
   hasFingerprintScanner = false;
-  hasCamera = false;
+  hasBarcodeScanner = false;
   hasDevice = false;
   notRegistered = true;
   notEnrolled = false;
@@ -62,9 +60,9 @@ export class StartAttendanceComponent implements OnInit {
         this.getScheduleDetails(scheduleId);
       },
     });
-    this.hasFingerprintScanner = await this.sdkService.loadSDK();
-    this.hasCamera = true; // TODO: initiate camera reader
-    this.hasDevice = this.hasCamera || this.hasFingerprintScanner;
+    await this.sdkService.loadSDK();
+    this.hasBarcodeScanner = false; // TODO: initiate barcode reader
+    this.hasDevice = this.hasBarcodeScanner || this.hasFingerprintScanner;
 
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {

@@ -22,10 +22,40 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 200px;
+    width: 350px;
+    height: 350px;
+    justify-content: center;
+    background-color: #F2E8E9;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.camera-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px;
     height: 200px;
     justify-content: center;
-    background-color: #D9D9D9;
+    background-color: #F2E8E9;
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.image-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    background-color: #F2E8E9;
     border-radius: 20px;
     padding: 20px;
     position: relative;
@@ -45,4 +75,84 @@
     width: 75px;
     height: 75px;
     display: inline-block;
+}
+
+.fingerprint-icon {
+    color: #F84C42;
+    font-size: 150px;
+    width: 150px;
+    height: 150px;
+    display: inline-block;
+}
+
+.fingerprint-container {
+    position: relative;
+    width: 175px;
+    height: 175px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fingerprint-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-top: 6px solid #F84C42;
+  border-left: 6px solid #F84C42;
+}
+
+.fingerprint-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-top: 6px solid #F84C42;
+  border-right: 6px solid #F84C42;
+}
+
+.fingerprint-container .bottom-left {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-bottom: 6px solid #F84C42;
+  border-left: 6px solid #F84C42;
+}
+
+.fingerprint-container .bottom-right {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  border-bottom: 6px solid #F84C42;
+  border-right: 6px solid #F84C42;
+}
+
+.row-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.row-container::-webkit-scrollbar-track {
+    background-color: #E3E3E3;
+    border-radius: 10px;
+}
+
+.row-container::-webkit-scrollbar-thumb {
+    background-color: #F84C42;
+    border-radius: 10px;
+    border: 2px solid #E3E3E3;
+}
+
+.row-container::-webkit-scrollbar-thumb:hover {
+    background-color: #b4342d;
 }

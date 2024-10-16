@@ -1,0 +1,38 @@
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.toolbar-container {
+    margin-top: 5rem;
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    width: 96%;
+    flex-direction: column;
+}
+
+.toolbar-container span {
+    font-size: 32px;
+    color: #F84C42;
+}
+
+.fingerprint-logo {
+    width: 200px;
+    height: 200px;
+    font-size: 200px;
+    color: white;
+}
+
+.biometrics:hover {
+    background: #7f7f7f;
+    color: rgb(179, 173, 173);
+    cursor: pointer;
+}
+
+.face-recognition:hover {
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C);
+    color: rgb(179, 173, 173);
+    cursor: pointer;
+}
