@@ -16,6 +16,7 @@ import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 @Component({
   selector: 'app-request-list-schedule',
   standalone: true,
@@ -451,14 +452,50 @@ export class RequestListScheduleComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.scheduleService.processScheduleDecision(schedule, "APPROVED").subscribe();
+      if(!result) return
+      this.scheduleService.processScheduleDecision(schedule, "APPROVED").subscribe({
+        next: value => {
+          this.openMessageDialog(true, schedule.id)
+        }
+      });
     });
   }
 
-  openMessageDialog(){
+  openRejectDialog(schedule: Schedule): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Reject Schedule',
+        message: 'Are you sure you want to reject this schedule?',
+        action: 'Reject'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!result) return
+      this.scheduleService.processScheduleDecision(schedule, "REJECTED").subscribe({
+        next: value => {
+          this.openMessageDialog(false, schedule.id)
+        }
+      });
+    });
+  }
+
+  openMessageDialog(isAccept: boolean, scheduleId: number){
+    const dialogRef = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: isAccept ? "Schedule Accepted" : "Schedule Rejected",
+        message: `Schedule successfully ${isAccept ? "accepted" : "rejected"}`
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.schedules = this.schedules.filter(schedule => schedule.id != scheduleId)
+    })
   }
 
   toggleRejectSchedule(schedule: Schedule) {
-
+    this.openRejectDialog(schedule)
   }
 }
