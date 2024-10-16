@@ -18,24 +18,22 @@ import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
-import { RequestScheduleComponent } from './request-schedule/request-schedule.component';
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, 
-    MatIconModule, 
-    CommonModule, 
-    FormsModule, 
-    AddScheduleComponent, 
-    MatSelectModule, 
-    EditScheduleComponent, 
-    RequestScheduleComponent
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    AddScheduleComponent,
+    MatSelectModule,
+    EditScheduleComponent
   ],
-  providers: [ScheduleService, 
-    SchoolYearService, 
-    UserService, 
-    CookieService, 
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './schedule.component.html',

@@ -16,19 +16,20 @@ import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 @Component({
   selector: 'app-request-list-schedule',
   standalone: true,
-  imports: [MatToolbarModule, 
-    MatIconModule, 
-    CommonModule, 
-    FormsModule, 
-    MatSelectModule, 
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    MatSelectModule,
   ],
-  providers: [ScheduleService, 
-    SchoolYearService, 
-    UserService, 
-    CookieService, 
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
     CryptoService
   ],
   templateUrl: './request-list-schedule.component.html',
@@ -99,7 +100,7 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   getAllSchedules() {
-    this.scheduleService.getAllSchedules().subscribe({
+    this.scheduleService.getAllPendingSchedules().subscribe({
       next: (schedules) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;
@@ -177,22 +178,6 @@ export class RequestListScheduleComponent implements OnInit {
 
   convertTimeFormat(time: string): string {
     return this.scheduleService.convertTimeFormat(time);
-  }
-
-  openDeleteDialog(schedule: Schedule): void {
-    const dialogRef = this.dialog.open(PromptConfirmComponent, {
-      width: '400px',
-      data: {
-        title: 'Delete Schedule',
-        message: 'Are you sure you want to delete this schedule?',
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.deleteSchedule(schedule);
-      }
-    });
   }
 
   getDayOfWeek(date: string | Date): string {
@@ -450,5 +435,67 @@ export class RequestListScheduleComponent implements OnInit {
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  toggleAcceptSchedule(schedule: Schedule) {
+    this.openAcceptDialog(schedule);
+  }
+
+  openAcceptDialog(schedule: Schedule): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Accept Schedule',
+        message: 'Are you sure you want to accept this schedule?',
+        action: 'Accept'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!result) return
+      this.scheduleService.processScheduleDecision(schedule, "APPROVED").subscribe({
+        next: value => {
+          this.openMessageDialog(true, schedule.id)
+        }
+      });
+    });
+  }
+
+  openRejectDialog(schedule: Schedule): void {
+    const dialogRef = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Reject Schedule',
+        message: 'Are you sure you want to reject this schedule?',
+        action: 'Reject'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(!result) return
+      this.scheduleService.processScheduleDecision(schedule, "REJECTED").subscribe({
+        next: value => {
+          this.openMessageDialog(false, schedule.id)
+        }
+      });
+    });
+  }
+
+  openMessageDialog(isAccept: boolean, scheduleId: number){
+    const dialogRef = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: isAccept ? "Schedule Accepted" : "Schedule Rejected",
+        message: `Schedule successfully ${isAccept ? "accepted" : "rejected"}`
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.schedules = this.schedules.filter(schedule => schedule.id != scheduleId)
+    })
+  }
+
+  toggleRejectSchedule(schedule: Schedule) {
+    this.openRejectDialog(schedule)
   }
 }
