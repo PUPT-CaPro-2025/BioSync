@@ -214,13 +214,13 @@
         </div>
         <div class="w-[54vw] h-[90vh] flex flex-col justify-between">
             <div class="flex flex-row gap-8 bg-transparent">
-                <div class="flex justify-start w-[32vh] p-4 items-center rounded-2xl bg-brightRed text-white">
+                <div class="flex justify-start w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
                     <div class="flex flex-col">
                         <p class="text-custom-40">{{ currentTime }}</p>
                         <p class="text-custom-16 current-date">{{ currentDate }}</p>
                     </div>
                 </div>
-                <div class="flex justify-between w-[32vh] p-4 items-center rounded-2xl bg-brightRed text-white">
+                <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
                     <div class="flex flex-col">
                         <p class="text-custom-40">0 ->tempo</p>
                         <p class="text-custom-16">Total of Students Logged</p>
@@ -228,7 +228,7 @@
                 </div>
             </div>
             <div class="h-[75vh] w-full bg-gradient-red-orange rounded-xl flex justify-center items center">
-                <div class="flex flex-col w-[85vh] justify-center gap-4">
+                <div class="flex flex-col w-[45vw] justify-center gap-4">
                     @if (!hasProfessorVerified) {
                         <p class="text-custom-32 text-f2White font-medium">
                             @if(!loggedProfessor){
@@ -251,7 +251,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-center">
-                                <div class="w-[40vh] flex justify-center items-center">
+                                <div class="w-[20vw] flex justify-center items-center">
                                     <div class="drop-area">
                                         @if(!loggedProfessor) {
                                             <div class="fingerprint-container">
@@ -283,7 +283,7 @@
                         </p>
                         <div class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9">
                             <div class="flex justify-center">
-                                <div class="flex gap-6 flex-col w-[30vh] justify-center">
+                                <div class="flex gap-6 flex-col w-[20vw] justify-center">
                                     @if(loggedStudent) {
                                         <div class="flex flex-col">
                                             <p class="text-lightGray text-custom-16">Student's Name</p>
@@ -309,7 +309,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-center">
-                                <div class="w-[40vh] flex justify-center items-center">
+                                <div class="w-[20vw] flex justify-center items-center">
                                     <div class="drop-area">
                                         @if(loggedStudent) {
                                             <div class="upload-message">
