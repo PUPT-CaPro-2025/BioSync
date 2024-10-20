@@ -9,34 +9,36 @@ import java.util.Optional;
 @RequestMapping("api/v1/school-year")
 public class SchoolYearController {
 
-    private final SchoolYearService schoolYearService;
+  private final SchoolYearService schoolYearService;
 
-    public SchoolYearController(SchoolYearService schoolYearService) {
-        this.schoolYearService = schoolYearService;
-    }
+  public SchoolYearController(SchoolYearService schoolYearService) {
+    this.schoolYearService = schoolYearService;
+  }
 
-    @GetMapping
-    public List<SchoolYear> getAllSchoolYears() {
-        return schoolYearService.getAllSchoolYears();
-    }
+  @GetMapping
+  public List<SchoolYear> getAllSchoolYears() {
+    return schoolYearService.getAllSchoolYears();
+  }
 
-    @GetMapping("/{id}")
-    public Optional<SchoolYear> getSchoolYearById(@PathVariable Long id) {
-        return schoolYearService.getSchoolYearById(id);
-    }
+  @GetMapping("/{id}")
+  public Optional<SchoolYear> getSchoolYearById(@PathVariable Long id) {
+    return schoolYearService.getSchoolYearById(id);
+  }
 
-    @PostMapping
-    public SchoolYear createSchoolYear(@RequestBody SchoolYear schoolYear) {
-        return schoolYearService.saveSchoolYear(schoolYear);
-    }
+  @PostMapping
+  public SchoolYear createSchoolYear(@RequestBody SchoolYear schoolYear) {
+    return schoolYearService.saveSchoolYear(schoolYear);
+  }
 
-    @PutMapping
-    public SchoolYear updateSchoolYear(@RequestBody SchoolYear schoolYear) throws Exception {
-        return schoolYearService.updateSchoolYear(schoolYear);
-    }
+  @PutMapping
+  public SchoolYear updateSchoolYear(@RequestBody SchoolYear schoolYear)
+      throws Exception
+  {
+    return schoolYearService.updateSchoolYear(schoolYear);
+  }
 
-    @DeleteMapping
-    public void deleteSchoolYear(@RequestBody SchoolYear schoolYear) {
-        schoolYearService.deleteSchoolYearById(schoolYear.getId());
-    }
+  @DeleteMapping
+  public void deleteSchoolYear(@RequestBody SchoolYear schoolYear) {
+    schoolYearService.deleteSchoolYearById(schoolYear.getId());
+  }
 }
