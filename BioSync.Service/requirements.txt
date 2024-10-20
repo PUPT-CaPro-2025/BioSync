@@ -9,12 +9,14 @@ flake8==7.1.1
 Flask==3.0.3
 Flask-Cors==5.0.0
 Flask-SQLAlchemy==3.1.1
+gunicorn==23.0.0
 isort==5.13.2
 itsdangerous==2.2.0
 Jinja2==3.1.4
 MarkupSafe==3.0.1
 mccabe==0.7.0
 numpy==2.1.2
+packaging==24.1
 pillow==10.4.0
 platformdirs==4.3.6
 psycopg2-binary==2.9.9
