@@ -1,61 +1,13 @@
+from flask import jsonify, request
+from . import app, db
+from .models import FaceEncoding
 import base64
-from io import BytesIO
-from typing import Optional
-
-import face_recognition
 import numpy as np
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
+from io import BytesIO
+import face_recognition
 from sqlalchemy import text
 
-app = Flask(__name__)
-CORS(
-    app,
-    resources={
-        r"*": {
-            "origins": "http://localhost:4200",
-            "supports_credentials": True,
-        }
-    },
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    "postgresql://postgres:jhean@localhost/BioSync"
-)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
-
-
-class User(db.Model):
-    __tablename__ = "users"
-
-    id: int = db.Column(db.Integer, primary_key=True)
-    first_name: str = db.Column(db.String, nullable=False)
-    middle_name: Optional[str] = db.Column(db.String, nullable=True)
-    last_name: str = db.Column(db.String, nullable=False)
-    usercode: str = db.Column(db.String, unique=True, nullable=False)
-    password: str = db.Column(db.String, nullable=False)
-    suffix: Optional[str] = db.Column(db.String, nullable=True)
-    email: str = db.Column(db.String, unique=True, nullable=False)
-    role: str = db.Column(db.String, nullable=False)
-
-
-class FaceEncoding(db.Model):
-    id: int = db.Column(db.Integer, primary_key=True)
-    user_id: int = db.Column(
-        db.Integer, db.ForeignKey("users.id"), nullable=False
-    )
-    encoding: bytes = db.Column(db.LargeBinary, nullable=False)
-
-    def __init__(self, user_id: int, encoding: bytes) -> None:
-        self.user_id = user_id
-        self.encoding = encoding
-
-
-with app.app_context():
-    db.create_all()
-
-route_prefix = "api/v1/flask"
+route_prefix = "/api/v1/flask"
 
 
 @app.route(f"{route_prefix}/health", methods=["GET"])
@@ -218,7 +170,3 @@ def recognize_face():
             )
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
