@@ -3,6 +3,7 @@ package com.example.biosyncapi.attendance;
 import com.example.biosyncapi.schedule.Schedule;
 import com.example.biosyncapi.user.User;
 import jakarta.persistence.*;
+
 import java.time.ZonedDateTime;
 
 @Entity
@@ -26,9 +27,12 @@ public class Attendance {
 
   private ZonedDateTime timeOut;
 
-  public Attendance() {}
+  public Attendance() {
+  }
 
-  public Attendance(String status, User user, Schedule schedule, ZonedDateTime timeIn) {
+  public Attendance(
+      String status, User user, Schedule schedule, ZonedDateTime timeIn)
+  {
     this.status = status;
     this.user = user;
     this.schedule = schedule;

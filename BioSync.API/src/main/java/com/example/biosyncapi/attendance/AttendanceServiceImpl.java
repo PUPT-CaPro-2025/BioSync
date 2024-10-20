@@ -23,9 +23,12 @@ public class AttendanceServiceImpl implements AttendanceService {
   private final UserRepository userRepository;
   private final ScheduleRepository scheduleRepository;
 
-  public AttendanceServiceImpl(AttendanceRepository attendanceRepository,
-      ScheduleStudentRepository scheduleStudentRepository, UserRepository userRepository,
-      ScheduleRepository scheduleRepository) {
+  public AttendanceServiceImpl(
+      AttendanceRepository attendanceRepository,
+      ScheduleStudentRepository scheduleStudentRepository,
+      UserRepository userRepository,
+      ScheduleRepository scheduleRepository)
+  {
     this.attendanceRepository = attendanceRepository;
     this.scheduleStudentRepository = scheduleStudentRepository;
     this.userRepository = userRepository;
@@ -54,10 +57,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
   @Override
   public Attendance updateAttendance(Attendance attendance) {
-    Optional<Attendance> existingAttendance = attendanceRepository.findById(attendance.getId());
+    Optional<Attendance> existingAttendance = attendanceRepository.findById(
+        attendance.getId());
 
-    if (existingAttendance.isEmpty())
+    if (existingAttendance.isEmpty()) {
       return null;
+    }
 
     Attendance updatedAttendance = existingAttendance.get();
     updatedAttendance.setStatus(attendance.getStatus());
@@ -68,22 +73,31 @@ public class AttendanceServiceImpl implements AttendanceService {
   }
 
   @Override
-  public User studentTimeIn(Long scheduleId, Long studentId, String attendanceStatus) {
+  public User studentTimeIn(
+      Long scheduleId, Long studentId, String attendanceStatus)
+  {
     Optional<User> studentOpt = userRepository.findById(studentId);
     Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
 
-    if (studentOpt.isEmpty() || scheduleOpt.isEmpty())
+    if (studentOpt.isEmpty() || scheduleOpt.isEmpty()) {
       return null;
+    }
 
-    ScheduleStudent scheduleStudentRecord = scheduleStudentRepository.findByStudentIdAndScheduleId(studentId,
+    ScheduleStudent scheduleStudentRecord =
+        scheduleStudentRepository.findByStudentIdAndScheduleId(
+        studentId,
         scheduleId);
-    if (scheduleStudentRecord == null)
+    if (scheduleStudentRecord == null) {
       return null;
+    }
 
-    if (!attendanceRepository.findByScheduleIdAndUserId(scheduleId, studentId).isEmpty())
+    if (!attendanceRepository.findByScheduleIdAndUserId(scheduleId, studentId)
+        .isEmpty()) {
       return null;
+    }
 
-    Attendance attendance = new Attendance(attendanceStatus, studentOpt.get(), scheduleOpt.get(),
+    Attendance attendance = new Attendance(attendanceStatus, studentOpt.get(),
+        scheduleOpt.get(),
         ZonedDateTime.now(ZoneId.of("UTC+8")));
     attendanceRepository.save(attendance);
 
@@ -92,16 +106,22 @@ public class AttendanceServiceImpl implements AttendanceService {
 
   @Override
   public void setTimeOut(Schedule schedule) {
-    List<ScheduleStudent> scheduleStudents = scheduleStudentRepository.findByScheduleId(schedule.getId());
-    List<Attendance> existingAttendances = attendanceRepository.findByScheduleId(schedule.getId());
-    Set<Long> studentsWithAttendance = existingAttendances.stream().map(attendance -> attendance.getUser().getId())
+    List<ScheduleStudent> scheduleStudents =
+        scheduleStudentRepository.findByScheduleId(
+        schedule.getId());
+    List<Attendance> existingAttendances =
+        attendanceRepository.findByScheduleId(
+        schedule.getId());
+    Set<Long> studentsWithAttendance = existingAttendances.stream()
+        .map(attendance -> attendance.getUser().getId())
         .collect(Collectors.toSet());
     for (ScheduleStudent scheduleStudent : scheduleStudents) {
       User student = scheduleStudent.getStudent();
 
       if (studentsWithAttendance.contains(student.getId())) {
         Attendance existingAttendance = existingAttendances.stream()
-            .filter(attendance -> attendance.getUser().getId().equals(student.getId()))
+            .filter(attendance -> attendance.getUser().getId()
+                .equals(student.getId()))
             .findFirst()
             .orElse(null);
 
