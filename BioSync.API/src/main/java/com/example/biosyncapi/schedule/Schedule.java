@@ -16,213 +16,253 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name="schedules")
+@Table(name = "schedules")
 public class Schedule {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name="subject_id", nullable=false)
-    private Subject subject;
+  @ManyToOne
+  @JoinColumn(name = "subject_id", nullable = false)
+  private Subject subject;
 
-    @ManyToOne
-    private Section section;
+  @ManyToOne
+  private Section section;
 
-    private Time startTime;
+  private Time startTime;
 
-    private Time endTime;
+  private Time endTime;
 
-    private Date scheduleDate;
+  private Date scheduleDate;
 
-    @ManyToOne
-    private Laboratory laboratory;
+  @ManyToOne
+  private Laboratory laboratory;
 
-    @ManyToOne
-    @JoinColumn(name = "professor_id", nullable = false)
-    private User professor;
+  @ManyToOne
+  @JoinColumn(name = "professor_id", nullable = false)
+  private User professor;
 
-    @ManyToOne
-    @JoinColumn(name = "school_year_id", nullable = false)
-    private SchoolYear schoolYear;
+  @ManyToOne
+  @JoinColumn(name = "school_year_id", nullable = false)
+  private SchoolYear schoolYear;
 
-    @ManyToOne
-    private Semester semester;
+  @ManyToOne
+  private Semester semester;
 
-    private String remarks;
+  private String remarks;
 
-    private UUID recurrenceId;
+  private UUID recurrenceId;
 
-    @Enumerated(EnumType.STRING)
-    private Recurrence recurrence;
+  @Enumerated(EnumType.STRING)
+  private Recurrence recurrence;
 
-    private int recurrenceInterval;
+  private int recurrenceInterval;
 
-    private boolean hasFinished;
+  private boolean hasFinished;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<ScheduleStudent> scheduleStudents;
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List<ScheduleStudent> scheduleStudents;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name="schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
-    public List<String> recurrenceDays;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+  public List<String> recurrenceDays;
 
-    public Schedule() {}
+  @Enumerated(value = EnumType.STRING)
+  public Status status;
 
-    public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate, Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks, UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<ScheduleStudent> students, List<String> recurrenceDays) {
-        this.id = id;
-        this.subject = subject;
-        this.section = section;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.scheduleDate = scheduleDate;
-        this.laboratory = laboratory;
-        this.professor = professor;
-        this.schoolYear = schoolYear;
-        this.semester = semester;
-        this.remarks = remarks;
-        this.recurrenceId = recurrenceId;
-        this.recurrence = recurrence;
-        this.recurrenceInterval = recurrenceInterval;
-        this.scheduleStudents = students;
-        this.recurrenceDays = recurrenceDays;
-        this.hasFinished = false;
-    }
+  public boolean isActive;
 
-    public Long getId() {
-        return id;
-    }
+  @ManyToOne
+  @JoinColumn(name = "requester_id")
+  public User requester;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Schedule() {
+    this.isActive = true;
+  }
 
-    public Subject getSubject() {
-        return subject;
-    }
+  public Schedule(Long id, Subject subject, Section section, Time startTime, Time endTime, Date scheduleDate,
+      Laboratory laboratory, User professor, SchoolYear schoolYear, Semester semester, String remarks,
+      UUID recurrenceId, Recurrence recurrence, int recurrenceInterval, List<ScheduleStudent> students,
+      List<String> recurrenceDays, Status status) {
+    this.id = id;
+    this.subject = subject;
+    this.section = section;
+    this.startTime = startTime;
+    this.endTime = endTime;
+    this.scheduleDate = scheduleDate;
+    this.laboratory = laboratory;
+    this.professor = professor;
+    this.schoolYear = schoolYear;
+    this.semester = semester;
+    this.remarks = remarks;
+    this.recurrenceId = recurrenceId;
+    this.recurrence = recurrence;
+    this.recurrenceInterval = recurrenceInterval;
+    this.scheduleStudents = students;
+    this.recurrenceDays = recurrenceDays;
+    this.status = status;
+    this.isActive = true;
+    this.hasFinished = false;
+  }
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Section getSection() {
-        return section;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setSection(Section section) {
-        this.section = section;
-    }
+  public Subject getSubject() {
+    return subject;
+  }
 
-    public Time getStartTime() {
-        return startTime;
-    }
+  public void setSubject(Subject subject) {
+    this.subject = subject;
+  }
 
-    public void setStartTime(Time startTime) {
-        this.startTime = startTime;
-    }
+  public Section getSection() {
+    return section;
+  }
 
-    public Time getEndTime() {
-        return endTime;
-    }
+  public void setSection(Section section) {
+    this.section = section;
+  }
 
-    public void setEndTime(Time endTime) {
-        this.endTime = endTime;
-    }
+  public Time getStartTime() {
+    return startTime;
+  }
 
-    public Date getScheduleDate() {
-        return scheduleDate;
-    }
+  public void setStartTime(Time startTime) {
+    this.startTime = startTime;
+  }
 
-    public void setScheduleDate(Date scheduleDate) {
-        this.scheduleDate = scheduleDate;
-    }
+  public Time getEndTime() {
+    return endTime;
+  }
 
-    public User getProfessor() {
-        return professor;
-    }
+  public void setEndTime(Time endTime) {
+    this.endTime = endTime;
+  }
 
-    public void setProfessor(User professor) {
-        this.professor = professor;
-    }
+  public Date getScheduleDate() {
+    return scheduleDate;
+  }
 
-    public Laboratory getLaboratory() {
-        return laboratory;
-    }
+  public void setScheduleDate(Date scheduleDate) {
+    this.scheduleDate = scheduleDate;
+  }
 
-    public void setLaboratory(Laboratory laboratory) {
-        this.laboratory = laboratory;
-    }
+  public User getProfessor() {
+    return professor;
+  }
 
-    public Semester getSemester() {
-        return semester;
-    }
+  public void setProfessor(User professor) {
+    this.professor = professor;
+  }
 
-    public void setSemester(Semester semester) {
-        this.semester = semester;
-    }
+  public Laboratory getLaboratory() {
+    return laboratory;
+  }
 
-    public SchoolYear getSchoolYear() {
-        return schoolYear;
-    }
+  public void setLaboratory(Laboratory laboratory) {
+    this.laboratory = laboratory;
+  }
 
-    public void setSchoolYear(SchoolYear schoolYear) {
-        this.schoolYear = schoolYear;
-    }
+  public Semester getSemester() {
+    return semester;
+  }
 
-    public String getRemarks() {
-        return remarks;
-    }
+  public void setSemester(Semester semester) {
+    this.semester = semester;
+  }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
+  public SchoolYear getSchoolYear() {
+    return schoolYear;
+  }
 
-    public Recurrence getRecurrence() {
-        return recurrence;
-    }
+  public void setSchoolYear(SchoolYear schoolYear) {
+    this.schoolYear = schoolYear;
+  }
 
-    public void setRecurrence(Recurrence recurrence) {
-        this.recurrence = recurrence;
-    }
+  public String getRemarks() {
+    return remarks;
+  }
 
-    public int getRecurrenceInterval() {
-        return recurrenceInterval;
-    }
+  public void setRemarks(String remarks) {
+    this.remarks = remarks;
+  }
 
-    public void setRecurrenceInterval(int recurrenceInterval) {
-        this.recurrenceInterval = recurrenceInterval;
-    }
+  public Recurrence getRecurrence() {
+    return recurrence;
+  }
 
-    public List<String> getRecurrenceDays() {
-        return recurrenceDays;
-    }
+  public void setRecurrence(Recurrence recurrence) {
+    this.recurrence = recurrence;
+  }
 
-    public void setRecurrenceDays(List<String> recurrenceDays) {
-        this.recurrenceDays = recurrenceDays;
-    }
+  public int getRecurrenceInterval() {
+    return recurrenceInterval;
+  }
 
-    public UUID getRecurrenceId() {
-        return recurrenceId;
-    }
+  public void setRecurrenceInterval(int recurrenceInterval) {
+    this.recurrenceInterval = recurrenceInterval;
+  }
 
-    public void setRecurrenceId(UUID recurrenceId) {
-        this.recurrenceId = recurrenceId;
-    }
+  public List<String> getRecurrenceDays() {
+    return recurrenceDays;
+  }
 
-    public boolean isHasFinished() {
-        return hasFinished;
-    }
+  public void setRecurrenceDays(List<String> recurrenceDays) {
+    this.recurrenceDays = recurrenceDays;
+  }
 
-    public void setHasFinished(boolean hasFinished) {
-        this.hasFinished = hasFinished;
-    }
+  public UUID getRecurrenceId() {
+    return recurrenceId;
+  }
 
-    public List<ScheduleStudent> getScheduleStudents() {
-        return scheduleStudents;
-    }
+  public void setRecurrenceId(UUID recurrenceId) {
+    this.recurrenceId = recurrenceId;
+  }
 
-    public void setScheduleStudents(List<ScheduleStudent> scheduleStudents) {
-        this.scheduleStudents = scheduleStudents;
-    }
+  public boolean isHasFinished() {
+    return hasFinished;
+  }
+
+  public void setHasFinished(boolean hasFinished) {
+    this.hasFinished = hasFinished;
+  }
+
+  public List<ScheduleStudent> getScheduleStudents() {
+    return scheduleStudents;
+  }
+
+  public void setScheduleStudents(List<ScheduleStudent> scheduleStudents) {
+    this.scheduleStudents = scheduleStudents;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public void setActive(boolean active) {
+    isActive = active;
+  }
+
+  public User getRequester() {
+    return requester;
+  }
+
+  public void setRequester(User requester) {
+    this.requester = requester;
+  }
 }

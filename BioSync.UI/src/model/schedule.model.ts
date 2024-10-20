@@ -22,4 +22,5 @@ export interface Schedule {
     recurrenceDays?: String[];
     recurrenceInterval?: string;
     hasFinished:boolean;
+    status: string;
   }

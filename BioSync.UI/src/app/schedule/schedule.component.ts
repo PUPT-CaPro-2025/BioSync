@@ -22,8 +22,20 @@ import jsPDF from "jspdf";
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
-  providers: [ScheduleService, SchoolYearService, UserService, CookieService, CryptoService],
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    AddScheduleComponent,
+    MatSelectModule,
+    EditScheduleComponent
+  ],
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
+    CryptoService
+  ],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -55,10 +67,13 @@ export class ScheduleComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
+  isRequestOneSchedule: boolean = false;
+  isRequestWeeklySchedule: boolean = false;
   isEditSchedule: boolean = false;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
   isDropdownOpenAddSchedule: boolean = false;
+  isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
 
@@ -261,9 +276,21 @@ export class ScheduleComponent implements OnInit{
     this.isWeeklyAddSchedule = !this.isWeeklyAddSchedule;
   }
 
+  toggleRequestOneSchedule(): void {
+    this.isDropdownOpenRequestSchedule = false;
+    this.isRequestOneSchedule = !this.isRequestOneSchedule;
+  }
+
+  toggleRequestWeeklySchedule(): void {
+    this.isDropdownOpenRequestSchedule = false;
+    this.isRequestWeeklySchedule = !this.isRequestWeeklySchedule;
+  }
+
   handleBackToSchedule(): void {
     this.isOneAddSchedule = false;
     this.isWeeklyAddSchedule = false;
+    this.isRequestOneSchedule = false;
+    this.isRequestWeeklySchedule = false;
   }
 
   toggleStartSchedule(schedule: Schedule) {
@@ -314,7 +341,10 @@ export class ScheduleComponent implements OnInit{
 
   onAddScheduleClick() {
     this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
+  }
 
+  onRequestScheduleClick() {
+    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
   }
 
   onFilterChange() {

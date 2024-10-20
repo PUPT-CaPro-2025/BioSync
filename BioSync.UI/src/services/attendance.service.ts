@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environment/app.setting';
 import { CookieService } from './cookie.service';
 import { Attendance } from '../model/attendance.model';
+import {User} from "../model/user.model";
 
 @Injectable()
 export class AttendanceService {
@@ -23,6 +24,13 @@ export class AttendanceService {
       headers: this.headers,
       withCredentials: true,
     });
+  }
+
+  logAttendance(logRequest: FormData) {
+    return this.http.post<User>(`${this.url}/student/time-in`, logRequest, {
+      headers: this.headers,
+      withCredentials: true
+    })
   }
 
   getAttendanceByScheduleId(scheduleId: number) {

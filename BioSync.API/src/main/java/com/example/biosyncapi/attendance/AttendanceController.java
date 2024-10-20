@@ -130,6 +130,24 @@ public class AttendanceController {
         "attendance", recordedAttendance));
   }
 
+  /*
+   * A time in method that does not require a fingerprint
+   *
+   */
+
+  @PostMapping("/student/time-in")
+  public ResponseEntity<?> studentTimeIn(@RequestParam("scheduleId") Long scheduleId,
+      @RequestParam("studentId") Long studentId,
+      @RequestParam("attendanceStatus") String attendanceStatus) {
+
+    User timedInStudent = this.attendanceService.studentTimeIn(scheduleId, studentId, attendanceStatus);
+
+    if (timedInStudent == null)
+      return ResponseEntity.badRequest().body("Request Invalid");
+
+    return ResponseEntity.ok().body(timedInStudent);
+  }
+
   @PostMapping("/verify/stop")
   public ResponseEntity<?> stopAttendance(@RequestParam("scheduleId") Long scheduleId) {
     Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
