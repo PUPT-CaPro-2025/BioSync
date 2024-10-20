@@ -53,5 +53,5 @@ jobs:
           ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/face-recog-service:latest
             docker rm -f face-recog-service-container || true
-            docker run -d -p 5000:5000 --name face-recog-service-container jheankhendrick/face-recog-service:latest
+            docker run -d -p 5000:5000 --env-file /home/ubuntu/biosync/env/.env --name face-recog-service-container jheankhendrick/face-recog-service:latest
           EOF
