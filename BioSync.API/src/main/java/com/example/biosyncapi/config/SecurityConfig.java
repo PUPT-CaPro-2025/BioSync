@@ -27,70 +27,83 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${cors.allowed.origins}")
-    private String allowedOrigins;
+  @Value("${cors.allowed.origins}")
+  private String allowedOrigins;
 
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomLogoutHandler customLogoutHandler;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
+  private final UserDetailsServiceImpl userDetailsServiceImpl;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final CustomLogoutHandler customLogoutHandler;
+  private final CustomAccessDeniedHandler accessDeniedHandler;
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl, JwtAuthenticationFilter jwtAuthenticationFilter, CustomLogoutHandler customLogoutHandler, CustomAccessDeniedHandler accessDeniedHandler) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.customLogoutHandler = customLogoutHandler;
-        this.accessDeniedHandler = accessDeniedHandler;
-    }
+  public SecurityConfig(
+      UserDetailsServiceImpl userDetailsServiceImpl,
+      JwtAuthenticationFilter jwtAuthenticationFilter,
+      CustomLogoutHandler customLogoutHandler,
+      CustomAccessDeniedHandler accessDeniedHandler)
+  {
+    this.userDetailsServiceImpl = userDetailsServiceImpl;
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.customLogoutHandler = customLogoutHandler;
+    this.accessDeniedHandler = accessDeniedHandler;
+  }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors
-                        .configurationSource(request -> {
-                            var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                            corsConfig.setAllowedOrigins(List.of(allowedOrigins));
-                            corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-                            corsConfig.setAllowedHeaders(List.of("*"));
-                            corsConfig.setAllowCredentials(true);
-                            return corsConfig;
-                        })
-                )
-                .authorizeHttpRequests(
-                        req->req.requestMatchers("/api/v1/auth/**")
-                                .permitAll()
-                                .requestMatchers("api/v1/test/")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.POST, "api/v1/visitors")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.POST, "api/v1/password/**")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
-                ).userDetailsService(userDetailsServiceImpl)
-                .exceptionHandling(e->e.accessDeniedHandler(accessDeniedHandler)
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .sessionManagement(session->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(l -> l.logoutUrl("/api/v1/auth/logout")
-                        .addLogoutHandler(customLogoutHandler)
-                        .logoutSuccessHandler(
-                                ((request, response, authentication) -> SecurityContextHolder.clearContext())
-                        ))
-                .build();
-    }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http)
+      throws Exception
+  {
+    return http
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors
+                .configurationSource(request -> {
+                  var corsConfig =
+                      new org.springframework.web.cors.CorsConfiguration();
+                  corsConfig.setAllowedOrigins(List.of(allowedOrigins));
+                  corsConfig.setAllowedMethods(
+                      List.of("GET", "POST", "PUT", "DELETE", "PATCH",
+                          "OPTIONS"));
+                  corsConfig.setAllowedHeaders(List.of("*"));
+                  corsConfig.setAllowCredentials(true);
+                  return corsConfig;
+                })
+             )
+        .authorizeHttpRequests(
+            req -> req.requestMatchers("/api/v1/auth/**")
+                .permitAll()
+                .requestMatchers("api/v1/test/")
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, "api/v1/visitors")
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, "api/v1/password/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                              ).userDetailsService(userDetailsServiceImpl)
+        .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler)
+            .authenticationEntryPoint(
+                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter,
+            UsernamePasswordAuthenticationFilter.class)
+        .logout(l -> l.logoutUrl("/api/v1/auth/logout")
+            .addLogoutHandler(customLogoutHandler)
+            .logoutSuccessHandler(
+                ((request, response, authentication) -> SecurityContextHolder.clearContext())
+                                 ))
+        .build();
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration configuration
-    ) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationConfiguration configuration
+                                                    ) throws Exception
+  {
+    return configuration.getAuthenticationManager();
+  }
 
 }

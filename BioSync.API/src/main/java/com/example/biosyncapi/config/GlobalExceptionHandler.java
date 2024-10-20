@@ -11,11 +11,11 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public ResponseEntity<String> handleNotFound(NoHandlerFoundException e) {
-        return new ResponseEntity<>("Resource not found", HttpStatus.NOT_FOUND);
-    }
+  @ExceptionHandler(NoHandlerFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseBody
+  public ResponseEntity<String> handleNotFound(NoHandlerFoundException e) {
+    return new ResponseEntity<>("Resource not found", HttpStatus.NOT_FOUND);
+  }
 
 }
