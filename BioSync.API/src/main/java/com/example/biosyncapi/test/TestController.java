@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/v1/test/")
+@RequestMapping("api/v1/health")
 public class TestController {
 
     @GetMapping
-    public Map<String, Object> test() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", 69);
-        response.put("name", "BioSync API");
+    public Map<String, String> test() {
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "OK");
 
         return response;
     }
