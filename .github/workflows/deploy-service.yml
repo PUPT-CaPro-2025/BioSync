@@ -1,0 +1,55 @@
+name: Build and Deploy Python Service
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+
+      - name: Change Directory to BioSync.Service
+        run: cd BioSync.Service
+
+      - name: Create .env File
+        working-directory: ./BioSync.Service
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "SQLALCHEMY_DATABASE_URI=${{ secrets.DATABASE_URI }}" >> .env
+            echo "CORS_ORIGINS=${{ secrets.ALLOWED_ORIGIN }}" >> .env
+          else
+            echo "SQLALCHEMY_DATABASE_URI=${{ secrets.DATABASE_URI_TEST }}" >> .env
+            echo "CORS_ORIGINS=${{ secrets.ALLOWED_ORIGIN_TEST }}" >> .env
+          fi
+
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        working-directory: ./BioSync.Service
+        run: docker build -t jheankhendrick/face-recog-service .
+
+      - name: Publish Image to Docker Hub
+        run: docker push jheankhendrick/face-recog-service:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+
+      - name: Deploy to EC2 Instance
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_HOST }} << 'EOF'
+            docker pull jheankhendrick/face-recog-service:latest
+            docker rm -f face-recog-service-container || true
+            docker run -d -p 5000:5000 --env-file /path/to/.env --name face-recog-service-container jheankhendrick/face-recog-service:latest
+          EOF
