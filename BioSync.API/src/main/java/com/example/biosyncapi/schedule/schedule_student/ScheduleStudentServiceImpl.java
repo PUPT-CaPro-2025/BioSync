@@ -12,57 +12,73 @@ import java.util.List;
 @Service
 public class ScheduleStudentServiceImpl implements ScheduleStudentService {
 
-    private final ScheduleStudentRepository scheduleStudentRepository;
-    private final ScheduleRepository scheduleRepository;
+  private final ScheduleStudentRepository scheduleStudentRepository;
+  private final ScheduleRepository scheduleRepository;
 
 
-    public ScheduleStudentServiceImpl(ScheduleStudentRepository scheduleStudentRepository, ScheduleRepository scheduleRepository) {
-        this.scheduleStudentRepository = scheduleStudentRepository;
-        this.scheduleRepository = scheduleRepository;
+  public ScheduleStudentServiceImpl(
+      ScheduleStudentRepository scheduleStudentRepository,
+      ScheduleRepository scheduleRepository)
+  {
+    this.scheduleStudentRepository = scheduleStudentRepository;
+    this.scheduleRepository = scheduleRepository;
+  }
+
+  @Override
+  public List<ScheduleStudent> getAllByScheduleId(Long userId) {
+    return scheduleStudentRepository.findByScheduleId(userId);
+  }
+
+  public List<User> getStudentsByScheduleId(Long scheduleId)
+      throws RuntimeException
+  {
+    Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
+      if (schedule == null) {
+          throw new RuntimeException("Schedule not found");
+      }
+
+    List<ScheduleStudent> scheduleStudents =
+        scheduleStudentRepository.findByScheduleId(schedule.getId());
+
+    List<User> users = new ArrayList<>();
+
+    for (ScheduleStudent scheduleStudent : scheduleStudents) {
+      users.add(scheduleStudent.getStudent());
     }
 
-    @Override
-    public List<ScheduleStudent> getAllByScheduleId(Long userId) {
-        return scheduleStudentRepository.findByScheduleId(userId);
+    return users;
+  }
+
+  @Override
+  public void addStudentToSchedule(
+      Schedule schedule,
+      User student) throws DataAccessException
+  {
+    if (schedule.getRecurrenceId() == null) {
+      ScheduleStudent scheduleStudent = new ScheduleStudent(schedule, student);
+      scheduleStudentRepository.save(scheduleStudent);
+      return;
     }
 
-    public List<User> getStudentsByScheduleId(Long scheduleId) throws RuntimeException {
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElse(null);
-        if(schedule == null) throw new RuntimeException("Schedule not found");
+    List<Schedule> scheduleList =
+        scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
 
-        List<ScheduleStudent> scheduleStudents = scheduleStudentRepository.findByScheduleId(schedule.getId());
+    for (Schedule scheduleItem : scheduleList) {
+      List<User> students = this.getStudentsByScheduleId(scheduleItem.getId());
 
-        List<User> users = new ArrayList<>();
+      boolean isUserOnList = students.stream()
+          .anyMatch(existingStudent -> existingStudent.getId()
+              .equals(student.getId()));
 
-        for (ScheduleStudent scheduleStudent : scheduleStudents) {
-            users.add(scheduleStudent.getStudent());
+        if (isUserOnList) {
+            continue;
         }
 
-        return users;
+      ScheduleStudent scheduleStudent =
+          new ScheduleStudent(scheduleItem, student);
+      scheduleStudentRepository.save(scheduleStudent);
     }
 
-    @Override
-    public void addStudentToSchedule(Schedule schedule, User student) throws DataAccessException {
-        if(schedule.getRecurrenceId() == null){
-            ScheduleStudent scheduleStudent = new ScheduleStudent(schedule, student);
-            scheduleStudentRepository.save(scheduleStudent);
-            return;
-        }
-
-        List<Schedule> scheduleList = scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
-
-        for (Schedule scheduleItem : scheduleList) {
-            List<User> students = this.getStudentsByScheduleId(scheduleItem.getId());
-
-            boolean isUserOnList = students.stream()
-                    .anyMatch(existingStudent -> existingStudent.getId().equals(student.getId()));
-
-            if(isUserOnList) continue;
-
-            ScheduleStudent scheduleStudent = new ScheduleStudent(scheduleItem, student);
-            scheduleStudentRepository.save(scheduleStudent);
-        }
-
-    }
+  }
 
 }
