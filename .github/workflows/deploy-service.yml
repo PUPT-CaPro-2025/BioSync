@@ -50,7 +50,7 @@ jobs:
         run: |
           EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
 
-          ssh -o StrictHostKeyChecking=no EC2_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/face-recog-service:latest
             docker rm -f face-recog-service-container || true
             docker run -d -p 5000:5000 --env-file /path/to/.env --name face-recog-service-container jheankhendrick/face-recog-service:latest
