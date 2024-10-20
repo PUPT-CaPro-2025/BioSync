@@ -9,34 +9,34 @@ import java.util.Optional;
 @RequestMapping("api/v1/programs")
 public class ProgramController {
 
-    private final ProgramService programService;
+  private final ProgramService programService;
 
-    public ProgramController(ProgramService programService) {
-        this.programService = programService;
-    }
+  public ProgramController(ProgramService programService) {
+    this.programService = programService;
+  }
 
-    @GetMapping()
-    public List<Program> getAllPrograms() {
-        return programService.getAllPrograms();
-    }
+  @GetMapping()
+  public List<Program> getAllPrograms() {
+    return programService.getAllPrograms();
+  }
 
-    @GetMapping("/{id}")
-    public Optional<Program> getProgramById(@PathVariable Long id) {
-        return programService.getProgramById(id);
-    }
+  @GetMapping("/{id}")
+  public Optional<Program> getProgramById(@PathVariable Long id) {
+    return programService.getProgramById(id);
+  }
 
-    @PostMapping()
-    public Program createProgram(@RequestBody Program program) {
-        return programService.saveProgram(program);
-    }
+  @PostMapping()
+  public Program createProgram(@RequestBody Program program) {
+    return programService.saveProgram(program);
+  }
 
-    @PutMapping()
-    public Program updateProgram(@RequestBody Program program) {
-        return programService.updateProgram(program);
-    }
+  @PutMapping()
+  public Program updateProgram(@RequestBody Program program) {
+    return programService.updateProgram(program);
+  }
 
-    @DeleteMapping()
-    public void deleteProgram(@RequestBody Program program) {
-        programService.deleteProgram(program.getId());
-    }
+  @DeleteMapping()
+  public void deleteProgram(@RequestBody Program program) {
+    programService.deleteProgram(program.getId());
+  }
 }
