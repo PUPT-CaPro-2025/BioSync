@@ -24,8 +24,12 @@ public class PasswordResetService {
   @Value("${cors.allowed.origins}")
   private String origin;
 
-  public PasswordResetService(PasswordResetRepository tokenRepository,
-                              UserRepository userRepository, MailService mailService, PasswordEncoder passwordEncoder) {
+  public PasswordResetService(
+      PasswordResetRepository tokenRepository,
+      UserRepository userRepository,
+      MailService mailService,
+      PasswordEncoder passwordEncoder)
+  {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.mailService = mailService;
@@ -33,22 +37,27 @@ public class PasswordResetService {
   }
 
   public String createPasswordResetToken(User user) {
-      PasswordResetToken hasExistingToken = tokenRepository.findByUser(user);
+    PasswordResetToken hasExistingToken = tokenRepository.findByUser(user);
 
-      if(hasExistingToken != null) tokenRepository.deleteByUser(user);
+    if (hasExistingToken != null) {
+      tokenRepository.deleteByUser(user);
+    }
 
-      String token = UUID.randomUUID().toString();
+    String token = UUID.randomUUID().toString();
 
-      PasswordResetToken resetToken = new PasswordResetToken();
-      resetToken.setToken(token);
-      resetToken.setUser(user);
-      resetToken.setExpiryDate(getExpiryDate());
+    PasswordResetToken resetToken = new PasswordResetToken();
+    resetToken.setToken(token);
+    resetToken.setUser(user);
+    resetToken.setExpiryDate(getExpiryDate());
 
-      tokenRepository.save(resetToken);
-      return token;
+    tokenRepository.save(resetToken);
+    return token;
   }
 
-  public void sendPasswordResetToken(User user, String token) {
+  public void sendPasswordResetToken(
+      User user,
+      String token)
+  {
     String resetUrl = origin + "/reset-password?token=" + token;
     String subject = "Password Reset Request";
     String text = "Click the link to reset your password: " + resetUrl;
@@ -66,7 +75,10 @@ public class PasswordResetService {
     return !passToken.getExpiryDate().before(new Date());
   }
 
-  public void resetPassword(String token, String newPassword) {
+  public void resetPassword(
+      String token,
+      String newPassword)
+  {
     PasswordResetToken resetToken = tokenRepository.findByToken(token);
 
     if (resetToken == null || resetToken.getExpiryDate().before(new Date())) {

@@ -17,96 +17,105 @@ import java.util.List;
 @Service
 public class AuthenticationServiceImpl {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtServiceImpl jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final TokenRepository tokenRepository;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtServiceImpl jwtService;
+  private final AuthenticationManager authenticationManager;
+  private final TokenRepository tokenRepository;
 
-    public AuthenticationServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtServiceImpl jwtService, AuthenticationManager authenticationManager, TokenRepository tokenRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-        this.tokenRepository = tokenRepository;
+  public AuthenticationServiceImpl(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
+      JwtServiceImpl jwtService,
+      AuthenticationManager authenticationManager,
+      TokenRepository tokenRepository)
+  {
+    this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.jwtService = jwtService;
+    this.authenticationManager = authenticationManager;
+    this.tokenRepository = tokenRepository;
+  }
+
+  public User register(User request) {
+
+    if (userRepository.existsByUsercode(request.getUsercode())) {
+      throw new IllegalArgumentException("Usercode already exists");
     }
 
-    public User register(User request){
-
-        if(userRepository.existsByUsercode(request.getUsercode())){
-            throw new IllegalArgumentException("Usercode already exists");
-        }
-
-        if(userRepository.existsByEmail(request.getEmail())){
-            throw new IllegalArgumentException("Email already exists");
-        }
-
-        User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setMiddleName(request.getMiddleName());
-        user.setLastName(request.getLastName());
-        user.setUsercode(request.getUsercode());
-        user.setSuffix(request.getSuffix());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
-
-        if(user.getRole() == Role.STUDENT){
-            user.setSection(request.getSection());
-            user.setProgram(request.getProgram());
-        }
-
-        user = userRepository.save(user);
-
-        return user;
+    if (userRepository.existsByEmail(request.getEmail())) {
+      throw new IllegalArgumentException("Email already exists");
     }
 
-    public AuthenticationResponse authenticate(User request) {
+    User user = new User();
+    user.setFirstName(request.getFirstName());
+    user.setMiddleName(request.getMiddleName());
+    user.setLastName(request.getLastName());
+    user.setUsercode(request.getUsercode());
+    user.setSuffix(request.getSuffix());
+    user.setEmail(request.getEmail());
+    user.setPassword(passwordEncoder.encode(request.getPassword()));
+    user.setRole(request.getRole());
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()));
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid username or password", e);
-        }
-
-
-        User user = userRepository
-                .findByUsercode(request.getUsercode())
-                .orElseThrow();
-
-        String jwt = jwtService.generateToken(user);
-
-        revokeAllTokenByUser(user);
-
-        saveUserToken(jwt, user);
-
-        String role = String.valueOf(user.getRole());
-
-        String userId = String.valueOf(user.getId());
-
-        return new AuthenticationResponse(jwt, role, userId);
+    if (user.getRole() == Role.STUDENT) {
+      user.setSection(request.getSection());
+      user.setProgram(request.getProgram());
     }
 
-    private void revokeAllTokenByUser(User user) {
-        List<Token> validTokenListByUser = tokenRepository.findAllTokenByUser(
-                user.getId()
-        );
+    user = userRepository.save(user);
 
-        if(!validTokenListByUser.isEmpty()){
-            validTokenListByUser.forEach(token -> token.setLoggedOut(true));
-        }
+    return user;
+  }
 
-        tokenRepository.saveAll(validTokenListByUser);
+  public AuthenticationResponse authenticate(User request) {
+
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(
+              request.getUsername(),
+              request.getPassword()));
+    } catch (AuthenticationException e) {
+      throw new BadCredentialsException("Invalid username or password", e);
     }
 
-    private void saveUserToken(String jwt, User user) {
-        Token token = new Token();
-        token.setToken(jwt);
-        token.setLoggedOut(false);
-        token.setUser(user);
-        tokenRepository.save(token);
+
+    User user = userRepository
+        .findByUsercode(request.getUsercode())
+        .orElseThrow();
+
+    String jwt = jwtService.generateToken(user);
+
+    revokeAllTokenByUser(user);
+
+    saveUserToken(jwt, user);
+
+    String role = String.valueOf(user.getRole());
+
+    String userId = String.valueOf(user.getId());
+
+    return new AuthenticationResponse(jwt, role, userId);
+  }
+
+  private void revokeAllTokenByUser(User user) {
+    List<Token> validTokenListByUser = tokenRepository.findAllTokenByUser(
+        user.getId()
+                                                                         );
+
+    if (!validTokenListByUser.isEmpty()) {
+      validTokenListByUser.forEach(token -> token.setLoggedOut(true));
     }
+
+    tokenRepository.saveAll(validTokenListByUser);
+  }
+
+  private void saveUserToken(
+      String jwt,
+      User user)
+  {
+    Token token = new Token();
+    token.setToken(jwt);
+    token.setLoggedOut(false);
+    token.setUser(user);
+    tokenRepository.save(token);
+  }
 }

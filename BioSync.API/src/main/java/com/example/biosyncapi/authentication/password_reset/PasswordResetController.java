@@ -16,7 +16,10 @@ public class PasswordResetController {
   private final PasswordResetService passwordResetService;
   private final UserRepository userRepository;
 
-  public PasswordResetController(PasswordResetService passwordResetService, UserRepository userRepository) {
+  public PasswordResetController(
+      PasswordResetService passwordResetService,
+      UserRepository userRepository)
+  {
     this.userRepository = userRepository;
     this.passwordResetService = passwordResetService;
   }
@@ -25,8 +28,9 @@ public class PasswordResetController {
   public ResponseEntity<?> processForgotPassword(@RequestParam String email) {
     User user = userRepository.findByEmail(email);
 
-    if (user == null)
+    if (user == null) {
       return ResponseEntity.badRequest().body("Email not found.");
+    }
 
     String token = passwordResetService.createPasswordResetToken(user);
     passwordResetService.sendPasswordResetToken(user, token);
@@ -37,7 +41,8 @@ public class PasswordResetController {
   @PostMapping("/reset")
   public ResponseEntity<?> passwordReset(
       @RequestParam String token,
-      @RequestParam String newPassword) {
+      @RequestParam String newPassword)
+  {
 
     if (!passwordResetService.validatePasswordResetToken(token)) {
       return ResponseEntity.badRequest().body("Invalid or expired token.");
