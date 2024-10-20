@@ -13,8 +13,7 @@ import {AuthService} from "../services/auth/auth.service";
 })
 export class AppComponent implements OnInit{
 
-  private publicRoutes = ['/login', '/admin-login', '/faculty-login', '/student-login', '/visitor-log'];
-
+  private publicRoutes = ['/login', '/forgot-password', '/reset-password', '/visitor-log'];
 
   constructor(
     private authService: AuthService,
@@ -24,7 +23,10 @@ export class AppComponent implements OnInit{
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
-        const isPublicRoute = this.publicRoutes.includes(event.url);
+
+        const urlWithoutQueryParams = event.url.split('?')[0];
+        const isPublicRoute = this.publicRoutes.includes(urlWithoutQueryParams);
+
         if (this.authService.isAuthenticated() && isPublicRoute) {
           this.router.navigate(['/dashboard']).then();
         } else if (!this.authService.isAuthenticated() && !isPublicRoute) {

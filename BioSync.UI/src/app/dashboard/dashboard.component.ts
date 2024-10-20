@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import {CookieService} from "../../services/cookie.service";
-import {DashboardProfessorComponent} from "../dashboard-professor/dashboard-professor.component";
-import {DashboardStudentComponent} from "../dashboard-student/dashboard-student.component";
-import { DashboardAdminComponent } from '../dashboard-admin/dashboard-admin.component';
+import {DashboardProfessorComponent} from "./dashboard-professor/dashboard-professor.component";
+import {DashboardStudentComponent} from "./dashboard-student/dashboard-student.component";
+import { DashboardAdminComponent } from './dashboard-admin/dashboard-admin.component';
 import { CryptoService } from '../../services/crypto.service';
 
 @Component({
@@ -20,7 +20,7 @@ import { CryptoService } from '../../services/crypto.service';
 export class DashboardComponent {
 
   constructor(
-    private cookieService: CookieService, 
+    private cookieService: CookieService,
     private cryptoService: CryptoService
   ) {}
 

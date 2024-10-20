@@ -4,21 +4,38 @@ import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AddScheduleComponent } from '../add-schedule/add-schedule.component';
+import { AddScheduleComponent } from './add-schedule/add-schedule.component';
 import { MatSelectModule } from '@angular/material/select';
-import { EditScheduleComponent } from '../edit-schedule/edit-schedule.component';
+import { EditScheduleComponent } from './edit-schedule/edit-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 import {SchoolYearService} from "../../services/school.year.service";
 import {SchoolYear} from "../../model/school.year.model";
 import {Router} from "@angular/router";
+import {CryptoService} from "../../services/crypto.service";
+import {CookieService} from "../../services/cookie.service";
+import {User} from "../../model/user.model";
+import {UserService} from "../../services/user.service";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-schedule',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
-  providers: [ScheduleService, SchoolYearService],
+  imports: [MatToolbarModule,
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    AddScheduleComponent,
+    MatSelectModule,
+    EditScheduleComponent
+  ],
+  providers: [ScheduleService,
+    SchoolYearService,
+    UserService,
+    CookieService,
+    CryptoService
+  ],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css',
 })
@@ -50,21 +67,41 @@ export class ScheduleComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
+  isRequestOneSchedule: boolean = false;
+  isRequestWeeklySchedule: boolean = false;
   isEditSchedule: boolean = false;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
   isDropdownOpenAddSchedule: boolean = false;
+  isDropdownOpenRequestSchedule: boolean = false;
+  userId!: number;
+  headerImage!: string;
 
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
-    private router : Router
+    private router : Router,
+    private cryptoService: CryptoService,
+    private cookieService: CookieService,
+    private userService: UserService
     ) {}
 
   ngOnInit() {
-    this.getAllSchedules();
+    if(this.getRole() === "ADMIN"){
+      this.getAllSchedules();
+    } else if (this.getRole() === "FACULTY"){
+      this.getUserId();
+      this.getFacultySchedule(this.userId);
+    } else {
+      this.getUserId();
+      this.getSectionId(this.userId);
+    }
     this.getAcademicYears();
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getAllSchedules() {
@@ -79,6 +116,29 @@ export class ScheduleComponent implements OnInit{
       },
       error: (err) => console.error(err),
     });
+  }
+
+  getUserId(){
+    const encryptedUserId = decodeURIComponent(this.cookieService.getCookie("user_id")!);
+    this.userId = +this.cryptoService.decrypt(encryptedUserId);
+  }
+
+  getRole(){
+    return this.cryptoService.decrypt(
+      decodeURIComponent(this.cookieService.getCookie("role")!));
+  }
+
+  getFacultySchedule(facultyId: number) {
+    this.scheduleService.getAllSchedulesByProfessorId(facultyId).subscribe({
+      next: (schedules: Schedule[]) => {
+        this.schedules = schedules;
+        this.scheduleContainer = schedules;
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
+        this.setLatestSchoolYear();
+      }
+    })
   }
 
   setLatestSchoolYear() {
@@ -216,14 +276,29 @@ export class ScheduleComponent implements OnInit{
     this.isWeeklyAddSchedule = !this.isWeeklyAddSchedule;
   }
 
+  toggleRequestOneSchedule(): void {
+    this.isDropdownOpenRequestSchedule = false;
+    this.isRequestOneSchedule = !this.isRequestOneSchedule;
+  }
+
+  toggleRequestWeeklySchedule(): void {
+    this.isDropdownOpenRequestSchedule = false;
+    this.isRequestWeeklySchedule = !this.isRequestWeeklySchedule;
+  }
+
   handleBackToSchedule(): void {
     this.isOneAddSchedule = false;
     this.isWeeklyAddSchedule = false;
+    this.isRequestOneSchedule = false;
+    this.isRequestWeeklySchedule = false;
   }
 
   toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId)
+    if(schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
+    } else {
+      this.router.navigate(['/attendance/start/', schedule.id]).then();
+    }
   }
 
   toggleEditSchedule(schedule: Schedule): void {
@@ -266,7 +341,10 @@ export class ScheduleComponent implements OnInit{
 
   onAddScheduleClick() {
     this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
+  }
 
+  onRequestScheduleClick() {
+    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
   }
 
   onFilterChange() {
@@ -277,5 +355,106 @@ export class ScheduleComponent implements OnInit{
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+  }
+
+  toggleViewSchedule(schedule: Schedule) {
+    this.router.navigate(["/view/schedule", schedule.id]).then();
+  }
+
+  getSectionId(userId: number) {
+    this.userService.getUserById(userId).subscribe({
+      next: (user: User) => {
+        if(!user.id) return;
+        this.getStudentSchedules(+user.section?.id!);
+      }
+    })
+  }
+
+  getStudentSchedules(sectionId: number){
+    this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
+      next: (schedules: Schedule[]) => {
+        console.log(schedules)
+        this.schedules = schedules;
+        this.scheduleContainer = schedules;
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
+        this.sortSchedulesById(this.schedules);
+        this.setLatestSchoolYear();
+      }
+    })
+  }
+
+  generatePdf() {
+
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    const title = 'SCHEDULE LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+
+    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
+    const rows = this.schedules.map(schedule =>
+      [
+        schedule.subject?.code,
+        schedule.subject?.name,
+        schedule.recurrenceDays,
+        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
+        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
+        schedule.laboratory?.name
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('schedule-list.pdf');
+  }
+
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 }

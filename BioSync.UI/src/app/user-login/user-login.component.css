@@ -1,0 +1,11 @@
+.login-image {
+    background-image: url('../../assets/main-bg.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.text-gradient {
+    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

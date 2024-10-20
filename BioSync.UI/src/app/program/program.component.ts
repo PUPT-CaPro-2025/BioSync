@@ -7,13 +7,13 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { AddProgramComponent } from '../add-program/add-program.component';
-import { EditProgramComponent } from '../edit-program/edit-program.component';
+import { AddProgramComponent } from './add-program/add-program.component';
+import { EditProgramComponent } from './edit-program/edit-program.component';
 import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { MatDialog } from '@angular/material/dialog';
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import { ViewProgramComponent } from '../view-program/view-program.component';
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-program',
@@ -29,7 +29,6 @@ import { ViewProgramComponent } from '../view-program/view-program.component';
     CommonModule,
     AddProgramComponent,
     EditProgramComponent,
-    ViewProgramComponent
   ],
   providers: [ProgramService],
   templateUrl: './program.component.html',
@@ -55,13 +54,18 @@ export class ProgramComponent implements OnInit{
   isViewProgram: boolean = false;
   programToEdit!: Program;
   currentProgram: number | undefined;
+  headerImage!: string;
 
   constructor(
-    private programService: ProgramService, 
+    private programService: ProgramService,
     private dialog: MatDialog) {}
 
   ngOnInit() {
     this.getAllPrograms()
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getAllPrograms(){
@@ -174,18 +178,72 @@ export class ProgramComponent implements OnInit{
     this.isEditProgram = false;
   }
 
-  toggleViewProgram(programId: number | undefined): void {
-    this.isViewProgram = !this.isViewProgram;
-    if(this.isViewProgram){
-      this.currentProgram = programId;
-    }
+  generatePdf() {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    const title = 'PROGRAM LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+
+    const columns = ['Program Code', 'Program Description'];
+    const rows = this.programs.map(program =>
+      [
+        program.programAbbreviation,
+        program.programName
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('program-list.pdf');
   }
 
-  setViewId(){
-    return this.currentProgram;
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 
-  handleBackToViewProgram(): void {
-    this.isViewProgram = false;
-  }
 }

@@ -1,0 +1,9 @@
+.toolbar-button button {
+  font-size: 12px;
+  padding: 4px 40px;
+  background-color: #F84C42;
+  color: white;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+}

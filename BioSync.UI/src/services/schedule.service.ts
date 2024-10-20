@@ -33,6 +33,28 @@ export class ScheduleService {
     })
   }
 
+  getAllRequestedSchedules(requestId: number){
+    return this.http.get<Schedule[]>(`${this.url}/professor/requests/${requestId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  getAllPendingSchedules(){
+    return this.http.get<Schedule[]>(`${this.url}/pending`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
+  processScheduleDecision(schedule: Schedule, status: string){
+    const body = { status: status };
+    return this.http.patch<Schedule>(`${this.url}/${schedule.id}?status=${status}`, body, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getAllSchedulesBySectionId(sectionId: number){
     return this.http.get<Schedule[]>(`${this.url}/section/${sectionId}`, {
       headers: this.headers,

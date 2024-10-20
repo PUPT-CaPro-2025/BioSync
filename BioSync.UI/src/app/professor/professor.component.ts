@@ -3,13 +3,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AddProfessorComponent } from '../add-professor/add-professor.component';
-import { EditProfessorComponent } from '../edit-professor/edit-professor.component';
+import { AddProfessorComponent } from './add-professor/add-professor.component';
+import { EditProfessorComponent } from './edit-professor/edit-professor.component';
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
 import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
-import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import jsPDF from "jspdf";
 
 @Component({
   selector: 'app-professor',
@@ -43,7 +44,7 @@ export class ProfessorComponent implements OnInit{
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
   professorToUpdate!: User
-
+  headerImage!: string;
 
   constructor(
     private userService: UserService,
@@ -52,6 +53,10 @@ export class ProfessorComponent implements OnInit{
 
   ngOnInit() {
     this.getProfessors()
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getProfessors(): void {
@@ -172,4 +177,75 @@ export class ProfessorComponent implements OnInit{
     })
   }
 
+  generatePdf() {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    const title = 'PROFESSOR LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+
+
+    const columns = ['Faculty Code', 'First Name', 'Middle Name', 'Last Name', 'Suffix'];
+    const rows = this.professors.map(professor =>
+      [
+        professor.usercode,
+        professor.firstName,
+        professor.middleName,
+        professor.lastName,
+        professor.suffix
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('professor-list.pdf');
+  }
+
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
+  }
 }

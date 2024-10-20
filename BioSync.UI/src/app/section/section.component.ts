@@ -9,9 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
-import { AddSectionComponent } from '../add-section/add-section.component';
+import { AddSectionComponent } from './add-section/add-section.component';
 import {MatDialog} from "@angular/material/dialog";
-import {PromptConfirmComponent} from "../prompt-confirm/prompt-confirm.component";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import jsPDF from "jspdf";
 
 
 @Component({
@@ -48,9 +49,7 @@ export class SectionComponent implements OnInit{
   currentPage: number = 1;
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSection: boolean = false;
-  isEditSection: boolean = false;
-  isViewSection: boolean = false;
-  sectionToEdit!: Section;
+  headerImage!: string;
 
   constructor(
     private dialog: MatDialog,
@@ -59,6 +58,10 @@ export class SectionComponent implements OnInit{
 
   ngOnInit() {
     this.getSections();
+
+    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
+      this.headerImage = base64Image;
+    });
   }
 
   getSections(){
@@ -153,19 +156,72 @@ export class SectionComponent implements OnInit{
     this.isAddSection = false;
   }
 
-  toggleEditSection(): void {
-    this.isEditSection = !this.isEditSection;
+  generatePdf() {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    const imgWidth = 115;
+    const imgHeight = 15;
+    const xOffset = (pageWidth - imgWidth) / 2;
+    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+    const title = 'SECTION LIST';
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleString();
+    doc.text(currentDate, pageWidth / 2, 35);
+
+    const columns = ['Program', 'Year', 'Section'];
+    const rows = this.section.map(sec =>
+      [
+        sec.program.programName,
+        sec.year,
+        sec.section
+      ]);
+
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 40,
+      theme: 'grid',
+      styles: {
+        fontSize: 10,
+        halign: 'center',
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        lineWidth: 0.4,
+        lineColor: [0, 0, 0],
+      },
+      bodyStyles: {
+        lineColor: [0, 0, 0],
+        textColor: [0, 0, 0],
+      }
+    });
+
+    doc.save('section-list.pdf');
   }
 
-  handleBackToEditSection(): void {
-    this.isEditSection = false;
+  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 
-  toggleViewSection(): void {
-    this.isViewSection = !this.isViewSection;
-  }
-
-  handleBackToViewSection(): void {
-    this.isViewSection = false;
-  }
 }

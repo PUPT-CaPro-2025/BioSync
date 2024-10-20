@@ -12,10 +12,19 @@ export class AddScheduleService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   createSchedule(schedule: Schedule[]){
-    const url = `${environment.apiUrl}/api/v1/schedules`;
+    const url = `${environment.apiUrl}/api/v1/schedules/create`;
     return this.http.post<Schedule[]>(url, schedule, {
       headers: this.headers,
       withCredentials: true
     });
   }
+
+  detectConflict(schedule: Schedule) {
+    const url = `${environment.apiUrl}/api/v1/schedules/conflicts`;
+    return this.http.post<Schedule[]>(url, schedule, {
+      headers: this.headers,
+      withCredentials: true
+    });
+  }
+
 }

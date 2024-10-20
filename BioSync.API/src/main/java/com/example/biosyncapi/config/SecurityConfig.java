@@ -1,8 +1,8 @@
 package com.example.biosyncapi.config;
 
 
-import com.example.biosyncapi.filter.JwtAuthenticationFilter;
-import com.example.biosyncapi.service.impl.UserDetailsServiceImpl;
+import com.example.biosyncapi.authentication.filter.JwtAuthenticationFilter;
+import com.example.biosyncapi.authentication.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,6 +62,8 @@ public class SecurityConfig {
                                 .requestMatchers("api/v1/test/")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/visitors")
+                                .permitAll()
+                                .requestMatchers(HttpMethod.POST, "api/v1/password/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()

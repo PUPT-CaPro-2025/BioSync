@@ -1,0 +1,341 @@
+<!-- <div class="flex justify-center items-center">
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">
+      Attendance for {{ selectedSchedule.subject?.name }}
+    </span>
+    @if (selectedSchedule) {
+      {{ getMonth(selectedSchedule.scheduleDate!) }}
+      {{ getDay(selectedSchedule.scheduleDate!) }}
+    }
+  </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+  <div class="flex justify-between w-[94%] bg-transparent">
+    <div class="w-[48%] subject-select">
+      <select
+        [(ngModel)]="selectedDevice"
+        id="subject"
+        name="subject"
+        class="bg-white custom-select w-full py-2 px-2 rounded-xl text-lightGray"
+      >
+        <option value="">Please select a device to use</option>
+        @if (hasFingerprintScanner) {
+          <option value="biometrics">Fingerprint Scanner</option>
+        }
+        @if (hasCamera) {
+          <option value="faceRecognition">Face Recognition</option>
+        }
+        @if (!hasDevice) {
+          <option value="">No Valid Scanner Detected</option>
+        }
+      </select>
+    </div>
+    @if (hasProfessorVerified) {
+      <div>
+        <button
+          mat-flat-button
+          (click)="openConfirmationDialog(selectedSchedule)"
+          class="stop-attendance"
+        >
+          Stop Attendance
+        </button>
+      </div>
+    }
+  </div>
+</div>
+@if (selectedDevice === "biometrics") {
+  @if (!hasProfessorVerified) {
+    <div class="flex justify-center items-center mt-8">
+      <div class="w-[94%] bg-transparent">
+        <p class="text-custom-16 text-lightGray">
+          {{ instructions }}
+        </p>
+      </div>
+    </div>
+    <div class="flex justify-center items-center mt-8">
+      <div
+        class="w-[94%] bg-transparent flex justify-center items-center flex-col"
+      >
+        <div class="flex justify-center items-center mt-32">
+          <p>{{ reminder }}</p>
+        </div>
+        @if (loggedProfessor) {
+          <div class="flex">
+            <div
+              class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-32"
+            ></div>
+            <div
+              class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-32"
+            >
+              <div class="flex flex-col">
+                <div class="flex justify-center items-center mb-4 mt-16">
+                  <div class="drop-area">
+                    <div class="upload-message">
+                      <mat-icon class="camera-icon">camera_alt</mat-icon>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex mt-24 gap-6 flex-col">
+                  <div class="flex flex-col">
+                    <p class="text-lightGray text-custom-12">
+                      Professor's Name
+                    </p>
+                    <p class="text-brightRed text-custom-24 font-weight400">
+                      John Doe
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="flex justify-center items-center mt-8">
+      <div class="w-[94%] bg-transparent">
+        <p class="text-custom-16 text-lightGray">
+          {{ instructions }}
+        </p>
+      </div>
+    </div>
+    <div
+      class="w-[94%] bg-transparent flex justify-center items-center flex-col"
+    >
+      @if (!loggedStudent) {
+        <div class="flex justify-center flex-col items-center mt-32">
+          <p>{{ reminder }}</p>
+        </div>
+      }
+      @if (loggedStudent) {
+        <div class="flex">
+          <div
+            class="bg-gradient-red-orange w-[75px] h-[600px] mb-14 mt-12"
+          ></div>
+          <div
+            class="flex justify-center bg-white w-[350px] h-[600px] mb-14 mt-12"
+          >
+            <div class="flex flex-col">
+              <div class="flex justify-center items-center mb-4 mt-16">
+                <div class="drop-area">
+                  <div class="upload-message">
+                    @if (profileImageUrl) {
+                      <img
+                        src="{{ profileImageUrl }}"
+                        alt="user profile image"
+                      />
+                    } @else {
+                      <mat-icon class="camera-icon">camera_alt</mat-icon>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="flex mt-24 gap-6 flex-col">
+                <div class="flex flex-col">
+                  <p class="text-lightGray text-custom-12">Student's Name</p>
+                  <p class="text-brightRed text-custom-24 font-weight400">
+                    {{ loggedStudent.firstName }} {{ loggedStudent.lastName }}
+                  </p>
+                </div>
+                <div class="flex flex-col">
+                  <p class="text-lightGray text-custom-12">Student Number</p>
+                  <p class="text-darkGray text-custom-16 font-weight400">
+                    {{ loggedStudent.usercode }}
+                  </p>
+                </div>
+                <div class="flex flex-col">
+                  <p class="text-lightGray text-custom-12">
+                    Course Year & Section
+                  </p>
+                  <p class="text-darkGray text-custom-16 font-weight400">
+                    BSIT 4-1
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+} @else if (selectedDevice === "faceRecognition") {
+  <div class="flex justify-center items-center mt-8">
+    <div class="w-[94%] bg-transparent">
+      <app-start-attendance-face [schedule]="selectedSchedule"/>
+    </div>
+  </div>
+} @else {
+  <div class="flex justify-center items-center mt-8">
+    <div class="w-[94%] bg-transparent">
+      <p class="text-custom-16 text-lightGray">No device selected.</p>
+    </div>
+  </div>
+} -->
+
+<!--New Code-->
+<div class="flex items-center justify-center h-screen">
+    <div class="gap-8 flex flex-row">
+        <div class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center">
+            <div class="w-[23vw] h-[85vh] flex justify-start flex-col">
+                <div class="flex flex-col gap-3">   
+                    <p class="text-custom-24 text-brightRed">
+                        {{ selectedSchedule.subject?.code }} - {{ selectedSchedule.subject?.name }}
+                    </p>
+                    <div class="flex flex-col">
+                        <p class="text-lightGray text-custom-12">Professor</p>
+                        <p class="text-custom-16 font-medium text-darkGray">
+                            Jheanie Go //dummy data
+                        </p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-12">
+                    <p class="text-brightRed text-custom-24">Attendance List</p>
+                    <hr class="border-t border-1 border-brightRed">
+                </div>
+                <div class=" mt-5 h-[55vh] overflow-y-auto row-container">
+                    <div class="">
+
+                    </div>
+                    @for(student of logstudents; track student) {
+                        <p class="text-darkGray text-custom-16">{{ logstudents.indexOf(student) + 1 }}. {{ student }}</p>
+                    }
+                </div>
+                @if (hasProfessorVerified) {
+                    <div class="flex-grow"></div>
+                    <div class="flex justify-center items-center">
+                      <button mat-flat-button
+                        (click)="openConfirmationDialog(selectedSchedule)"
+                        class="stop-attendance">
+                        Stop Attendance
+                      </button>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="w-[54vw] h-[90vh] flex flex-col justify-between">
+            <div class="flex flex-row gap-8 bg-transparent">
+                <div class="flex justify-start w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+                    <div class="flex flex-col">
+                        <p class="text-custom-40">{{ currentTime }}</p>
+                        <p class="text-custom-16 current-date">{{ currentDate }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+                    <div class="flex flex-col">
+                        <p class="text-custom-40">0 ->tempo</p>
+                        <p class="text-custom-16">Total of Students Logged</p>
+                    </div>
+                </div>
+            </div>
+            <div class="h-[75vh] w-full bg-gradient-red-orange rounded-xl flex justify-center items center">
+                <div class="flex flex-col w-[45vw] justify-center gap-4">
+                    @if (!hasProfessorVerified) {
+                        <p class="text-custom-32 text-f2White font-medium">
+                            @if(!loggedProfessor){
+                                {{reminder}}
+                            } @else if(loggedProfessor) {
+                                {{reminder}}
+                            }
+                        </p>
+                        <div class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9">
+                            <div class="flex justify-center">
+                                <div class="flex gap-6 flex-col w-[30vh] justify-center">
+                                    @if(loggedProfessor) {
+                                    <div class="flex flex-col">
+                                        <p class="text-lightGray text-custom-16">In-Charge Name</p>
+                                        <p class="text-brightRed text-custom-24 font-weight400">
+                                            hello //dummy data
+                                        </p>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="w-[20vw] flex justify-center items-center">
+                                    <div class="drop-area">
+                                        @if(!loggedProfessor) {
+                                            <div class="fingerprint-container">
+                                                <mat-icon class="fingerprint-icon">fingerprint</mat-icon>
+                                                <div class="bottom-left"></div>
+                                                <div class="bottom-right"></div>
+                                            </div>
+                                        } @else if(loggedProfessor) {
+                                            <div class="upload-message">
+                                                @if (profileImageUrl) {
+                                                  <img
+                                                    src="{{ profileImageUrl }}"
+                                                    alt="user profile image"
+                                                  />
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    } @else {
+                        <p class="text-custom-32 text-f2White font-medium">
+                            @if (loggedStudent) {
+                                WELCOME
+                            } @else if(!loggedStudent) {
+                                {{reminder}}
+                            }
+                        </p>
+                        <div class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9">
+                            <div class="flex justify-center">
+                                <div class="flex gap-6 flex-col w-[20vw] justify-center">
+                                    @if(loggedStudent) {
+                                        <div class="flex flex-col">
+                                            <p class="text-lightGray text-custom-16">Student's Name</p>
+                                            <p class="text-brightRed text-custom-24 font-weight400">
+                                                {{ loggedStudent.firstName }} {{ loggedStudent.lastName }}
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-lightGray text-custom-16">Student Number</p>
+                                            <p class="text-darkGray text-custom-20 font-weight400">
+                                                {{ loggedStudent.usercode }}
+                                            </p>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <p class="text-lightGray text-custom-16">
+                                                Course Year & Section
+                                            </p>
+                                            <p class="text-darkGray text-custom-16 font-weight400">
+                                                BSIT 4-1 //dummy data
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="flex justify-center">
+                                <div class="w-[20vw] flex justify-center items-center">
+                                    <div class="drop-area">
+                                        @if(loggedStudent) {
+                                            <div class="upload-message">
+                                                @if (profileImageUrl) {
+                                                  <img
+                                                    src="{{ profileImageUrl }}"
+                                                    alt="user profile image"
+                                                  />
+                                                } @else {
+                                                  <mat-icon class="camera-icon">camera_alt</mat-icon>
+                                                }
+                                              </div>
+                                        } @else if(!loggedStudent) {
+                                            <div class="fingerprint-container">
+                                                <mat-icon class="fingerprint-icon">fingerprint</mat-icon>
+                                                <div class="bottom-left"></div>
+                                                <div class="bottom-right"></div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>     
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

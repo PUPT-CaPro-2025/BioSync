@@ -23,12 +23,20 @@ jobs:
 
     - name: Substitute apiUrl in app.settings
       run: |
-        sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+          sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL }}'~" environment/app.setting.ts
+        elif [[ "${GITHUB_REF}" == "refs/heads/staging" ]]; then
+          sed -i -e "s~apiUrl: '.*'~apiUrl: '${{ secrets.API_URL_TEST }}'~" environment/app.setting.ts
+        fi
       shell: /usr/bin/bash -e {0}
 
     - name: Substitute cryptoKey in app.settings
       run: |
-        sed -i -e "s~key: '.*'~key: '${{ secrets.CRYPTO_KEY }}'~" environment/app.setting.ts
+        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+          sed -i -e "s~key: '.*'~key: '${{ secrets.CRYPTO_KEY }}'~" environment/app.setting.ts
+        elif [[ "${GITHUB_REF}" == "refs/heads/staging" ]]; then
+          sed -i -e "s~key: '.*'~key: '${{ secrets.CRYPTO_KEY }}'~" environment/app.setting.ts
+        fi
       shell: /usr/bin/bash -e {0}
 
     - name: Build Angular Project
@@ -40,8 +48,14 @@ jobs:
     - name: Transfer Build Folder to EC2 Instance
       uses: easingthemes/ssh-deploy@v2.1.4
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
-        REMOTE_HOST: ${{ secrets.AWS_DEPLOY_HOST }}
+        SSH_PRIVATE_KEY: ${{ 
+          github.ref == 'refs/heads/main' && secrets.EC2_PRIVATE_KEY ||
+          github.ref == 'refs/heads/staging' && secrets.EC2_PRIVATE_KEY_TEST ||
+          secrets.EC2_PRIVATE_KEY }}
+        REMOTE_HOST: ${{
+          github.ref == 'refs/heads/main' && secrets.AWS_DEPLOY_HOST ||
+          github.ref == 'refs/heads/staging' && secrets.AWS_DEPLOY_HOST_TEST ||
+          secrets.AWS_DEPLOY_HOST }}
         REMOTE_USER: ${{ secrets.AWS_DEPLOY_USER }}
         REMOTE_PORT: ${{ secrets.AWS_DEPLOY_PORT }}
         SOURCE: "dist/bio-sync.ui/"
