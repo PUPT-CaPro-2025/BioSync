@@ -54,12 +54,20 @@ public class UserServiceImpl implements UserService {
   private final ScheduleStudentRepository scheduleStudentRepository;
   private final AttendanceRepository attendanceRepository;
 
-  public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
-      FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository,
-                         ProgramRepository programRepository, SectionRepository sectionRepository,
-                         AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService,
-                          ScheduleStudentRepository scheduleStudentRepository, PasswordResetRepository resetTokenRepository,
-                         AttendanceRepository attendanceRepository) {
+  public UserServiceImpl(
+      UserRepository userRepository,
+      TokenRepository tokenRepository,
+      FingerprintRepository fingerprintRepository,
+      S3Client s3Client,
+      ProfileImageRepository profileImageRepository,
+      ProgramRepository programRepository,
+      SectionRepository sectionRepository,
+      AuthenticationServiceImpl authenticationService,
+      ScheduleStudentService scheduleStudentService,
+      ScheduleStudentRepository scheduleStudentRepository,
+      PasswordResetRepository resetTokenRepository,
+      AttendanceRepository attendanceRepository)
+  {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.fingerprintRepository = fingerprintRepository;
@@ -102,7 +110,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public void deleteUser(Long id) {
     Optional<User> user = this.userRepository.findById(id);
-    if (user.isEmpty()) throw new IllegalArgumentException("User does not exist");
+    if (user.isEmpty()) {
+      throw new IllegalArgumentException("User does not exist");
+    }
 
     this.profileImageRepository.deleteByUserId(id);
     this.attendanceRepository.deleteByUserId(id);
@@ -119,23 +129,30 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void processProfileImage(Long userId, MultipartFile image) {
+  public void processProfileImage(
+      Long userId,
+      MultipartFile image)
+  {
     Optional<User> user = userRepository.findById(userId);
-    if (user.isEmpty())
+    if (user.isEmpty()) {
       throw new RuntimeException("User not found");
+    }
 
     File dir = new File(profileImageDirectory);
     if (!dir.exists()) {
       boolean created = dir.mkdirs();
 
-      if (!created)
+      if (!created) {
         throw new RuntimeException("Failed to create fingerprints directory");
+      }
     }
 
-    String uniqueFileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
+    String uniqueFileName =
+        UUID.randomUUID() + "-" + image.getOriginalFilename();
     Path filePath = Paths.get(profileImageDirectory, uniqueFileName);
     try {
-      Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(image.getInputStream(), filePath,
+          StandardCopyOption.REPLACE_EXISTING);
       String imagePath = filePath.toAbsolutePath().toString();
       ProfileImage profileImage = new ProfileImage(imagePath, user.get());
       profileImageRepository.save(profileImage);
@@ -145,11 +162,15 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void processProfileImageToBucket(Long userId, MultipartFile image) throws IOException {
+  public void processProfileImageToBucket(
+      Long userId,
+      MultipartFile image) throws IOException
+  {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    String uniqueFileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
+    String uniqueFileName =
+        UUID.randomUUID() + "-" + image.getOriginalFilename();
 
     s3Client.putObject(
         PutObjectRequest.builder()
@@ -158,7 +179,8 @@ public class UserServiceImpl implements UserService {
             .build(),
         RequestBody.fromInputStream(image.getInputStream(), image.getSize()));
 
-    String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
+    String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName,
+        uniqueFileName);
 
     ProfileImage profileImage = new ProfileImage(s3Url, user);
 
@@ -169,24 +191,30 @@ public class UserServiceImpl implements UserService {
    * process to update the profile picture of the user
    *
    * @param userId The ID of the user whose profile image is being updated.
-   * 
+   *
    * @param image The new profile image to be uploaded.
-   * 
+   *
    * @throws IOException If an error occurs while processing the image.
    */
   @Override
-  public void processEditProfileImageToBucket(Long userId, MultipartFile image) throws IOException {
+  public void processEditProfileImageToBucket(
+      Long userId,
+      MultipartFile image) throws IOException
+  {
     User user = userRepository.findByUserId(userId);
 
-    if (user == null)
+    if (user == null) {
       throw new RuntimeException("User not found");
+    }
 
-    ProfileImage profileImage = profileImageRepository.findByUserId(user.getId());
+    ProfileImage profileImage =
+        profileImageRepository.findByUserId(user.getId());
 
     String currentImagePath = profileImage.getImageUrl();
 
     if (currentImagePath != null) {
-      String existingFileName = currentImagePath.replace("https://pupt-biosync-team.s3.amazonaws.com/", "");
+      String existingFileName = currentImagePath.replace(
+          "https://pupt-biosync-team.s3.amazonaws.com/", "");
 
       s3Client.deleteObject(
           DeleteObjectRequest.builder()
@@ -211,10 +239,14 @@ public class UserServiceImpl implements UserService {
    * @param <optional> schedule id - include student in schedule
    */
   @Override
-  public HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule ) throws Exception {
+  public HashMap<User, String> processCSV(
+      MultipartFile file,
+      Schedule schedule) throws Exception
+  {
     HashMap<User, String> mailPassword = new HashMap<>();
     try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)))
+    {
       String line;
       boolean isHeader = true;
       while ((line = reader.readLine()) != null) {
@@ -226,14 +258,19 @@ public class UserServiceImpl implements UserService {
 
         Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
-        if (user.isPresent()) {
-          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, user.get()));
+        if (user.isPresent() && schedule != null) {
+          this.scheduleStudentService.addStudentToSchedule(schedule,
+              user.get());
           continue;
         }
         System.out.println(Arrays.toString(csvRow));
         String generatedPassword = generatePassword(8);
-        User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
-        schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
+        User createdUser = this.authenticationService.register(
+            mapToUser(csvRow, generatedPassword));
+        if (schedule != null) {
+          this.scheduleStudentService.addStudentToSchedule(schedule,
+              createdUser);
+        }
 
         mailPassword.put(createdUser, generatedPassword);
       }
@@ -243,7 +280,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User mapToUser(String[] csvRow, String password) {
+  public User mapToUser(
+      String[] csvRow,
+      String password)
+  {
     User user = new User();
     user.setUsercode(getValue(csvRow[0]));
     user.setLastName(getValue(csvRow[1]));
@@ -259,21 +299,24 @@ public class UserServiceImpl implements UserService {
 
   //region Helper methods
   private String getValue(String value) {
-    if (value.isEmpty())
+    if (value.isEmpty()) {
       return null;
+    }
 
     return value;
   }
 
-  private String getEmail(String value){
-    if(!value.contains("(locked)")) return value;
+  private String getEmail(String value) {
+    if (!value.contains("(locked)")) {
+      return value;
+    }
 
     int extraIndex = value.indexOf("(locked)");
 
     return value.substring(0, extraIndex);
   }
 
-  private Section getSection(String sectionCode){
+  private Section getSection(String sectionCode) {
     int tgIndex = sectionCode.indexOf("TG");
 
     String yearSection = sectionCode.substring(tgIndex + 2).trim();
@@ -281,12 +324,15 @@ public class UserServiceImpl implements UserService {
 
     Program program = getProgram(sectionCode);
 
-    if(program == null) return null;
+    if (program == null) {
+      return null;
+    }
 
     String year = yearSectionArr[0];
     int section = Integer.parseInt(yearSectionArr[1]);
 
-    return this.sectionRepository.findByProgramAndYearAndSection(program, year, section);
+    return this.sectionRepository.findByProgramAndYearAndSection(program, year,
+        section);
   }
 
   private Program getProgram(String sectionCode) {
@@ -294,12 +340,14 @@ public class UserServiceImpl implements UserService {
 
     String programAbb = sectionCode.substring(0, tgIndex).trim();
 
-    return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
+    return this.programRepository.findByProgramAbbreviation(programAbb)
+        .orElse(null);
   }
 
 
   private String generatePassword(int length) {
-    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    String characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     String specialCharacters = "!@#$%^&*()_+[]{}|;:,.<>?";
 
     String allCharacters = characters + specialCharacters;

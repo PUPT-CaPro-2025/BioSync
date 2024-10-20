@@ -23,16 +23,26 @@ public interface UserService {
 
   void deleteUser(Long id);
 
-  void processProfileImage(Long userId, MultipartFile image);
+  void processProfileImage(
+      Long userId,
+      MultipartFile image);
 
-  void processProfileImageToBucket(Long userId, MultipartFile image) throws IOException;
+  void processProfileImageToBucket(
+      Long userId,
+      MultipartFile image) throws IOException;
 
-  void processEditProfileImageToBucket(Long userId, MultipartFile image) throws IOException;
+  void processEditProfileImageToBucket(
+      Long userId,
+      MultipartFile image) throws IOException;
 
   String getProfileImageUrl(Long userId);
 
-  HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception;
+  HashMap<User, String> processCSV(
+      MultipartFile file,
+      Schedule schedule) throws Exception;
 
-  User mapToUser(String[] csvRow, String password);
+  User mapToUser(
+      String[] csvRow,
+      String password);
 
 }

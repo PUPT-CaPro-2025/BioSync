@@ -23,7 +23,11 @@ public class UserController {
   private final MailService mailService;
   private final ScheduleService scheduleService;
 
-  public UserController(UserService userService, MailService mailService, ScheduleService scheduleService) {
+  public UserController(
+      UserService userService,
+      MailService mailService,
+      ScheduleService scheduleService)
+  {
     this.userService = userService;
     this.mailService = mailService;
     this.scheduleService = scheduleService;
@@ -42,8 +46,9 @@ public class UserController {
   @GetMapping("/section/{id}")
   public ResponseEntity<List<User>> getUsersBySectionId(@PathVariable Long id) {
     List<User> students = this.userService.getUsersBySectionId(id);
-    if (students.isEmpty())
+    if (students.isEmpty()) {
       return ResponseEntity.notFound().build();
+    }
 
     return ResponseEntity.ok(students);
   }
@@ -52,8 +57,9 @@ public class UserController {
   public ResponseEntity<Map<String, String>> getProfileImageUrl(@PathVariable Long id) {
     String profileImageUrl = this.userService.getProfileImageUrl(id);
 
-    if (profileImageUrl == null)
+    if (profileImageUrl == null) {
       return ResponseEntity.notFound().build();
+    }
 
     Map<String, String> response = new HashMap<>();
     response.put("profileImageUrl", profileImageUrl);
@@ -75,7 +81,8 @@ public class UserController {
   public ResponseEntity<?> createUserProfileImage(
       @RequestParam("userId") Long userId,
       @RequestParam("profileImage") MultipartFile profileImage,
-      @RequestParam(value = "method", defaultValue = "toBucket") String method) {
+      @RequestParam(value = "method", defaultValue = "toBucket") String method)
+  {
     try {
       if (method.equals("toBucket")) {
         this.userService.processProfileImageToBucket(userId, profileImage);
@@ -90,26 +97,28 @@ public class UserController {
 
   @PostMapping("/students")
   public ResponseEntity<Map<String, Object>> addStudents(
-          @RequestParam("file") MultipartFile file,
-          @RequestParam(value = "scheduleId", required = false) Long scheduleId) {
+      @RequestParam("file") MultipartFile file,
+      @RequestParam(value = "scheduleId", required = false) Long scheduleId)
+  {
     try {
-      Optional<Schedule> schedule = scheduleId != null ? scheduleService.getScheduleById(scheduleId) : Optional.empty();
-      HashMap<User, String> mailPasswords = userService.processCSV(file, schedule);
+      Schedule schedule =
+          scheduleService.getScheduleById(scheduleId).orElse(null);
+      HashMap<User, String> mailPasswords =
+          userService.processCSV(file, schedule);
 
       mailService.autoSendCredentials(mailPasswords);
 
       return ResponseEntity.ok().body(Map.ofEntries(
-              Map.entry("success", true),
-              Map.entry("count", mailPasswords.size())
-      ));
+          Map.entry("success", true),
+          Map.entry("count", mailPasswords.size())
+                                                   ));
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(Map.ofEntries(
-              Map.entry("success", false),
-              Map.entry("error", e.getMessage())
-      ));
+          Map.entry("success", false),
+          Map.entry("error", e.getMessage())
+                                                           ));
     }
   }
-
 
   @PutMapping("/edit-user")
   public User updateUser(@RequestBody User user) {
@@ -119,7 +128,8 @@ public class UserController {
   @PutMapping("/edit-profile-image")
   public ResponseEntity<?> updateUserProfileImage(
       @RequestParam("userId") Long userId,
-      @RequestParam("profileImage") MultipartFile profileImage) {
+      @RequestParam("profileImage") MultipartFile profileImage)
+  {
     try {
       this.userService.processEditProfileImageToBucket(userId, profileImage);
 

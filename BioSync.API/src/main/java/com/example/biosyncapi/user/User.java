@@ -16,156 +16,156 @@ import java.util.List;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String firstName;
+  private String firstName;
 
-    private String middleName;
+  private String middleName;
 
-    private String lastName;
+  private String lastName;
 
-    @Column(unique = true)
-    private String usercode;
+  @Column(unique = true)
+  private String usercode;
 
-    private String password;
+  private String password;
 
-    private String suffix;
+  private String suffix;
 
-    @Column(unique = true)
-    private String email;
+  @Column(unique = true)
+  private String email;
 
-    @Enumerated(value = EnumType.STRING)
-    private Role role;
+  @Enumerated(value = EnumType.STRING)
+  private Role role;
 
-    @ManyToOne
-    @JoinColumn(name = "program_id")
-    private Program Program;
+  @ManyToOne
+  @JoinColumn(name = "program_id")
+  private Program Program;
 
-    @ManyToOne
-    private Section section;
+  @ManyToOne
+  private Section section;
 
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    private List<Token> tokens;
+  @OneToMany(mappedBy = "user")
+  @JsonIgnore
+  private List<Token> tokens;
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getFirstName() {
-        return firstName;
-    }
+  public String getFirstName() {
+    return firstName;
+  }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
 
-    public String getMiddleName() {
-        return middleName;
-    }
+  public String getMiddleName() {
+    return middleName;
+  }
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
+  public void setMiddleName(String middleName) {
+    this.middleName = middleName;
+  }
 
-    public String getLastName() {
-        return lastName;
-    }
+  public String getLastName() {
+    return lastName;
+  }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
 
-    public String getUsercode() {
-        return usercode;
-    }
+  public String getUsercode() {
+    return usercode;
+  }
 
-    public void setUsercode(String usercode) {
-        this.usercode = usercode;
-    }
+  public void setUsercode(String usercode) {
+    this.usercode = usercode;
+  }
 
-    public String getSuffix() {
-        return suffix;
-    }
+  public String getSuffix() {
+    return suffix;
+  }
 
-    public void setSuffix(String suffix) {
-        this.suffix = suffix;
-    }
+  public void setSuffix(String suffix) {
+    this.suffix = suffix;
+  }
 
-    public String getEmail() {
-        return email;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public Section getSection() {
-        return section;
-    }
+  public Section getSection() {
+    return section;
+  }
 
-    public void setSection(Section section) {
-        this.section = section;
-    }
+  public void setSection(Section section) {
+    this.section = section;
+  }
 
-    public com.example.biosyncapi.program.Program getProgram() {
-        return Program;
-    }
+  public com.example.biosyncapi.program.Program getProgram() {
+    return Program;
+  }
 
-    public void setProgram(com.example.biosyncapi.program.Program program) {
-        Program = program;
-    }
+  public void setProgram(com.example.biosyncapi.program.Program program) {
+    Program = program;
+  }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of(new SimpleGrantedAuthority(role.name()));
+  }
 
-    public String getPassword() {
-        return password;
-    }
+  public String getPassword() {
+    return password;
+  }
 
-    @Override
-    public String getUsername() {
-        return usercode;
-    }
+  @Override
+  public String getUsername() {
+    return usercode;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    public Role getRole() {
-        return role;
-    }
+  public Role getRole() {
+    return role;
+  }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+  public void setRole(Role role) {
+    this.role = role;
+  }
 }
