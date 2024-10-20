@@ -9,34 +9,34 @@ import java.util.Optional;
 @RequestMapping("api/v1/semester")
 public class SemesterController {
 
-    private final SemesterService semesterService;
+  private final SemesterService semesterService;
 
-    public SemesterController(SemesterService semesterService) {
-        this.semesterService = semesterService;
-    }
+  public SemesterController(SemesterService semesterService) {
+    this.semesterService = semesterService;
+  }
 
-    @GetMapping
-    public List<Semester> getAllSemesters() {
-        return semesterService.getAllSemesters();
-    }
+  @GetMapping
+  public List<Semester> getAllSemesters() {
+    return semesterService.getAllSemesters();
+  }
 
-    @GetMapping("/{id}")
-    public Optional<Semester> getSemesterById(@PathVariable Long id) {
-        return semesterService.getSemesterById(id);
-    }
+  @GetMapping("/{id}")
+  public Optional<Semester> getSemesterById(@PathVariable Long id) {
+    return semesterService.getSemesterById(id);
+  }
 
-    @PostMapping
-    public Semester createSemester(@RequestBody Semester semester) {
-        return semesterService.createSemester(semester);
-    }
+  @PostMapping
+  public Semester createSemester(@RequestBody Semester semester) {
+    return semesterService.createSemester(semester);
+  }
 
-    @PutMapping
-    public Semester updateSemester(@RequestBody Semester semester) {
-        return semesterService.updateSemester(semester);
-    }
+  @PutMapping
+  public Semester updateSemester(@RequestBody Semester semester) {
+    return semesterService.updateSemester(semester);
+  }
 
-    @DeleteMapping
-    public void deleteSemester(@RequestBody Semester semester) {
-        semesterService.deleteSemester(semester.getId());
-    }
+  @DeleteMapping
+  public void deleteSemester(@RequestBody Semester semester) {
+    semesterService.deleteSemester(semester.getId());
+  }
 }
