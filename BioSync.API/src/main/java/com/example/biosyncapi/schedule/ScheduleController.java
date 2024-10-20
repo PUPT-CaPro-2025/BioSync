@@ -31,27 +31,15 @@ public class ScheduleController {
     this.userService = userService;
   }
 
-    @GetMapping
-    public List<Schedule> getAllSchedules() {
-        return scheduleService.getAllSchedules();
-    }
+  @GetMapping
+  public List<Schedule> getAllSchedules() {
+    return scheduleService.getAllSchedules();
+  }
 
-    @GetMapping("/pending")
-    public List<Schedule> getPendingSchedules() {
-        return scheduleService.getAllPendingSchedules();
-    }
-
-    @GetMapping("/professor/{id}")
-    public List<Schedule> getSchedulesByProfessorId(@PathVariable Long id) {
-        return scheduleService.getAllSchedulesByProfessorId(id);
-    }
-
-    @GetMapping("/professor/requests/{id}")
-    public ResponseEntity<?> getRequestedSchedules(@PathVariable Long id){
-        List<Schedule> requestedSchedules = scheduleService.getAllRequestedSchedules(id);
-
-        return new ResponseEntity<>(requestedSchedules, HttpStatus.OK);
-    }
+  @GetMapping("/professor/{id}")
+  public List<Schedule> getSchedulesByProfessorId(@PathVariable Long id) {
+    return scheduleService.getAllSchedulesByProfessorId(id);
+  }
 
   @GetMapping("/section/{id}")
   public List<Schedule> getSchedulesBySectionId(@PathVariable Long id) {
@@ -128,17 +116,10 @@ public class ScheduleController {
     }
   }
 
-    @PutMapping
-    public Schedule updateSchedule(@RequestBody Schedule schedule) {
-        return scheduleService.updateSchedule(schedule);
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<?> patchSchedule(@PathVariable Long id, @RequestParam String status) {
-        Status statusReq = Status.valueOf(status);
-        Schedule schedule = scheduleService.updatePartialSchedule(id, statusReq);
-        return new ResponseEntity<>(schedule, HttpStatus.OK);
-    }
+  @PutMapping
+  public Schedule updateSchedule(@RequestBody Schedule schedule) {
+    return scheduleService.updateSchedule(schedule);
+  }
 
   @DeleteMapping
   public void deleteSchedule(@RequestBody Schedule schedule) {

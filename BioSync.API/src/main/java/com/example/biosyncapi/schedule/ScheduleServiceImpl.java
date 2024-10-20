@@ -40,28 +40,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     this.scheduleStudentRepository = scheduleStudentRepository;
   }
 
-    @Override
-    public List<Schedule> getAllSchedules() {
-        return scheduleRepository.findByIsActiveTrueAndStatus(Status.APPROVED);
-    }
+  @Override
+  public List<Schedule> getAllSchedules() {
+    return scheduleRepository.findAll();
+  }
 
   @Override
   public List<Schedule> getAllSchedulesByProfessorId(Long professorId) {
     return scheduleRepository.findSchedulesByProfessorId(professorId);
   }
 
-    @Override
-    public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
-        return scheduleRepository.findSchedulesBySectionId(sectionId);
-    }
-
-    public List<Schedule> getAllPendingSchedules(){
-        return scheduleRepository.findAllByStatus(Status.PENDING);
-    }
-
-    public List<Schedule> getAllRequestedSchedules(Long requesterId){
-        return scheduleRepository.findByRequesterId(requesterId);
-    }
+  @Override
+  public List<Schedule> getAllSchedulesBySectionId(Long sectionId) {
+    return scheduleRepository.findSchedulesBySectionId(sectionId);
+  }
 
   @Override
   public List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId) {
@@ -265,10 +257,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
       }
 
-            return schedule;
-        }
-        return scheduleRepository.save(schedule);
+      return schedule;
     }
+    return scheduleRepository.save(schedule);
+  }
 
     public Schedule updatePartialSchedule(Long id, Status updates) {
         Schedule existingSchedule = scheduleRepository.findById(id)

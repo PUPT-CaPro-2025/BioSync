@@ -66,7 +66,8 @@ public class Schedule {
   private List<ScheduleStudent> scheduleStudents;
 
   @ElementCollection(fetch = FetchType.EAGER)
-  @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+  @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name =
+      "schedule_id"))
   public List<String> recurrenceDays;
 
   @Enumerated(value = EnumType.STRING)
@@ -247,29 +248,5 @@ public class Schedule {
 
   public void setScheduleStudents(List<ScheduleStudent> scheduleStudents) {
     this.scheduleStudents = scheduleStudents;
-  }
-
-  public Status getStatus() {
-    return status;
-  }
-
-  public void setStatus(Status status) {
-    this.status = status;
-  }
-
-  public boolean isActive() {
-    return isActive;
-  }
-
-  public void setActive(boolean active) {
-    isActive = active;
-  }
-
-  public User getRequester() {
-    return requester;
-  }
-
-  public void setRequester(User requester) {
-    this.requester = requester;
   }
 }

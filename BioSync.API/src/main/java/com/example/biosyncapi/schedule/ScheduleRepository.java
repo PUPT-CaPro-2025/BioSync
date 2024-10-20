@@ -40,8 +40,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
   @Query("SELECT s FROM Schedule s WHERE s.recurrenceId = :recurrenceId")
   List<Schedule> findByRecurrenceId(@Param("recurrenceId") UUID recurrenceId);
 
-    @Query("SELECT s FROM Schedule s WHERE s.professor.id = :professorId AND s.isActive = true AND s.status = 'APPROVED'")
-    List<Schedule> findSchedulesByProfessorId(@Param("professorId") Long professorId);
+  @Query("SELECT s FROM Schedule s WHERE s.professor.id = :professorId")
+  List<Schedule> findSchedulesByProfessorId(@Param("professorId") Long professorId);
 
   @Query("SELECT s FROM Schedule s WHERE s.section.id = :sectionId")
   List<Schedule> findSchedulesBySectionId(@Param("sectionId") Long sectionId);
