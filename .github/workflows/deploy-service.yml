@@ -44,12 +44,14 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets[github.ref == 'refs/heads/main' && 'EC2_PRIVATE_KEY' || 'EC2_PRIVATE_KEY_TEST'] }}
 
       - name: Deploy to EC2 Instance
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_HOST }} << 'EOF'
+          EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
+
+          ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/face-recog-service:latest
             docker rm -f face-recog-service-container || true
-            docker run -d -p 5000:5000 --env-file /path/to/.env --name face-recog-service-container jheankhendrick/face-recog-service:latest
+            docker run -d -p 5000:5000 --env-file /home/ubuntu/biosync/env/.env --name face-recog-service-container jheankhendrick/face-recog-service:latest
           EOF
