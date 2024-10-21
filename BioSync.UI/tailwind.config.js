@@ -7,9 +7,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        darkRed: '#D33C33',
-        brightRed: '#F84C42',
-        darkOrange: '#FB7E3C',
+        darkRed: '#68191F',
+        brightRed: '#AB3130',
+        darkOrange: '#F5B436',
         darkerOrange: '#B75E2E',
         f2White: '#F2E8E9',
         f4White: '#F4F4F4',
@@ -28,22 +28,24 @@ module.exports = {
         'custom-12': '12px',
       },
       borderColor: {
-        darkRed: '#D33C33',
-        brightRed: '#F84C42',
-        darkOrange: '#FB7E3C',
-        f2White: 'F2E8E9',
+        darkRed: '#68191F',
+        brightRed: '#AB3130',
+        darkOrange: '#F5B436',
+        darkerOrange: '#B75E2E',
+        f2White: '#F2E8E9',
         f4White: '#F4F4F4',
         cleanWhite: '#FFFFFF',
         darkGray: '#393939',
         lightGray: '#7F7F7F',
+        semiGray: '#E3E3E3',
       },
       borderWidth: {
         '1': '1px',
         '2': '2px'
       },
       backgroundImage: {
-        'gradient-red-orange': 'linear-gradient(to right, #F84C42, #F9653F, #FB7E3C)',
-        'gradient-dark-red-orange': 'linear-gradient(to right, #D33C33, #C54D31, #B75E2E)',
+        'gradient-red': 'linear-gradient(to right,  #68191F, #AB3130)',
+        'gradient-dark-red': 'linear-gradient(to right, #3A0F12, #5C1919)',
         'gradient-orange-red-down': 'linear-gradient(to bottom, #E4581D, #F9653F)',
         lightGray: '#7F7F7F',
       },

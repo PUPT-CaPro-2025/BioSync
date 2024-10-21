@@ -311,10 +311,10 @@
                 Cancel
             </button>
             <button class="text-custom-14 text-white py-2 px-19
-                bg-gradient-red-orange rounded-full form-button"
+                bg-gradient-red rounded-full form-button"
                 (click)="submit()"
                 [ngClass]="{
-                    'bg-gradient-red-orange text-white hover:bg-gradient-dark-red-orange hover:text-f4White': isScheduleValid,
+                    'bg-gradient-red text-white hover:bg-gradient-dark-red hover:text-f4White': isScheduleValid,
                     'bg-gray-600 text-gray-300 cursor-not-allowed': !isScheduleValid
                   }"
                 [disabled]="!isScheduleValid">
