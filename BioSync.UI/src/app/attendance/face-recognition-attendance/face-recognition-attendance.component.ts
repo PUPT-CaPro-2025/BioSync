@@ -115,14 +115,6 @@ export class FaceRecognitionAttendanceComponent implements OnInit {
     });
   }
 
-  getMonth(date: string) {
-    return this.scheduleService.getMonth(date);
-  }
-
-  getDay(date: string) {
-    return this.scheduleService.getDay(date);
-  }
-
   private base64ToBlob(base64: string, contentType: string) {
     return this.sdkService.base64ToBlob(base64, contentType);
   }
@@ -235,9 +227,9 @@ export class FaceRecognitionAttendanceComponent implements OnInit {
 
   //temporary data
   logstudents = [
-    'Kylie Ross Ayacocho', 
-    'Andronicus Dimasacat', 
-    'Jhean Khendrick Galope', 
+    'Kylie Ross Ayacocho',
+    'Andronicus Dimasacat',
+    'Jhean Khendrick Galope',
     'Christian Harrel Go'
   ]
 }
