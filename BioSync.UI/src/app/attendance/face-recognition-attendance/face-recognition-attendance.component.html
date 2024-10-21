@@ -2,14 +2,15 @@
     <div class="gap-8 flex flex-row">
         <div class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center">
             <div class="w-[23vw] h-[85vh] flex justify-start flex-col">
-                <div class="flex flex-col gap-3">   
+                <div class="flex flex-col gap-3">
                     <p class="text-custom-24 text-brightRed">
-                        {{ selectedSchedule.subject?.code }} - {{ selectedSchedule.subject?.name }}
+                        {{ schedule.subject?.code }} - {{ schedule.subject?.name }}
                     </p>
                     <div class="flex flex-col">
                         <p class="text-lightGray text-custom-12">Professor</p>
                         <p class="text-custom-16 font-medium text-darkGray">
-                            Jheanie Go //dummy data
+                            {{ schedule.professor?.firstName }}
+                            {{ schedule.professor?.lastName }}
                         </p>
                     </div>
                 </div>
@@ -29,7 +30,7 @@
                     <div class="flex-grow"></div>
                     <div class="flex justify-center items-center">
                       <button mat-flat-button
-                        (click)="openConfirmationDialog(selectedSchedule)"
+                        (click)="openConfirmationDialog(schedule)"
                         class="stop-attendance">
                         Stop Attendance
                       </button>
@@ -47,7 +48,7 @@
                 </div>
                 <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
                     <div class="flex flex-col">
-                        <p class="text-custom-40">0 ->tempo</p>
+                        <p class="text-custom-40">{{ logstudents.length }}</p>
                         <p class="text-custom-16">Total of Students Logged</p>
                     </div>
                 </div>
@@ -66,22 +67,14 @@
                             <div class="w-[23vw] rounded-xl h-[55vh] bg-white flex justify-center flex-col gap-9">
                                 <div class="flex justify-center">
                                     <div class="w-[20vw] flex justify-center items-center flex-col gap-8">
-                                        <div class="camera-area">
-                                            <div class="upload-message">
-                                                @if (profileImageUrl) {
-                                                  <img
-                                                    src="{{ profileImageUrl }}"
-                                                    alt="user profile image"
-                                                  />
-                                                } @else {
-                                                  <mat-icon class="camera-icon">camera_alt</mat-icon>
-                                                }
-                                            </div>                                     
+                                        <div id="div1" style="position: relative;">
+                                            <video #videoElement id="videoElement" muted autoplay></video>
+                                            <canvas #overlay id="overlay" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
                                         </div>
                                         <p class="text-lightGray text-custom-14">Please center your face in the camera frame for a clear scan. Make sure your entire face is visible</p>
                                     </div>
                                 </div>
-                            </div>   
+                            </div>
                             <div class="w-[23vw] rounded-xl h-[55vh] bg-white flex justify-center gap-9">
                                 <div class="flex justify-center flex-col gap-24">
                                     <div class="w-[20vw] flex justify-center items-center">
@@ -105,13 +98,14 @@
                                             <div class="flex flex-col">
                                                 <p class="text-lightGray text-custom-16">In-Charge Name</p>
                                                 <p class="text-brightRed text-custom-24 font-weight400">
-                                                    Hello //dummy data
+                                                    {{ loggedProfessor.firstName }}
+                                                    {{ loggedProfessor.lastName }}
                                                 </p>
                                             </div>
                                         }
                                     </div>
                                 </div>
-                            </div>     
+                            </div>
                         </div>
                     } @else {
                         <p class="text-custom-32 text-f2White font-medium">
@@ -135,12 +129,12 @@
                                                 } @else {
                                                   <mat-icon class="camera-icon">camera_alt</mat-icon>
                                                 }
-                                            </div>                                     
+                                            </div>
                                         </div>
                                         <p class="text-lightGray text-custom-14">Please center your face in the camera frame for a clear scan. Make sure your entire face is visible</p>
                                     </div>
                                 </div>
-                            </div>   
+                            </div>
                             <div class="w-[23vw] rounded-xl h-[55vh] bg-white flex justify-center gap-9">
                                 <div class="flex justify-center flex-col gap-16">
                                     <div class="w-[20vw] flex justify-center items-center">
@@ -179,15 +173,16 @@
                                                         Course Year & Section
                                                     </p>
                                                     <p class="text-darkGray text-custom-16 font-weight400">
-                                                        BSIT 4-1 //dummy data
+                                                        {{ loggedStudent.section?.year }}
+                                                        - {{ loggedStudent.section?.section }}
                                                     </p>
                                                 </div>
                                             }
                                         </div>
                                     </div>
                                 </div>
-                            </div>     
-                        </div>                      
+                            </div>
+                        </div>
                     }
                 </div>
             </div>
