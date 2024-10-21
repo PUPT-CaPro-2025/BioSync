@@ -17,7 +17,7 @@
 
 .toolbar-container span {
     font-size: 32px;
-    color: #F84C42;
+    color: #AB3130;
 }
 
 .toolbar-button {
@@ -28,7 +28,7 @@
 .toolbar-button button {
     font-size: 12px;
     padding: 4px 40px;
-    background-color: #F84C42;
+    background-color: #AB3130;
     color: white;
     border: none;
     border-radius: 40px;
@@ -80,7 +80,7 @@
 }
 
 .entry-container span {
-    color: #F84C42;
+    color: #AB3130;
     font-size: 12px;
 }
 
@@ -95,7 +95,7 @@
 }
 
 .sort-container select {
-    color: #F84C42;
+    color: #AB3130;
     border: 1px solid #F2E8E9;
     border-radius: 4px;
     padding: 5px 10px;
@@ -117,7 +117,7 @@
 .attributes {
     font-weight: bold;
     font-size: 12px;
-    color: #F84C42;
+    color: #AB3130;
     padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
@@ -157,7 +157,7 @@
 }
 
 .view-button, .edit-button, .delete-button {
-    background-color: #F84C42;
+    background-color: #AB3130;
     color: white;
     border: none;
     padding: 4px 4px;
@@ -253,7 +253,7 @@
 }
 
 .paginator-button-container button.active-button {
-    color: #F84C42;
+    color: #AB3130;
 }
 
 .paginator-button-container img {

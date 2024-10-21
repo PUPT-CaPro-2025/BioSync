@@ -17,17 +17,17 @@
 
 .mat-step-header[aria-selected="true"] .mat-step-icon {
     background-color: white;
-    border: 2px solid #F84C42;
-    color: #F84C42;
+    border: 2px solid #AB3130;
+    color: #AB3130;
 }
   
 .mat-step-header[aria-selected="true"] .mat-step-label {
-    color: #F84C42;
+    color: #AB3130;
 }
 
 .mat-step-header[ng-reflect-state="edit"] .mat-step-icon {
-    background-color: #F84C42;
-    border: 2px solid #F84C42;
+    background-color: #AB3130;
+    border: 2px solid #AB3130;
     color: white;
 }
 
@@ -64,7 +64,7 @@ button.mat-stepper-previous {
 button.mat-stepper-next {
     color: white !important;
     padding: 8px 60px !important;
-    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436) !important; 
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -78,7 +78,7 @@ button.mat-stepper-next:hover {
 .add-button {
     color: white !important;
     padding: 8px 60px !important;
-    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C) !important; 
+    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436) !important; 
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -158,7 +158,7 @@ button.mat-stepper-next:hover {
     width: 200px;
     height: 300px;
     padding: 20px;
-    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C);
+    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436);
     text-align: center;
     border-radius: 20px;
     display: flex;

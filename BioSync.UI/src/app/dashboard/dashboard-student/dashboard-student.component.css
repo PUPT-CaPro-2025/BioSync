@@ -41,13 +41,13 @@ width: 100%;
 }
 
 .fc-toolbar-title {
-  color: #F84C42 !important;    
+  color: #AB3130 !important;    
   font-size: 24px !important;
   font: medium !important; 
 }
 
 .fc-button.fc-today-button {
-  background-color: #F84C42 !important;
+  background-color: #AB3130 !important;
   color: white !important;
 }
 
@@ -59,7 +59,7 @@ width: 100%;
 .fc-next-button {
   background-color: transparent !important;
   border: none !important;
-  color: #F84C42 !important;
+  color: #AB3130 !important;
   box-shadow: none !important; 
   font-size: larger !important;
 }
@@ -83,7 +83,7 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border-bottom: 2px solid #F84C42;
+  border-bottom: 2px solid #AB3130;
   pointer-events: none;
   box-sizing: border-box;
 }
@@ -106,7 +106,7 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border: 2px solid #F84C42;
+  border: 2px solid #AB3130;
   border-radius: 8px;
   pointer-events: none;
   box-sizing: border-box;

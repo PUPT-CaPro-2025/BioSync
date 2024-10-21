@@ -11,7 +11,7 @@
 .stop-attendance {
     color: white !important;
     padding: 8px 60px !important;
-    background: #FB7E3C !important;
+    background: #F5B436 !important;
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -77,7 +77,7 @@
 }
 
 .fingerprint-icon {
-    color: #F84C42;
+    color: #AB3130;
     font-size: 150px;
     width: 150px;
     height: 150px;
@@ -100,8 +100,8 @@
   left: 0;
   width: 40px;
   height: 40px;
-  border-top: 6px solid #F84C42;
-  border-left: 6px solid #F84C42;
+  border-top: 6px solid #AB3130;
+  border-left: 6px solid #AB3130;
 }
 
 .fingerprint-container::after {
@@ -111,8 +111,8 @@
   right: 0;
   width: 40px;
   height: 40px;
-  border-top: 6px solid #F84C42;
-  border-right: 6px solid #F84C42;
+  border-top: 6px solid #AB3130;
+  border-right: 6px solid #AB3130;
 }
 
 .fingerprint-container .bottom-left {
@@ -122,8 +122,8 @@
   left: 0;
   width: 40px;
   height: 40px;
-  border-bottom: 6px solid #F84C42;
-  border-left: 6px solid #F84C42;
+  border-bottom: 6px solid #AB3130;
+  border-left: 6px solid #AB3130;
 }
 
 .fingerprint-container .bottom-right {
@@ -133,8 +133,8 @@
   right: 0;
   width: 40px;
   height: 40px;
-  border-bottom: 6px solid #F84C42;
-  border-right: 6px solid #F84C42;
+  border-bottom: 6px solid #AB3130;
+  border-right: 6px solid #AB3130;
 }
 
 .row-container::-webkit-scrollbar {
@@ -147,7 +147,7 @@
 }
 
 .row-container::-webkit-scrollbar-thumb {
-    background-color: #F84C42;
+    background-color: #AB3130;
     border-radius: 10px;
     border: 2px solid #E3E3E3;
 }
