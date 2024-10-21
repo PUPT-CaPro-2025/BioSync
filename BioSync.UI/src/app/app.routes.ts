@@ -20,6 +20,9 @@ import { PasswordForgotComponent } from './password/password-forgot/password-for
 import { PasswordResetComponent } from './password/password-reset/password-reset.component';
 import { FacultyMyRequestComponent } from './faculty-my-request/faculty-my-request.component';
 import { RequestListScheduleComponent } from './request-list-schedule/request-list-schedule.component';
+import {
+  AttendanceTypeComponent
+} from "./attendance/attendance-type/attendance-type.component";
 
 export const routes: Routes = [
     { path: "login", component: UserLoginComponent },
@@ -35,6 +38,7 @@ export const routes: Routes = [
     { path: "professor", component: ProfessorComponent },
     { path: "student", component: StudentComponent },
     { path: "attendance", component: AttendanceComponent },
+    { path: "attendance/:id/select-type", component: AttendanceTypeComponent},
     { path: "attendance/start/:id", component: StartAttendanceComponent },
     { path: "view/attendance/:id", component: ViewAttendanceComponent },
     { path: "school-year", component: SchoolYearComponent },

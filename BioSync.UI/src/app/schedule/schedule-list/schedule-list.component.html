@@ -26,29 +26,35 @@
             <div class="flex flex-col">
               <div class="flex gap-1 text-xs">
                 <span class="font-semibold">
-                  [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
+                  [ {{ getDayOfWeek(schedule.scheduleDate) }} / {{
+                    schedule.scheduleDate
+                  }} ]
                 </span>
               </div>
               <div class="italic">
-                Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                Faculty: {{ schedule.professor?.firstName }} {{
+                  schedule.professor?.lastName
+                }}
                 <p>
                   Class:
-                  {{schedule.section?.program?.programAbbreviation}}
-                  {{schedule.section?.year}}-{{schedule.section?.section}}
+                  {{ schedule.section?.program?.programAbbreviation }}
+                  {{ schedule.section?.year }}-{{ schedule.section?.section }}
                 </p>
               </div>
             </div>
           </div>
-          <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
-            {{convertTimeFormat(schedule.endTime)}}</div>
-          <div class="cell">{{schedule.laboratory?.name}}</div>
+          <div class="cell">{{ convertTimeFormat(schedule.startTime) }} -
+            {{ convertTimeFormat(schedule.endTime) }}
+          </div>
+          <div class="cell">{{ schedule.laboratory?.name }}</div>
           <div class="cell">
             <div class="action-container">
-              @if(isScheduledForFutureOrToday(schedule)) {
-                <button class="edit-button" (click)="toggleStartSchedule(schedule)">
+              @if (isScheduledForFutureOrToday(schedule)) {
+                <button class="edit-button"
+                        (click)="toggleStartSchedule(schedule)">
                   <mat-icon>play_arrow</mat-icon>
                 </button>
-              }@else {
+              } @else {
                 <button class="edit-button">
                   <mat-icon>visibility</mat-icon>
                 </button>
