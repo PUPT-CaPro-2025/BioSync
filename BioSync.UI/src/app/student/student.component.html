@@ -75,13 +75,8 @@
                 </div>
             </div>
         </div>
-        } @else {
-          <div class="flex justify-center items-center h-[50vh]">
-            No Student Data Yet.
-        </div>
-        }
         <div class="line-container">
-            <img src="../../assets/black-line.svg">
+          <img src="../../assets/black-line.svg">
         </div>
         <div class="bottom-container">
             <div class="paginator">
@@ -116,6 +111,11 @@
                 </div>
             </div>
         </div>
+        } @else {
+          <div class="flex justify-center items-center h-[50vh]">
+            No Student Data Yet.
+        </div>
+        }
     } @else {
         <app-edit-student
           [selectedStudent]="studentToEdit"
