@@ -37,30 +37,36 @@
                     </div>
                 </mat-toolbar>
             </div>
-            <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes text-custom-16">
-                        <div class="cell">Program</div>
-                        <div class="cell">Year</div>
-                        <div class="cell">Section</div>
-                        <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container text-custom-12">
-                        @for (section of filteredSections; track section ) {
-                            <div class="row">
-                                <div class="cell ml-6">{{ section.program.programName }}</div>
-                                <div class="cell">{{ section.year }}</div>
-                                <div class="cell">{{ section.section }}</div>
-                                <div class="cell">
-                                    <div class="action-container">
-                                        <button class="delete-button" (click)="openConfirmationDialog(section)"><mat-icon>delete</mat-icon></button>
+            @if(filteredSections.length > 0) {
+                <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes text-custom-16">
+                            <div class="cell">Program</div>
+                            <div class="cell">Year</div>
+                            <div class="cell">Section</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container text-custom-12">
+                            @for (section of filteredSections; track section ) {
+                                <div class="row">
+                                    <div class="cell ml-6">{{ section.program.programName }}</div>
+                                    <div class="cell">{{ section.year }}</div>
+                                    <div class="cell">{{ section.section }}</div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="delete-button" (click)="openConfirmationDialog(section)"><mat-icon>delete</mat-icon></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            } @else {
+                <div class="flex justify-center items-center h-[50vh]">
+                    No Section Data Yet.
+                </div>
+            }
             <div class="line-container">
                 <img src="../../assets/black-line.svg">
             </div>
