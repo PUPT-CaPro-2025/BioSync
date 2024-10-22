@@ -36,18 +36,18 @@
             </div>
         </mat-toolbar>
     </div>
-    <div class="table-container">
-        <div class="subject-table">
-            <div class="attributes">
-                <div class="cell">VISITOR'S NAME</div>
-                <div class="cell">PURPOSE OF VISIT</div>
-                <div class="cell">DATE</div>
-                <div class="cell">TIME</div>
-                <DIV class="cell">DESTINATION</DIV>
-                <div class="cell">ACTION</div>
-            </div>
-            <div class="row-container">
-                @if(filteredVisitors.length > 0) {
+    @if(filteredVisitors.length > 0) {
+        <div class="table-container">
+            <div class="subject-table">
+                <div class="attributes">
+                    <div class="cell">VISITOR'S NAME</div>
+                    <div class="cell">PURPOSE OF VISIT</div>
+                    <div class="cell">DATE</div>
+                    <div class="cell">TIME</div>
+                    <DIV class="cell">DESTINATION</DIV>
+                    <div class="cell">ACTION</div>
+                </div>
+                <div class="row-container">
                     @for (visitor of filteredVisitors; track visitor) {
                         <div class="row">
                             <div class="cell">{{visitor.name}}</div>
@@ -63,12 +63,14 @@
                             </div>
                         </div>
                     }
-                } @else {
-                    <div class="flex justify-center mt-5">No Data Found</div>
-                }
+                </div>
             </div>
         </div>
-    </div>
+    } @else {
+        <div class="flex justify-center items-center h-[50vh]">
+            No Visitors Yet.
+          </div>
+    }
     <div class="line-container">
         <img src="../../assets/black-line.svg">
     </div>
