@@ -66,47 +66,47 @@
                 </div>
             </div>
         </div>
+        <div class="line-container">
+            <img src="../../assets/black-line.svg">
+        </div>
+        <div class="bottom-container">
+            <div class="paginator">
+                <div class="paginator-info">
+                  {{ getDisplayRange() }} of {{ totalItems }}
+                </div>
+                <div class="paginator-controls">
+                  <span>Page</span>
+                  <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                        @for (page of pages; track page) {
+                            <option [value]="page">{{ page }}</option>
+                        }
+                  </select>
+                  <div class="paginator-button-container">
+                    <button (click)="previousPage()"
+                            [disabled]="currentPage === 1"
+                            [ngClass]="{'active-button': currentPage > 1}">
+                        <img src="../../assets/previous.svg"
+                                alt="Previous Icon"
+                                [ngClass]="{'active-icon': currentPage > 1}">
+                        Previous
+                    </button>
+                    <button (click)="nextPage()"
+                            [disabled]="currentPage === totalPages"
+                            [ngClass]="{'active-button': currentPage < totalPages}">
+                        Next
+                        <img src="../../assets/next.svg"
+                                alt="Next Icon"
+                                [ngClass]="{'active-icon': currentPage < totalPages}">
+                    </button>
+                  </div>
+                </div>
+            </div>
+        </div>
     } @else {
         <div class="flex justify-center items-center h-[50vh]">
             No Visitors Yet.
           </div>
     }
-    <div class="line-container">
-        <img src="../../assets/black-line.svg">
-    </div>
-    <div class="bottom-container">
-        <div class="paginator">
-            <div class="paginator-info">
-              {{ getDisplayRange() }} of {{ totalItems }}
-            </div>
-            <div class="paginator-controls">
-              <span>Page</span>
-              <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                    @for (page of pages; track page) {
-                        <option [value]="page">{{ page }}</option>
-                    }
-              </select>
-              <div class="paginator-button-container">
-                <button (click)="previousPage()"
-                        [disabled]="currentPage === 1"
-                        [ngClass]="{'active-button': currentPage > 1}">
-                    <img src="../../assets/previous.svg"
-                            alt="Previous Icon"
-                            [ngClass]="{'active-icon': currentPage > 1}">
-                    Previous
-                </button>
-                <button (click)="nextPage()"
-                        [disabled]="currentPage === totalPages"
-                        [ngClass]="{'active-button': currentPage < totalPages}">
-                    Next
-                    <img src="../../assets/next.svg"
-                            alt="Next Icon"
-                            [ngClass]="{'active-icon': currentPage < totalPages}">
-                </button>
-              </div>
-            </div>
-        </div>
-    </div>
 } @else {
         <app-edit-visitor
           [visitor]="visitorToEdit"
