@@ -38,31 +38,38 @@
                     </div>
                 </mat-toolbar>
             </div>
-            <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes text-custom-16">
-                        <div class="cell">Laboratory Name</div>
-                        <div class="cell">Room Code</div>
-                        <div class="cell">Capacity</div>
-                        <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container text-custom-12">
-                        @for (laboratory of filteredLaboratories; track laboratory ) {
-                            <div class="row">
-                                <div class="cell">{{ laboratory.name }}</div>
-                                <div class="cell">{{ laboratory.roomCode }}</div>
-                                <div class="cell">{{ laboratory.capacity }}</div>
-                                <div class="cell">
-                                    <div class="action-container">
-                                        <button class="edit-button" (click)="toggleEditLaboratory(laboratory)"><mat-icon>edit</mat-icon></button>
-                                        <button class="delete-button" (click)="openDeleteDialog(laboratory)"><mat-icon>delete</mat-icon></button>
+
+            @if(filteredLaboratories.length > 0) {
+                <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes text-custom-16">
+                            <div class="cell">Laboratory Name</div>
+                            <div class="cell">Room Code</div>
+                            <div class="cell">Capacity</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container text-custom-12">
+                            @for (laboratory of filteredLaboratories; track laboratory ) {
+                                <div class="row">
+                                    <div class="cell">{{ laboratory.name }}</div>
+                                    <div class="cell">{{ laboratory.roomCode }}</div>
+                                    <div class="cell">{{ laboratory.capacity }}</div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="edit-button" (click)="toggleEditLaboratory(laboratory)"><mat-icon>edit</mat-icon></button>
+                                            <button class="delete-button" (click)="openDeleteDialog(laboratory)"><mat-icon>delete</mat-icon></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            } @else {
+                <div class="flex justify-center items-center h-[50vh]">
+                    No Laboratory Data Yet.
+                </div>
+            }
 
             <div class="line-container">
                 <img src="../../assets/black-line.svg">
