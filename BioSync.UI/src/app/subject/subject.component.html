@@ -38,29 +38,35 @@
                 </div>
             </mat-toolbar>
         </div>
-        <div class="table-container">
-            <div class="subject-table">
-                <div class="attributes">
-                    <div class="cell">Subject Code</div>
-                    <div class="cell">Subject Name</div>
-                    <div class="cell">Action</div>
-                </div>
-                <div class="row-container">
-                    @for (subject of filteredSubjects; track subject) {
-                        <div class="row">
-                            <div class="cell">{{ subject.code }}</div>
-                        <div class="cell">{{ subject.name }}</div>
-                        <div class="cell">
-                            <div class="action-container">
-                                <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
+        @if(filteredSubjects.length > 0) {
+            <div class="table-container">
+                <div class="subject-table">
+                    <div class="attributes">
+                        <div class="cell">Subject Code</div>
+                        <div class="cell">Subject Name</div>
+                        <div class="cell">Action</div>
+                    </div>
+                    <div class="row-container">
+                        @for (subject of filteredSubjects; track subject) {
+                            <div class="row">
+                                <div class="cell">{{ subject.code }}</div>
+                            <div class="cell">{{ subject.name }}</div>
+                            <div class="cell">
+                                <div class="action-container">
+                                    <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
+                                    <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
+                                </div>
                             </div>
-                        </div>
-                        </div>
-                    }
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Subjects Yet.
+            </div>
+        }
         <div class="line-container">
             <img src="../../assets/black-line.svg">
         </div>
