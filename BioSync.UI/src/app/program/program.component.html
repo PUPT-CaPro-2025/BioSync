@@ -38,29 +38,36 @@
                     </div>
                 </mat-toolbar>
             </div>
-            <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes text-custom-16">
-                        <div class="cell">Program Name</div>
-                        <div class="cell">Program Abbreviation</div>
-                        <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container text-custom-12">
-                        @for (program of filteredPrograms; track program ) {
-                            <div class="row">
-                                <div class="cell">{{ program.programName }}</div>
-                                <div class="cell">{{ program.programAbbreviation }}</div>
-                                <div class="cell">
-                                    <div class="action-container">
-                                        <button class="edit-button" (click)="toggleEditProgram(program)"><mat-icon>edit</mat-icon></button>
-                                        <button class="delete-button" (click)="openDeleteDialog(program)"><mat-icon>delete</mat-icon></button>
+
+            @if(filteredPrograms.length > 0) {
+                <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes text-custom-16">
+                            <div class="cell">Program Name</div>
+                            <div class="cell">Program Abbreviation</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container text-custom-12">
+                            @for (program of filteredPrograms; track program ) {
+                                <div class="row">
+                                    <div class="cell">{{ program.programName }}</div>
+                                    <div class="cell">{{ program.programAbbreviation }}</div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="edit-button" (click)="toggleEditProgram(program)"><mat-icon>edit</mat-icon></button>
+                                            <button class="delete-button" (click)="openDeleteDialog(program)"><mat-icon>delete</mat-icon></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            } @else {
+                <div class="flex justify-center items-center h-[50vh]">
+                    No Program Data Yet.
+                </div>
+            }
 
             <div class="line-container">
                 <img src="../../assets/black-line.svg">
