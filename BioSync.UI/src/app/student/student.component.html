@@ -45,7 +45,8 @@
                 </div>
             </mat-toolbar>
         </div>
-        <div class="table-container">
+        @if(filteredStudents.length > 0) {
+          <div class="table-container">
             <div class="subject-table">
                 <div class="attributes text-custom-16">
                     <div class="cell">Student Number</div>
@@ -74,6 +75,11 @@
                 </div>
             </div>
         </div>
+        } @else {
+          <div class="flex justify-center items-center h-[50vh]">
+            No Student Data Yet.
+        </div>
+        }
         <div class="line-container">
             <img src="../../assets/black-line.svg">
         </div>
