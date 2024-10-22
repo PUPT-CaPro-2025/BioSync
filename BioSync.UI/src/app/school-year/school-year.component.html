@@ -39,69 +39,75 @@
                     </div>
                 </mat-toolbar>
             </div>
-            <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes text-custom-16">
-                        <div class="cell">Academic Year</div>
-                        <div class="cell">First Semester</div>
-                        <div class="cell">Second Semester</div>
-                        <div class="cell">Summer Semester</div>
-                        <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container text-custom-12">
-                        @for (schoolYear of filteredSchoolYears; track schoolYear) {
-                            <div class="row">
-                                <div class="cell ml-9">
-                                    {{ schoolYear.startYear }} - {{ schoolYear.endYear  }}
-                                </div>
-                                <div class="cell">
-                                    <div class="flex flex-col">
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">Start Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.firstSemester.startDate) }}</p>
+            @if(filteredSchoolYears.length > 0) {
+                <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes text-custom-16">
+                            <div class="cell">Academic Year</div>
+                            <div class="cell">First Semester</div>
+                            <div class="cell">Second Semester</div>
+                            <div class="cell">Summer Semester</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container text-custom-12">
+                            @for (schoolYear of filteredSchoolYears; track schoolYear) {
+                                <div class="row">
+                                    <div class="cell ml-9">
+                                        {{ schoolYear.startYear }} - {{ schoolYear.endYear  }}
+                                    </div>
+                                    <div class="cell">
+                                        <div class="flex flex-col">
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">Start Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.firstSemester.startDate) }}</p>
+                                            </div>
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">End Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.firstSemester.endDate) }}</p>
+                                            </div>
                                         </div>
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">End Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.firstSemester.endDate) }}</p>
+                                    </div>
+                                    <div class="cell">
+                                        <div class="flex flex-col">
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">Start Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.secondSemester.startDate) }}</p>
+                                            </div>
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">End Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.secondSemester.endDate) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cell">
+                                        <div class="flex flex-col">
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">Start Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.summerSemester.startDate) }}</p>
+                                            </div>
+                                            <div class="flex">
+                                                <p class="font-semibold mr-1">End Date:</p>
+                                                <p>{{ dateToReadable(schoolYear.summerSemester.endDate) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
+                                            <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
+                                            <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="cell">
-                                    <div class="flex flex-col">
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">Start Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.secondSemester.startDate) }}</p>
-                                        </div>
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">End Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.secondSemester.endDate) }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="cell">
-                                    <div class="flex flex-col">
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">Start Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.summerSemester.startDate) }}</p>
-                                        </div>
-                                        <div class="flex">
-                                            <p class="font-semibold mr-1">End Date:</p>
-                                            <p>{{ dateToReadable(schoolYear.summerSemester.endDate) }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="cell">
-                                    <div class="action-container">
-                                        <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
-                                        <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
-                                        <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
-                                    </div>
-                                </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            } @else {
+                <div class="flex justify-center items-center h-[50vh]">
+                    No School Year Data Yet.
+                </div>
+            }
             <div class="line-container">
                 <img src="../../assets/black-line.svg">
             </div>
