@@ -21,8 +21,12 @@
                     <div class="">
 
                     </div>
-                    @for(student of logstudents; track student) {
-                        <p class="text-darkGray text-custom-16">{{ logstudents.indexOf(student) + 1 }}. {{ student }}</p>
+                    @if(logstudents.length > 0) {
+                        @for(student of logstudents; track student) {
+                          <p class="text-darkGray text-custom-16">{{ logstudents.indexOf(student) + 1 }}. {{ student }}</p>
+                        }
+                    } @else {
+                        <p class="text-darkGray text-custom-16 items-center justify-center">No one has logged yet.</p>
                     }
                 </div>
                 @if (hasProfessorVerified) {
