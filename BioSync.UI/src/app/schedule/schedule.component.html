@@ -116,48 +116,52 @@
                     <div class="cell">Laboratory</div>
                     <div class="cell">Action</div>
                   </div>
-                  <div class="row-container text-custom-12">
-                    @for (schedule of filteredSchedules; track schedule) {
-                      <div class="row">
-                        <div class="cell">{{ schedule?.subject?.code }}</div>
-                        <div class="cell">{{ schedule?.subject?.name }}</div>
-                        <div class="cell">
-                          <div class="flex flex-col">
-                            <div class="flex gap-1 text-xs">
-                              <span class="font-semibold">
-                                @if(schedule.recurrenceId){
-                                  [ {{getRecurrenceDays(schedule.recurrenceId) }}
-                                  / {{ schedule.recurrence }} ]
-                                }@else{
-                                  [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
-                                }</span>
+                  <div class="row-container">
+                    @if(filteredSchedules.length > 0) {
+                      @for (schedule of filteredSchedules; track schedule) {
+                        <div class="row text-custom-12">
+                          <div class="cell">{{ schedule?.subject?.code }}</div>
+                          <div class="cell">{{ schedule?.subject?.name }}</div>
+                          <div class="cell">
+                            <div class="flex flex-col">
+                              <div class="flex gap-1 text-xs">
+                                <span class="font-semibold">
+                                  @if(schedule.recurrenceId){
+                                    [ {{getRecurrenceDays(schedule.recurrenceId) }}
+                                    / {{ schedule.recurrence }} ]
+                                  }@else{
+                                    [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
+                                  }</span>
+                              </div>
+                              <div class="italic">
+                                Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                                <p>
+                                  Class:
+                                  {{schedule.section?.program?.programAbbreviation}}
+                                  {{schedule.section?.year}}-{{schedule.section?.section}}
+                                </p>
+                              </div>
                             </div>
-                            <div class="italic">
-                              Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
-                              <p>
-                                Class:
-                                {{schedule.section?.program?.programAbbreviation}}
-                                {{schedule.section?.year}}-{{schedule.section?.section}}
-                              </p>
+                          </div>
+                          <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
+                            {{convertTimeFormat(schedule.endTime)}}</div>
+                          <div class="cell">{{schedule.laboratory?.name}}</div>
+                          <div class="cell">
+                            <div class="action-container">
+                              @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
+                                <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
+                              }
+                              <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
+                              @if(getRole() === "ADMIN"){
+                                <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
+                                <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
+                              }
                             </div>
                           </div>
                         </div>
-                        <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
-                          {{convertTimeFormat(schedule.endTime)}}</div>
-                        <div class="cell">{{schedule.laboratory?.name}}</div>
-                        <div class="cell">
-                          <div class="action-container">
-                            @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
-                              <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
-                            }
-                            <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
-                            @if(getRole() === "ADMIN"){
-                              <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
-                              <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
-                            }
-                          </div>
-                        </div>
-                      </div>
+                      }
+                    } @else {
+                      <div class="flex justify-center my-5">No Data Found</div>
                     }
                   </div>
                 </div>
