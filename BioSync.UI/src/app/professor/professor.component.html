@@ -38,37 +38,43 @@
                 </div>
             </mat-toolbar>
         </div>
-        <div class="table-container">
-            <div class="subject-table">
-                <div class="attributes">
-                    <div class="cell">Faculty Code</div>
-                    <div class="cell">First Name</div>
-                    <div class="cell">Last Name</div>
-                    <div class="cell">Middle Initial</div>
-                    <div class="cell">Suffix</div>
-                    <div class="cell">Action</div>
-                </div>
-                <div class="row-container">
-                    @for (professor of filteredProfessors; track professor) {
-                        <div class="row">
-                            <div class="cell">{{professor.usercode}}</div>
-                            <div class="cell">{{professor.firstName}}</div>
-                            <div class="cell">{{professor.lastName}}</div>
-                            <div class="cell">{{professor.middleName}}</div>
-                            <div class="cell">{{professor.suffix}}</div>
-                            <div class="cell">
-                                <div class="action-container">
-                                    <button class="edit-button" (click)="toggleEditProfessor(professor)">
-                                      <mat-icon>edit</mat-icon>
-                                    </button>
-                                    <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
+        @if(filteredProfessors.length > 0) {
+            <div class="table-container">
+                <div class="subject-table">
+                    <div class="attributes">
+                        <div class="cell">Faculty Code</div>
+                        <div class="cell">First Name</div>
+                        <div class="cell">Last Name</div>
+                        <div class="cell">Middle Initial</div>
+                        <div class="cell">Suffix</div>
+                        <div class="cell">Action</div>
+                    </div>
+                    <div class="row-container">
+                        @for (professor of filteredProfessors; track professor) {
+                            <div class="row">
+                                <div class="cell">{{professor.usercode}}</div>
+                                <div class="cell">{{professor.firstName}}</div>
+                                <div class="cell">{{professor.lastName}}</div>
+                                <div class="cell">{{professor.middleName}}</div>
+                                <div class="cell">{{professor.suffix}}</div>
+                                <div class="cell">
+                                    <div class="action-container">
+                                        <button class="edit-button" (click)="toggleEditProfessor(professor)">
+                                          <mat-icon>edit</mat-icon>
+                                        </button>
+                                        <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Faculty Data Yet.
+            </div>
+        }
         <div class="line-container">
             <img src="../../assets/black-line.svg">
         </div>
