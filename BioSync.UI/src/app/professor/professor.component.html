@@ -1,116 +1,124 @@
-@if (!isAddProfessor) {
-    @if(!isEditProfessor) {
-        <div class="header">
-            <mat-toolbar class="toolbar-container">
-                <span>List of Professors - ALL</span>
-                <div class="toolbar-button">
-                    <button (click)="toggleAddProfessor()">Add New Professor</button>
-                    <button (click)="generatePdf()">Print Professor Report</button>
-                </div>
-            </mat-toolbar>
-        </div>
-        <div class="filter-container">
-            <mat-toolbar class="filter-content">
-                <div class="search-container">
-                    <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH">
-                </div>
-                <div class="dropdown-container">
-                    <div class="dropdown-content">
-                        <div class="entry-container">
-                            <span>Show</span>
-                            <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                @for(entry of entries; track entry) {
-                                    <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                }
-                            </select>
-                            <span>Entries</span>
+<div class="background-container">
+    @if (!isAddProfessor) {
+        @if(!isEditProfessor) {
+            <div class="header">
+                <mat-toolbar class="toolbar-container">
+                    <span>List of Professors - ALL</span>
+                    <div class="toolbar-button">
+                        <button (click)="toggleAddProfessor()">Add New Professor</button>
+                        <button (click)="generatePdf()">Print Professor Report</button>
+                    </div>
+                </mat-toolbar>
+            </div>
+            <div class="filter-container">
+                <mat-toolbar class="filter-content">
+                    <div class="search-container">
+                        <mat-icon class="search-icon">search</mat-icon>
+                        <input type="text" placeholder="SEARCH">
+                    </div>
+                    <div class="dropdown-container">
+                        <div class="dropdown-content">
+                            <div class="entry-container">
+                                <span>Show</span>
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                    @for(entry of entries; track entry) {
+                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                    }
+                                </select>
+                                <span>Entries</span>
+                            </div>
+                            <div class="sort-container">
+                                <select>
+                                    <option>Sort by</option>
+                                    @for(sort of sorting; track sort) {
+                                        <option [value]="sort">{{sort}}</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
-                        <div class="sort-container">
-                            <select>
-                                <option>Sort by</option>
-                                @for(sort of sorting; track sort) {
-                                    <option [value]="sort">{{sort}}</option>
-                                }
-                            </select>
+                    </div>
+                </mat-toolbar>
+            </div>
+            @if(filteredProfessors.length > 0) {
+            <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes">
+                            <div class="cell">Faculty Code</div>
+                            <div class="cell">First Name</div>
+                            <div class="cell">Last Name</div>
+                            <div class="cell">Middle Initial</div>
+                            <div class="cell">Suffix</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container">
+                            @for (professor of filteredProfessors; track professor) {
+                                <div class="row">
+                                    <div class="cell">{{professor.usercode}}</div>
+                                    <div class="cell">{{professor.firstName}}</div>
+                                    <div class="cell">{{professor.lastName}}</div>
+                                    <div class="cell">{{professor.middleName}}</div>
+                                    <div class="cell">{{professor.suffix}}</div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="edit-button" (click)="toggleEditProfessor(professor)">
+                                              <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
-            </mat-toolbar>
-        </div>
-        <div class="table-container">
-            <div class="subject-table">
-                <div class="attributes">
-                    <div class="cell">Faculty Code</div>
-                    <div class="cell">First Name</div>
-                    <div class="cell">Last Name</div>
-                    <div class="cell">Middle Initial</div>
-                    <div class="cell">Suffix</div>
-                    <div class="cell">Action</div>
+                <div class="line-container">
+                    <img src="../../assets/black-line.svg">
                 </div>
-                <div class="row-container">
-                    @for (professor of filteredProfessors; track professor) {
-                        <div class="row">
-                            <div class="cell">{{professor.usercode}}</div>
-                            <div class="cell">{{professor.firstName}}</div>
-                            <div class="cell">{{professor.lastName}}</div>
-                            <div class="cell">{{professor.middleName}}</div>
-                            <div class="cell">{{professor.suffix}}</div>
-                            <div class="cell">
-                                <div class="action-container">
-                                    <button class="edit-button" (click)="toggleEditProfessor(professor)">
-                                      <mat-icon>edit</mat-icon>
-                                    </button>
-                                    <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
-                                </div>
-                            </div>
+                <div class="bottom-container">
+                    <div class="paginator">
+                        <div class="paginator-info">
+                          {{ getDisplayRange() }} of {{ totalItems }}
                         </div>
-                    }
+                        <div class="paginator-controls">
+                          <span>Page</span>
+                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                                @for (page of pages; track page) {
+                                    <option [value]="page">{{ page }}</option>
+                                }
+                          </select>
+                          <div class="paginator-button-container">
+                            <button (click)="previousPage()"
+                                    [disabled]="currentPage === 1"
+                                    [ngClass]="{'active-button': currentPage > 1}">
+                                <img src="../../assets/previous.svg"
+                                        alt="Previous Icon"
+                                        [ngClass]="{'active-icon': currentPage > 1}">
+                                Previous
+                            </button>
+                            <button (click)="nextPage()"
+                                    [disabled]="currentPage === totalPages"
+                                    [ngClass]="{'active-button': currentPage < totalPages}">
+                                Next
+                                <img src="../../assets/next.svg"
+                                        alt="Next Icon"
+                                        [ngClass]="{'active-icon': currentPage < totalPages}">
+                            </button>
+                          </div>
+                        </div>
+                    </div>
                 </div>
+            } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Faculty Data Yet.
             </div>
-        </div>
-        <div class="line-container">
-            <img src="../../assets/black-line.svg">
-        </div>
-        <div class="bottom-container">
-            <div class="paginator">
-                <div class="paginator-info">
-                  {{ getDisplayRange() }} of {{ totalItems }}
-                </div>
-                <div class="paginator-controls">
-                  <span>Page</span>
-                  <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                        @for (page of pages; track page) {
-                            <option [value]="page">{{ page }}</option>
-                        }
-                  </select>
-                  <div class="paginator-button-container">
-                    <button (click)="previousPage()"
-                            [disabled]="currentPage === 1"
-                            [ngClass]="{'active-button': currentPage > 1}">
-                        <img src="../../assets/previous.svg"
-                                alt="Previous Icon"
-                                [ngClass]="{'active-icon': currentPage > 1}">
-                        Previous
-                    </button>
-                    <button (click)="nextPage()"
-                            [disabled]="currentPage === totalPages"
-                            [ngClass]="{'active-button': currentPage < totalPages}">
-                        Next
-                        <img src="../../assets/next.svg"
-                                alt="Next Icon"
-                                [ngClass]="{'active-icon': currentPage < totalPages}">
-                    </button>
-                  </div>
-                </div>
-            </div>
-        </div>
+        }
     } @else {
-        <app-edit-professor
-          [professorToBeUpdated]="professorToUpdate"
-          (editedProfessor)="onProfessorUpdate($event)"
-          (backToEditProfessor)="handleBackToEditProfessor()"/>
-    }
-} @else {
-    <app-add-professor (professorAdded)="onProfessorAdded($event)" (backToProfessor)="handleBackToProfessor()"></app-add-professor>
-}
+            <app-edit-professor
+              [professorToBeUpdated]="professorToUpdate"
+              (editedProfessor)="onProfessorUpdate($event)"
+              (backToEditProfessor)="handleBackToEditProfessor()"/>
+        }
+    } @else {
+        <app-add-professor (professorAdded)="onProfessorAdded($event)" (backToProfessor)="handleBackToProfessor()"></app-add-professor>
+    }    
+</div>
