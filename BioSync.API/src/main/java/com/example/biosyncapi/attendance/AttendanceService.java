@@ -8,6 +8,8 @@ import java.util.List;
 public interface AttendanceService {
   List<Attendance> getAttendanceByScheduleId(Long scheduleId);
 
+  List<User> getStudentsLoggedByScheduleId(Long scheduleId);
+
   Long getAttendanceCountByStudentId(Long studentId);
 
   Long getAbsentCountByStudentId(Long studentId);
