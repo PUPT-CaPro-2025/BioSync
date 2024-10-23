@@ -1,158 +1,160 @@
-@if(!isAddSchoolYear) {
-    @if(!isEditSchoolYear) {
-        @if(!isViewSchoolYear) {
-            <div class="header">
-                <mat-toolbar class="toolbar-container">
-                    <span>List of School Years - ALL</span>
-                    <div class="toolbar-button">
-                        <button (click)="toggleAddSchoolYear()">Add New School Year</button>
-                        <button (click)="generatePdf()">Print School Year Reports</button>
-                    </div>
-                </mat-toolbar>
-            </div>
-            <div class="filter-container">
-                <mat-toolbar class="filter-content">
-                    <div class="search-container">
-                        <mat-icon class="search-icon">search</mat-icon>
-                        <input type="text" placeholder="SEARCH">
-                    </div>
-                    <div class="dropdown-container">
-                        <div class="dropdown-content">
-                            <div class="entry-container">
-                                <span>Show</span>
-                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                    @for(entry of entries; track entry) {
-                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                    }
-                                </select>
-                                <span>Entries</span>
-                            </div>
-                            <div class="sort-container">
-                                <select>
-                                    <option>Sort by</option>
-                                    @for(sort of sorting; track sort) {
-                                        <option [value]="sort">{{sort}}</option>
-                                    }
-                                </select>
-                            </div>
+<div class="background-container">
+    @if(!isAddSchoolYear) {
+        @if(!isEditSchoolYear) {
+            @if(!isViewSchoolYear) {
+                <div class="header">
+                    <mat-toolbar class="toolbar-container">
+                        <span>List of School Years - ALL</span>
+                        <div class="toolbar-button">
+                            <button (click)="toggleAddSchoolYear()">Add New School Year</button>
+                            <button (click)="generatePdf()">Print School Year Reports</button>
                         </div>
-                    </div>
-                </mat-toolbar>
-            </div>
-            @if(filteredSchoolYears.length > 0) {
-                <div class="table-container">
-                    <div class="subject-table">
-                        <div class="attributes text-custom-16">
-                            <div class="cell">Academic Year</div>
-                            <div class="cell">First Semester</div>
-                            <div class="cell">Second Semester</div>
-                            <div class="cell">Summer Semester</div>
-                            <div class="cell">Action</div>
+                    </mat-toolbar>
+                </div>
+                <div class="filter-container">
+                    <mat-toolbar class="filter-content">
+                        <div class="search-container">
+                            <mat-icon class="search-icon">search</mat-icon>
+                            <input type="text" placeholder="SEARCH">
                         </div>
-                        <div class="row-container text-custom-12">
-                            @for (schoolYear of filteredSchoolYears; track schoolYear) {
-                                <div class="row">
-                                    <div class="cell ml-9">
-                                        {{ schoolYear.startYear }} - {{ schoolYear.endYear  }}
-                                    </div>
-                                    <div class="cell">
-                                        <div class="flex flex-col">
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">Start Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.firstSemester.startDate) }}</p>
-                                            </div>
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">End Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.firstSemester.endDate) }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cell">
-                                        <div class="flex flex-col">
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">Start Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.secondSemester.startDate) }}</p>
-                                            </div>
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">End Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.secondSemester.endDate) }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cell">
-                                        <div class="flex flex-col">
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">Start Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.summerSemester.startDate) }}</p>
-                                            </div>
-                                            <div class="flex">
-                                                <p class="font-semibold mr-1">End Date:</p>
-                                                <p>{{ dateToReadable(schoolYear.summerSemester.endDate) }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="cell">
-                                        <div class="action-container">
-                                            <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
-                                            <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
-                                            <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
-                                        </div>
-                                    </div>
+                        <div class="dropdown-container">
+                            <div class="dropdown-content">
+                                <div class="entry-container">
+                                    <span>Show</span>
+                                    <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                        @for(entry of entries; track entry) {
+                                            <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                        }
+                                    </select>
+                                    <span>Entries</span>
                                 </div>
-                            }
+                                <div class="sort-container">
+                                    <select>
+                                        <option>Sort by</option>
+                                        @for(sort of sorting; track sort) {
+                                            <option [value]="sort">{{sort}}</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-toolbar>
+                </div>
+                @if(filteredSchoolYears.length > 0) {
+                <div class="table-container">
+                        <div class="subject-table">
+                            <div class="attributes text-custom-16">
+                                <div class="cell">Academic Year</div>
+                                <div class="cell">First Semester</div>
+                                <div class="cell">Second Semester</div>
+                                <div class="cell">Summer Semester</div>
+                                <div class="cell">Action</div>
+                            </div>
+                            <div class="row-container text-custom-12">
+                                @for (schoolYear of filteredSchoolYears; track schoolYear) {
+                                    <div class="row">
+                                        <div class="cell ml-9">
+                                            {{ schoolYear.startYear }} - {{ schoolYear.endYear  }}
+                                        </div>
+                                        <div class="cell">
+                                            <div class="flex flex-col">
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">Start Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.firstSemester.startDate) }}</p>
+                                                </div>
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">End Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.firstSemester.endDate) }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cell">
+                                            <div class="flex flex-col">
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">Start Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.secondSemester.startDate) }}</p>
+                                                </div>
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">End Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.secondSemester.endDate) }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cell">
+                                            <div class="flex flex-col">
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">Start Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.summerSemester.startDate) }}</p>
+                                                </div>
+                                                <div class="flex">
+                                                    <p class="font-semibold mr-1">End Date:</p>
+                                                    <p>{{ dateToReadable(schoolYear.summerSemester.endDate) }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="cell">
+                                            <div class="action-container">
+                                                <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
+                                                <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
+                                                <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="line-container">
-                    <img src="../../assets/black-line.svg">
-                </div>
-                <div class="bottom-container">
-                    <div class="paginator">
-                        <div class="paginator-info">
-                          {{ getDisplayRange() }} of {{ totalItems }}
-                        </div>
-                        <div class="paginator-controls">
-                          <span>Page</span>
-                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                            @for (page of pages; track page) {
-                                <option [value]="page">{{ page }}</option>
-                            }
-                          </select>
-                          <div class="paginator-button-container">
-                            <button (click)="previousPage()"
-                                    [disabled]="currentPage === 1"
-                                    [ngClass]="{'active-button': currentPage > 1}">
-                                <img src="../../assets/previous.svg"
-                                        alt="Previous Icon"
-                                        [ngClass]="{'active-icon': currentPage > 1}">
-                                Previous
-                            </button>
-                            <button (click)="nextPage()"
-                                    [disabled]="currentPage === totalPages"
-                                    [ngClass]="{'active-button': currentPage < totalPages}">
-                                Next
-                                <img src="../../assets/next.svg"
-                                        alt="Next Icon"
-                                        [ngClass]="{'active-icon': currentPage < totalPages}">
-                            </button>
-                          </div>
+                    <div class="line-container">
+                        <img src="../../assets/black-line.svg">
+                    </div>
+                    <div class="bottom-container">
+                        <div class="paginator">
+                            <div class="paginator-info">
+                              {{ getDisplayRange() }} of {{ totalItems }}
+                            </div>
+                            <div class="paginator-controls">
+                              <span>Page</span>
+                              <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                                @for (page of pages; track page) {
+                                    <option [value]="page">{{ page }}</option>
+                                }
+                              </select>
+                              <div class="paginator-button-container">
+                                <button (click)="previousPage()"
+                                        [disabled]="currentPage === 1"
+                                        [ngClass]="{'active-button': currentPage > 1}">
+                                    <img src="../../assets/previous.svg"
+                                            alt="Previous Icon"
+                                            [ngClass]="{'active-icon': currentPage > 1}">
+                                    Previous
+                                </button>
+                                <button (click)="nextPage()"
+                                        [disabled]="currentPage === totalPages"
+                                        [ngClass]="{'active-button': currentPage < totalPages}">
+                                    Next
+                                    <img src="../../assets/next.svg"
+                                            alt="Next Icon"
+                                            [ngClass]="{'active-icon': currentPage < totalPages}">
+                                </button>
+                              </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            } @else {
+                } @else {
                 <div class="flex justify-center items-center h-[50vh]">
                     No School Year Data Yet.
                 </div>
             }
         } @else {
-            <app-view-school-year (backToViewSchoolYear)="handleBackToViewSchoolYear()"/>
+                <app-view-school-year (backToViewSchoolYear)="handleBackToViewSchoolYear()"/>
+            }
+        } @else {
+            <app-edit-school-year
+              [schoolYearToEdit]="schoolYearToEdit"
+              (editedSchoolYear)="onSchoolYearEdit($event)"
+              (backToEditSchoolYear)="handleBackToEditSchoolYear()"/>
         }
     } @else {
-        <app-edit-school-year
-          [schoolYearToEdit]="schoolYearToEdit"
-          (editedSchoolYear)="onSchoolYearEdit($event)"
-          (backToEditSchoolYear)="handleBackToEditSchoolYear()"/>
-    }
-} @else {
-    <app-add-school-year (newSchoolYear)="onSchoolYearCreate($event)" (backToSchoolYear)="handleBackToSchoolYear()"/>
-}
+        <app-add-school-year (newSchoolYear)="onSchoolYearCreate($event)" (backToSchoolYear)="handleBackToSchoolYear()"/>
+    }    
+</div>
