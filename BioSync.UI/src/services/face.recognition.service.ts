@@ -13,7 +13,7 @@ export class FaceRecognitionService {
 
   constructor(private http: HttpClient) {}
 
-  encodeFaceDate(user: User, base64String: string) {
+  encodeFaceData(user: User, base64String: string) {
     const payload = {
       user: user,
       image_data: base64String,
