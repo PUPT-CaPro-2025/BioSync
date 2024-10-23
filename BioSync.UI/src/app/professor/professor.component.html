@@ -39,74 +39,80 @@
                     </div>
                 </mat-toolbar>
             </div>
+            @if(filteredProfessors.length > 0) {
             <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes">
-                        <div class="cell">Faculty Code</div>
-                        <div class="cell">First Name</div>
-                        <div class="cell">Last Name</div>
-                        <div class="cell">Middle Initial</div>
-                        <div class="cell">Suffix</div>
-                        <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container">
-                        @for (professor of filteredProfessors; track professor) {
-                            <div class="row">
-                                <div class="cell">{{professor.usercode}}</div>
-                                <div class="cell">{{professor.firstName}}</div>
-                                <div class="cell">{{professor.lastName}}</div>
-                                <div class="cell">{{professor.middleName}}</div>
-                                <div class="cell">{{professor.suffix}}</div>
-                                <div class="cell">
-                                    <div class="action-container">
-                                        <button class="edit-button" (click)="toggleEditProfessor(professor)">
-                                          <mat-icon>edit</mat-icon>
-                                        </button>
-                                        <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
+                    <div class="subject-table">
+                        <div class="attributes">
+                            <div class="cell">Faculty Code</div>
+                            <div class="cell">First Name</div>
+                            <div class="cell">Last Name</div>
+                            <div class="cell">Middle Initial</div>
+                            <div class="cell">Suffix</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container">
+                            @for (professor of filteredProfessors; track professor) {
+                                <div class="row">
+                                    <div class="cell">{{professor.usercode}}</div>
+                                    <div class="cell">{{professor.firstName}}</div>
+                                    <div class="cell">{{professor.lastName}}</div>
+                                    <div class="cell">{{professor.middleName}}</div>
+                                    <div class="cell">{{professor.suffix}}</div>
+                                    <div class="cell">
+                                        <div class="action-container">
+                                            <button class="edit-button" (click)="toggleEditProfessor(professor)">
+                                              <mat-icon>edit</mat-icon>
+                                            </button>
+                                            <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="line-container">
-                <img src="../../assets/black-line.svg">
-            </div>
-            <div class="bottom-container">
-                <div class="paginator">
-                    <div class="paginator-info">
-                      {{ getDisplayRange() }} of {{ totalItems }}
-                    </div>
-                    <div class="paginator-controls">
-                      <span>Page</span>
-                      <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                            @for (page of pages; track page) {
-                                <option [value]="page">{{ page }}</option>
                             }
-                      </select>
-                      <div class="paginator-button-container">
-                        <button (click)="previousPage()"
-                                [disabled]="currentPage === 1"
-                                [ngClass]="{'active-button': currentPage > 1}">
-                            <img src="../../assets/previous.svg"
-                                    alt="Previous Icon"
-                                    [ngClass]="{'active-icon': currentPage > 1}">
-                            Previous
-                        </button>
-                        <button (click)="nextPage()"
-                                [disabled]="currentPage === totalPages"
-                                [ngClass]="{'active-button': currentPage < totalPages}">
-                            Next
-                            <img src="../../assets/next.svg"
-                                    alt="Next Icon"
-                                    [ngClass]="{'active-icon': currentPage < totalPages}">
-                        </button>
-                      </div>
+                        </div>
                     </div>
                 </div>
+                <div class="line-container">
+                    <img src="../../assets/black-line.svg">
+                </div>
+                <div class="bottom-container">
+                    <div class="paginator">
+                        <div class="paginator-info">
+                          {{ getDisplayRange() }} of {{ totalItems }}
+                        </div>
+                        <div class="paginator-controls">
+                          <span>Page</span>
+                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                                @for (page of pages; track page) {
+                                    <option [value]="page">{{ page }}</option>
+                                }
+                          </select>
+                          <div class="paginator-button-container">
+                            <button (click)="previousPage()"
+                                    [disabled]="currentPage === 1"
+                                    [ngClass]="{'active-button': currentPage > 1}">
+                                <img src="../../assets/previous.svg"
+                                        alt="Previous Icon"
+                                        [ngClass]="{'active-icon': currentPage > 1}">
+                                Previous
+                            </button>
+                            <button (click)="nextPage()"
+                                    [disabled]="currentPage === totalPages"
+                                    [ngClass]="{'active-button': currentPage < totalPages}">
+                                Next
+                                <img src="../../assets/next.svg"
+                                        alt="Next Icon"
+                                        [ngClass]="{'active-icon': currentPage < totalPages}">
+                            </button>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Faculty Data Yet.
             </div>
-        } @else {
+        }
+    } @else {
             <app-edit-professor
               [professorToBeUpdated]="professorToUpdate"
               (editedProfessor)="onProfessorUpdate($event)"
