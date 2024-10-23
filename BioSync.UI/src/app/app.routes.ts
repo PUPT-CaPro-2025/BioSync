@@ -42,9 +42,6 @@ import {
     AttendanceTypeComponent
 } from "./attendance/attendance-type/attendance-type.component";
 import {
-    StartAttendanceFaceComponent
-} from "./attendance/start-attendance-face/start-attendance-face.component";
-import {
     FaceRecognitionAttendanceComponent
 } from "./attendance/face-recognition-attendance/face-recognition-attendance.component";
 
