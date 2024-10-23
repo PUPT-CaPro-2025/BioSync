@@ -2,9 +2,9 @@
   <line y1="0.5" x2="250" y2="0.5" stroke="url(#paint0_linear)"/>
   <defs>
     <linearGradient id="paint0_linear" x1="0" y1="0" x2="250" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#F84C42"/>
+      <stop offset="0%" stop-color="#AB3130"/>
       <stop offset="50%" stop-color="#F9653F"/>
-      <stop offset="100%" stop-color="#FB7E3C"/>
+      <stop offset="100%" stop-color="#F5B436"/>
     </linearGradient>
   </defs>
 </svg>

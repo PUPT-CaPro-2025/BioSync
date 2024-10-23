@@ -1,4 +1,5 @@
-@if(!isOneAddSchedule) {
+<div class="background-container">
+  @if(!isOneAddSchedule) {
     @if(!isWeeklyAddSchedule) {
         @if(!isEditSchedule) {
           @if(!isRequestOneSchedule) {
@@ -226,3 +227,4 @@
 } @else {
     <app-add-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()" [isOneSchedule]="isOneAddSchedule"></app-add-schedule>
 }
+</div>

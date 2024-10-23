@@ -1,109 +1,111 @@
-@if (!isAddSubject) {
-    @if(!isEditSubject) {
-        <div class="header">
-            <mat-toolbar class="toolbar-container">
-                <span>List of Subjects - ALL</span>
-                <div class="toolbar-button">
-                    <button (click)="toggleAddSubject()">Add New Subject</button>
-                    <button (click)="generatePdf()">Print Subject Report</button>
-                </div>
-            </mat-toolbar>
-        </div>
-        <div class="filter-container">
-            <mat-toolbar class="filter-content">
-                <div class="search-container">
-                    <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH">
-                </div>
-                <div class="dropdown-container">
-                    <div class="dropdown-content">
-                        <div class="entry-container">
-                            <span>Show</span>
-                            <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                @for(entry of entries; track entry) {
-                                    <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                }
-                            </select>
-                            <span>Entries</span>
-                        </div>
-                        <div class="sort-container">
-                            <select>
-                                <option>Sort by</option>
-                                @for(sort of sorting; track sort) {
-                                    <option [value]="sort">{{sort}}</option>
-                                }
-                            </select>
-                        </div>
+<div class="background-container">
+    @if (!isAddSubject) {
+        @if(!isEditSubject) {
+            <div class="header">
+                <mat-toolbar class="toolbar-container">
+                    <span>List of Subjects - ALL</span>
+                    <div class="toolbar-button">
+                        <button (click)="toggleAddSubject()">Add New Subject</button>
+                        <button (click)="generatePdf()">Print Subject Report</button>
                     </div>
-                </div>
-            </mat-toolbar>
-        </div>
-        <div class="table-container">
-            <div class="subject-table">
-                <div class="attributes">
-                    <div class="cell">Subject Code</div>
-                    <div class="cell">Subject Name</div>
-                    <div class="cell">Action</div>
-                </div>
-                <div class="row-container">
-                    @for (subject of filteredSubjects; track subject) {
-                        <div class="row">
-                            <div class="cell">{{ subject.code }}</div>
-                        <div class="cell">{{ subject.name }}</div>
-                        <div class="cell">
-                            <div class="action-container">
-                                <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
+                </mat-toolbar>
+            </div>
+            <div class="filter-container">
+                <mat-toolbar class="filter-content">
+                    <div class="search-container">
+                        <mat-icon class="search-icon">search</mat-icon>
+                        <input type="text" placeholder="SEARCH">
+                    </div>
+                    <div class="dropdown-container">
+                        <div class="dropdown-content">
+                            <div class="entry-container">
+                                <span>Show</span>
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                    @for(entry of entries; track entry) {
+                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                    }
+                                </select>
+                                <span>Entries</span>
+                            </div>
+                            <div class="sort-container">
+                                <select>
+                                    <option>Sort by</option>
+                                    @for(sort of sorting; track sort) {
+                                        <option [value]="sort">{{sort}}</option>
+                                    }
+                                </select>
                             </div>
                         </div>
-                        </div>
-                    }
-                </div>
+                    </div>
+                </mat-toolbar>
             </div>
-        </div>
-        <div class="line-container">
-            <img src="../../assets/black-line.svg">
-        </div>
-        <div class="bottom-container">
-            <div class="paginator">
-                <div class="paginator-info">
-                  {{ getDisplayRange() }} of {{ totalItems }}
-                </div>
-                <div class="paginator-controls">
-                  <span>Page</span>
-                  <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                        @for (page of pages; track page) {
-                            <option [value]="page">{{ page }}</option>
+            <div class="table-container">
+                <div class="subject-table">
+                    <div class="attributes">
+                        <div class="cell">Subject Code</div>
+                        <div class="cell">Subject Name</div>
+                        <div class="cell">Action</div>
+                    </div>
+                    <div class="row-container">
+                        @for (subject of filteredSubjects; track subject) {
+                            <div class="row">
+                                <div class="cell">{{ subject.code }}</div>
+                            <div class="cell">{{ subject.name }}</div>
+                            <div class="cell">
+                                <div class="action-container">
+                                    <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
+                                    <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
+                                </div>
+                            </div>
+                            </div>
                         }
-                  </select>
-                  <div class="paginator-button-container">
-                    <button (click)="previousPage()"
-                            [disabled]="currentPage === 1"
-                            [ngClass]="{'active-button': currentPage > 1}">
-                        <img src="../../assets/previous.svg"
-                                alt="Previous Icon"
-                                [ngClass]="{'active-icon': currentPage > 1}">
-                        Previous
-                    </button>
-                    <button (click)="nextPage()"
-                            [disabled]="currentPage === totalPages"
-                            [ngClass]="{'active-button': currentPage < totalPages}">
-                        Next
-                        <img src="../../assets/next.svg"
-                                alt="Next Icon"
-                                [ngClass]="{'active-icon': currentPage < totalPages}">
-                    </button>
-                  </div>
+                    </div>
                 </div>
             </div>
-        </div>
+            <div class="line-container">
+                <img src="../../assets/black-line.svg">
+            </div>
+            <div class="bottom-container">
+                <div class="paginator">
+                    <div class="paginator-info">
+                      {{ getDisplayRange() }} of {{ totalItems }}
+                    </div>
+                    <div class="paginator-controls">
+                      <span>Page</span>
+                      <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                            @for (page of pages; track page) {
+                                <option [value]="page">{{ page }}</option>
+                            }
+                      </select>
+                      <div class="paginator-button-container">
+                        <button (click)="previousPage()"
+                                [disabled]="currentPage === 1"
+                                [ngClass]="{'active-button': currentPage > 1}">
+                            <img src="../../assets/previous.svg"
+                                    alt="Previous Icon"
+                                    [ngClass]="{'active-icon': currentPage > 1}">
+                            Previous
+                        </button>
+                        <button (click)="nextPage()"
+                                [disabled]="currentPage === totalPages"
+                                [ngClass]="{'active-button': currentPage < totalPages}">
+                            Next
+                            <img src="../../assets/next.svg"
+                                    alt="Next Icon"
+                                    [ngClass]="{'active-icon': currentPage < totalPages}">
+                        </button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        } @else {
+            <app-edit-subject
+              [selectedSubject]="subjectToEdit"
+              (updatedSubject)="onSubjectUpdate($event)"
+              (backToEditSubject)="handleBackToEditSubject()"/>
+        }
+    
     } @else {
-        <app-edit-subject
-          [selectedSubject]="subjectToEdit"
-          (updatedSubject)="onSubjectUpdate($event)"
-          (backToEditSubject)="handleBackToEditSubject()"/>
-    }
-
-} @else {
-    <app-add-subject (subjectAdded)="onSubjectAdded($event)" (backToSubject)="handleBackToSubject()"></app-add-subject>
-}
+        <app-add-subject (subjectAdded)="onSubjectAdded($event)" (backToSubject)="handleBackToSubject()"></app-add-subject>
+    }    
+</div>
