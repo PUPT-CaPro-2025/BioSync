@@ -38,6 +38,11 @@ public class AttendanceServiceImpl implements AttendanceService {
   }
 
   @Override
+  public List<User> getStudentsLoggedByScheduleId(Long scheduleId) {
+    return attendanceRepository.getStudentsByScheduleId(scheduleId);
+  }
+
+  @Override
   public Long getAttendanceCountByStudentId(Long studentId) {
     return attendanceRepository.countByUserIdAndStatus(studentId, "PRESENT");
   }

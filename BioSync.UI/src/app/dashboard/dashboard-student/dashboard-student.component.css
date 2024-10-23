@@ -1,3 +1,14 @@
+.background-container {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1682' height='332' preserveAspectRatio='none' viewBox='0 0 1682 332'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1520%26quot%3b)' fill='none'%3e%3cpath d='M 0%2c250 C 48.2%2c202.8 144.6%2c20.4 241%2c14 C 337.4%2c7.6 385.6%2c203 482%2c218 C 578.4%2c233 626.6%2c77.6 723%2c89 C 819.4%2c100.4 867.6%2c271.6 964%2c275 C 1060.4%2c278.4 1108.6%2c115.8 1205%2c106 C 1301.4%2c96.2 1350.6%2c241.8 1446%2c226 C 1541.4%2c210.2 1634.8%2c66.8 1682%2c27L1682 332L0 332z' fill='rgba(239%2c 233%2c 233%2c 1)'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1520'%3e%3crect width='1682' height='332' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
+  background-attachment: fixed;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
 .toolbar-container {
   margin-top: 5rem;
   background: none;
@@ -41,13 +52,13 @@ width: 100%;
 }
 
 .fc-toolbar-title {
-  color: #F84C42 !important;    
+  color: #AB3130 !important;    
   font-size: 24px !important;
   font: medium !important; 
 }
 
 .fc-button.fc-today-button {
-  background-color: #F84C42 !important;
+  background-color: #AB3130 !important;
   color: white !important;
 }
 
@@ -59,7 +70,7 @@ width: 100%;
 .fc-next-button {
   background-color: transparent !important;
   border: none !important;
-  color: #F84C42 !important;
+  color: #AB3130 !important;
   box-shadow: none !important; 
   font-size: larger !important;
 }
@@ -83,7 +94,7 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border-bottom: 2px solid #F84C42;
+  border-bottom: 2px solid #AB3130;
   pointer-events: none;
   box-sizing: border-box;
 }
@@ -106,7 +117,7 @@ width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
-  border: 2px solid #F84C42;
+  border: 2px solid #AB3130;
   border-radius: 8px;
   pointer-events: none;
   box-sizing: border-box;

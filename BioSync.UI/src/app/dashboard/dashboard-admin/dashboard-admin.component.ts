@@ -114,7 +114,7 @@ export class DashboardAdminComponent implements OnInit {
     eventClick: (info) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
-      info.el.style.background = 'linear-gradient(to bottom, #E4581D, #F9653F)';
+      info.el.style.background = '#AB3130';
     },
     eventContent: function(info) {
       const startTime = new Date(info.event.start!).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
