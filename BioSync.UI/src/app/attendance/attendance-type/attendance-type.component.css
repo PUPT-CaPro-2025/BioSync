@@ -15,7 +15,7 @@
 
 .toolbar-container span {
     font-size: 32px;
-    color: #F84C42;
+    color: #AB3130;
 }
 
 .fingerprint-logo {
@@ -32,7 +32,7 @@
 }
 
 .face-recognition:hover {
-    background: linear-gradient(to right, #F84C42, #F9653F, #FB7E3C);
+    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436);
     color: rgb(179, 173, 173);
     cursor: pointer;
 }

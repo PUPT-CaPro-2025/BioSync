@@ -1,26 +1,33 @@
 <div class="header">
-    <mat-toolbar class="toolbar-container">
-        <span>Comp 1230 - Fundamentals to chuchu</span>
-        <p class="text-lightGray text-custom-16">Please choose a device to continue.</p>
-    </mat-toolbar>
+  <mat-toolbar class="toolbar-container">
+    <span>{{ selectedSubject.code }} - {{  selectedSubject.name }}</span>
+    <p class="text-lightGray text-custom-16">Please choose a device to
+      continue.</p>
+  </mat-toolbar>
 </div>
 <div class="justify-center items-center flex flex-row gap-24 mt-20">
-    <div class="h-[55vh] w-[18vw] bg-gradient-red-orange rounded-2xl flex flex-col justify-between biometrics">
-        <div class="flex justify-center items-center grow">
-            <mat-icon class="fingerprint-logo">fingerprint</mat-icon>
-        </div>
-        <div class="flex flex-col items-center mb-4 gap-4">
-            <hr class="border-t border-5 border-white w-[85%]">
-            <p class="text-center text-white text-custom-20">Biometrics Scanner</p>
-        </div>
+  <div
+    (click)="startAttendance('fingerprint')"
+    class="h-[55vh] w-[18vw] bg-gradient-red-orange rounded-2xl flex flex-col justify-between biometrics">
+    <div class="flex justify-center items-center grow">
+      <mat-icon class="fingerprint-logo">fingerprint</mat-icon>
     </div>
-    <div class="h-[55vh] w-[18vw] bg-lightGray rounded-2xl flex flex-col justify-between face-recognition">
-        <div class="flex justify-center items-center grow">
-            <img class="w-[200px] h-[200px]" src="../../../assets/face-recognition-white.png" alt="face recognition logo">
-        </div>
-        <div class="flex flex-col items-center mb-4 gap-4">
-            <hr class="border-t border-5 border-white w-[85%]">
-            <p class="text-center text-white text-custom-20">Face Recognition</p>
-        </div>
+    <div class="flex flex-col items-center mb-4 gap-4">
+      <hr class="border-t border-5 border-white w-[85%]">
+      <p class="text-center text-white text-custom-20">Fingerprint Scanner</p>
     </div>
+  </div>
+  <div
+    (click)="startAttendance('face')"
+    class="h-[55vh] w-[18vw] bg-lightGray rounded-2xl flex flex-col justify-between face-recognition">
+    <div class="flex justify-center items-center grow">
+      <img class="w-[200px] h-[200px]"
+           src="../../../assets/face-recognition-white.png"
+           alt="face recognition logo">
+    </div>
+    <div class="flex flex-col items-center mb-4 gap-4">
+      <hr class="border-t border-5 border-white w-[85%]">
+      <p class="text-center text-white text-custom-20">Face Recognition</p>
+    </div>
+  </div>
 </div>

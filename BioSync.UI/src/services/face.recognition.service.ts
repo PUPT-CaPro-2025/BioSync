@@ -8,12 +8,12 @@ import {RecognitionResponse} from "../model/recognition.response.model";
   providedIn: 'root',
 })
 export class FaceRecognitionService {
-  url = `${environment.serviceUrl}`;
+  url = `${environment.serviceUrl}/api/v1/flask`;
   headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
   constructor(private http: HttpClient) {}
 
-  encodeFaceDate(user: User, base64String: string) {
+  encodeFaceData(user: User, base64String: string) {
     const payload = {
       user: user,
       image_data: base64String,
@@ -23,6 +23,17 @@ export class FaceRecognitionService {
       headers: this.headers,
       withCredentials: true,
     });
+  }
+
+  verifyProfessor(professor_id: number, base64String: string) {
+    const payload = {
+      professor_id: professor_id,
+      image_data: base64String,
+    }
+
+    return this.http.post(`${this.url}/recognize_professor`, payload, {
+      withCredentials: true,
+    })
   }
 
   compareFaceData(schedule_id: number, base64Image: string){

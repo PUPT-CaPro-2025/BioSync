@@ -65,7 +65,7 @@
 }
 
 .menu-container.clicked {
-    background: linear-gradient(90deg, #F84C42, #F9653F, #FB7E3C);
+    background: linear-gradient(90deg, #68191F, #AB3130);
 }
 
 .menu-container.clicked p {
@@ -145,7 +145,7 @@
 
 .logout-content p {
     font-size: 16px;
-    color: #F84C42;
+    color: #AB3130;
 }
 
 .close-icon {

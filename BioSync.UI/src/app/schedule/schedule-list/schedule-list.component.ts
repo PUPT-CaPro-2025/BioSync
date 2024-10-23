@@ -80,6 +80,6 @@ export class ScheduleListComponent implements OnInit {
   }
 
   toggleStartSchedule(schedule: Schedule) {
-    this.router.navigate(['/attendance/start/', schedule.id]).then();
+    this.router.navigate(['/attendance', schedule.id, 'select-type']).then();
   }
 }

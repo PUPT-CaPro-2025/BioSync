@@ -1,42 +1,44 @@
-@if(!isAddSection) {
-            <div class="header">
-                <mat-toolbar class="toolbar-container">
-                    <span>List of Sections - ALL</span>
-                    <div class="toolbar-button">
-                        <button (click)="toggleAddSection()">Add New Section</button>
-                        <button (click)="generatePdf()">Print Section Reports</button>
-                    </div>
-                </mat-toolbar>
-            </div>
-            <div class="filter-container">
-                <mat-toolbar class="filter-content">
-                    <div class="search-container">
-                        <mat-icon class="search-icon">search</mat-icon>
-                        <input type="text" placeholder="SEARCH">
-                    </div>
-                    <div class="dropdown-container">
-                        <div class="dropdown-content">
-                            <div class="entry-container">
-                                <span>Show</span>
-                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                    @for(entry of entries; track entry) {
-                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                    }
-                                </select>
-                                <span>Entries</span>
-                            </div>
-                            <div class="sort-container">
-                                <select>
-                                    <option>Sort by</option>
-                                    @for(sort of sorting; track sort) {
-                                        <option [value]="sort">{{sort}}</option>
-                                    }
-                                </select>
-                            </div>
+<div class="background-container">
+    @if(!isAddSection) {
+        <div class="header">
+            <mat-toolbar class="toolbar-container">
+                <span>List of Sections - ALL</span>
+                <div class="toolbar-button">
+                    <button (click)="toggleAddSection()">Add New Section</button>
+                    <button (click)="generatePdf()">Print Section Reports</button>
+                </div>
+            </mat-toolbar>
+        </div>
+        <div class="filter-container">
+            <mat-toolbar class="filter-content">
+                <div class="search-container">
+                    <mat-icon class="search-icon">search</mat-icon>
+                    <input type="text" placeholder="SEARCH">
+                </div>
+                <div class="dropdown-container">
+                    <div class="dropdown-content">
+                        <div class="entry-container">
+                            <span>Show</span>
+                            <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                @for(entry of entries; track entry) {
+                                    <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                }
+                            </select>
+                            <span>Entries</span>
+                        </div>
+                        <div class="sort-container">
+                            <select>
+                                <option>Sort by</option>
+                                @for(sort of sorting; track sort) {
+                                    <option [value]="sort">{{sort}}</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                </mat-toolbar>
-            </div>
+                </div>
+            </mat-toolbar>
+        </div>
+        @if(filteredSections.length > 0) {
             <div class="table-container">
                 <div class="subject-table">
                     <div class="attributes text-custom-16">
@@ -97,8 +99,14 @@
                     </div>
                 </div>
             </div>
+        } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Section Data Yet.
+            </div>
+        }
 } @else {
-    <app-add-section
-      (sectionAdded)="onSectionCreation($event)"
-      (backToSection)="handleBackToSection()"/>
+<app-add-section
+  (sectionAdded)="onSectionCreation($event)"
+  (backToSection)="handleBackToSection()"/>
 }
+</div>

@@ -1,8 +1,11 @@
 package com.example.biosyncapi.attendance;
 
+import com.example.biosyncapi.user.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -13,4 +16,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     @Transactional
     @Modifying
     void deleteByUserId(Long userId);
+    @Query("SELECT a.user FROM Attendance a WHERE a.schedule.id = :scheduleId")
+    List<User> getStudentsByScheduleId(@Param("scheduleId") Long scheduleId);
 }

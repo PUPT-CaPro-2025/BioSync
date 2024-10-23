@@ -17,6 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import {Mail} from "../../../model/mail.model";
 import {MailService} from "../../../services/mail.service";
+import {
+  FaceRecognitionService
+} from "../../../services/face.recognition.service";
 
 @Component({
   selector: 'app-add-professor',
@@ -79,7 +82,8 @@ export class AddProfessorComponent implements OnInit{
     private dialog: MatDialog,
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
-    private mailService: MailService
+    private mailService: MailService,
+    private faceRecognitionService: FaceRecognitionService,
   ) {}
 
   ngOnInit() {
@@ -141,7 +145,7 @@ export class AddProfessorComponent implements OnInit{
       next: (userCreated: User) => {
         if(!userCreated.id) return;
         if(this.selectedProfileImage){
-          this.processProfileImage(+userCreated.id);
+          this.processProfileImage(userCreated);
         }
         if(this.isRightIndex && this.isRightThumb){
           this.registerFingerprintData(userCreated);
@@ -169,11 +173,28 @@ export class AddProfessorComponent implements OnInit{
     this.mailService.sendMail(mailContent).subscribe();
   }
 
-  processProfileImage(professorId: number) {
+  processProfileImage(professor: User) {
     const formData = new FormData();
-    formData.append('userId', `${professorId}`);
-    formData.append('profileImage', this.selectedProfileImage , `user-${professorId}-img.png`);
-    this.userService.processProfileImage(formData).subscribe();
+    formData.append('userId', `${professor.id}`);
+    formData.append('profileImage', this.selectedProfileImage , `user-${professor.id}-img.png`);
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Image = reader.result as string;
+
+          this.faceRecognitionService.encodeFaceData(professor, base64Image).subscribe();
+        };
+
+        reader.onerror = (error) => {
+          console.error("Error converting image to base64:", error);
+        };
+
+        if (this.selectedProfileImage) {
+          reader.readAsDataURL(this.selectedProfileImage);
+        }
+      }
+    });
   }
 
   registerFingerprintData(professor: User){
