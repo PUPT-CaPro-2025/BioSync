@@ -27,11 +27,13 @@ import {
 } from "../../../services/face.recognition.service";
 import {UserService} from "../../../services/user.service";
 import {AttendanceService} from "../../../services/attendance.service";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatProgressBar} from "@angular/material/progress-bar";
 
 @Component({
   selector: 'app-face-recognition-attendance',
   standalone: true,
-  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
+  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage, MatProgressSpinner, MatProgressBar],
   providers: [ScheduleService, UserService, FingerprintService, AttendanceService],
   templateUrl: './face-recognition-attendance.component.html',
   styleUrls: ['./face-recognition-attendance.component.css', '../start-attendance/start-attendance.component.css']
@@ -41,19 +43,12 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
   @ViewChild('overlay') overlay!: ElementRef<HTMLCanvasElement>;
   schedule!: Schedule;
   reminder = 'Scan In-Charge Face ID';
-  loggedProfessor!: User | null;
-  loggedStudent!: User | null;
+  loggedUser!: User | null;
   hasProfessorVerified = false;
   currentTime!: string;
   currentDate!: string;
   profileImageUrl!: string;
-  hasError = false;
   message = 'WELCOME';
-  student_code!:string;
-  name!: string;
-  recognized = false;
-  loading = false;
-  submitted = false;
   modelsLoaded = false;
   detectionInterval = 700;
   MAX_NO_FACE_COUNT = 20;
@@ -64,14 +59,10 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
   requestSent = 0;
   MAX_REQUEST_SEND = 5;
   matchResponseArray: number[] = [];
+  showOtherDetails = false;
   private subscription!: Subscription;
-
-  logstudents = [
-    'Kylie Ross Ayacocho',
-    'Andronicus Dimasacat',
-    'Jhean Khendrick Galope',
-    'Christian Harrel Go'
-  ]
+  unrecognized = false;
+  studentsLogged: User[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -91,9 +82,10 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
       next: (params) => {
         const scheduleId = +params.get('id')!;
         this.getScheduleDetails(scheduleId);
+        this.loggedUser = this.schedule.professor!;
       },
     });
-    this.loadModels()
+    await this.loadModels()
   }
 
   ngAfterViewInit() {
@@ -209,9 +201,10 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
           this.lastFaceDetection = null;
           this.noFaceDetectedCount = 0;
           this.requestSent = 0;
-          this.recognized = false;
-          this.hasError = false;
-          this.loading = false;
+          if(this.loggedUser){
+            this.loggedUser = null;
+          }
+          this.unrecognized = false;
         }
       }
 
@@ -239,19 +232,14 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
     const box = detection.detection.box;
     const base64Image = this.getBase64Image(box);
 
-    if (base64Image) {
+    if (base64Image && this.hasProfessorVerified) {
       this.subscription = this.faceRecognitionService
           .compareFaceData(this.schedule.id, base64Image)
-          .pipe(
-              finalize(() => {
-                this.submitted = true;
-                this.loading = true;
-              })
-          )
           .subscribe({
             next: (value: RecognitionResponse) => {
               this.matchResponseArray.push(value.match);
               if (this.requestSent === this.MAX_REQUEST_SEND) {
+                this.showOtherDetails = true;
                 this.getUserDetails(this.getMostFrequentMatch());
                 this.unsubscribeFromService()
               }
@@ -260,16 +248,31 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
               if (this.requestSent === this.MAX_REQUEST_SEND) {
                 if(this.matchResponseArray.length === 0){
                   setTimeout(() => {
-                    this.hasError = true;
-                    this.recognized = false;
-                    this.loading = false;
-                    this.submitted = false;
+                    this.unrecognized = true;
+                    this.message = "WELCOME"
                   }, 0);
                 }
                 this.unsubscribeFromService()
               }
             }
           });
+    } else if(base64Image && !this.hasProfessorVerified){
+      this.faceRecognitionService.verifyProfessor(this.schedule.professor?.id!, base64Image).subscribe({
+        next: () => {
+          if (this.requestSent === this.MAX_REQUEST_SEND) {
+            this.hasProfessorVerified = true;
+            this.loggedUser = this.schedule.professor!;
+            this.reminder = "Scan Students Face ID"
+          }
+        },
+        error: () => {
+          if (this.requestSent === this.MAX_REQUEST_SEND){
+            if(this.matchResponseArray.length === 0){
+              this.unrecognized = true;
+            }
+          }
+        }
+      })
     }
   }
 
@@ -279,7 +282,11 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
     formData.append('scheduleId', scheduleId.toString());
     formData.append('attendanceStatus', attendanceStatus);
 
-    this.attendanceService.logAttendance(formData).subscribe();
+    this.attendanceService.logAttendance(formData).subscribe({
+      next: (value) => {
+        this.studentsLogged.push(value);
+      }
+    });
   }
 
   private unsubscribeFromService() {
@@ -291,12 +298,21 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
   getUserDetails(userid: number) {
     this.userService.getUserById(userid).subscribe({
       next: (value) => {
-        this.name = `${value.firstName} ${value.lastName}`;
-        this.student_code = value.usercode;
+        this.loggedUser = value;
+        const hasLogged = this.studentsLogged.some(user => user.id === value.id);
+        if(hasLogged) this.message = "Already Logged!";
         this.getUserProfileImage(value.id);
         this.logAttendance(value.id, this.schedule.id, "PRESENT");
       },
     });
+  }
+
+  getLoggedStudents(){
+    this.attendanceService.getStudentsLogged(this.schedule.id).subscribe({
+      next: (value) => {
+        this.studentsLogged = value;
+      }
+    })
   }
 
   getUserProfileImage(userId: number) {
@@ -304,9 +320,6 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
         this.matchResponseArray = []
-        this.recognized = true;
-        this.loading = false;
-        this.submitted = false;
       },
     });
   }
@@ -390,10 +403,10 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: (value) => {
         this.schedule = value;
+        this.getLoggedStudents();
       },
     });
   }
-
 
   openConfirmationDialog(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
@@ -429,7 +442,12 @@ export class FaceRecognitionAttendanceComponent implements OnInit, AfterViewInit
     });
   }
 
-  stopAttendance(schedule: Schedule) {}
-
+  stopAttendance(schedule: Schedule) {
+    this.fingerprintService.stopAttendance(schedule).subscribe({
+      next: (value) => {
+        this.openInformationDialog(value);
+      },
+    });
+  }
 
 }

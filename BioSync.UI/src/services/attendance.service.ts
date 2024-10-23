@@ -26,6 +26,13 @@ export class AttendanceService {
     });
   }
 
+  getStudentsLogged(scheduleId: number){
+    return this.http.get<User[]>(`${this.url}/students/${scheduleId}`, {
+      headers: this.headers,
+      withCredentials: true,
+    })
+  }
+
   logAttendance(logRequest: FormData) {
     return this.http.post<User>(`${this.url}/student/time-in`, logRequest, {
       headers: this.headers,
