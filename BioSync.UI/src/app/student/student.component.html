@@ -1,4 +1,5 @@
-@if(!isAddStudent) {
+<div class="background-container">
+  @if(!isAddStudent) {
     @if(!isEditStudent) {
         <div class="header">
             <mat-toolbar class="toolbar-container">
@@ -121,3 +122,4 @@
       (addedStudent)="onStudentAdded($event)"
       (backToStudent)="handleBackToStudent()"/>
 }
+</div>

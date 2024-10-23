@@ -1,109 +1,111 @@
-@if(!isEditVisitor) {
-    <div class="header">
-        <mat-toolbar class="toolbar-container">
-            <span>Visitor Logs</span>
-            <div class="toolbar-button">
-                <button (click)="generatePdf()">Print Visitor Report</button>
-            </div>
-        </mat-toolbar>
-    </div>
-    <div class="filter-container">
-        <mat-toolbar class="filter-content">
-            <div class="search-container">
-                <mat-icon class="search-icon">search</mat-icon>
-                <input type="text" placeholder="SEARCH">
-            </div>
-            <div class="dropdown-container">
-                <div class="dropdown-content">
-                    <div class="entry-container">
-                        <span>Show</span>
-                        <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                            @for(entry of entries; track entry) {
-                                <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                            }
-                        </select>
-                        <span>Entries</span>
-                    </div>
-                    <div class="sort-container">
-                        <select>
-                            <option>Sort by</option>
-                            @for(sort of sorting; track sort) {
-                                <option [value]="sort">{{sort}}</option>
-                            }
-                        </select>
-                    </div>
+<div class="background-container">
+    @if(!isEditVisitor) {
+        <div class="header">
+            <mat-toolbar class="toolbar-container">
+                <span>Visitor Logs</span>
+                <div class="toolbar-button">
+                    <button (click)="generatePdf()">Print Visitor Report</button>
                 </div>
-            </div>
-        </mat-toolbar>
-    </div>
-    <div class="table-container">
-        <div class="subject-table">
-            <div class="attributes">
-                <div class="cell">VISITOR'S NAME</div>
-                <div class="cell">PURPOSE OF VISIT</div>
-                <div class="cell">DATE</div>
-                <div class="cell">TIME</div>
-                <DIV class="cell">DESTINATION</DIV>
-                <div class="cell">ACTION</div>
-            </div>
-            <div class="row-container">
-                @for (visitor of filteredVisitors; track visitor) {
-                    <div class="row">
-                        <div class="cell">{{visitor.name}}</div>
-                        <div class="cell">{{visitor.purposeOfVisit}}</div>
-                        <div class="cell">{{getDate(visitor.visitDate)}}</div>
-                        <div class="cell">{{getTime(visitor.visitDate)}}</div>
-                        <div class="cell">{{visitor.destination}}</div>
-                        <div class="cell">
-                            <div class="action-container">
-                                <button class="edit-button" (click)="toggleEditVisitor(visitor)"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button" (click)="openDeleteDialog(visitor)"><mat-icon>delete</mat-icon></button>
-                            </div>
+            </mat-toolbar>
+        </div>
+        <div class="filter-container">
+            <mat-toolbar class="filter-content">
+                <div class="search-container">
+                    <mat-icon class="search-icon">search</mat-icon>
+                    <input type="text" placeholder="SEARCH">
+                </div>
+                <div class="dropdown-container">
+                    <div class="dropdown-content">
+                        <div class="entry-container">
+                            <span>Show</span>
+                            <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                @for(entry of entries; track entry) {
+                                    <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                }
+                            </select>
+                            <span>Entries</span>
+                        </div>
+                        <div class="sort-container">
+                            <select>
+                                <option>Sort by</option>
+                                @for(sort of sorting; track sort) {
+                                    <option [value]="sort">{{sort}}</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                }
-            </div>
+                </div>
+            </mat-toolbar>
         </div>
-    </div>
-    <div class="line-container">
-        <img src="../../assets/black-line.svg">
-    </div>
-    <div class="bottom-container">
-        <div class="paginator">
-            <div class="paginator-info">
-              {{ getDisplayRange() }} of {{ totalItems }}
-            </div>
-            <div class="paginator-controls">
-              <span>Page</span>
-              <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                    @for (page of pages; track page) {
-                        <option [value]="page">{{ page }}</option>
+        <div class="table-container">
+            <div class="subject-table">
+                <div class="attributes">
+                    <div class="cell">VISITOR'S NAME</div>
+                    <div class="cell">PURPOSE OF VISIT</div>
+                    <div class="cell">DATE</div>
+                    <div class="cell">TIME</div>
+                    <DIV class="cell">DESTINATION</DIV>
+                    <div class="cell">ACTION</div>
+                </div>
+                <div class="row-container">
+                    @for (visitor of filteredVisitors; track visitor) {
+                        <div class="row">
+                            <div class="cell">{{visitor.name}}</div>
+                            <div class="cell">{{visitor.purposeOfVisit}}</div>
+                            <div class="cell">{{getDate(visitor.visitDate)}}</div>
+                            <div class="cell">{{getTime(visitor.visitDate)}}</div>
+                            <div class="cell">{{visitor.destination}}</div>
+                            <div class="cell">
+                                <div class="action-container">
+                                    <button class="edit-button" (click)="toggleEditVisitor(visitor)"><mat-icon>edit</mat-icon></button>
+                                    <button class="delete-button" (click)="openDeleteDialog(visitor)"><mat-icon>delete</mat-icon></button>
+                                </div>
+                            </div>
+                        </div>
                     }
-              </select>
-              <div class="paginator-button-container">
-                <button (click)="previousPage()"
-                        [disabled]="currentPage === 1"
-                        [ngClass]="{'active-button': currentPage > 1}">
-                    <img src="../../assets/previous.svg"
-                            alt="Previous Icon"
-                            [ngClass]="{'active-icon': currentPage > 1}">
-                    Previous
-                </button>
-                <button (click)="nextPage()"
-                        [disabled]="currentPage === totalPages"
-                        [ngClass]="{'active-button': currentPage < totalPages}">
-                    Next
-                    <img src="../../assets/next.svg"
-                            alt="Next Icon"
-                            [ngClass]="{'active-icon': currentPage < totalPages}">
-                </button>
-              </div>
+                </div>
             </div>
         </div>
-    </div>
-} @else {
-        <app-edit-visitor
-          [visitor]="visitorToEdit"
-          (editedVisitor)="onVisitorUpdate($event)"
-          (backToEditVisitor)="handleBackToEditVisitor()"/>
-    }
+        <div class="line-container">
+            <img src="../../assets/black-line.svg">
+        </div>
+        <div class="bottom-container">
+            <div class="paginator">
+                <div class="paginator-info">
+                  {{ getDisplayRange() }} of {{ totalItems }}
+                </div>
+                <div class="paginator-controls">
+                  <span>Page</span>
+                  <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                        @for (page of pages; track page) {
+                            <option [value]="page">{{ page }}</option>
+                        }
+                  </select>
+                  <div class="paginator-button-container">
+                    <button (click)="previousPage()"
+                            [disabled]="currentPage === 1"
+                            [ngClass]="{'active-button': currentPage > 1}">
+                        <img src="../../assets/previous.svg"
+                                alt="Previous Icon"
+                                [ngClass]="{'active-icon': currentPage > 1}">
+                        Previous
+                    </button>
+                    <button (click)="nextPage()"
+                            [disabled]="currentPage === totalPages"
+                            [ngClass]="{'active-button': currentPage < totalPages}">
+                        Next
+                        <img src="../../assets/next.svg"
+                                alt="Next Icon"
+                                [ngClass]="{'active-icon': currentPage < totalPages}">
+                    </button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    } @else {
+            <app-edit-visitor
+              [visitor]="visitorToEdit"
+              (editedVisitor)="onVisitorUpdate($event)"
+              (backToEditVisitor)="handleBackToEditVisitor()"/>
+        }    
+</div>
