@@ -21,6 +21,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import {MailService} from "../../../services/mail.service";
 import {Mail} from "../../../model/mail.model";
+import {
+  FaceRecognitionService
+} from "../../../services/face.recognition.service";
 
 @Component({
   selector: 'app-add-student',
@@ -93,7 +96,8 @@ export class AddStudentComponent implements OnInit{
     private sectionService: SectionService,
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
-    private mailService: MailService
+    private mailService: MailService,
+    private faceRecognitionService: FaceRecognitionService,
   ) {}
 
   ngOnInit() {
@@ -190,7 +194,7 @@ export class AddStudentComponent implements OnInit{
       next: (student: User) => {
         if(!student.id) return;
         if(this.selectedProfileImage){
-          this.processProfileImage(student.id)
+          this.processProfileImage(student)
         }
         if(this.isRightIndex && this.isRightThumb){
           this.registerFingerprintData(student);
@@ -218,11 +222,28 @@ export class AddStudentComponent implements OnInit{
     this.mailService.sendMail(mailContent).subscribe();
   }
 
-  processProfileImage(studentId: number) {
+  processProfileImage(student: User) {
     const formData = new FormData();
-    formData.append('userId', `${studentId}`);
-    formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
-    this.userService.processProfileImage(formData).subscribe();
+    formData.append('userId', `${student.id}`);
+    formData.append('profileImage', this.selectedProfileImage , `user-${student.id}-img.png`);
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64Image = reader.result as string;
+
+          this.faceRecognitionService.encodeFaceData(student, base64Image).subscribe();
+        };
+
+        reader.onerror = (error) => {
+          console.error("Error converting image to base64:", error);
+        };
+
+        if (this.selectedProfileImage) {
+          reader.readAsDataURL(this.selectedProfileImage);
+        }
+      }
+    });
   }
 
 

@@ -1,14 +1,16 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
-import { Schedule } from '../../model/schedule.model';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { AddScheduleComponent } from './add-schedule/add-schedule.component';
-import { MatSelectModule } from '@angular/material/select';
-import { EditScheduleComponent } from './edit-schedule/edit-schedule.component';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {Schedule} from '../../model/schedule.model';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {AddScheduleComponent} from './add-schedule/add-schedule.component';
+import {MatSelectModule} from '@angular/material/select';
+import {EditScheduleComponent} from './edit-schedule/edit-schedule.component';
 import {ScheduleService} from "../../services/schedule.service";
-import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {
+  PromptConfirmComponent
+} from "../prompt/prompt-confirm/prompt-confirm.component";
 import {MatDialog} from "@angular/material/dialog";
 import {SchoolYearService} from "../../services/school.year.service";
 import {SchoolYear} from "../../model/school.year.model";
@@ -40,7 +42,7 @@ import jsPDF from "jspdf";
   styleUrl: './schedule.component.css',
 })
 
-export class ScheduleComponent implements OnInit{
+export class ScheduleComponent implements OnInit {
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
@@ -81,16 +83,17 @@ export class ScheduleComponent implements OnInit{
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
-    private router : Router,
+    private router: Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
     private userService: UserService
-    ) {}
+  ) {
+  }
 
   ngOnInit() {
-    if(this.getRole() === "ADMIN"){
+    if (this.getRole() === "ADMIN") {
       this.getAllSchedules();
-    } else if (this.getRole() === "FACULTY"){
+    } else if (this.getRole() === "FACULTY") {
       this.getUserId();
       this.getFacultySchedule(this.userId);
     } else {
@@ -118,12 +121,13 @@ export class ScheduleComponent implements OnInit{
     });
   }
 
-  getUserId(){
-    const encryptedUserId = decodeURIComponent(this.cookieService.getCookie("user_id")!);
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+      this.cookieService.getCookie("user_id")!);
     this.userId = +this.cryptoService.decrypt(encryptedUserId);
   }
 
-  getRole(){
+  getRole() {
     return this.cryptoService.decrypt(
       decodeURIComponent(this.cookieService.getCookie("role")!));
   }
@@ -157,14 +161,15 @@ export class ScheduleComponent implements OnInit{
     if (schedules) {
       const daysSet = new Set<string>();
       schedules.forEach((schedule) => {
-        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString()));
+        schedule.recurrenceDays!.forEach(
+          (day: String) => daysSet.add(day.toString()));
       });
       return Array.from(daysSet);
     }
     return [];
   }
 
-  onScheduleCreation(schedule: Schedule[]){
+  onScheduleCreation(schedule: Schedule[]) {
     schedule.forEach((schedule: Schedule) => {
       this.schedules.push(schedule);
     })
@@ -205,7 +210,7 @@ export class ScheduleComponent implements OnInit{
     return this.scheduleService.getDayOfWeek(date);
   }
 
-  deleteSchedule(scheduleToDelete: Schedule){
+  deleteSchedule(scheduleToDelete: Schedule) {
     this.scheduleService.deleteSchedule(scheduleToDelete)
       .subscribe({
         next: () => {
@@ -230,7 +235,8 @@ export class ScheduleComponent implements OnInit{
 
   getDisplayRange(): string {
     const start = (this.currentPage - 1) * this.itemsPerPage + 1;
-    const end = Math.min(this.currentPage * this.itemsPerPage, this.totalItems);
+    const end = Math.min(this.currentPage * this.itemsPerPage,
+      this.totalItems);
     return `${start}-${end}`;
   }
 
@@ -294,10 +300,10 @@ export class ScheduleComponent implements OnInit{
   }
 
   toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId) {
+    if (schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
     } else {
-      this.router.navigate(['/attendance/start/', schedule.id]).then();
+      this.router.navigate(['/attendance', schedule.id, 'select-type']).then();
     }
   }
 
@@ -315,7 +321,7 @@ export class ScheduleComponent implements OnInit{
     const recurrenceIdStorage: string[] = [];
     this.schedules.forEach(schedule => {
       if (schedule.recurrenceId != null) {
-        if(!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+        if (!recurrenceIdStorage.includes(schedule.recurrenceId)) {
           recurrenceIdStorage.push(schedule.recurrenceId);
           filteredSchedules.push(schedule);
         }
@@ -350,7 +356,7 @@ export class ScheduleComponent implements OnInit{
   onFilterChange() {
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-      && schedule.semester?.id === this.selectedSemester
+        && schedule.semester?.id === this.selectedSemester
     )
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
@@ -364,13 +370,13 @@ export class ScheduleComponent implements OnInit{
   getSectionId(userId: number) {
     this.userService.getUserById(userId).subscribe({
       next: (user: User) => {
-        if(!user.id) return;
+        if (!user.id) return;
         this.getStudentSchedules(+user.section?.id!);
       }
     })
   }
 
-  getStudentSchedules(sectionId: number){
+  getStudentSchedules(sectionId: number) {
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
         console.log(schedules)
@@ -398,22 +404,23 @@ export class ScheduleComponent implements OnInit{
     const title = 'SCHEDULE LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
+    doc.text(title, pageWidth / 2, 30, {align: 'center'});
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
+    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, {align: 'right'});
     doc.setFont('helvetica', 'normal');
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, pageWidth / 2, 35);
 
-    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
+    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class', 'Laboratory'];
     const rows = this.schedules.map(schedule =>
       [
         schedule.subject?.code,
         schedule.subject?.name,
         schedule.recurrenceDays,
-        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${this.convertTimeFormat(
+          schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
         `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
         `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
         schedule.laboratory?.name

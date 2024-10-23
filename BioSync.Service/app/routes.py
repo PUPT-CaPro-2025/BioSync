@@ -85,6 +85,70 @@ def get_face_encoding(user_id):
     return None
 
 
+@app.route(f"{route_prefix}/recognize_professor", methods=["POST"])
+def recognize_professor():
+    data = request.json
+    
+    if not data:
+        return jsonify({"status": "error", "message": "No request received"}), 400
+    
+    professor_id = data.get("professor_id")
+    image_data = data.get("image_data")
+    
+    if not image_data:
+        return jsonify({"status": "error", "message": "Image is required"}), 400
+    
+    try:
+        image_data = base64.b64decode(image_data.split(",")[1])
+        image = face_recognition.load_image_file(BytesIO(image_data))
+        
+        face_locations = face_recognition.face_locations(image);
+        
+        if not face_locations:
+            return (
+                jsonify({"status": "error", "message": "No Face Found"}),
+                400
+            )
+        
+        unknown_face_encoding = face_recognition.face_encodings(
+           image, face_locations 
+        )[0]
+        
+        professor_face_encoding = []
+        
+        face_encoding = get_face_encoding(professor_id)
+        
+        if face_encoding is not None:
+            professor_face_encoding.append(face_encoding)
+
+        if professor_face_encoding:
+            matches = face_recognition.compare_faces(
+                professor_face_encoding, unknown_face_encoding
+            )
+
+            if any(matches):
+                return jsonify({"status": "success"}), 200
+            else:
+                return (
+                    jsonify(
+                        {"status": "error", "message": "Person Not Recognized"}
+                    ),
+                    401,
+                )
+        else: 
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "No face encodings found for students",
+                    }
+                ),
+                400,
+            )
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
 @app.route(f"{route_prefix}/recognize_face", methods=["POST"])
 def recognize_face():
     data = request.json
