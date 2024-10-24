@@ -11,6 +11,9 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatDialog} from "@angular/material/dialog";
 import {AddStudentComponent} from "../../student/add-student/add-student.component";
 import {PromptCsvComponent} from "../../prompt/prompt-csv/prompt-csv.component";
+import {
+  AddToScheduleComponent
+} from "../../prompt/add-to-schedule/add-to-schedule.component";
 
 @Component({
   selector: 'app-view-schedule',
@@ -88,7 +91,21 @@ export class ViewScheduleComponent implements OnInit{
   }
 
   toggleAddStudent() {
+    const ref = this.dialog.open(AddToScheduleComponent, {
+      width: '450px',
+      height: '250px',
+      data: {
+        title: 'Add Student',
+        scheduleId: this.schedule.id,
+      },
+      autoFocus: false
+    })
 
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getUsersByScheduleId(this.schedule.id!);
+      }
+    })
   }
 
   toggleBulkAddStudent() {

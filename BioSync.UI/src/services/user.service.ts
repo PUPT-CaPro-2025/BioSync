@@ -5,6 +5,7 @@ import {CookieService} from "./cookie.service";
 import {User} from "../model/user.model";
 import {Observable} from "rxjs";
 import {CsvResponse} from "../model/csvResponse.model";
+import {Student} from "../model/student-model";
 
 @Injectable()
 export class UserService {
@@ -77,6 +78,25 @@ export class UserService {
     }[]> {
         return this.http.get<{ student: User, computerNumber: string }[]>(
             `${this.url}/schedules/students/details/${scheduleId}`, {
+                headers: this.headers,
+                withCredentials: true
+            })
+    }
+
+    addUserToSchedule(scheduleId: number, studentId: number): Observable<User> {
+        const body = new FormData();
+        body.set('schedule_id', scheduleId.toString());
+        body.set('student_id', studentId.toString());
+
+        return this.http.post<User>(`${this.url}/schedules/student/add`, body, {
+            headers: this.headers,
+            withCredentials: true
+        })
+    }
+
+    getAllStudentsFilteredByScheduleId(scheduleId: number): Observable<User[]> {
+        return this.http.get<User[]>(
+            `${this.url}/users/students/${scheduleId}`, {
                 headers: this.headers,
                 withCredentials: true
             })
