@@ -11,6 +11,9 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatDialog} from "@angular/material/dialog";
 import {AddStudentComponent} from "../../student/add-student/add-student.component";
 import {PromptCsvComponent} from "../../prompt/prompt-csv/prompt-csv.component";
+import {
+  AddToScheduleComponent
+} from "../../prompt/add-to-schedule/add-to-schedule.component";
 
 @Component({
   selector: 'app-view-schedule',
@@ -29,7 +32,8 @@ import {PromptCsvComponent} from "../../prompt/prompt-csv/prompt-csv.component";
 })
 export class ViewScheduleComponent implements OnInit{
   schedule!: Schedule;
-  class: User[] = [];
+  class: { student: User, computerNumber: string }[] = [];
+
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -50,17 +54,21 @@ export class ViewScheduleComponent implements OnInit{
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: value => {
         this.schedule = value;
-        this.getUsersBySectionId(this.schedule.id!);
+        this.getUsersByScheduleId(this.schedule.id!);
       }
     })
   }
 
-  getUsersBySectionId(scheduleId: number) {
+  getUsersByScheduleId(scheduleId: number) {
     this.userService.getUsersByScheduleId(scheduleId).subscribe({
-      next: value => {
-        this.class = value
+      next: (value: { student: User, computerNumber: string }[]) => {
+        this.class = value;
+        console.log(this.class);
+      },
+      error: (err) => {
+        console.error('Error fetching users by schedule ID:', err);
       }
-    })
+    });
   }
 
   convertTo12HourFormat(string: string){
@@ -83,7 +91,21 @@ export class ViewScheduleComponent implements OnInit{
   }
 
   toggleAddStudent() {
+    const ref = this.dialog.open(AddToScheduleComponent, {
+      width: '450px',
+      height: '250px',
+      data: {
+        title: 'Add Student',
+        scheduleId: this.schedule.id,
+      },
+      autoFocus: false
+    })
 
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getUsersByScheduleId(this.schedule.id!);
+      }
+    })
   }
 
   toggleBulkAddStudent() {
