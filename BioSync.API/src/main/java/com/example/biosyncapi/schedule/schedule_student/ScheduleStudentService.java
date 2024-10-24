@@ -7,7 +7,15 @@ import org.springframework.dao.DataAccessException;
 import java.util.List;
 
 public interface ScheduleStudentService {
-    List<ScheduleStudent> getAllByScheduleId(Long userId);
-    void addStudentToSchedule(Schedule schedule, User student) throws DataAccessException;
-    List<User> getStudentsByScheduleId(Long scheduleId) throws RuntimeException;
+  List<ScheduleStudent> getAllByScheduleId(Long userId);
+
+  void addStudentToSchedule(
+      Schedule schedule,
+      User student) throws DataAccessException;
+
+  List<User> getStudentsByScheduleId(Long scheduleId) throws RuntimeException;
+
+  ScheduleStudent setStudentComputerNumber(
+      ScheduleStudent student,
+      Long computerNumber) throws DataAccessException;
 }

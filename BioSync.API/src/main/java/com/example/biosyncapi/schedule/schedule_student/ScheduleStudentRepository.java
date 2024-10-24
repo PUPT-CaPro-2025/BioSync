@@ -8,19 +8,23 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ScheduleStudentRepository extends JpaRepository<ScheduleStudent, Long> {
-    List<ScheduleStudent> findByScheduleIdAndHasLoggedFalse(Long scheduleId);
+public interface ScheduleStudentRepository
+    extends JpaRepository<ScheduleStudent, Long>
+{
+  List<ScheduleStudent> findByScheduleIdAndHasLoggedFalse(Long scheduleId);
 
-    List<ScheduleStudent> findByScheduleId(Long scheduleId);
+  List<ScheduleStudent> findByScheduleId(Long scheduleId);
 
-    ScheduleStudent findByStudentIdAndScheduleId(Long student_id, Long schedule_id);
+  ScheduleStudent findByStudentIdAndScheduleId(
+      Long student_id,
+      Long schedule_id);
 
-    @Transactional
-    void deleteByScheduleId(Long scheduleId);
+  @Transactional
+  void deleteByScheduleId(Long scheduleId);
 
-    @Transactional
-    @Modifying
-    @Query("DELETE FROM ScheduleStudent s WHERE s.student = :user")
-    void deleteAllByUserId(User user);
+  @Transactional
+  @Modifying
+  @Query("DELETE FROM ScheduleStudent s WHERE s.student = :user")
+  void deleteAllByUserId(User user);
 
 }
