@@ -65,6 +65,19 @@ public class ScheduleController {
     return scheduleStudentService.getStudentsByScheduleId(id);
   }
 
+  @GetMapping("students/details/{id}")
+  public ResponseEntity<List<ScheduleStudent>> getSchedulesStudentByScheduleId
+      (@PathVariable Long id) {
+    List<ScheduleStudent> scheduleStudent =
+        scheduleStudentService.getAllByScheduleId(id);
+
+    if (scheduleStudent == null || scheduleStudent.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(scheduleStudent);
+  }
+
   @GetMapping("/recurrence/{id}")
   public ResponseEntity<List<Schedule>> getSchedulesByRecurrenceId(@PathVariable UUID id) {
     List<Schedule> schedules = scheduleService.getSchedulesByRecurrenceId(id);
