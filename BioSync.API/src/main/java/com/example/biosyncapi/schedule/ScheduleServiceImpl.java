@@ -138,6 +138,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
+                newSchedule.setStatus(schedule.getStatus());
 
                 List<ScheduleStudent> scheduleStudents = new ArrayList<>();
                 for (User student : students) {
