@@ -149,7 +149,8 @@ export class ProfessorComponent implements OnInit{
     });
 
     ref.afterClosed().subscribe({
-      next: () => {
+      next: (result) => {
+        if(!result) return;
         this.deleteProfessor(professor);
       }
     })
