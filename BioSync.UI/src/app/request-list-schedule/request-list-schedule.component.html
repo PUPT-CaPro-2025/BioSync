@@ -99,10 +99,13 @@
                 {{convertTimeFormat(schedule.endTime)}}</div>
               <div class="cell">{{schedule.laboratory?.name}}</div>
               <div class="cell">
-                <div class="action-container">
-                  <button class="accept-button" (click)="toggleAcceptSchedule(schedule)"><mat-icon>check_circle</mat-icon></button>
-                  <button class="delete-button" (click)="toggleRejectSchedule(schedule)"><mat-icon>remove_circle</mat-icon></button>
-                </div>
+                <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                @if(activeDropdownId === schedule.id) {
+                  <div class="action-container">
+                    <button class="accept-button" (click)="toggleAcceptSchedule(schedule)">Accept</button>
+                    <button class="delete-button" (click)="toggleRejectSchedule(schedule)">Reject</button>
+                  </div>
+                }
               </div>
             </div>
           }
