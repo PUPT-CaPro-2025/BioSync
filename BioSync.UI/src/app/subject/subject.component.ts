@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from '../../model/subject-model';
@@ -47,6 +47,7 @@ export class SubjectComponent implements OnInit{
   isEditSubject: boolean = false;
   subjectToEdit!: Subject;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private subjectService: SubjectService,
@@ -87,6 +88,7 @@ export class SubjectComponent implements OnInit{
   }
 
   openDeleteDialog(subject: Subject): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -153,6 +155,22 @@ export class SubjectComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(SubjectId: number): void {
+    this.activeDropdownId = this.activeDropdownId === SubjectId ? null : SubjectId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddSubject(): void {
     this.isAddSubject = !this.isAddSubject;
   }
@@ -162,6 +180,7 @@ export class SubjectComponent implements OnInit{
   }
 
   toggleEditSubject(subject: Subject): void {
+    this.activeDropdownId = null;
     this.isEditSubject = !this.isEditSubject;
     this.subjectToEdit = subject;
   }
