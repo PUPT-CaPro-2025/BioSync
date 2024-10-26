@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -53,6 +53,7 @@ export class SchoolYearComponent implements OnInit {
   isViewSchoolYear: boolean = false;
   schoolYearToEdit!: SchoolYear;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private schoolYearService: SchoolYearService,
@@ -88,6 +89,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   openConfirmationDialog(schoolYear: SchoolYear): void {
+    this. activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -166,6 +168,22 @@ export class SchoolYearComponent implements OnInit {
     }
   }
 
+  toggleDropdownAction(schoolYearId: number): void {
+    this.activeDropdownId = this.activeDropdownId === schoolYearId ? null : schoolYearId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddSchoolYear(): void {
     this.isAddSchoolYear = !this.isAddSchoolYear;
   }
@@ -175,6 +193,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   toggleEditSchoolYear(schoolYear: SchoolYear): void {
+    this.activeDropdownId = null;
     this.isEditSchoolYear = !this.isEditSchoolYear;
     this.schoolYearToEdit = schoolYear;
 
@@ -185,6 +204,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   toggleViewSchoolYear(): void {
+    this. activeDropdownId = null;
     this.isViewSchoolYear = !this.isViewSchoolYear;
   }
 
