@@ -184,8 +184,8 @@ export class AttendanceComponent implements OnInit{
     this.onPageChange();
   }
 
-  toggleDropdownAction(professorId: number): void {
-    this.activeDropdownId = this.activeDropdownId === professorId ? null : professorId;
+  toggleDropdownAction(attendanceId: number): void {
+    this.activeDropdownId = this.activeDropdownId === attendanceId ? null : attendanceId;
   }
 
   @HostListener('document:click', ['$event'])

@@ -173,8 +173,8 @@ export class StudentComponent implements OnInit{
     }
   }
 
-  toggleDropdownAction(professorId: number): void {
-    this.activeDropdownId = this.activeDropdownId === professorId ? null : professorId;
+  toggleDropdownAction(studentId: number): void {
+    this.activeDropdownId = this.activeDropdownId === studentId ? null : studentId;
   }
 
   @HostListener('document:click', ['$event'])
