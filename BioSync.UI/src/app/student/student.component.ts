@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -64,7 +64,7 @@ export class StudentComponent implements OnInit{
   headerImage!: string;
   sortBy = '';
   searchQuery!: string;
-
+  activeDropdownId: number | null = null;
 
   constructor(
     private userService: UserService,
@@ -105,6 +105,7 @@ export class StudentComponent implements OnInit{
   }
 
   openConfirmationDialog(student: User){
+    this.activeDropdownId = null;
     const dialog = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -172,6 +173,22 @@ export class StudentComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(professorId: number): void {
+    this.activeDropdownId = this.activeDropdownId === professorId ? null : professorId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddStudent(): void {
     this.isAddStudent = !this.isAddStudent;
   }
@@ -181,6 +198,7 @@ export class StudentComponent implements OnInit{
   }
 
   toggleEditStudent(studentToEdit: User): void {
+    this.activeDropdownId = null;
     this.isEditStudent = !this.isEditStudent;
     this.studentToEdit = studentToEdit;
   }

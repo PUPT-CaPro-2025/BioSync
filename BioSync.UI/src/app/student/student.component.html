@@ -66,10 +66,13 @@
                             <div class="cell">{{ student.section?.year }}</div>
                             <div class="cell">{{ student.section?.section }}</div>
                             <div class="cell">
-                                <div class="action-container">
-                                    <button class="edit-button" (click)="toggleEditStudent(student)"><mat-icon>edit</mat-icon></button>
-                                    <button class="delete-button" (click)="openConfirmationDialog(student)"><mat-icon>delete</mat-icon></button>
-                                </div>
+                                <button (click)="toggleDropdownAction(student.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                @if(activeDropdownId === student.id) {
+                                    <div class="action-container">
+                                        <button class="action-button" (click)="toggleEditStudent(student)">Edit</button>
+                                        <button class="action-button" (click)="openConfirmationDialog(student)">Delete</button>
+                                    </div>
+                                }
                             </div>
                         </div>
                     }
