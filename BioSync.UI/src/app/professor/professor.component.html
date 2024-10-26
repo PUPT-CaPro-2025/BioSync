@@ -59,12 +59,13 @@
                                     <div class="cell">{{professor.middleName}}</div>
                                     <div class="cell">{{professor.suffix}}</div>
                                     <div class="cell">
-                                        <div class="action-container">
-                                            <button class="edit-button" (click)="toggleEditProfessor(professor)">
-                                              <mat-icon>edit</mat-icon>
-                                            </button>
-                                            <button class="delete-button" (click)="openDeleteConfirmation(professor)"><mat-icon>delete</mat-icon></button>
-                                        </div>
+                                        <button (click)="toggleDropdownAction(professor.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                        @if(activeDropdownId === professor.id) {
+                                            <div class="action-container">
+                                                <button class="action-button" (click)="toggleEditProfessor(professor)">Edit</button>
+                                                <button class="action-button" (click)="openDeleteConfirmation(professor)">Delete</button>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             }

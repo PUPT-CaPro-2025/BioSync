@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -45,6 +45,7 @@ export class ProfessorComponent implements OnInit{
   isEditProfessor: boolean = false;
   professorToUpdate!: User
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private userService: UserService,
@@ -122,6 +123,22 @@ export class ProfessorComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(professorId: number): void {
+    this.activeDropdownId = this.activeDropdownId === professorId ? null : professorId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddProfessor(): void {
     this.isAddProfessor = !this.isAddProfessor;
   }
@@ -131,6 +148,7 @@ export class ProfessorComponent implements OnInit{
   }
 
   toggleEditProfessor(professor: User): void {
+    this.activeDropdownId = null;
     this.isEditProfessor = !this.isEditProfessor;
     this.professorToUpdate = professor;
   }
@@ -140,6 +158,7 @@ export class ProfessorComponent implements OnInit{
   }
 
   openDeleteConfirmation(professor: User){
+    this.activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
