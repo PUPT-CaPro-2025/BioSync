@@ -54,9 +54,12 @@
                                 <div class="cell">{{ section.year }}</div>
                                 <div class="cell">{{ section.section }}</div>
                                 <div class="cell">
-                                    <div class="action-container">
-                                        <button class="delete-button" (click)="openConfirmationDialog(section)"><mat-icon>delete</mat-icon></button>
-                                    </div>
+                                    <button (click)="toggleDropdownAction(section.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                    @if(activeDropdownId === section.id) {
+                                        <div class="action-container">
+                                            <button class="action-button" (click)="openConfirmationDialog(section)">Delete</button>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         }

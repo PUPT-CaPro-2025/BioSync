@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -50,6 +50,7 @@ export class SectionComponent implements OnInit{
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddSection: boolean = false;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private dialog: MatDialog,
@@ -83,6 +84,7 @@ export class SectionComponent implements OnInit{
   }
 
   openConfirmationDialog(section: Section){
+    this.activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -145,6 +147,22 @@ export class SectionComponent implements OnInit{
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.onPageChange();
+    }
+  }
+
+  toggleDropdownAction(sectionId: number): void {
+    this.activeDropdownId = this.activeDropdownId === sectionId ? null : sectionId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
     }
   }
 
