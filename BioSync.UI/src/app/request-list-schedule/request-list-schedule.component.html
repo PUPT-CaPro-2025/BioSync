@@ -102,8 +102,8 @@
                 <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                 @if(activeDropdownId === schedule.id) {
                   <div class="action-container">
-                    <button class="accept-button" (click)="toggleAcceptSchedule(schedule)">Accept</button>
-                    <button class="delete-button" (click)="toggleRejectSchedule(schedule)">Reject</button>
+                    <button class="action-button" (click)="toggleAcceptSchedule(schedule)">Accept</button>
+                    <button class="action-button" (click)="toggleRejectSchedule(schedule)">Reject</button>
                   </div>
                 }
               </div>
