@@ -1,5 +1,5 @@
 import { Visitor } from '../../model/visitor.model';
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -42,6 +42,7 @@ export class VisitorComponent implements OnInit{
   isEditVisitor: boolean = false;
   visitorToEdit!: Visitor;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private visitorService: VisitorService,
@@ -96,6 +97,7 @@ export class VisitorComponent implements OnInit{
   }
 
   openDeleteDialog(visitor: Visitor): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -162,9 +164,26 @@ export class VisitorComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(visitorId: number): void {
+    this.activeDropdownId = this.activeDropdownId === visitorId ? null : visitorId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleEditVisitor(visitor: Visitor) {
     this.isEditVisitor = !this.isEditVisitor;
     this.visitorToEdit = visitor;
+    this.activeDropdownId = null;
   }
 
   handleBackToEditVisitor(): void {

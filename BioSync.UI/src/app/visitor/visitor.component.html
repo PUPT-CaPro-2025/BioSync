@@ -57,10 +57,13 @@
                                 <div class="cell">{{getTime(visitor.visitDate)}}</div>
                                 <div class="cell">{{visitor.destination}}</div>
                                 <div class="cell">
-                                    <div class="action-container">
-                                        <button class="edit-button" (click)="toggleEditVisitor(visitor)"><mat-icon>edit</mat-icon></button>
-                                        <button class="delete-button" (click)="openDeleteDialog(visitor)"><mat-icon>delete</mat-icon></button>
-                                    </div>
+                                    <button (click)="toggleDropdownAction(visitor.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                    @if(activeDropdownId === visitor.id) {
+                                        <div class="action-container">
+                                            <button class="action-button" (click)="toggleEditVisitor(visitor)">Edit</button>
+                                            <button class="action-button" (click)="openDeleteDialog(visitor)">Delete</button>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         }

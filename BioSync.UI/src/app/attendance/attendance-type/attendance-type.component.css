@@ -26,13 +26,13 @@
 }
 
 .biometrics:hover {
-    background: #7f7f7f;
+    background: linear-gradient(to right, #68191F, #AB3130);
     color: rgb(179, 173, 173);
     cursor: pointer;
 }
 
 .face-recognition:hover {
-    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436);
+    background: linear-gradient(to right, #68191F, #AB3130);
     color: rgb(179, 173, 173);
     cursor: pointer;
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -55,6 +55,7 @@ export class ProgramComponent implements OnInit{
   programToEdit!: Program;
   currentProgram: number | undefined;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private programService: ProgramService,
@@ -95,6 +96,7 @@ export class ProgramComponent implements OnInit{
   }
 
   openDeleteDialog(program: Program): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -161,6 +163,22 @@ export class ProgramComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(programId: number): void {
+    this.activeDropdownId = this.activeDropdownId === programId ? null : programId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddProgram(): void {
     this.isAddProgram = !this.isAddProgram;
   }
@@ -170,6 +188,7 @@ export class ProgramComponent implements OnInit{
   }
 
   toggleEditProgram(program: Program): void {
+    this.activeDropdownId = null;
     this.isEditProgram = !this.isEditProgram;
     this.programToEdit = program;
   }

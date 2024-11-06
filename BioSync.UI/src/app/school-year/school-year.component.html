@@ -93,11 +93,14 @@
                                             </div>
                                         </div>
                                         <div class="cell">
-                                            <div class="action-container">
-                                                <button class="view-button" (click)="toggleViewSchoolYear()"><mat-icon>visibility</mat-icon></button>
-                                                <button class="edit-button" (click)="toggleEditSchoolYear(schoolYear)"><mat-icon>edit</mat-icon></button>
-                                                <button class="delete-button" (click)="openConfirmationDialog(schoolYear)"><mat-icon>delete</mat-icon></button>
-                                            </div>
+                                            <button (click)="toggleDropdownAction(schoolYear.id!)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                            @if(activeDropdownId === schoolYear.id) {
+                                                <div class="action-container">
+                                                    <button class="action-button" (click)="toggleViewSchoolYear()">View</button>
+                                                    <button class="action-button" (click)="toggleEditSchoolYear(schoolYear)">Edit</button>
+                                                    <button class="action-button" (click)="openConfirmationDialog(schoolYear)">Delete</button>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 }

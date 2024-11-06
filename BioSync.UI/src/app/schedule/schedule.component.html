@@ -148,16 +148,19 @@
                             {{convertTimeFormat(schedule.endTime)}}</div>
                           <div class="cell">{{schedule.laboratory?.name}}</div>
                           <div class="cell">
-                            <div class="action-container">
-                              @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
-                                <button class="edit-button" (click)="toggleStartSchedule(schedule)"><mat-icon>play_arrow</mat-icon></button>
-                              }
-                              <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
-                              @if(getRole() === "ADMIN"){
-                                <button class="edit-button" (click)="toggleEditSchedule(schedule)"><mat-icon>edit</mat-icon></button>
-                                <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
-                              }
-                            </div>
+                            <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                            @if(activeDropdownId === schedule.id) {
+                              <div class="action-container">
+                                @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
+                                  <button class="action-button" (click)="toggleStartSchedule(schedule)">Start Attendance</button>
+                                }
+                                <button class="action-button" (click)="toggleViewSchedule(schedule)">View</button>
+                                @if(getRole() === "ADMIN"){
+                                  <button class="action-button" (click)="toggleEditSchedule(schedule)">edit</button>
+                                  <button class="action-button" (click)="openDeleteDialog(schedule)">delete</button>
+                                }
+                              </div>
+                            }
                           </div>
                         </div>
                       }

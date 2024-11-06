@@ -95,9 +95,12 @@
                 {{convertTimeFormat(schedule.endTime)}}</div>
               <div class="cell">{{schedule.laboratory?.name}}</div>
               <div class="cell">
-                <div class="action-container">
-                  <button class="edit-button" (click)="toggleViewAttendance(schedule)"><mat-icon>visibility</mat-icon></button>
-                </div>
+                <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                  @if(activeDropdownId === schedule.id) {
+                      <div class="action-container">
+                        <button class="action-button" (click)="toggleViewAttendance(schedule)">View</button>
+                      </div>
+                  }
               </div>
             </div>
           }

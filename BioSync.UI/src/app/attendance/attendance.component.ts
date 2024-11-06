@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -56,6 +56,7 @@ export class AttendanceComponent implements OnInit{
   userId!: number;
   headerImage!: string;
   attendances: Attendance[] = [];
+  activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -183,6 +184,22 @@ export class AttendanceComponent implements OnInit{
     this.onPageChange();
   }
 
+  toggleDropdownAction(attendanceId: number): void {
+    this.activeDropdownId = this.activeDropdownId === attendanceId ? null : attendanceId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -223,6 +240,7 @@ export class AttendanceComponent implements OnInit{
   }
 
   toggleViewAttendance(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.router.navigate(["/view/attendance", schedule.id]).then();
   }
 

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
@@ -71,6 +71,7 @@ export class RequestListScheduleComponent implements OnInit {
   isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -242,6 +243,22 @@ export class RequestListScheduleComponent implements OnInit {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.onPageChange();
+    }
+  }
+
+  toggleDropdownAction(scheduleId: number): void {
+    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
     }
   }
 
@@ -438,6 +455,7 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   toggleAcceptSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.openAcceptDialog(schedule);
   }
 
@@ -496,6 +514,7 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   toggleRejectSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.openRejectDialog(schedule)
   }
 }

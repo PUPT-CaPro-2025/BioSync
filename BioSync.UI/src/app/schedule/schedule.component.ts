@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {Schedule} from '../../model/schedule.model';
@@ -78,6 +78,7 @@ export class ScheduleComponent implements OnInit {
   isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -191,6 +192,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   openDeleteDialog(schedule: Schedule): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -272,6 +274,22 @@ export class ScheduleComponent implements OnInit {
     }
   }
 
+  toggleDropdownAction(scheduleId: number): void {
+    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleOneAddSchedule(): void {
     this.isDropdownOpenAddSchedule = false;
     this.isOneAddSchedule = !this.isOneAddSchedule;
@@ -300,6 +318,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleStartSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     if (schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
     } else {
@@ -308,6 +327,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleEditSchedule(schedule: Schedule): void {
+    this.activeDropdownId = null;
     this.isEditSchedule = !this.isEditSchedule;
     this.selectedSchedule = schedule;
   }
@@ -364,6 +384,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleViewSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.router.navigate(["/view/schedule", schedule.id]).then();
   }
 

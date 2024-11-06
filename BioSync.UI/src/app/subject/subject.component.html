@@ -53,10 +53,13 @@
                                     <div class="cell">{{ subject.code }}</div>
                                 <div class="cell">{{ subject.name }}</div>
                                 <div class="cell">
-                                    <div class="action-container">
-                                        <button class="edit-button" (click)="toggleEditSubject(subject)"><mat-icon>edit</mat-icon></button>
-                                        <button class="delete-button" (click)="openDeleteDialog(subject)"><mat-icon>delete</mat-icon></button>
-                                    </div>
+                                    <button (click)="toggleDropdownAction(subject.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                    @if(activeDropdownId === subject.id) {
+                                        <div class="action-container">
+                                            <button class="action-button" (click)="toggleEditSubject(subject)">Edit</button>
+                                            <button class="action-button" (click)="openDeleteDialog(subject)">Delete</button>
+                                        </div>
+                                    }
                                 </div>
                                 </div>
                             }
