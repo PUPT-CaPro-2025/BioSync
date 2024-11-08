@@ -44,10 +44,10 @@ export class SectionComponent implements OnInit{
 
   section: Section[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSection: boolean = false;
   headerImage!: string;
   activeDropdownId: number | null = null;
@@ -70,6 +70,8 @@ export class SectionComponent implements OnInit{
       next: (sections: Section[]) => {
         this.section = sections;
         this.sortSections();
+        this.totalItems = this.section.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
