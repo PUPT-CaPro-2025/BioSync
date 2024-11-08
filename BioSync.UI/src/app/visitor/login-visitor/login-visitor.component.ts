@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import {VisitorService} from "../../../services/visitor.service";
 import {Visitor} from "../../../model/visitor.model";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login-visitor',
@@ -28,6 +29,7 @@ export class LoginVisitorComponent implements OnInit {
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private visitorService: VisitorService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -70,5 +72,9 @@ export class LoginVisitorComponent implements OnInit {
     })
 
     this.visitorLogForm.reset()
+  }
+
+  navigateTo(route: string) {
+    this.router.navigate([route]).then();
   }
 }
