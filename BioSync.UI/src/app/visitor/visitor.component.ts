@@ -35,10 +35,10 @@ export class VisitorComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isEditVisitor: boolean = false;
   visitorToEdit!: Visitor;
   headerImage!: string;
@@ -61,6 +61,8 @@ export class VisitorComponent implements OnInit{
     this.visitorService.getVisitors().subscribe({
       next: (visitors: Visitor[]) => {
         this.visitors = visitors;
+        this.totalItems = visitors.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
