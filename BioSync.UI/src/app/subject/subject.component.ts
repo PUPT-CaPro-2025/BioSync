@@ -39,10 +39,10 @@ export class SubjectComponent implements OnInit{
 
   subjects: Subject[] = []
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSubject: boolean = false;
   isEditSubject: boolean = false;
   subjectToEdit!: Subject;
@@ -67,6 +67,8 @@ export class SubjectComponent implements OnInit{
         subjects.forEach((subject) => {
           this.subjects.push(subject);
         })
+        this.totalItems = this.subjects.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
