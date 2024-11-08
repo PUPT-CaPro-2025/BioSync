@@ -115,10 +115,19 @@ export class VisitorComponent implements OnInit{
     })
   }
 
+  updatePagination(): void {
+    this.totalItems = this.visitors.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
   deleteVisitorLog(visitor: Visitor): void {
     this.visitorService.deleteVisitor(visitor).subscribe({
       next: () => {
         this.visitors = this.visitors.filter(v => v.id !== visitor.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     })
