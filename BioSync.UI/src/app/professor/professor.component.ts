@@ -37,10 +37,10 @@ export class ProfessorComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
   professorToUpdate!: User
@@ -64,6 +64,8 @@ export class ProfessorComponent implements OnInit{
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: (professors: User[]) => {
         this.professors = professors;
+        this.totalItems = this.professors.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
