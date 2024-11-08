@@ -45,10 +45,10 @@ export class ProgramComponent implements OnInit{
 
   programs: Program[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddProgram: boolean = false;
   isEditProgram: boolean = false;
   isViewProgram: boolean = false;
@@ -75,6 +75,8 @@ export class ProgramComponent implements OnInit{
         programs.forEach((program) => {
           this.programs.push(program);
         })
+        this.totalItems = this.programs.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
