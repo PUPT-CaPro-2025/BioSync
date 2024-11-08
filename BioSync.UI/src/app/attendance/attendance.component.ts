@@ -265,6 +265,8 @@ export class AttendanceComponent implements OnInit{
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
