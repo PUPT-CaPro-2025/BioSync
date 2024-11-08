@@ -77,6 +77,15 @@ export class SubjectComponent implements OnInit{
 
   onSubjectAdded(newSubject: Subject){
     this.subjects.push(newSubject);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.subjects.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onSubjectUpdate(updatedSubject: Subject) {
@@ -110,6 +119,7 @@ export class SubjectComponent implements OnInit{
     this.subjectService.deleteSubject(subject.id).subscribe({
       next: () => {
         this.subjects = this.subjects.filter(s => s.id !== subject.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });

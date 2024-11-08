@@ -85,6 +85,15 @@ export class LaboratoryComponent implements OnInit {
 
   onLaboratoryAdded(newLaboratory: Laboratory){
     this.laboratories.push(newLaboratory);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.laboratories.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onLaboratoryUpdate(updatedLaboratory: Laboratory) {
@@ -118,6 +127,7 @@ export class LaboratoryComponent implements OnInit {
     this.laboratoryService.deleteLaboratoryById(laboratoryToDelete).subscribe({
       next: () => {
         this.laboratories = this.laboratories.filter(laboratory => laboratory.id !== laboratoryToDelete.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });

@@ -94,6 +94,15 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.queriedStudents.push(newStudent);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.students.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onStudentUpdate(updatedStudent: User){
@@ -253,6 +262,7 @@ export class StudentComponent implements OnInit{
       next: () => {
         this.queriedStudents = this.queriedStudents.filter(student => studentToDelete.id !== student.id);
         this.openMessageDialog(true);
+        this.updatePagination();
       },
       error: err => {
         console.log(err.error);

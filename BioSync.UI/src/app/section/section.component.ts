@@ -83,6 +83,15 @@ export class SectionComponent implements OnInit{
   onSectionCreation(section: Section){
     this.section.push(section);
     this.sortSections();
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.section.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   openConfirmationDialog(section: Section){
@@ -106,6 +115,7 @@ export class SectionComponent implements OnInit{
     this.sectionService.deleteSection(section).subscribe({
       next: () => {
         this.section = this.section.filter(v => v.id !== section.id);
+        this.updatePagination();
       }
     })
   }

@@ -171,6 +171,15 @@ export class RequestListScheduleComponent implements OnInit {
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -195,7 +204,8 @@ export class RequestListScheduleComponent implements OnInit {
         next: () => {
           this.schedules = this.schedules.filter(
             schedule => schedule.id !== scheduleToDelete.id
-          )
+          );
+          this.updatePagination();
         }
       })
   }

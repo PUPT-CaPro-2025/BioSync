@@ -85,6 +85,15 @@ export class ProgramComponent implements OnInit{
 
   onProgramAdded(newProgram: Program){
     this.programs.push(newProgram);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.programs.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onProgramUpdate(updatedProgram: Program) {
@@ -118,6 +127,7 @@ export class ProgramComponent implements OnInit{
     this.programService.deleteProgram(programToDelete).subscribe({
       next: () => {
         this.programs = this.programs.filter(program => program.id !== programToDelete.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });
