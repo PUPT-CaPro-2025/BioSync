@@ -54,10 +54,10 @@ export class StudentComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
   studentToEdit!:User;
@@ -83,7 +83,9 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
-        this.queriedStudents = [...this.students]
+        this.queriedStudents = [...this.students];
+        this.totalItems = this.students.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
 
