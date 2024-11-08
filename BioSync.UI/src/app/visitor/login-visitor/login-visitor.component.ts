@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange } from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
@@ -12,17 +13,29 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-login-visitor',
   standalone: true,
-  imports: [MatIconModule, ReactiveFormsModule, MatSelectModule, MatInput],
+  imports: [MatIconModule, 
+    ReactiveFormsModule, 
+    MatSelectModule, 
+    MatInput,
+    MatSelectModule
+  ],
   providers: [VisitorService],
   templateUrl: './login-visitor.component.html',
   styleUrl: './login-visitor.component.css'
 })
 export class LoginVisitorComponent implements OnInit {
   visitorLogForm!: FormGroup;
+  showOtherDetails: boolean = false;
 
   labs: string[] = [
     'DOST Laboratory',
     'Aboitiz Laboratory',
+  ];
+
+  visitPurposes: string[] =[
+    'Panelist',
+    'Organizer',
+    'Clearance'
   ];
 
   constructor(
@@ -36,11 +49,15 @@ export class LoginVisitorComponent implements OnInit {
     this.initForm();
   }
 
+  onVisitPurposeChange(event: MatSelectChange): void {
+    this.showOtherDetails = event.value === 'Others';
+  }
+
   initForm(): void{
     this.visitorLogForm = this.formBuilder.group({
         name: ['', [Validators.required]],
         purposeOfVisit: ['', [Validators.required]],
-        otherDetails: ['', [Validators.required]],
+        otherDetails: [''],
         destination: ['', [Validators.required]],
       }
     )

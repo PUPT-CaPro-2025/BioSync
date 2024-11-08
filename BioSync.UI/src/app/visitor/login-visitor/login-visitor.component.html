@@ -33,31 +33,37 @@
                         formControlName="name">
                 </div>
                 <div class="group flex flex-col gap-1">
-                    <label for="purpose-of-visit" class="text-custom-16 md:text-custom-20
+                    <label for="visit-purpose" class="text-custom-20
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Purpose of Visit
                     </label>
-                    <input matInput id="purpose_of_visit" name="purpose-of-visit"
-                        placeholder="Enter Visitor's purpose of visit" class="bg-transparent
-                        border-b-2 border-darkGray focus:border-brightRed
-                        focus:outline-none transition-colors
-                        duration-300 w-full py-2 md:py-2 px-1"
-                        formControlName="purposeOfVisit">
+                    <mat-select id="visit_purpose" name="visit-purpose" placeholder="Select your Purpose of Visit"
+                            class="bg-transparent border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors 
+                            duration-300 w-full py-2 px-1" formControlName="purposeOfVisit"
+                            (selectionChange)="onVisitPurposeChange($event)">
+                            @for(visitPurpose of visitPurposes; track visitPurpose) {
+                                <mat-option [value]="visitPurpose">{{visitPurpose}}</mat-option>
+                            }
+                            <mat-option value="Others">Others</mat-option>
+                    </mat-select>
                 </div>
-                <div class="group flex flex-col gap-1">
-                    <label for="other-details" class="text-custom-16 md:text-custom-20
-                        text-darkGray transition-colors duration-300
-                        group-focus-within:text-brightRed">
-                        Other Details
-                    </label>
-                    <input matInput id="other_details" name="other-details"
-                        placeholder="Any additional details for visit" class="bg-transparent
-                        border-b-2 border-darkGray focus:border-brightRed
-                        focus:outline-none transition-colors
-                        duration-300 w-full py-2 md:py-2 px-1"
-                        formControlName="otherDetails">
-                </div>
+                @if(showOtherDetails) {
+                    <div class="group flex flex-col gap-1">
+                        <label for="other-details" class="text-custom-16 md:text-custom-20
+                            text-darkGray transition-colors duration-300
+                            group-focus-within:text-brightRed">
+                            Other Details
+                        </label>
+                        <input matInput id="other_details" name="other-details"
+                            placeholder="Any additional details for visit" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 md:py-2 px-1"
+                            formControlName="otherDetails">
+                    </div>
+                }
                 <div class="group flex flex-col gap-1">
                     <label for="destination" class="text-custom-16 md:text-custom-20
                         text-darkGray transition-colors duration-300
