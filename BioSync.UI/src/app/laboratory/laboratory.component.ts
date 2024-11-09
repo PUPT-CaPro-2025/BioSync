@@ -45,10 +45,10 @@ export class LaboratoryComponent implements OnInit {
 
   laboratories: Laboratory[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddLaboratory: boolean = false;
   isEditLaboratory: boolean = false;
   isViewLaboratory: boolean = false;
@@ -75,6 +75,8 @@ export class LaboratoryComponent implements OnInit {
         laboratories.forEach((laboratory) => {
           this.laboratories.push(laboratory);
         })
+        this.totalItems = this.laboratories.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
@@ -83,6 +85,15 @@ export class LaboratoryComponent implements OnInit {
 
   onLaboratoryAdded(newLaboratory: Laboratory){
     this.laboratories.push(newLaboratory);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.laboratories.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onLaboratoryUpdate(updatedLaboratory: Laboratory) {
@@ -116,6 +127,7 @@ export class LaboratoryComponent implements OnInit {
     this.laboratoryService.deleteLaboratoryById(laboratoryToDelete).subscribe({
       next: () => {
         this.laboratories = this.laboratories.filter(laboratory => laboratory.id !== laboratoryToDelete.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });

@@ -37,10 +37,10 @@ export class ProfessorComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
   professorToUpdate!: User
@@ -64,12 +64,23 @@ export class ProfessorComponent implements OnInit{
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: (professors: User[]) => {
         this.professors = professors;
+        this.totalItems = this.professors.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
 
   onProfessorAdded(newProfessor: User){
     this.professors.push(newProfessor);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.professors.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onProfessorUpdate(updatedProfessor: User){
@@ -192,6 +203,7 @@ export class ProfessorComponent implements OnInit{
         this.professors = this.professors.filter(
           prof => prof.id !== professor.id
         );
+        this.updatePagination();
       },
       error: () => this.openSomethingWentWrong()
     })

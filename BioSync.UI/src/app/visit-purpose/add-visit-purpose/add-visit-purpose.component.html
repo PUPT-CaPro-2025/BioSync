@@ -1,0 +1,40 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Add New Visit Purpose</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="visitPurposeForm">
+        <div class="w-[55%] flex flex-col gap-4 row-block">
+            <div class="group flex flex-col gap-1">
+                <label for="purpose-of-visit" class="text-custom-16
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Purpose of Visit
+                </label>
+                <input matInput id="visit_purpose"
+                    name="purpose-of-visit"
+                    placeholder="Enter the purpose of visit"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="visitPurpose">
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end button-content">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray back-button"
+                        (click)="returnToVisitPurposeView()">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red rounded-full
+                        hover:bg-gradient-dark-red hover:text-f4White add-button"
+                        (click)="submit()">
+                        Add Visit Purpose
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -56,10 +56,10 @@ export class FacultyMyRequestComponent implements OnInit {
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;;
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
@@ -108,6 +108,8 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (err) => console.error(err),
     });
@@ -132,6 +134,8 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -166,6 +170,15 @@ export class FacultyMyRequestComponent implements OnInit {
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -206,7 +219,8 @@ export class FacultyMyRequestComponent implements OnInit {
         next: () => {
           this.schedules = this.schedules.filter(
             schedule => schedule.id !== scheduleToDelete.id
-          )
+          );
+          this.updatePagination();
         }
       })
   }

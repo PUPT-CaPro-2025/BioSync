@@ -54,10 +54,10 @@ export class StudentComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
   studentToEdit!:User;
@@ -83,7 +83,9 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
-        this.queriedStudents = [...this.students]
+        this.queriedStudents = [...this.students];
+        this.totalItems = this.students.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
 
@@ -92,6 +94,15 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.queriedStudents.push(newStudent);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.students.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onStudentUpdate(updatedStudent: User){
@@ -251,6 +262,7 @@ export class StudentComponent implements OnInit{
       next: () => {
         this.queriedStudents = this.queriedStudents.filter(student => studentToDelete.id !== student.id);
         this.openMessageDialog(true);
+        this.updatePagination();
       },
       error: err => {
         console.log(err.error);

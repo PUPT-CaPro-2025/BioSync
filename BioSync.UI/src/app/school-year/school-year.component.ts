@@ -44,10 +44,10 @@ export class SchoolYearComponent implements OnInit {
 
   schoolYear: SchoolYear[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSchoolYear: boolean = false;
   isEditSchoolYear: boolean = false;
   isViewSchoolYear: boolean = false;
@@ -72,6 +72,8 @@ export class SchoolYearComponent implements OnInit {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (schoolYears: SchoolYear[]) => {
         this.schoolYear = schoolYears;
+        this.totalItems = this.schoolYear.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
     });
   }
@@ -107,6 +109,15 @@ export class SchoolYearComponent implements OnInit {
 
   onSchoolYearCreate(schoolYear: SchoolYear): void {
     this.schoolYear.push(schoolYear);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.schoolYear.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onSchoolYearEdit(schoolYear: SchoolYear): void {
@@ -120,6 +131,7 @@ export class SchoolYearComponent implements OnInit {
       next: () => {
         this.schoolYear = this.schoolYear.filter(
           v => v.id !== schoolYear.id);
+        this.updatePagination();
       }
     })
   }

@@ -45,10 +45,10 @@ export class ProgramComponent implements OnInit{
 
   programs: Program[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddProgram: boolean = false;
   isEditProgram: boolean = false;
   isViewProgram: boolean = false;
@@ -75,6 +75,8 @@ export class ProgramComponent implements OnInit{
         programs.forEach((program) => {
           this.programs.push(program);
         })
+        this.totalItems = this.programs.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
@@ -83,6 +85,15 @@ export class ProgramComponent implements OnInit{
 
   onProgramAdded(newProgram: Program){
     this.programs.push(newProgram);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.programs.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onProgramUpdate(updatedProgram: Program) {
@@ -116,6 +127,7 @@ export class ProgramComponent implements OnInit{
     this.programService.deleteProgram(programToDelete).subscribe({
       next: () => {
         this.programs = this.programs.filter(program => program.id !== programToDelete.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });

@@ -49,10 +49,10 @@ export class AttendanceComponent implements OnInit{
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   userId!: number;
   headerImage!: string;
   attendances: Attendance[] = [];
@@ -94,6 +94,8 @@ export class AttendanceComponent implements OnInit{
         this.getAllAttendance();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (err) => console.error(err),
     });
@@ -124,6 +126,8 @@ export class AttendanceComponent implements OnInit{
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -261,6 +265,8 @@ export class AttendanceComponent implements OnInit{
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }

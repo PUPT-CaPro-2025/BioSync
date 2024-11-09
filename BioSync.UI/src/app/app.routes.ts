@@ -44,6 +44,8 @@ import {
 import {
     FaceRecognitionAttendanceComponent
 } from "./attendance/face-recognition-attendance/face-recognition-attendance.component";
+import { SuffixComponent } from './suffix/suffix.component';
+import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
@@ -73,6 +75,8 @@ export const routes: Routes = [
     {path: "program", component: ProgramComponent},
     {path: "section", component: SectionComponent},
     {path: "laboratory", component: LaboratoryComponent},
+    {path: "suffix", component: SuffixComponent},
+    {path: "visit-purpose", component: VisitPurposeComponent},
     {path: 'schedule/start/:id', component: ScheduleListComponent},
     {path: 'view/schedule/:id', component: ViewScheduleComponent},
     {path: '', redirectTo: '/login', pathMatch: 'full'},

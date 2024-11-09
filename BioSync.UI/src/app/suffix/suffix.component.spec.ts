@@ -1,0 +1,23 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { SuffixComponent } from './suffix.component';
+
+describe('SuffixComponent', () => {
+  let component: SuffixComponent;
+  let fixture: ComponentFixture<SuffixComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [SuffixComponent]
+    })
+    .compileComponents();
+
+    fixture = TestBed.createComponent(SuffixComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

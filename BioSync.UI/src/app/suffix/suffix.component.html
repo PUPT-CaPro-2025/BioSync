@@ -1,0 +1,117 @@
+<div class="background-container">
+    @if(!isAddSuffix) {
+        @if(!isEditSuffix) {
+            <div class="header">
+                <mat-toolbar class="toolbar-container">
+                    <span>List of Suffixes - ALL</span>
+                    <div class="toolbar-button">
+                        <button (click)="toggleAddSuffix()">Add New Suffix</button>
+                        <button>Print Suffix Reports</button>
+                    </div>
+                </mat-toolbar>
+            </div>
+            <div class="filter-container">
+                <mat-toolbar class="filter-content">
+                    <div class="search-container">
+                        <mat-icon class="search-icon">search</mat-icon>
+                        <input type="text" placeholder="SEARCH">
+                    </div>
+                    <div class="dropdown-container">
+                        <div class="dropdown-content">
+                            <div class="entry-container">
+                                <span>Show</span>
+                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                    @for(entry of entries; track entry) {
+                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                    }
+                                </select>
+                                <span>Entries</span>
+                            </div>
+                            <div class="sort-container">
+                                <select>
+                                    <option>Sort by</option>
+                                    @for(sort of sorting; track sort) {
+                                        <option [value]="sort">{{sort}}</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </mat-toolbar>
+            </div>
+            @if(filteredSuffixes.length > 0) {
+            <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes text-custom-16">
+                            <div class="cell">Suffix Name</div>
+                            <div class="cell">Suffix Abbreviation</div>
+                            <div class="cell">Action</div>
+                        </div>
+                        <div class="row-container text-custom-12">
+                            @for (suffix of filteredSuffixes; track suffix ) {
+                                <div class="row">
+                                    <div class="cell">{{ suffix.suffix_name }}</div>
+                                    <div class="cell">{{ suffix.suffix_abbbreviation }}</div>
+                                    <div class="cell">
+                                        <button (click)="toggleDropdownAction(suffix.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                        @if(activeDropdownId === suffix.id) {
+                                            <div class="action-container">
+                                                <button class="action-button" (click)="toggleEditSuffix(suffix)">Edit</button>
+                                                <button class="action-button">Delete</button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                    <div class="line-container">
+                    <img src="../../assets/black-line.svg">
+                </div>
+                <div class="bottom-container">
+                    <div class="paginator">
+                        <div class="paginator-info">
+                          {{ getDisplayRange() }} of {{ totalItems }}
+                        </div>
+                        <div class="paginator-controls">
+                          <span>Page</span>
+                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                            @for (page of pages; track page) {
+                                <option [value]="page">{{ page }}</option>
+                            }
+                          </select>
+                          <div class="paginator-button-container">
+                            <button (click)="previousPage()"
+                                    [disabled]="currentPage === 1"
+                                    [ngClass]="{'active-button': currentPage > 1}">
+                                <img src="../../assets/previous.svg"
+                                        alt="Previous Icon"
+                                        [ngClass]="{'active-icon': currentPage > 1}">
+                                Previous
+                            </button>
+                            <button (click)="nextPage()"
+                                    [disabled]="currentPage === totalPages"
+                                    [ngClass]="{'active-button': currentPage < totalPages}">
+                                Next
+                                <img src="../../assets/next.svg"
+                                        alt="Next Icon"
+                                        [ngClass]="{'active-icon': currentPage < totalPages}">
+                            </button>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            } @else {
+            <div class="flex justify-center items-center h-[50vh]">
+                No Suffix Data Yet.
+            </div>
+            }    
+        } @else {
+            <app-edit-suffix
+              (backToEditSuffix)="handleBackToEditSuffix()"/>
+        }    
+    } @else {
+        <app-add-suffix (backToSuffix)="handleBackToSuffix()"/>
+    }
+</div>
