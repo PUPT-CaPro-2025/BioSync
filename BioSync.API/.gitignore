@@ -34,4 +34,5 @@ build/
 
 ### Fingerprint Storage ###
 biometrics/
+.DS_Store
 profile/
