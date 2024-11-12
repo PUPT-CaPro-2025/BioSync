@@ -75,7 +75,8 @@
                                         <mat-icon>more_horiz</mat-icon>
                                     </button>
                                     @if(activeDropdownId === visitor.id) {
-                                        <div class="action-container">
+                                        <div class="action-container" [ngClass]="{
+                                            'bottom-action': filteredVisitors.length >= 4 && (filteredVisitors[filteredVisitors.length - 1] === visitor || filteredVisitors[filteredVisitors.length - 2] === visitor)}">
                                             <button class="action-button" 
                                                 (click)="toggleEditVisitor(visitor)">
                                                 Edit
