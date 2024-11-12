@@ -1,147 +1,192 @@
 <div class="background-container">
-  @if(!isOneAddSchedule) {
-    @if(!isWeeklyAddSchedule) {
-        @if(!isEditSchedule) {
-          @if(!isRequestOneSchedule) {
-            @if(!isRequestWeeklySchedule) {
-              <div class="header">
-                <mat-toolbar class="toolbar-container">
-                  @if(getRole() === "ADMIN"){
-                    <span>List of Schedules - ALL</span>
-                  } @else {
-                    <span>List of Schedules</span>
+  @if (!isOneAddSchedule) {
+    @if (!isWeeklyAddSchedule) {
+      @if (!isEditSchedule) {
+        @if (!isRequestOneSchedule) {
+          @if (!isRequestWeeklySchedule) {
+            <div class="header">
+              <mat-toolbar class="toolbar-container">
+                @if (getRole() === "ADMIN") {
+                  <span>List of Schedules - ALL</span>
+                } @else {
+                  <span>List of Schedules</span>
+                }
+                <div class="toolbar-button">
+                  @if (getRole() === "ADMIN") {
+                    <div class="flex flex-col items-center">
+                      <div
+                        class="header-button"
+                        (click)="onAddScheduleClick()"
+                      >
+                        Add New Schedule
+                        <mat-icon class="dropdown-icon">{{
+                          isDropdownOpenAddSchedule
+                            ? "keyboard_arrow_up"
+                            : "keyboard_arrow_down"
+                        }}</mat-icon>
+                      </div>
+                      @if (isDropdownOpenAddSchedule) {
+                        <div class="add-schedule-content flex flex-col">
+                          <div
+                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                            (click)="toggleOneAddSchedule()"
+                          >
+                            Add One Time Schedule
+                          </div>
+                          <div
+                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                            (click)="toggleWeeklyAddSchedule()"
+                          >
+                            Add Recurrence Schedule
+                          </div>
+                        </div>
+                      }
+                    </div>
                   }
-                  <div class="toolbar-button">
-                    @if(getRole() === "ADMIN"){
-                      <div class="flex flex-col items-center">
-                        <div class="header-button" (click)="onAddScheduleClick()">
-                          Add New Schedule
-                          <mat-icon class="dropdown-icon">{{ isDropdownOpenAddSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-                        </div>
-                        @if(isDropdownOpenAddSchedule) {
-                          <div class="add-schedule-content flex flex-col">
-                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                                 (click)="toggleOneAddSchedule()">
-                              Add One Time Schedule
-                            </div>
-                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                                 (click)="toggleWeeklyAddSchedule()">
-                              Add Recurrence Schedule
-                            </div>
+                  @if (getRole() === "FACULTY") {
+                    <div class="flex flex-col items-center">
+                      <div
+                        class="header-button"
+                        (click)="onRequestScheduleClick()"
+                      >
+                        Request Schedule
+                        <mat-icon class="dropdown-icon">{{
+                          isDropdownOpenRequestSchedule
+                            ? "keyboard_arrow_up"
+                            : "keyboard_arrow_down"
+                        }}</mat-icon>
+                      </div>
+                      @if (isDropdownOpenRequestSchedule) {
+                        <div class="add-schedule-content flex flex-col">
+                          <div
+                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                            (click)="toggleRequestOneSchedule()"
+                          >
+                            Request One Time Schedule
                           </div>
-                        }
-                      </div>
-                    }
-                    @if(getRole() === "FACULTY") {
-                      <div class="flex flex-col items-center">
-                        <div class="header-button" (click)="onRequestScheduleClick()">
-                          Request Schedule
-                          <mat-icon class="dropdown-icon">{{ isDropdownOpenRequestSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-                        </div>
-                        @if(isDropdownOpenRequestSchedule) {
-                          <div class="add-schedule-content flex flex-col">
-                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                                 (click)="toggleRequestOneSchedule()">
-                                Request One Time Schedule
-                            </div>
-                            <div class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
-                                 (click)="toggleRequestWeeklySchedule()">
-                                Request Recurrence Schedule
-                            </div>
+                          <div
+                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                            (click)="toggleRequestWeeklySchedule()"
+                          >
+                            Request Recurrence Schedule
                           </div>
-                        }
-                      </div>
-                    }
-                    <button class="header-button" (click)="generatePdf()">Print Schedule Reports</button>
+                        </div>
+                      }
+                    </div>
+                  }
+                  <button class="header-button" (click)="generatePdf()">
+                    Print Schedule Reports
+                  </button>
+                </div>
+              </mat-toolbar>
+            </div>
+            <div class="filter-container">
+              <mat-toolbar class="filter-content">
+                <div class="flex w-full gap-2">
+                  <div class="select-semester-container w-full">
+                    <mat-select
+                      [(value)]="selectedAcademicYear"
+                      id="academic-year"
+                      name="section"
+                      class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                      (selectionChange)="onFilterChange()"
+                    >
+                      @for (academicYear of academicYears; track academicYear) {
+                        <mat-option [value]="academicYear.id">
+                          AY {{ academicYear.startYear }} -
+                          {{ academicYear.endYear }}
+                        </mat-option>
+                      }
+                    </mat-select>
                   </div>
-                </mat-toolbar>
-              </div>
-              <div class="filter-container">
-                <mat-toolbar class="filter-content">
-                  <div class="flex w-full gap-2">
-                    <div class="select-semester-container w-full">
-                      <mat-select [(value)]="selectedAcademicYear" id="academic-year"
-                                  name="section" class="bg-transparent
-                                       border-b-2 border-darkGray focus:border-brightRed
-                                       focus:outline-none transition-colors
-                                       duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
-                        @for(academicYear of academicYears; track academicYear) {
-                          <mat-option [value]="academicYear.id">
-                            AY {{academicYear.startYear}} - {{ academicYear.endYear }}
-                          </mat-option>
+                  <div class="select-semester-container w-full">
+                    <mat-select
+                      [(value)]="selectedSemester"
+                      id="semester"
+                      name="section"
+                      class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                      (selectionChange)="onFilterChange()"
+                    >
+                      @for (semester of semesters; track $index) {
+                        <mat-option [value]="$index + 1">{{
+                          semester
+                        }}</mat-option>
+                      }
+                    </mat-select>
+                  </div>
+                </div>
+                <div class="dropdown-container">
+                  <div class="dropdown-content">
+                    <div class="entry-container">
+                      <span>Show</span>
+                      <select
+                        [(ngModel)]="itemsPerPage"
+                        (change)="onItemsPerPageChange()"
+                      >
+                        @for (entry of entries; track entry) {
+                          <option [value]="entry" [selected]="entry === '10'">
+                            {{ entry }}
+                          </option>
                         }
-                      </mat-select>
+                      </select>
+                      <span>Entries</span>
                     </div>
-                    <div class="select-semester-container w-full">
-                      <mat-select [(value)]="selectedSemester" id="semester"
-                                  name="section" class="bg-transparent
-                                         border-b-2 border-darkGray focus:border-brightRed
-                                         focus:outline-none transition-colors
-                                         duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
-                        @for(semester of semesters; track $index) {
-                          <mat-option [value]="$index + 1">{{semester}}</mat-option>
+                    <div class="sort-container">
+                      <select>
+                        <option>Sort by</option>
+                        @for (sort of sorting; track sort) {
+                          <option [value]="sort">{{ sort }}</option>
                         }
-                      </mat-select>
+                      </select>
                     </div>
                   </div>
-                  <div class="dropdown-container">
-                    <div class="dropdown-content">
-                      <div class="entry-container">
-                        <span>Show</span>
-                        <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                          @for(entry of entries; track entry) {
-                            <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                          }
-                        </select>
-                        <span>Entries</span>
-                      </div>
-                      <div class="sort-container">
-                        <select>
-                          <option>Sort by</option>
-                          @for(sort of sorting; track sort) {
-                            <option [value]="sort">{{sort}}</option>
-                          }
-                        </select>
-                      </div>
-                    </div>
+                </div>
+              </mat-toolbar>
+            </div>
+            @if (filteredSchedules.length > 0) {
+              <div class="table-container">
+                <div class="subject-table">
+                  <div class="attributes text-custom-16">
+                    <div class="cell">Subject Code</div>
+                    <div class="cell">Subject Name</div>
+                    <div class="cell">Schedule</div>
+                    <div class="cell">Time</div>
+                    <div class="cell">Laboratory</div>
+                    <div class="cell">Action</div>
                   </div>
-                </mat-toolbar>
-              </div>
-              @if(filteredSchedules.length > 0) {
-                <div class="table-container">
-                  <div class="subject-table">
-                    <div class="attributes text-custom-16">
-                      <div class="cell">Subject Code</div>
-                      <div class="cell">Subject Name</div>
-                      <div class="cell">Schedule</div>
-                      <div class="cell">Time</div>
-                      <div class="cell">Laboratory</div>
-                      <div class="cell">Action</div>
-                    </div>
-                    <div class="row-container">
-                      @for (schedule of filteredSchedules; track schedule) {
-                        <div class="row text-custom-12">
-                          <div class="cell">{{ schedule?.subject?.code }}</div>
-                          <div class="cell">{{ schedule?.subject?.name }}</div>
-                          <div class="cell">
-                            <div class="flex flex-col">
-                              <div class="flex gap-1 text-xs">
-                                <span class="font-semibold">
-                                  @if(schedule.recurrenceId){
-                                    [ {{getRecurrenceDays(schedule.recurrenceId) }}
-                                    / {{ schedule.recurrence }} ]
-                                  }@else{
-                                    [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
-                                  }</span>
-                              </div>
-                              <div class="italic">
-                                Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
-                                <p>
-                                  Class:
-                                  {{schedule.section?.program?.programAbbreviation}}
-                                  {{schedule.section?.year}}-{{schedule.section?.section}}
-                                </p>
-                              </div>
+                  <div class="row-container">
+                    @for (schedule of filteredSchedules; track schedule) {
+                      <div class="row text-custom-12">
+                        <div class="cell">{{ schedule?.subject?.code }}</div>
+                        <div class="cell">{{ schedule?.subject?.name }}</div>
+                        <div class="cell">
+                          <div class="flex flex-col">
+                            <div class="flex gap-1 text-xs">
+                              <span class="font-semibold">
+                                @if (schedule.recurrenceId) {
+                                  [
+                                  {{
+                                    getRecurrenceDays(schedule.recurrenceId)
+                                  }}
+                                  / {{ schedule.recurrence }} ]
+                                } @else {
+                                  [ {{ getDayOfWeek(schedule.scheduleDate) }} /
+                                  {{ schedule.scheduleDate }} ]
+                                }
+                              </span>
+                            </div>
+                            <div class="italic">
+                              Faculty: {{ schedule.professor?.firstName }}
+                              {{ schedule.professor?.lastName }}
+                              <p>
+                                Class:
+                                {{
+                                  schedule.section?.program?.programAbbreviation
+                                }}
+                                {{ schedule.section?.year }}-{{
+                                  schedule.section?.section
+                                }}
+                              </p>
                             </div>
                           </div>
                           <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
@@ -150,7 +195,7 @@
                           <div class="cell">
                             <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                             @if(activeDropdownId === schedule.id) {
-                              <div class="action-container"  [ngClass]="{
+                              <div class="action-container" [ngClass]="{
                                 'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
                                 @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
                                   <button class="action-button" (click)="toggleStartSchedule(schedule)">Start Attendance</button>
@@ -232,9 +277,17 @@
               (editBackToSchedule)="handleEditBackToSchedule()"/>
         }
     } @else {
-        <app-add-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()" [isWeeklySchedule]="isWeeklyAddSchedule"></app-add-schedule>
+      <app-add-schedule
+        (createdSchedule)="onScheduleCreation($event)"
+        (backToSchedule)="handleBackToSchedule()"
+        [isWeeklySchedule]="isWeeklyAddSchedule"
+      ></app-add-schedule>
     }
-} @else {
-    <app-add-schedule (createdSchedule)="onScheduleCreation($event)" (backToSchedule)="handleBackToSchedule()" [isOneSchedule]="isOneAddSchedule"></app-add-schedule>
-}
+  } @else {
+    <app-add-schedule
+      (createdSchedule)="onScheduleCreation($event)"
+      (backToSchedule)="handleBackToSchedule()"
+      [isOneSchedule]="isOneAddSchedule"
+    ></app-add-schedule>
+  }
 </div>
