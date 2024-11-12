@@ -1,13 +1,13 @@
 <div class="flex items-center justify-center h-screen">
   <div class="gap-8 flex flex-row">
     <div
-      class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center">
+      class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center"
+    >
       <div class="w-[23vw] h-[85vh] flex justify-start flex-col">
         <div class="flex flex-col gap-3">
           <p class="text-custom-24 text-brightRed">
-            {{ selectedSchedule.subject?.code }} - {{
-              selectedSchedule.subject?.name
-            }}
+            {{ selectedSchedule.subject?.code }} -
+            {{ selectedSchedule.subject?.name }}
           </p>
           <div class="flex flex-col">
             <p class="text-lightGray text-custom-12">Professor</p>
@@ -19,24 +19,24 @@
         </div>
         <div class="flex flex-col gap-2 mt-12">
           <p class="text-brightRed text-custom-24">Attendance List</p>
-          <hr class="border-t border-1 border-brightRed">
+          <hr class="border-t border-1 border-brightRed" />
         </div>
-        <div class=" mt-5 h-[55vh] overflow-y-auto row-container">
-          <div class="">
-
-          </div>
-          @for (student of logstudents; track student) {
-            <p class="text-darkGray text-custom-16">{{
-                logstudents.indexOf(student) + 1
-              }}. {{ student }}</p>
+        <div class="mt-5 h-[55vh] overflow-y-auto row-container">
+          @for (student of studentsLogged; track student) {
+            <p class="text-darkGray text-custom-16">
+              {{ studentsLogged.indexOf(student) + 1 }}.
+              {{ student.firstName }} {{ student.lastName }}
+            </p>
           }
         </div>
         @if (hasProfessorVerified) {
           <div class="flex-grow"></div>
           <div class="flex justify-center items-center">
-            <button mat-flat-button
-                    (click)="openConfirmationDialog(selectedSchedule)"
-                    class="stop-attendance">
+            <button
+              mat-flat-button
+              (click)="openConfirmationDialog(selectedSchedule)"
+              class="stop-attendance"
+            >
               Stop Attendance
             </button>
           </div>
@@ -46,22 +46,25 @@
     <div class="w-[54vw] h-[90vh] flex flex-col justify-between">
       <div class="flex flex-row gap-8 bg-transparent">
         <div
-          class="flex justify-start w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+          class="flex justify-start w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white"
+        >
           <div class="flex flex-col">
             <p class="text-custom-40">{{ currentTime }}</p>
             <p class="text-custom-16 current-date">{{ currentDate }}</p>
           </div>
         </div>
         <div
-          class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+          class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white"
+        >
           <div class="flex flex-col">
-            <p class="text-custom-40">{{ logstudents.length }}</p>
+            <p class="text-custom-40">{{ studentsLogged.length }}</p>
             <p class="text-custom-16">Total of Students Logged</p>
           </div>
         </div>
       </div>
       <div
-        class="h-[75vh] w-full bg-gradient-red-orange rounded-xl flex justify-center items center">
+        class="h-[75vh] w-full bg-gradient-red-orange rounded-xl flex justify-center items center"
+      >
         <div class="flex flex-col w-[45vw] justify-center gap-4">
           @if (!hasProfessorVerified) {
             <p class="text-custom-32 text-f2White font-medium">
@@ -72,13 +75,15 @@
               }
             </p>
             <div
-              class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9">
+              class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9"
+            >
               <div class="flex justify-center">
                 <div class="flex gap-6 flex-col w-[30vh] justify-center">
                   @if (loggedProfessor) {
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">In-Charge
-                        Name</p>
+                      <p class="text-lightGray text-custom-16">
+                        In-Charge Name
+                      </p>
                       <p class="text-brightRed text-custom-24 font-weight400">
                         {{ selectedSchedule.professor?.firstName }}
                         {{ selectedSchedule.professor?.lastName }}
@@ -92,7 +97,8 @@
                   <div class="drop-area">
                     @if (!loggedProfessor) {
                       <div class="fingerprint-container">
-                        <mat-icon class="fingerprint-icon">fingerprint
+                        <mat-icon class="fingerprint-icon"
+                          >fingerprint
                         </mat-icon>
                         <div class="bottom-left"></div>
                         <div class="bottom-right"></div>
@@ -120,22 +126,24 @@
               }
             </p>
             <div
-              class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9">
+              class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9"
+            >
               <div class="flex justify-center">
                 <div class="flex gap-6 flex-col w-[20vw] justify-center">
                   @if (loggedStudent) {
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">Student's
-                        Name</p>
+                      <p class="text-lightGray text-custom-16">
+                        Student's Name
+                      </p>
                       <p class="text-brightRed text-custom-24 font-weight400">
-                        {{ loggedStudent.firstName }} {{
-                          loggedStudent.lastName
-                        }}
+                        {{ loggedStudent.firstName }}
+                        {{ loggedStudent.lastName }}
                       </p>
                     </div>
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">Student
-                        Number</p>
+                      <p class="text-lightGray text-custom-16">
+                        Student Number
+                      </p>
                       <p class="text-darkGray text-custom-20 font-weight400">
                         {{ loggedStudent.usercode }}
                       </p>
@@ -148,9 +156,8 @@
                         {{
                           loggedStudent.section?.program?.programAbbreviation
                         }}
-                        {{ loggedStudent.section?.year }} - {{
-                          loggedStudent.section?.section
-                        }}
+                        {{ loggedStudent.section?.year }} -
+                        {{ loggedStudent.section?.section }}
                       </p>
                     </div>
                   }
@@ -172,7 +179,8 @@
                       </div>
                     } @else if (!loggedStudent) {
                       <div class="fingerprint-container">
-                        <mat-icon class="fingerprint-icon">fingerprint
+                        <mat-icon class="fingerprint-icon"
+                          >fingerprint
                         </mat-icon>
                         <div class="bottom-left"></div>
                         <div class="bottom-right"></div>
