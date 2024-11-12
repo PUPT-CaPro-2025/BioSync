@@ -109,7 +109,8 @@
                     <mat-icon>more_horiz</mat-icon>
                 </button>
                 @if(activeDropdownId === schedule.id) {
-                    <div class="action-container">
+                    <div class="action-container" [ngClass]="{
+                      'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
                         <button class="action-button" 
                             (click)="toggleAcceptSchedule(schedule)">
                             Accept
