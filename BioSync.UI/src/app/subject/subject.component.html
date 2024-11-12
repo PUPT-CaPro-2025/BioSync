@@ -52,14 +52,14 @@
                     <div class="subject-table">
                         <div class="attributes">
                             <div class="cell">Subject Code</div>
-                            <div class="cell">Subject Name</div>
+                            <div class="cell">Subject Description</div>
                             <div class="cell">Action</div>
                         </div>
                         <div class="row-container">
                             @for (subject of filteredSubjects; track subject) {
                                 <div class="row">
                                     <div class="cell">{{ subject.code }}</div>
-                                <div class="cell">{{ subject.name }}</div>
+                                <div class="cell">{{ subject.description }}</div>
                                 <div class="cell">
                                     <button 
                                         (click)="toggleDropdownAction(subject.id)" 
