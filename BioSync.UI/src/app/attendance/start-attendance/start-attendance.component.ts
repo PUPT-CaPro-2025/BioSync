@@ -12,14 +12,25 @@ import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confi
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import {NgOptimizedImage} from "@angular/common";
-import {AttendanceService} from "../../../services/attendance.service";
+import { NgOptimizedImage } from '@angular/common';
+import { AttendanceService } from '../../../services/attendance.service';
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
-  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
-  providers: [ScheduleService, SdkService, FingerprintService, AttendanceService],
+  imports: [
+    MatToolbar,
+    MatButton,
+    FormsModule,
+    MatIconModule,
+    NgOptimizedImage,
+  ],
+  providers: [
+    ScheduleService,
+    SdkService,
+    FingerprintService,
+    AttendanceService,
+  ],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
 })
@@ -35,13 +46,11 @@ export class StartAttendanceComponent implements OnInit {
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
   studentVerified = false;
-  selectedDevice: string = '';
   profileImageUrl!: string;
   hasFingerprintScanner = false;
   hasCamera = false;
   hasDevice = false;
-  notRegistered = true;
-  notEnrolled = false;
+  studentsLogged: User[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -50,6 +59,7 @@ export class StartAttendanceComponent implements OnInit {
     private fingerprintService: FingerprintService,
     private dialog: MatDialog,
     private router: Router,
+    private attendanceService: AttendanceService,
   ) {}
 
   async ngOnInit() {
@@ -84,14 +94,14 @@ export class StartAttendanceComponent implements OnInit {
     this.currentTime = now.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
 
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     };
 
     const formattedDate = now.toLocaleDateString('en-US', options);
@@ -111,17 +121,9 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
-        console.log(this.selectedProfessorId);
+        this.getLoggedStudents(value.id);
       },
     });
-  }
-
-  getMonth(date: string) {
-    return this.scheduleService.getMonth(date);
-  }
-
-  getDay(date: string) {
-    return this.scheduleService.getDay(date);
   }
 
   private base64ToBlob(base64: string, contentType: string) {
@@ -166,12 +168,12 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
         this.loggedStudent = value.student;
+        this.studentsLogged.push(this.loggedStudent);
         this.reminder = 'WELCOME';
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
           this.studentVerified = true;
-          this.loggedStudent = null;
-          this.profileImageUrl = "";
+          this.profileImageUrl = '';
           this.reminder = 'Scanning...';
         }, 3000);
       },
@@ -234,11 +236,11 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  //temporary data
-  logstudents = [
-    'Kylie Ross Ayacocho', 
-    'Andronicus Dimasacat', 
-    'Jhean Khendrick Galope', 
-    'Christian Harrel Go'
-  ]
+  getLoggedStudents(scheduleId: number) {
+    this.attendanceService.getStudentsLogged(scheduleId).subscribe({
+      next: (value) => {
+        this.studentsLogged = value;
+      },
+    });
+  }
 }

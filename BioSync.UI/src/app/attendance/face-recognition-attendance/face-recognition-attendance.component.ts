@@ -220,9 +220,7 @@ export class FaceRecognitionAttendanceComponent
           this.lastFaceDetection = null;
           this.noFaceDetectedCount = 0;
           this.requestSent = 0;
-          if (this.loggedUser) {
-            this.loggedUser = null;
-          }
+          this.loggedUser = null;
           this.unrecognized = false;
         }
       }

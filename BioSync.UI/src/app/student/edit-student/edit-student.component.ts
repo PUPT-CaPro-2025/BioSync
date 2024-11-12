@@ -1,30 +1,50 @@
-import {Component, EventEmitter, OnInit, Output, Input, ViewEncapsulation} from '@angular/core';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {MatInputModule} from '@angular/material/input';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatButtonModule} from "@angular/material/button";
-import {MatSelectChange, MatSelectModule} from '@angular/material/select';
-import {ProgramService} from "../../../services/program.service";
-import {Program} from "../../../model/program.model";
-import {UserService} from "../../../services/user.service";
-import {User} from "../../../model/user.model";
-import {MatDialog} from "@angular/material/dialog";
-import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
-import {Section} from "../../../model/section.model";
-import {SectionService} from "../../../services/section.service";
-import {MatStep, MatStepLabel, MatStepper, MatStepperNext, MatStepperPrevious} from "@angular/material/stepper";
-import {SdkService} from "../../../services/sdk.service";
-import {FingerprintService} from "../../../services/fingerprint.service";
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  Input,
+  ViewEncapsulation,
+} from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { ProgramService } from '../../../services/program.service';
+import { Program } from '../../../model/program.model';
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../model/user.model';
+import { MatDialog } from '@angular/material/dialog';
+import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
+import { Section } from '../../../model/section.model';
+import { SectionService } from '../../../services/section.service';
+import {
+  MatStep,
+  MatStepLabel,
+  MatStepper,
+  MatStepperNext,
+  MatStepperPrevious,
+} from '@angular/material/stepper';
+import { SdkService } from '../../../services/sdk.service';
+import { FingerprintService } from '../../../services/fingerprint.service';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import {MailService} from "../../../services/mail.service";
+import { MailService } from '../../../services/mail.service';
 
 @Component({
   selector: 'app-edit-student',
   standalone: true,
-  imports: [MatToolbarModule,
+  imports: [
+    MatToolbarModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -37,19 +57,17 @@ import {MailService} from "../../../services/mail.service";
     MatStepperNext,
     MatStepperPrevious,
     MatIconModule,
-    CommonModule
+    CommonModule,
   ],
-  providers: [
-    ProgramService,
-    UserService,
-    SectionService,
-    MailService
-  ],
+  providers: [ProgramService, UserService, SectionService, MailService],
   templateUrl: './edit-student.component.html',
-  styleUrls: ['./edit-student.component.css', '../add-student/add-student.component.css'],
+  styleUrls: [
+    './edit-student.component.css',
+    '../add-student/add-student.component.css',
+  ],
   encapsulation: ViewEncapsulation.None,
 })
-export class EditStudentComponent implements OnInit{
+export class EditStudentComponent implements OnInit {
   @Output() backToEditStudent = new EventEmitter<void>();
   @Output() editedStudent = new EventEmitter<User>();
   @Input() selectedStudent!: User;
@@ -65,10 +83,10 @@ export class EditStudentComponent implements OnInit{
     'Jr.',
     '1st',
     '2nd',
-    '3rd'
+    '3rd',
   ];
 
-  allPrograms: Program[] = []
+  allPrograms: Program[] = [];
   sections: Section[] = [];
   filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
@@ -105,24 +123,30 @@ export class EditStudentComponent implements OnInit{
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
-          if(this.rightThumbFingerprintImageSrc == null){
-            this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+          if (this.rightThumbFingerprintImageSrc == null) {
+            this.rightThumbFingerprintImageSrc = this.base64ToBlob(
+              src,
+              'image/png',
+            );
             this.isRightThumb = true;
             setTimeout(() => {
               this.rightThumbState = 'Right Thumb Captured';
               this.hasRightThumb = true;
-            }, 2000)
+            }, 2000);
           } else {
-            this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.rightIndexFingerprintImageSrc = this.base64ToBlob(
+              src,
+              'image/png',
+            );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }
-      }
+      },
     });
   }
 
-  initForm(){
+  initForm() {
     this.editStudentForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
@@ -131,19 +155,19 @@ export class EditStudentComponent implements OnInit{
       suffix: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       program: ['', [Validators.required]],
-      section: [0, [Validators.required]]
+      section: [0, [Validators.required]],
     });
   }
 
-  getAllPrograms(){
+  getAllPrograms() {
     this.programService.getAllPrograms().subscribe({
       next: (programs: Program[]) => {
         this.allPrograms = programs;
-      }
-    })
+      },
+    });
   }
 
-  setFormValues(){
+  setFormValues() {
     this.editStudentForm.patchValue({
       usercode: this.selectedStudent.usercode,
       firstName: this.selectedStudent.firstName,
@@ -153,23 +177,39 @@ export class EditStudentComponent implements OnInit{
       email: this.selectedStudent.email,
       program: this.selectedStudent.program?.id,
       section: this.selectedStudent.section?.id,
-    })
+    });
+
+    this.fingerprintService
+      .getProfileImageUrl(this.selectedStudent.id)
+      .subscribe({
+        next: (value) => {
+          this.imageSrc = value.profileImageUrl;
+        },
+      });
   }
 
   returnToStudentView(): void {
     this.backToEditStudent.emit();
   }
 
-  submit(){
-    if(!this.editStudentForm.valid || !this.editStudentForm.touched || !this.selectedProfileImage) return;
+  submit() {
+    if (
+      !this.editStudentForm.valid &&
+      !this.editStudentForm.touched &&
+      !this.selectedProfileImage
+    )
+      return;
 
     const updatedValues = this.editStudentForm.value;
 
     let selectedProgram = this.allPrograms.find(
-      (program: Program) => program.id === this.selectedStudent.program?.id);
+      (program: Program) => program.id === this.selectedStudent.program?.id,
+    );
 
-    let selectedSection = this.sections.find((section: Section) =>
-      section.id === this.editStudentForm.get('section')?.value);
+    let selectedSection = this.sections.find(
+      (section: Section) =>
+        section.id === this.editStudentForm.get('section')?.value,
+    );
 
     const studentToUpdate = {
       ...updatedValues,
@@ -178,77 +218,94 @@ export class EditStudentComponent implements OnInit{
       id: this.selectedStudent.id,
       password: this.selectedStudent.password,
       role: this.selectedStudent.role,
-    }
+    };
 
     this.userService.updateUser(studentToUpdate).subscribe({
       next: (updatedUser: User) => {
-        if(!updatedUser.id) return;
-        if(this.selectedProfileImage) {
+        if (!updatedUser.id) return;
+        if (this.selectedProfileImage) {
           this.processProfileImage(updatedUser.id);
         }
-        if(this.isRightIndex && this.isRightThumb){
-          this.registerFingerprintData(updatedUser)
+        if (this.isRightIndex && this.isRightThumb) {
+          this.registerFingerprintData(updatedUser);
         }
         this.editedStudent.emit(updatedUser);
         this.openSuccessDialog();
-      }
-    })
+      },
+    });
 
     return;
   }
 
-  onProgramChange(event: MatSelectChange){
-    this.filteredSections = this.sections.filter(section =>
-      section.program.id === event.value);
+  onProgramChange(event: MatSelectChange) {
+    this.filteredSections = this.sections.filter(
+      (section) => section.program.id === event.value,
+    );
   }
 
-  getAllSections(){
+  getAllSections() {
     this.sectionService.getSections().subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
-        this.filteredSections = this.sections.filter(section =>
-          section.program.id === this.selectedStudent.section?.program.id
-        )
-      }
-    })
+        this.filteredSections = this.sections.filter(
+          (section) =>
+            section.program.id === this.selectedStudent.section?.program.id,
+        );
+      },
+    });
   }
 
-  openSuccessDialog(){
+  openSuccessDialog() {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Student Updated!',
-        message: 'Students record has been updated successfully.'
-      }
-    })
+        message: 'Students record has been updated successfully.',
+      },
+    });
 
     ref.afterClosed().subscribe({
       next: () => {
         this.returnToStudentView();
-      }
-    })
+      },
+    });
   }
 
   processProfileImage(studentId: number) {
     const formData = new FormData();
     formData.append('userId', `${studentId}`);
-    formData.append('profileImage', this.selectedProfileImage , `user-${studentId}-img.png`);
-    this.userService.editProfileImage(formData).subscribe();
+    formData.append(
+      'profileImage',
+      this.selectedProfileImage,
+      `user-${studentId}-img.png`,
+    );
+    this.userService.editProfileImage(formData).subscribe({
+      next: (value) => {
+        console.log(value);
+      },
+      error: (err) => console.error(err),
+    });
   }
 
-  registerFingerprintData(student: User){
+  registerFingerprintData(student: User) {
     const formData = new FormData();
     formData.append('userId', `${student.id}`);
-    formData.append('fingerprint', this.rightIndexFingerprintImageSrc,
-      `right-index-${student.lastName}.png`)
-    formData.append('fingerprint', this.rightThumbFingerprintImageSrc,
-      `right-thumb-${student.lastName}.png`)
+    formData.append(
+      'fingerprint',
+      this.rightIndexFingerprintImageSrc,
+      `right-index-${student.lastName}.png`,
+    );
+    formData.append(
+      'fingerprint',
+      this.rightThumbFingerprintImageSrc,
+      `right-thumb-${student.lastName}.png`,
+    );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
       next: (value) => {
         console.log(value);
-      }
-    })
+      },
+    });
   }
 
   private base64ToBlob(src: string, imagePng: string) {
@@ -278,10 +335,10 @@ export class EditStudentComponent implements OnInit{
         this.currentStepLabel = 'Set Up Information';
         break;
       case 1:
-        this.currentStepLabel = 'Student\'s Picture';
+        this.currentStepLabel = "Student's Picture";
         break;
       case 2:
-        this.currentStepLabel = 'Student\'s Biometrics';
+        this.currentStepLabel = "Student's Biometrics";
         break;
       default:
         this.currentStepLabel = 'Unknown Step';
