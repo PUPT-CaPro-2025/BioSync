@@ -178,6 +178,14 @@ export class EditStudentComponent implements OnInit {
       program: this.selectedStudent.program?.id,
       section: this.selectedStudent.section?.id,
     });
+
+    this.fingerprintService
+      .getProfileImageUrl(this.selectedStudent.id)
+      .subscribe({
+        next: (value) => {
+          this.imageSrc = value.profileImageUrl;
+        },
+      });
   }
 
   returnToStudentView(): void {
@@ -185,15 +193,12 @@ export class EditStudentComponent implements OnInit {
   }
 
   submit() {
-    console.log('test1');
     if (
-      !this.editStudentForm.valid ||
-      !this.editStudentForm.touched ||
+      !this.editStudentForm.valid &&
+      !this.editStudentForm.touched &&
       !this.selectedProfileImage
     )
       return;
-
-    console.log('test');
 
     const updatedValues = this.editStudentForm.value;
 
