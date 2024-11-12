@@ -30,7 +30,7 @@ import { EditVisitPurposeComponent } from './edit-visit-purpose/edit-visit-purpo
     EditVisitPurposeComponent
   ],
   templateUrl: './visit-purpose.component.html',
-  styleUrls: ['./visit-purpose.component.css', '../program/program.component.css']
+  styleUrls: ['./visit-purpose.component.css', '../schedule/schedule.component.css']
 })
 export class VisitPurposeComponent implements OnInit {
   entries: string[] = [
