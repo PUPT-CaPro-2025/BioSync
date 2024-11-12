@@ -5,12 +5,20 @@
             <mat-toolbar class="toolbar-container">
                 <span>List of Students - ALL</span>
                 <div class="toolbar-button">
-                    <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
+                    <button mat-button [matMenuTriggerFor]="menu">
+                        Add Student
+                    </button>
                     <mat-menu #menu="matMenu">
-                      <button mat-menu-item (click)="toggleAddStudent()">Add Single Student</button>
-                      <button mat-menu-item (click)="toggleBulkAddStudent()">Add Multiple Student</button>
+                        <button mat-menu-item (click)="toggleAddStudent()">
+                            Add Single Student
+                        </button>
+                        <button mat-menu-item (click)="toggleBulkAddStudent()">
+                            Add Multiple Student
+                        </button>
                     </mat-menu>
-                    <button (click)="generatePdf()">Print Student Report</button>
+                    <button (click)="generatePdf()">
+                        Print Student Report
+                    </button>
                 </div>
             </mat-toolbar>
         </div>
@@ -18,7 +26,9 @@
             <mat-toolbar class="filter-content">
                 <div class="search-container">
                     <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH" [(ngModel)]="searchQuery" (input)="searchStudentList()">
+                    <input type="text" placeholder="SEARCH" 
+                        [(ngModel)]="searchQuery" 
+                        (input)="searchStudentList()">
                 </div>
                 <div class="dropdown-container">
                     <div class="dropdown-content">
@@ -34,13 +44,17 @@
                           </div>
                         </div>
                         <div class="entry-container">
-                          <span>Show</span>
-                          <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                            @for(entry of entries; track entry) {
-                              <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                            }
-                          </select>
-                          <span>Entries</span>
+                            <span>Show</span>
+                            <select [(ngModel)]="itemsPerPage" 
+                                (change)="onItemsPerPageChange()">
+                                @for(entry of entries; track entry) {
+                                    <option [value]="entry" 
+                                        [selected]="entry === '10'">
+                                        {{entry}}
+                                    </option>
+                                }
+                            </select>
+                            <span>Entries</span>
                         </div>
                     </div>
                 </div>
@@ -66,11 +80,21 @@
                             <div class="cell">{{ student.section?.year }}</div>
                             <div class="cell">{{ student.section?.section }}</div>
                             <div class="cell">
-                                <button (click)="toggleDropdownAction(student.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                <button (click)="toggleDropdownAction(student.id)" 
+                                    class="dropdown-toggle">
+                                    <mat-icon>more_horiz</mat-icon>
+                                </button>
                                 @if(activeDropdownId === student.id) {
-                                    <div class="action-container">
-                                        <button class="action-button" (click)="toggleEditStudent(student)">Edit</button>
-                                        <button class="action-button" (click)="openConfirmationDialog(student)">Delete</button>
+                                    <div class="action-container" [ngClass]="{
+                                        'bottom-action': filteredStudents.length >= 4 && (filteredStudents[filteredStudents.length - 1] === student || filteredStudents[filteredStudents.length - 2] === student)}">>
+                                        <button class="action-button" 
+                                            (click)="toggleEditStudent(student)">
+                                            Edit
+                                        </button>
+                                        <button class="action-button" 
+                                            (click)="openConfirmationDialog(student)">
+                                            Delete
+                                        </button>
                                     </div>
                                 }
                             </div>
