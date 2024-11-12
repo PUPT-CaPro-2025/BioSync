@@ -31,7 +31,7 @@ import jsPDF from "jspdf";
   ],
   providers: [SectionService],
   templateUrl: './section.component.html',
-  styleUrl: './section.component.css'
+  styleUrls: ['./section.component.css', '../schedule/schedule.component.css']
 })
 export class SectionComponent implements OnInit{
   entries: string[] = [
