@@ -26,7 +26,7 @@ import {Attendance} from "../../model/attendance.model";
   imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
   providers: [ScheduleService, SchoolYearService, UserService, CookieService, CryptoService, AttendanceService],
   templateUrl: './attendance.component.html',
-  styleUrl: './attendance.component.css'
+  styleUrls: ['./attendance.component.css', '../schedule/schedule.component.css']
 })
 export class AttendanceComponent implements OnInit{
   entries: string[] = [
