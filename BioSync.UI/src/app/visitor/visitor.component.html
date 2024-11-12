@@ -4,7 +4,10 @@
             <mat-toolbar class="toolbar-container">
                 <span>Visitor Logs</span>
                 <div class="toolbar-button">
-                    <button (click)="generatePdf()">Print Visitor Report</button>
+                    <button (click)="generatePdf()" 
+                        class="header-button">
+                        Print Visitor Report
+                    </button>
                 </div>
             </mat-toolbar>
         </div>
@@ -18,9 +21,13 @@
                     <div class="dropdown-content">
                         <div class="entry-container">
                             <span>Show</span>
-                            <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                            <select [(ngModel)]="itemsPerPage" 
+                                    (change)="onItemsPerPageChange()">
                                 @for(entry of entries; track entry) {
-                                    <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                    <option [value]="entry" 
+                                        [selected]="entry === '10'">
+                                        {{entry}}
+                                    </option>
                                 }
                             </select>
                             <span>Entries</span>
@@ -52,16 +59,31 @@
                         @for (visitor of filteredVisitors; track visitor) {
                             <div class="row">
                                 <div class="cell">{{visitor.name}}</div>
-                                <div class="cell">{{visitor.purposeOfVisit}}</div>
-                                <div class="cell">{{getDate(visitor.visitDate)}}</div>
-                                <div class="cell">{{getTime(visitor.visitDate)}}</div>
+                                <div class="cell">
+                                    {{visitor.purposeOfVisit}}
+                                </div>
+                                <div class="cell">
+                                    {{getDate(visitor.visitDate)}}
+                                </div>
+                                <div class="cell">
+                                    {{getTime(visitor.visitDate)}}
+                                </div>
                                 <div class="cell">{{visitor.destination}}</div>
                                 <div class="cell">
-                                    <button (click)="toggleDropdownAction(visitor.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                    <button (click)="toggleDropdownAction(visitor.id)" 
+                                        class="dropdown-toggle">
+                                        <mat-icon>more_horiz</mat-icon>
+                                    </button>
                                     @if(activeDropdownId === visitor.id) {
                                         <div class="action-container">
-                                            <button class="action-button" (click)="toggleEditVisitor(visitor)">Edit</button>
-                                            <button class="action-button" (click)="openDeleteDialog(visitor)">Delete</button>
+                                            <button class="action-button" 
+                                                (click)="toggleEditVisitor(visitor)">
+                                                Edit
+                                            </button>
+                                            <button class="action-button" 
+                                                (click)="openDeleteDialog(visitor)">
+                                                Delete
+                                            </button>
                                         </div>
                                     }
                                 </div>
@@ -90,8 +112,8 @@
                                 [disabled]="currentPage === 1"
                                 [ngClass]="{'active-button': currentPage > 1}">
                             <img src="../../assets/previous.svg"
-                                    alt="Previous Icon"
-                                    [ngClass]="{'active-icon': currentPage > 1}">
+                                alt="Previous Icon"
+                                [ngClass]="{'active-icon': currentPage > 1}">
                             Previous
                         </button>
                         <button (click)="nextPage()"
