@@ -31,7 +31,7 @@ import { EditSuffixComponent } from './edit-suffix/edit-suffix.component';
   ],
   providers: [],
   templateUrl: './suffix.component.html',
-  styleUrls: ['./suffix.component.css', '../program/program.component.css']
+  styleUrls: ['./suffix.component.css', '../schedule/schedule.component.css']
 })
 export class SuffixComponent implements OnInit{
   entries: string[] = [
