@@ -149,6 +149,26 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
+    ProfileImage profileImage = profileImageRepository.findByUserId(user.getId());
+
+    if(profileImage == null) {
+      profileImage = new ProfileImage();
+      profileImage.setUser(user);
+    } else {
+      String currentImagePath = profileImage.getImageUrl();
+
+      if(currentImagePath != null) {
+        String existingFileName = currentImagePath
+            .replace("https://pupt-biosync-team.s3.amazonaws.com/", "");
+        s3Client.deleteObject(
+            DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(existingFileName)
+                .build());
+
+      }
+    }
+
     String uniqueFileName = UUID.randomUUID() + "-" + image.getOriginalFilename();
 
     s3Client.putObject(
@@ -160,7 +180,7 @@ public class UserServiceImpl implements UserService {
 
     String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
 
-    ProfileImage profileImage = new ProfileImage(s3Url, user);
+     profileImage.setImageUrl(s3Url);
 
     profileImageRepository.save(profileImage);
   }
