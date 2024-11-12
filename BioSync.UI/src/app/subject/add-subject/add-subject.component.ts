@@ -41,7 +41,6 @@ export class AddSubjectComponent implements OnInit{
   initForm(){
     this.subjectForm = this.formBuilder.group({
       code: ['', [Validators.required]],
-      name: ['', [Validators.required]],
       description: ['', Validators.required]
     });
   }
