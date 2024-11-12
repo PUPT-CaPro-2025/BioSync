@@ -24,7 +24,7 @@ import jsPDF from "jspdf";
     EditProfessorComponent],
   providers: [UserService],
   templateUrl: './professor.component.html',
-  styleUrl: './professor.component.css'
+  styleUrls: ['./professor.component.css', '../schedule/schedule.component.css']
 })
 export class ProfessorComponent implements OnInit{
   professors: User[] = [];
