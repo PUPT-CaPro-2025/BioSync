@@ -35,7 +35,7 @@ import jsPDF from "jspdf";
   ],
   providers: [SchoolYearService],
   templateUrl: './school-year.component.html',
-  styleUrl: './school-year.component.css',
+  styleUrls: ['./school-year.component.css', '../schedule/schedule.component.css']
 })
 export class SchoolYearComponent implements OnInit {
   entries: string[] = ['10', '20', '30', '40', '50'];
