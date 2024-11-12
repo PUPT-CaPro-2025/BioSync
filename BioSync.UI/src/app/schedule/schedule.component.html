@@ -14,7 +14,7 @@
                   <div class="toolbar-button">
                     @if(getRole() === "ADMIN"){
                       <div class="flex flex-col items-center">
-                        <div class="add-schedule-button" (click)="onAddScheduleClick()">
+                        <div class="header-button" (click)="onAddScheduleClick()">
                           Add New Schedule
                           <mat-icon class="dropdown-icon">{{ isDropdownOpenAddSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </div>
@@ -34,7 +34,7 @@
                     }
                     @if(getRole() === "FACULTY") {
                       <div class="flex flex-col items-center">
-                        <div class="add-schedule-button" (click)="onRequestScheduleClick()">
+                        <div class="header-button" (click)="onRequestScheduleClick()">
                           Request Schedule
                           <mat-icon class="dropdown-icon">{{ isDropdownOpenRequestSchedule ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
                         </div>
@@ -52,7 +52,7 @@
                         }
                       </div>
                     }
-                    <button class="print-schedule" (click)="generatePdf()">Print Schedule Reports</button>
+                    <button class="header-button" (click)="generatePdf()">Print Schedule Reports</button>
                   </div>
                 </mat-toolbar>
               </div>
@@ -150,7 +150,8 @@
                           <div class="cell">
                             <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                             @if(activeDropdownId === schedule.id) {
-                              <div class="action-container">
+                              <div class="action-container"  [ngClass]="{
+                                'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
                                 @if(getRole() === "FACULTY" || getRole() === "ADMIN"){
                                   <button class="action-button" (click)="toggleStartSchedule(schedule)">Start Attendance</button>
                                 }
