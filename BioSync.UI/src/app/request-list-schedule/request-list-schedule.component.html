@@ -3,7 +3,9 @@
     <mat-toolbar class="toolbar-container">
         <span>Request List</span>
       <div class="toolbar-button">
-        <button class="print-schedule" (click)="generatePdf()">Print Request Reports</button>
+        <button class="header-button" (click)="generatePdf()">
+          Print Request Reports
+        </button>
       </div>
     </mat-toolbar>
   </div>
@@ -12,26 +14,27 @@
       <div class="flex w-full gap-2">
         <div class="select-semester-container w-full">
           <mat-select [(value)]="selectedAcademicYear" id="academic-year"
-                      name="section" class="bg-transparent
-                           border-b-2 border-darkGray focus:border-brightRed
-                           focus:outline-none transition-colors
-                           duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
-            @for(academicYear of academicYears; track academicYear) {
-              <mat-option [value]="academicYear.id">
-                AY {{academicYear.startYear}} - {{ academicYear.endYear }}
-              </mat-option>
-            }
+                      name="section" class="bg-transparent border-b-2 
+                      border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" 
+                        (selectionChange)="onFilterChange()">
+                @for(academicYear of academicYears; track academicYear) {
+                  <mat-option [value]="academicYear.id">
+                    AY {{academicYear.startYear}} - {{ academicYear.endYear }}
+                  </mat-option>
+                }
           </mat-select>
         </div>
         <div class="select-semester-container w-full">
           <mat-select [(value)]="selectedSemester" id="semester"
-                      name="section" class="bg-transparent
-                             border-b-2 border-darkGray focus:border-brightRed
-                             focus:outline-none transition-colors
-                             duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
-            @for(semester of semesters; track $index) {
-              <mat-option [value]="$index + 1">{{semester}}</mat-option>
-            }
+                      name="section" class="bg-transparent border-b-2 
+                        border-darkGray focus:border-brightRed
+                          focus:outline-none transition-colors duration-300 
+                          w-full py-2 px-1" (selectionChange)="onFilterChange()">
+                @for(semester of semesters; track $index) {
+                  <mat-option [value]="$index + 1">{{semester}}</mat-option>
+                }
           </mat-select>
         </div>
       </div>
@@ -40,9 +43,11 @@
           <div class="entry-container">
             <span>Show</span>
             <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-              @for(entry of entries; track entry) {
-                <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-              }
+                @for(entry of entries; track entry) {
+                  <option [value]="entry" [selected]="entry === '10'">
+                    {{entry}}
+                  </option>
+                }
             </select>
             <span>Entries</span>
           </div>
@@ -99,12 +104,22 @@
                 {{convertTimeFormat(schedule.endTime)}}</div>
               <div class="cell">{{schedule.laboratory?.name}}</div>
               <div class="cell">
-                <button (click)="toggleDropdownAction(schedule.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                <button (click)="toggleDropdownAction(schedule.id)" 
+                    class="dropdown-toggle">
+                    <mat-icon>more_horiz</mat-icon>
+                </button>
                 @if(activeDropdownId === schedule.id) {
-                  <div class="action-container">
-                    <button class="action-button" (click)="toggleAcceptSchedule(schedule)">Accept</button>
-                    <button class="action-button" (click)="toggleRejectSchedule(schedule)">Reject</button>
-                  </div>
+                    <div class="action-container" [ngClass]="{
+                      'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
+                        <button class="action-button" 
+                            (click)="toggleAcceptSchedule(schedule)">
+                            Accept
+                        </button>
+                        <button class="action-button" 
+                            (click)="toggleRejectSchedule(schedule)">
+                            Reject
+                        </button>
+                    </div>
                 }
               </div>
             </div>

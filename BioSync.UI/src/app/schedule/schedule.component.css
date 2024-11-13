@@ -37,7 +37,7 @@
     position: relative;
 }
 
-.print-schedule, .add-schedule-button {
+.header-button {
     font-size: 12px;
     padding: 4px 40px;
     background-color: #AB3130;
@@ -47,7 +47,7 @@
     cursor: pointer;
 }
 
-.print-schedule:hover, .add-schedule-button:hover {
+.header-button:hover {
     background-color: #800c10;
 }
 
@@ -101,6 +101,27 @@
 
 .select-semester-container mat-select::before {
     border-bottom-color: #7F7F7F !important;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: gray;
+}
+
+.search-container input {
+    font-size: 12px;
+    padding: 4px 80px 4px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #F2E8E9;
 }
 
 .dropdown-content {
@@ -164,7 +185,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    height: 50vh;
+    height: calc(100vh - 350px);
     overflow-y: auto;
 }
 
@@ -175,6 +196,9 @@
     padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
+    position: relative;
+    overflow: visible;
+    justify-content: space-between;
 }
 
 .subject-table .cell {
@@ -199,6 +223,21 @@
     display: flex;
     flex-direction: column;
     z-index: 1000;
+    top: 70%;
+    right: 40;
+}
+
+.action-container.bottom-action {
+    top: unset;
+    bottom: 70%; 
+    border-bottom-left-radius: unset; 
+    border-bottom-right-radius: unset;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding-top: unset;
+    border-top: unset;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #AB3130;
 }
 
 .action-button {

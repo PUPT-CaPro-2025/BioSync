@@ -5,8 +5,12 @@
                 <mat-toolbar class="toolbar-container">
                     <span>List of Subjects - ALL</span>
                     <div class="toolbar-button">
-                        <button (click)="toggleAddSubject()">Add New Subject</button>
-                        <button (click)="generatePdf()">Print Subject Report</button>
+                        <button class="header-button" (click)="toggleAddSubject()">
+                            Add New Subject
+                        </button>
+                        <button class="header-button" (click)="generatePdf()">
+                            Print Subject Report
+                        </button>
                     </div>
                 </mat-toolbar>
             </div>
@@ -20,9 +24,13 @@
                         <div class="dropdown-content">
                             <div class="entry-container">
                                 <span>Show</span>
-                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                                <select [(ngModel)]="itemsPerPage" 
+                                    (change)="onItemsPerPageChange()">
                                     @for(entry of entries; track entry) {
-                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
+                                        <option [value]="entry" 
+                                            [selected]="entry === '10'">
+                                            {{entry}}
+                                        </option>
                                     }
                                 </select>
                                 <span>Entries</span>
@@ -44,20 +52,31 @@
                     <div class="subject-table">
                         <div class="attributes">
                             <div class="cell">Subject Code</div>
-                            <div class="cell">Subject Name</div>
+                            <div class="cell">Subject Description</div>
                             <div class="cell">Action</div>
                         </div>
                         <div class="row-container">
                             @for (subject of filteredSubjects; track subject) {
                                 <div class="row">
                                     <div class="cell">{{ subject.code }}</div>
-                                <div class="cell">{{ subject.name }}</div>
+                                <div class="cell">{{ subject.description }}</div>
                                 <div class="cell">
-                                    <button (click)="toggleDropdownAction(subject.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                    <button 
+                                        (click)="toggleDropdownAction(subject.id)" 
+                                        class="dropdown-toggle">
+                                        <mat-icon>more_horiz</mat-icon>
+                                    </button>
                                     @if(activeDropdownId === subject.id) {
-                                        <div class="action-container">
-                                            <button class="action-button" (click)="toggleEditSubject(subject)">Edit</button>
-                                            <button class="action-button" (click)="openDeleteDialog(subject)">Delete</button>
+                                        <div class="action-container" [ngClass]="{
+                                            'bottom-action': filteredSubjects.length >= 4 && (filteredSubjects[filteredSubjects.length - 1] === subject || filteredSubjects[filteredSubjects.length - 2] === subject)}">
+                                            <button class="action-button" 
+                                                (click)="toggleEditSubject(subject)">
+                                                Edit
+                                            </button>
+                                            <button class="action-button" 
+                                                (click)="openDeleteDialog(subject)">
+                                                Delete
+                                            </button>
                                         </div>
                                     }
                                 </div>
@@ -86,17 +105,17 @@
                                     [disabled]="currentPage === 1"
                                     [ngClass]="{'active-button': currentPage > 1}">
                                 <img src="../../assets/previous.svg"
-                                        alt="Previous Icon"
-                                        [ngClass]="{'active-icon': currentPage > 1}">
+                                    alt="Previous Icon"
+                                    [ngClass]="{'active-icon': currentPage > 1}">
                                 Previous
                             </button>
                             <button (click)="nextPage()"
-                                    [disabled]="currentPage === totalPages"
-                                    [ngClass]="{'active-button': currentPage < totalPages}">
+                                [disabled]="currentPage === totalPages"
+                                [ngClass]="{'active-button': currentPage < totalPages}">
                                 Next
                                 <img src="../../assets/next.svg"
-                                        alt="Next Icon"
-                                        [ngClass]="{'active-icon': currentPage < totalPages}">
+                                    alt="Next Icon"
+                                    [ngClass]="{'active-icon': currentPage < totalPages}">
                             </button>
                           </div>
                         </div>
@@ -115,6 +134,7 @@
         }
     
     } @else {
-        <app-add-subject (subjectAdded)="onSubjectAdded($event)" (backToSubject)="handleBackToSubject()"></app-add-subject>
+        <app-add-subject (subjectAdded)="onSubjectAdded($event)" 
+            (backToSubject)="handleBackToSubject()"/>
     }    
 </div>

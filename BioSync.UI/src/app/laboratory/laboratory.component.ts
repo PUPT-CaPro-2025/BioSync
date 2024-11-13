@@ -32,7 +32,7 @@ import jsPDF from "jspdf";
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
-  styleUrl: './laboratory.component.css'
+  styleUrls: ['./laboratory.component.css', '../schedule/schedule.component.css']
 })
 export class LaboratoryComponent implements OnInit {
   entries: string[] = [

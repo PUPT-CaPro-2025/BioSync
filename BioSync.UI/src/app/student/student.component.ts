@@ -34,7 +34,7 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
   ],
   providers: [UserService],
   templateUrl: './student.component.html',
-  styleUrl: './student.component.css'
+  styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];

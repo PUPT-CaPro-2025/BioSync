@@ -5,8 +5,8 @@
                 <mat-toolbar class="toolbar-container">
                     <span>List of Suffixes - ALL</span>
                     <div class="toolbar-button">
-                        <button (click)="toggleAddSuffix()">Add New Suffix</button>
-                        <button>Print Suffix Reports</button>
+                        <button class="header-button" (click)="toggleAddSuffix()">Add New Suffix</button>
+                        <button class="header-button">Print Suffix Reports</button>
                     </div>
                 </mat-toolbar>
             </div>
@@ -55,7 +55,8 @@
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(suffix.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === suffix.id) {
-                                            <div class="action-container">
+                                            <div class="action-container" [ngClass]="{
+                                                'bottom-action': filteredSuffixes.length >= 4 && (filteredSuffixes[filteredSuffixes.length - 1] === suffix || filteredSuffixes[filteredSuffixes.length - 2] === suffix)}">
                                                 <button class="action-button" (click)="toggleEditSuffix(suffix)">Edit</button>
                                                 <button class="action-button">Delete</button>
                                             </div>

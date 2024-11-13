@@ -42,7 +42,6 @@ export class EditSubjectComponent implements OnInit{
     this.subjectForm = this.formBuilder.group({
       id: [],
       code: ['', [Validators.required]],
-      name: ['', [Validators.required]],
       description: ['', Validators.required]
     });
   }
@@ -51,7 +50,6 @@ export class EditSubjectComponent implements OnInit{
     this.subjectForm.patchValue({
       id: this.selectedSubject.id,
       code: this.selectedSubject.code,
-      name: this.selectedSubject.name,
       description: this.selectedSubject.description,
     })
   }

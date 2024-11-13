@@ -4,8 +4,8 @@
             <mat-toolbar class="toolbar-container">
                 <span>List of Sections - ALL</span>
                 <div class="toolbar-button">
-                    <button (click)="toggleAddSection()">Add New Section</button>
-                    <button (click)="generatePdf()">Print Section Reports</button>
+                    <button class="header-button" (click)="toggleAddSection()">Add New Section</button>
+                    <button class="header-button" (click)="generatePdf()">Print Section Reports</button>
                 </div>
             </mat-toolbar>
         </div>
@@ -56,7 +56,8 @@
                                 <div class="cell">
                                     <button (click)="toggleDropdownAction(section.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                     @if(activeDropdownId === section.id) {
-                                        <div class="action-container">
+                                        <div class="action-container" [ngClass]="{
+                                            'bottom-action': filteredSections.length >= 4 && (filteredSections[filteredSections.length - 1] === section || filteredSections[filteredSections.length - 2] === section)}">
                                             <button class="action-button" (click)="openConfirmationDialog(section)">Delete</button>
                                         </div>
                                     }

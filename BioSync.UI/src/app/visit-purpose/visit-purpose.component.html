@@ -5,8 +5,8 @@
                 <mat-toolbar class="toolbar-container">
                     <span>List of Purpose of Visit - ALL</span>
                     <div class="toolbar-button">
-                        <button (click)="toggleAddVisitPurpose()">Add New Visit Purpose</button>
-                        <button>Print Visit Purpose Reports</button>
+                        <button class="header-button" (click)="toggleAddVisitPurpose()">Add New Visit Purpose</button>
+                        <button class="header-button">Print Visit Purpose Reports</button>
                     </div>
                 </mat-toolbar>
             </div>
@@ -53,7 +53,8 @@
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(visitPurpose.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === visitPurpose.id) {
-                                            <div class="action-container">
+                                            <div class="action-container" [ngClass]="{
+                                                'bottom-action': filteredVisitPurposes.length >= 4 && (filteredVisitPurposes[filteredVisitPurposes.length - 1] === visitPurpose || filteredVisitPurposes[filteredVisitPurposes.length - 2] === visitPurpose)}">
                                                 <button class="action-button" (click)="toggleEdittVisitPurpose(visitPurpose)">Edit</button>
                                                 <button class="action-button">Delete</button>
                                             </div>

@@ -3,7 +3,7 @@
     <mat-toolbar class="toolbar-container">
         <span>My Requests</span>
       <div class="toolbar-button">
-        <button class="print-schedule" (click)="generatePdf()">Print My Requests Reports</button>
+        <button class="header-button" (click)="generatePdf()">Print My Requests Reports</button>
       </div>
     </mat-toolbar>
   </div>
@@ -101,10 +101,23 @@
               <div class="cell">{{schedule.laboratory?.name}}</div>
               <div class="cell">{{schedule.status}}</div>
               <div class="cell">
-                <div class="action-container">
-                  <button class="edit-button" (click)="toggleViewSchedule(schedule)"><mat-icon>visibility</mat-icon></button>
-                  <button class="delete-button" (click)="openDeleteDialog(schedule)"><mat-icon>delete</mat-icon></button>
-                </div>
+                <button (click)="toggleDropdownAction(schedule.id)"
+                    class="dropdown-toggle">
+                    <mat-icon>more_horiz</mat-icon>
+                  </button>
+                  @if (activeDropdownId === schedule.id) {
+                    <div class="action-container" [ngClass]="{
+                      'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
+                      <button class="action-button"
+                        (click)="toggleViewSchedule(schedule)">
+                        View
+                      </button>
+                      <button class="action-button"
+                        (click)="openDeleteDialog(schedule)">
+                        Delete
+                      </button>
+                    </div>
+                  }
               </div>
             </div>
           }

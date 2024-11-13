@@ -32,7 +32,7 @@ import jsPDF from "jspdf";
   ],
   providers: [ProgramService],
   templateUrl: './program.component.html',
-  styleUrl: './program.component.css'
+  styleUrls: ['./program.component.css', '../schedule/schedule.component.css']
 })
 export class ProgramComponent implements OnInit{
   entries: string[] = [

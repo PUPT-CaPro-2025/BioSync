@@ -26,7 +26,7 @@ import 'jspdf-autotable';
   ],
   providers: [SubjectService],
   templateUrl: './subject.component.html',
-  styleUrl: './subject.component.css'
+  styleUrls: ['./subject.component.css', '../schedule/schedule.component.css']
 })
 export class SubjectComponent implements OnInit{
   entries: string[] = [

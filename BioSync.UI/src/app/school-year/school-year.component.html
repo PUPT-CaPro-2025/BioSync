@@ -6,8 +6,8 @@
                     <mat-toolbar class="toolbar-container">
                         <span>List of School Years - ALL</span>
                         <div class="toolbar-button">
-                            <button (click)="toggleAddSchoolYear()">Add New School Year</button>
-                            <button (click)="generatePdf()">Print School Year Reports</button>
+                            <button class="header-button" (click)="toggleAddSchoolYear()">Add New School Year</button>
+                            <button class="header-button" (click)="generatePdf()">Print School Year Reports</button>
                         </div>
                     </mat-toolbar>
                 </div>
@@ -95,7 +95,8 @@
                                         <div class="cell">
                                             <button (click)="toggleDropdownAction(schoolYear.id!)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                             @if(activeDropdownId === schoolYear.id) {
-                                                <div class="action-container">
+                                                <div class="action-container" [ngClass]="{
+                                                    'bottom-action': filteredSchoolYears.length >= 4 && (filteredSchoolYears[filteredSchoolYears.length - 1] === schoolYear || filteredSchoolYears[filteredSchoolYears.length - 2] === schoolYear)}">
                                                     <button class="action-button" (click)="toggleViewSchoolYear()">View</button>
                                                     <button class="action-button" (click)="toggleEditSchoolYear(schoolYear)">Edit</button>
                                                     <button class="action-button" (click)="openConfirmationDialog(schoolYear)">Delete</button>

@@ -21,7 +21,7 @@ import jsPDF from "jspdf";
     EditVisitorComponent],
   providers: [VisitorService],
   templateUrl: './visitor.component.html',
-  styleUrl: './visitor.component.css'
+  styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css']
 })
 export class VisitorComponent implements OnInit{
   //Temporary Data
