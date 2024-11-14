@@ -4,6 +4,7 @@ import com.example.biosyncapi.authentication.token.Token;
 import com.example.biosyncapi.program.Program;
 import com.example.biosyncapi.section.Section;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -122,6 +123,12 @@ public class User implements UserDetails {
         Program = program;
     }
 
+    @JsonProperty("authorities")
+    public List<String> getAuthoritiesAsStrings() {
+        return List.of(role.name());
+    }
+
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
