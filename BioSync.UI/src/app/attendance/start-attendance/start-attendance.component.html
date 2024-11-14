@@ -67,7 +67,7 @@
       >
         <div class="flex flex-col w-[45vw] justify-center gap-4">
           @if (!hasProfessorVerified) {
-            <p class="text-custom-32 text-f2White font-medium">
+            <p class="text-custom-32 text-brightRed font-medium">
               @if (!loggedProfessor) {
                 {{ reminder }}
               } @else if (loggedProfessor) {
@@ -118,7 +118,7 @@
               </div>
             </div>
           } @else {
-            <p class="text-custom-32 text-f2White font-medium">
+            <p class="text-custom-32 text-brightRed font-medium">
               @if (loggedStudent) {
                 WELCOME
               } @else if (!loggedStudent) {
