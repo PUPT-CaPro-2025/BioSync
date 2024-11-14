@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environment/app.setting";
 import {Schedule} from "../model/schedule.model";
 import {CookieService} from "./cookie.service";
+import {ClassResponse} from "../model/class.model";
 
 @Injectable()
 export class ScheduleService {
@@ -74,6 +75,13 @@ export class ScheduleService {
       headers: this.headers,
       withCredentials: true
     })
+  }
+
+  setComputerNumber(scheduleStudent: ClassResponse){
+    return this.http.put<Schedule>(`${this.url}/students/computer`, scheduleStudent, {
+      headers: this.headers,
+      withCredentials: true
+    });
   }
 
   deleteSchedule(schedule: Schedule){
