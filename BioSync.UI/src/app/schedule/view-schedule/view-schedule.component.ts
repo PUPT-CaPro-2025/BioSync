@@ -42,6 +42,7 @@ export class ViewScheduleComponent implements OnInit {
   schedule!: Schedule;
   class: ClassResponse[] = [];
 
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
@@ -65,6 +66,7 @@ export class ViewScheduleComponent implements OnInit {
         this.getUsersByScheduleId(this.schedule.id!);
       },
     });
+
   }
 
   getUsersByScheduleId(scheduleId: number) {
