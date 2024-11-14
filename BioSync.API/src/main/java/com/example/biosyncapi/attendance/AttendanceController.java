@@ -73,6 +73,13 @@ public class AttendanceController {
     return ResponseEntity.ok(absentCount);
   }
 
+  @GetMapping("count/tardy/{id}")
+  public ResponseEntity<Long> getTardinessCountByStudentId(@PathVariable Long id) {
+    Long absentCount = attendanceService.getTardinessCountByStudentId(id);
+
+    return ResponseEntity.ok(absentCount);
+  }
+
   @GetMapping("students/{id}")
   public ResponseEntity<List<User>> getAttendanceByStudentId(@PathVariable Long id) {
     List<User> students = attendanceService.getStudentsLoggedByScheduleId(id);

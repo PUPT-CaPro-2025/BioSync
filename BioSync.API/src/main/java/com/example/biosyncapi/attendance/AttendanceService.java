@@ -14,6 +14,8 @@ public interface AttendanceService {
 
   Long getAbsentCountByStudentId(Long studentId);
 
+  Long getTardinessCountByStudentId(Long studentId);
+
   Attendance saveAttendance(Attendance attendance);
 
   Attendance updateAttendance(Attendance attendance);
