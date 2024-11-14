@@ -337,6 +337,7 @@ export class AddScheduleComponent implements OnInit {
   }
 
   setSemester() {
+    this.semesters = [];
     this.semesters.push(<Semester>this.selectedSY?.firstSemester);
     this.semesters.push(<Semester>this.selectedSY?.secondSemester);
     this.semesters.push(<Semester>this.selectedSY?.summerSemester);
