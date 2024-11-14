@@ -1,19 +1,24 @@
-import {Component, OnInit} from '@angular/core';
-import {MatToolbar} from "@angular/material/toolbar";
-import {ActivatedRoute} from "@angular/router";
-import {ScheduleService} from "../../../services/schedule.service";
-import {Schedule} from "../../../model/schedule.model";
-import {MatIcon} from "@angular/material/icon";
-import {User} from "../../../model/user.model";
-import {UserService} from "../../../services/user.service";
-import {MatButton} from "@angular/material/button";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {MatDialog} from "@angular/material/dialog";
-import {AddStudentComponent} from "../../student/add-student/add-student.component";
-import {PromptCsvComponent} from "../../prompt/prompt-csv/prompt-csv.component";
+import { Component, OnInit } from '@angular/core';
+import { MatToolbar } from '@angular/material/toolbar';
+import { ActivatedRoute } from '@angular/router';
+import { ScheduleService } from '../../../services/schedule.service';
+import { Schedule } from '../../../model/schedule.model';
+import { MatIcon } from '@angular/material/icon';
+import { User } from '../../../model/user.model';
+import { UserService } from '../../../services/user.service';
 import {
-  AddToScheduleComponent
-} from "../../prompt/add-to-schedule/add-to-schedule.component";
+  MatButton,
+  MatFabButton,
+  MatIconButton,
+  MatMiniFabButton,
+} from '@angular/material/button';
+import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
+import { MatDialog } from '@angular/material/dialog';
+import { AddStudentComponent } from '../../student/add-student/add-student.component';
+import { PromptCsvComponent } from '../../prompt/prompt-csv/prompt-csv.component';
+import { AddToScheduleComponent } from '../../prompt/add-to-schedule/add-to-schedule.component';
+import { SetComputerComponent } from '../../prompt/set-computer/set-computer.component';
+import { ClassResponse } from '../../../model/class.model';
 
 @Component({
   selector: 'app-view-schedule',
@@ -24,70 +29,70 @@ import {
     MatButton,
     MatMenu,
     MatMenuItem,
-    MatMenuTrigger
+    MatMenuTrigger,
+    MatIconButton,
+    MatMiniFabButton,
+    MatFabButton,
   ],
   providers: [ScheduleService, UserService],
   templateUrl: './view-schedule.component.html',
-  styleUrls: ['./view-schedule.component.css', '../schedule.component.css']
+  styleUrls: ['./view-schedule.component.css', '../schedule.component.css'],
 })
-export class ViewScheduleComponent implements OnInit{
+export class ViewScheduleComponent implements OnInit {
   schedule!: Schedule;
-  class: { student: User, computerNumber: string }[] = [];
-
+  class: ClassResponse[] = [];
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(params => {
+    this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       this.getScheduleDetails(+id!);
-
     });
   }
 
-  getScheduleDetails(scheduleId: number){
+  getScheduleDetails(scheduleId: number) {
     this.scheduleService.getScheduleById(scheduleId).subscribe({
-      next: value => {
+      next: (value) => {
         this.schedule = value;
         this.getUsersByScheduleId(this.schedule.id!);
-      }
-    })
+      },
+    });
   }
 
   getUsersByScheduleId(scheduleId: number) {
     this.userService.getUsersByScheduleId(scheduleId).subscribe({
-      next: (value: { student: User, computerNumber: string }[]) => {
+      next: (value: ClassResponse[]) => {
         this.class = value;
         console.log(this.class);
       },
       error: (err) => {
         console.error('Error fetching users by schedule ID:', err);
-      }
+      },
     });
   }
 
-  convertTo12HourFormat(string: string){
+  convertTo12HourFormat(string: string) {
     return this.scheduleService.convertTimeFormat(string);
   }
 
-  getReadableDate(dateStr: string){
+  getReadableDate(dateStr: string) {
     const date = new Date(dateStr);
 
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     }).format(date);
   }
 
-
   returnToSchoolYearView() {
-    history.back()
+    history.back();
   }
 
   toggleAddStudent() {
@@ -98,14 +103,23 @@ export class ViewScheduleComponent implements OnInit{
         title: 'Add Student',
         scheduleId: this.schedule.id,
       },
-      autoFocus: false
-    })
+      autoFocus: false,
+    });
 
     ref.afterClosed().subscribe({
       next: () => {
         this.getUsersByScheduleId(this.schedule.id!);
-      }
-    })
+      },
+    });
+  }
+
+  toggleAssignedComputer(data: ClassResponse) {
+    const ref = this.dialog.open(SetComputerComponent, {
+      width: '450px',
+      height: '280px',
+      data: data,
+      autoFocus: false
+    });
   }
 
   toggleBulkAddStudent() {
@@ -114,7 +128,7 @@ export class ViewScheduleComponent implements OnInit{
       height: '210px',
       data: {
         scheduleId: this.schedule.id,
-      }
-    })
+      },
+    });
   }
 }
