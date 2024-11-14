@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-start-attendance',
@@ -31,6 +32,7 @@ import { CookieService } from '../../../services/cookie.service';
     SdkService,
     FingerprintService,
     AttendanceService,
+    UserService
   ],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
@@ -62,6 +64,7 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
+    private userService: UserService,
   ) {}
 
   async ngOnInit() {
@@ -143,15 +146,21 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
+            this.userService.getUserById(this.selectedProfessorId).subscribe({
+              next: (professor) => {
+                this.loggedProfessor = professor;
+              },
+            });
             this.cookieService.setCookie(
                 'actualTimeStart',
                 Date.now().toString(),
             );
             this.reminder = 'Fingerprint verified, Starting Attendance...';
           setTimeout(() => {
-            this.hasProfessorVerified = true;
             this.instructions = 'Scan Fingerprint to Log Attendance';
-            this.reminder = 'Scanning...';
+            this.reminder = 'Scan Student Fingerprint';
+            this.hasProfessorVerified = true;
+            this.loggedProfessor = null;
           }, 2000);
         },
         error: (err) => {
@@ -185,15 +194,16 @@ export class StartAttendanceComponent implements OnInit {
         this.reminder = 'WELCOME';
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
+          this.loggedStudent = null;
           this.studentVerified = true;
           this.profileImageUrl = '';
-          this.reminder = 'Scanning...';
+          this.reminder = 'Scan Student Fingerprint';
         }, 3000);
       },
       error: (err) => {
         this.reminder = err['error'];
         setTimeout(() => {
-          this.reminder = 'Scanning...';
+          this.reminder = 'Scan Student Fingerprint';
         }, 2000);
       },
     });
