@@ -282,10 +282,10 @@ export class FaceRecognitionAttendanceComponent
           next: () => {
             if (this.requestSent === this.MAX_REQUEST_SEND) {
               this.hasProfessorVerified = true;
-              this.cookieService.setCookie(
-                  'actualTimeStart',
-                  Date.now().toString(),
-              );
+              const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
+              if (!actualTimeStart) {
+                this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+              }
               this.loggedUser = this.schedule.professor!;
               this.reminder = 'Scan Students Face ID';
             }
