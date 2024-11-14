@@ -1,6 +1,7 @@
 package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.laboratory.Laboratory;
+import com.example.biosyncapi.school_year.SchoolYear;
 import com.example.biosyncapi.subject.SubjectRepository;
 import com.example.biosyncapi.user.UserRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
@@ -64,8 +65,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<Schedule> findConflictingSchedules(Date scheduleDate, Time startTime, Time endTime, Laboratory laboratory) {
-        return scheduleRepository.findConflictingSchedules(scheduleDate, startTime, endTime, laboratory);
+    public List<Schedule> findConflictingSchedules(Date scheduleDate,
+        Time startTime, Time endTime, Laboratory laboratory, SchoolYear schoolYear) {
+        return scheduleRepository.findConflictingSchedules(scheduleDate,
+            startTime, endTime, laboratory, schoolYear);
     }
 
     @Override
@@ -88,7 +91,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                         schedule.getScheduleDate(),
                         schedule.getStartTime(),
                         schedule.getEndTime(),
-                        schedule.getLaboratory()
+                        schedule.getLaboratory(),
+                        schedule.getSchoolYear()
                 );
 
         if(!conflictingSchedule.isEmpty()) {

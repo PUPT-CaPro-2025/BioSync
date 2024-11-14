@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -26,7 +26,7 @@ import {Attendance} from "../../model/attendance.model";
   imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
   providers: [ScheduleService, SchoolYearService, UserService, CookieService, CryptoService, AttendanceService],
   templateUrl: './attendance.component.html',
-  styleUrl: './attendance.component.css'
+  styleUrls: ['./attendance.component.css', '../schedule/schedule.component.css']
 })
 export class AttendanceComponent implements OnInit{
   entries: string[] = [
@@ -49,13 +49,14 @@ export class AttendanceComponent implements OnInit{
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   userId!: number;
   headerImage!: string;
   attendances: Attendance[] = [];
+  activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -93,6 +94,8 @@ export class AttendanceComponent implements OnInit{
         this.getAllAttendance();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (err) => console.error(err),
     });
@@ -123,6 +126,8 @@ export class AttendanceComponent implements OnInit{
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -183,6 +188,22 @@ export class AttendanceComponent implements OnInit{
     this.onPageChange();
   }
 
+  toggleDropdownAction(attendanceId: number): void {
+    this.activeDropdownId = this.activeDropdownId === attendanceId ? null : attendanceId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -223,6 +244,7 @@ export class AttendanceComponent implements OnInit{
   }
 
   toggleViewAttendance(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.router.navigate(["/view/attendance", schedule.id]).then();
   }
 
@@ -243,6 +265,8 @@ export class AttendanceComponent implements OnInit{
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }

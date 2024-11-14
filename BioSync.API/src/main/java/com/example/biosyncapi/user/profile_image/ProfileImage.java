@@ -23,6 +23,14 @@ public class ProfileImage {
         this.user = user;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public Long getId() {
         return id;
     }

@@ -27,8 +27,8 @@ jobs:
           sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${DB_URL}|" \
                  -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
                  -e "s|spring.datasource.password=.*|spring.datasource.password=${DB_PASSWORD}|" \
-                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${ALLOWED_ORIGIN}|" \
                  -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
+                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${ALLOWED_ORIGIN}|" \
                  -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
                  -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
                  -e "s|aws.access.key=.*|aws.access.key=${{ secrets.AWS_ACCESS_KEY }}|" \

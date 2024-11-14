@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -31,7 +31,7 @@ import jsPDF from "jspdf";
   ],
   providers: [SectionService],
   templateUrl: './section.component.html',
-  styleUrl: './section.component.css'
+  styleUrls: ['./section.component.css', '../schedule/schedule.component.css']
 })
 export class SectionComponent implements OnInit{
   entries: string[] = [
@@ -44,12 +44,13 @@ export class SectionComponent implements OnInit{
 
   section: Section[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSection: boolean = false;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private dialog: MatDialog,
@@ -69,6 +70,8 @@ export class SectionComponent implements OnInit{
       next: (sections: Section[]) => {
         this.section = sections;
         this.sortSections();
+        this.totalItems = this.section.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -80,9 +83,19 @@ export class SectionComponent implements OnInit{
   onSectionCreation(section: Section){
     this.section.push(section);
     this.sortSections();
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.section.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   openConfirmationDialog(section: Section){
+    this.activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -102,6 +115,7 @@ export class SectionComponent implements OnInit{
     this.sectionService.deleteSection(section).subscribe({
       next: () => {
         this.section = this.section.filter(v => v.id !== section.id);
+        this.updatePagination();
       }
     })
   }
@@ -145,6 +159,22 @@ export class SectionComponent implements OnInit{
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.onPageChange();
+    }
+  }
+
+  toggleDropdownAction(sectionId: number): void {
+    this.activeDropdownId = this.activeDropdownId === sectionId ? null : sectionId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
     }
   }
 

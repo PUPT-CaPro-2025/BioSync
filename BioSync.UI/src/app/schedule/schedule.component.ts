@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {Schedule} from '../../model/schedule.model';
@@ -63,10 +63,10 @@ export class ScheduleComponent implements OnInit {
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
@@ -78,6 +78,7 @@ export class ScheduleComponent implements OnInit {
   isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -110,12 +111,14 @@ export class ScheduleComponent implements OnInit {
   getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
       next: (schedules) => {
-        this.schedules = schedules;
+        this.schedules = schedules.filter(schedule => !schedule.hasFinished);
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (err) => console.error(err),
     });
@@ -141,6 +144,8 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -176,6 +181,15 @@ export class ScheduleComponent implements OnInit {
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
@@ -191,6 +205,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   openDeleteDialog(schedule: Schedule): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -216,7 +231,8 @@ export class ScheduleComponent implements OnInit {
         next: () => {
           this.schedules = this.schedules.filter(
             schedule => schedule.id !== scheduleToDelete.id
-          )
+          );
+          this.updatePagination();
         }
       })
   }
@@ -272,6 +288,22 @@ export class ScheduleComponent implements OnInit {
     }
   }
 
+  toggleDropdownAction(scheduleId: number): void {
+    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleOneAddSchedule(): void {
     this.isDropdownOpenAddSchedule = false;
     this.isOneAddSchedule = !this.isOneAddSchedule;
@@ -300,6 +332,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleStartSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     if (schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
     } else {
@@ -308,6 +341,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleEditSchedule(schedule: Schedule): void {
+    this.activeDropdownId = null;
     this.isEditSchedule = !this.isEditSchedule;
     this.selectedSchedule = schedule;
   }
@@ -364,6 +398,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   toggleViewSchedule(schedule: Schedule) {
+    this.activeDropdownId = null;
     this.router.navigate(["/view/schedule", schedule.id]).then();
   }
 
@@ -386,6 +421,8 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.totalItems = this.schedules.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }

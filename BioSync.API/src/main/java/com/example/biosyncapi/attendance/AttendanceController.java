@@ -73,6 +73,13 @@ public class AttendanceController {
     return ResponseEntity.ok(absentCount);
   }
 
+  @GetMapping("count/tardy/{id}")
+  public ResponseEntity<Long> getTardinessCountByStudentId(@PathVariable Long id) {
+    Long absentCount = attendanceService.getTardinessCountByStudentId(id);
+
+    return ResponseEntity.ok(absentCount);
+  }
+
   @GetMapping("students/{id}")
   public ResponseEntity<List<User>> getAttendanceByStudentId(@PathVariable Long id) {
     List<User> students = attendanceService.getStudentsLoggedByScheduleId(id);
@@ -106,6 +113,7 @@ public class AttendanceController {
   public ResponseEntity<?> verifyStudentTimeInAttendance(
       @RequestParam("scheduleId") Long scheduleId,
       @RequestParam("fingerprint") MultipartFile fingerprint,
+      @RequestParam("status") String status,
       @RequestParam(value = "method", defaultValue = "toBucket") String method) throws IOException {
 
     User student;
@@ -129,7 +137,8 @@ public class AttendanceController {
     if (hasLogged)
       return ResponseEntity.status(409).body("User has already logged.");
 
-    Attendance attendance = new Attendance("PRESENT", student, schedule.get(), ZonedDateTime.now(ZoneId.of("UTC+8")));
+    Attendance attendance = new Attendance(status, student, schedule.get(),
+        ZonedDateTime.now(ZoneId.of("UTC+8")));
 
     Attendance recordedAttendance = attendanceService.saveAttendance(attendance);
 

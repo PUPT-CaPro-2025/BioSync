@@ -1,5 +1,5 @@
 import { Visitor } from '../../model/visitor.model';
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,7 @@ import jsPDF from "jspdf";
     EditVisitorComponent],
   providers: [VisitorService],
   templateUrl: './visitor.component.html',
-  styleUrl: './visitor.component.css'
+  styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css']
 })
 export class VisitorComponent implements OnInit{
   //Temporary Data
@@ -35,13 +35,14 @@ export class VisitorComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isEditVisitor: boolean = false;
   visitorToEdit!: Visitor;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private visitorService: VisitorService,
@@ -60,6 +61,8 @@ export class VisitorComponent implements OnInit{
     this.visitorService.getVisitors().subscribe({
       next: (visitors: Visitor[]) => {
         this.visitors = visitors;
+        this.totalItems = visitors.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
@@ -96,6 +99,7 @@ export class VisitorComponent implements OnInit{
   }
 
   openDeleteDialog(visitor: Visitor): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -111,10 +115,19 @@ export class VisitorComponent implements OnInit{
     })
   }
 
+  updatePagination(): void {
+    this.totalItems = this.visitors.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
   deleteVisitorLog(visitor: Visitor): void {
     this.visitorService.deleteVisitor(visitor).subscribe({
       next: () => {
         this.visitors = this.visitors.filter(v => v.id !== visitor.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     })
@@ -162,9 +175,26 @@ export class VisitorComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(visitorId: number): void {
+    this.activeDropdownId = this.activeDropdownId === visitorId ? null : visitorId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleEditVisitor(visitor: Visitor) {
     this.isEditVisitor = !this.isEditVisitor;
     this.visitorToEdit = visitor;
+    this.activeDropdownId = null;
   }
 
   handleBackToEditVisitor(): void {

@@ -1,6 +1,7 @@
 package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.laboratory.Laboratory;
+import com.example.biosyncapi.school_year.SchoolYear;
 import com.example.biosyncapi.section.Section;
 import com.example.biosyncapi.semester.Semester;
 import com.example.biosyncapi.subject.Subject;
@@ -26,12 +27,18 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByStatus(Status status);
 
-    @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate AND s.laboratory = :laboratory AND s.startTime < :endTime AND s.endTime > :startTime")
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :scheduleDate " +
+        "AND s.status = 'APPROVED' AND s.laboratory = :laboratory AND s" +
+        ".startTime <" +
+        " :endTime" +
+        " AND " +
+        "s.endTime > :startTime AND s.schoolYear = :schoolYear")
     List<Schedule> findConflictingSchedules(
             @Param("scheduleDate") Date scheduleDate,
             @Param("startTime") Time startTime,
             @Param("endTime") Time endTime,
-            @Param("laboratory") Laboratory laboratory);
+            @Param("laboratory") Laboratory laboratory,
+            @Param("schoolYear") SchoolYear schoolYear);
 
     @Query("SELECT s FROM Schedule s WHERE s.recurrenceId = :recurrenceId")
     List<Schedule> findByRecurrenceId(@Param("recurrenceId") UUID recurrenceId);
