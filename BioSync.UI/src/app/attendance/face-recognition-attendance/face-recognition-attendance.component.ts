@@ -315,7 +315,7 @@ export class FaceRecognitionAttendanceComponent
         "actualTimeStart"));
     const currentTime = Date.now();
     const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 15;
+    const isStudentLate = timeDifferenceInMinutes > 30;
     formData.append('status', isStudentLate ? "LATE" : "PRESENT");
 
     this.attendanceService.logAttendance(formData).subscribe({
