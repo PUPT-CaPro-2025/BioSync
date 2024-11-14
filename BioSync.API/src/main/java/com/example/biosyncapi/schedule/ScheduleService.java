@@ -1,6 +1,8 @@
 package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.laboratory.Laboratory;
+import com.example.biosyncapi.school_year.SchoolYear;
+import com.example.biosyncapi.semester.Semester;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -13,7 +15,8 @@ public interface ScheduleService {
     List<Schedule> getAllSchedulesByProfessorId(Long userId);
     List<Schedule> getAllSchedulesBySectionId(Long sectionId);
     List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId);
-    List<Schedule> findConflictingSchedules(Date scheduleDate, Time startTime, Time endTime, Laboratory laboratory);
+    List<Schedule> findConflictingSchedules(Date scheduleDate,
+        Time startTime, Time endTime, Laboratory laboratory, SchoolYear schoolYear);
     Optional<Schedule> getScheduleById(Long id);
     List<Schedule> createSchedule(Schedule schedule);
     List<Schedule> getAllRequestedSchedules(Long requesterId);
