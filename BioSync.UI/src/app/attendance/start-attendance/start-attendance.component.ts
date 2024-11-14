@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
+import { CookieService } from '../../../services/cookie.service';
 
 @Component({
   selector: 'app-start-attendance',
@@ -60,6 +61,7 @@ export class StartAttendanceComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private attendanceService: AttendanceService,
+    private cookieService: CookieService,
   ) {}
 
   async ngOnInit() {
@@ -141,6 +143,10 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
+            this.cookieService.setCookie(
+                'actualTimeStart',
+                Date.now().toString(),
+            );
             this.reminder = 'Fingerprint verified, Starting Attendance...';
           setTimeout(() => {
             this.hasProfessorVerified = true;
@@ -164,6 +170,13 @@ export class StartAttendanceComponent implements OnInit {
     formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
     formData.append('scheduleId', `${this.selectedSchedule.id}`);
     formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
+
+    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
+        "actualTimeStart"));
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const isStudentLate = timeDifferenceInMinutes > 15;
+    formData.append('status', isStudentLate ? "LATE" : "PRESENT");
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
