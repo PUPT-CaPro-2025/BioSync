@@ -28,4 +28,4 @@ setuptools==75.1.0
 SQLAlchemy==2.0.35
 tomlkit==0.13.2
 typing_extensions==4.12.2
-Werkzeug==3.0.6
+Werkzeug==3.0.4
