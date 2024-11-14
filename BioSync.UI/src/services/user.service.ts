@@ -6,6 +6,7 @@ import {User} from "../model/user.model";
 import {Observable} from "rxjs";
 import {CsvResponse} from "../model/csvResponse.model";
 import {Student} from "../model/student-model";
+import {ClassResponse} from "../model/class.model";
 
 @Injectable()
 export class UserService {
@@ -72,11 +73,8 @@ export class UserService {
             })
     }
 
-    getUsersByScheduleId(scheduleId: number): Observable<{
-        student: User,
-        computerNumber: string
-    }[]> {
-        return this.http.get<{ student: User, computerNumber: string }[]>(
+    getUsersByScheduleId(scheduleId: number): Observable<ClassResponse[]> {
+        return this.http.get<ClassResponse[]>(
             `${this.url}/schedules/students/details/${scheduleId}`, {
                 headers: this.headers,
                 withCredentials: true
