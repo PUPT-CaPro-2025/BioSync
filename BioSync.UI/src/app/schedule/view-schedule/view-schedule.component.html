@@ -61,17 +61,19 @@
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">Students</span>
     <div class="flex gap-5">
-      <div class="toolbar-button">
-        <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="toggleAddStudent()">
-            Add Single Student
-          </button>
-          <button mat-menu-item (click)="toggleBulkAddStudent()">
-            Add Multiple Student
-          </button>
-        </mat-menu>
-      </div>
+        @if(getRole() !== "STUDENT"){
+            <div class="toolbar-button">
+                <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item (click)="toggleAddStudent()">
+                        Add Single Student
+                    </button>
+                    <button mat-menu-item (click)="toggleBulkAddStudent()">
+                        Add Multiple Student
+                    </button>
+                </mat-menu>
+            </div>
+        }
     </div>
   </mat-toolbar>
 </div>

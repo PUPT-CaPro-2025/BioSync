@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
 import { Schedule } from '../../../model/schedule.model';
 import { MatIcon } from '@angular/material/icon';
-import { User } from '../../../model/user.model';
 import { UserService } from '../../../services/user.service';
 import {
   MatButton,
@@ -14,11 +13,12 @@ import {
 } from '@angular/material/button';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
-import { AddStudentComponent } from '../../student/add-student/add-student.component';
 import { PromptCsvComponent } from '../../prompt/prompt-csv/prompt-csv.component';
 import { AddToScheduleComponent } from '../../prompt/add-to-schedule/add-to-schedule.component';
 import { SetComputerComponent } from '../../prompt/set-computer/set-computer.component';
 import { ClassResponse } from '../../../model/class.model';
+import {CookieService} from "../../../services/cookie.service";
+import {CryptoService} from "../../../services/crypto.service";
 
 @Component({
   selector: 'app-view-schedule',
@@ -34,7 +34,7 @@ import { ClassResponse } from '../../../model/class.model';
     MatMiniFabButton,
     MatFabButton,
   ],
-  providers: [ScheduleService, UserService],
+  providers: [ScheduleService, UserService, CookieService, CryptoService],
   templateUrl: './view-schedule.component.html',
   styleUrls: ['./view-schedule.component.css', '../schedule.component.css'],
 })
@@ -47,6 +47,8 @@ export class ViewScheduleComponent implements OnInit {
     private scheduleService: ScheduleService,
     private userService: UserService,
     private dialog: MatDialog,
+    private cookieService: CookieService,
+    private cryptoService: CryptoService
   ) {}
 
   ngOnInit() {
@@ -114,7 +116,7 @@ export class ViewScheduleComponent implements OnInit {
   }
 
   toggleAssignedComputer(data: ClassResponse) {
-    const ref = this.dialog.open(SetComputerComponent, {
+    this.dialog.open(SetComputerComponent, {
       width: '450px',
       height: '280px',
       data: data,
@@ -123,12 +125,17 @@ export class ViewScheduleComponent implements OnInit {
   }
 
   toggleBulkAddStudent() {
-    const ref = this.dialog.open(PromptCsvComponent, {
+    this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
         scheduleId: this.schedule.id,
       },
     });
+  }
+
+  getRole(): string{
+    const getTheRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(getTheRole);
   }
 }
