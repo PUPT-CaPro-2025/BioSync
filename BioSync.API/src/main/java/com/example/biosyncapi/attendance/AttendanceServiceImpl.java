@@ -44,7 +44,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
   @Override
   public Long getAttendanceCountByStudentId(Long studentId) {
-    return attendanceRepository.countByUserIdAndStatus(studentId, "PRESENT");
+    Long present =  attendanceRepository.countByUserIdAndStatus(studentId,
+        "PRESENT");
+    Long late = attendanceRepository.countByUserIdAndStatus(studentId,
+        "LATE");
+
+    return late + present;
   }
 
   @Override
