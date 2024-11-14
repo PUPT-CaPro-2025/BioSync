@@ -1,1 +1,164 @@
-<p>admin-profile works!</p>
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+      <span class="text-custom-32 text-brightRed">{{currentStepLabel}}</span>
+    </mat-toolbar>
+  </div>
+<div class="flex justify-center items-center mt-8 w-[90%] bg-transparent form-content">
+    <mat-stepper [linear]="true" #stepper class="flex items-center justify-center align-middle rounded-2xl w-3/4" (selectionChange)="onStepChange($event)" labelPosition="bottom">
+      <mat-step [stepControl]="adminForm">
+        <div class="flex justify-center align-middle mt-5">
+          <form class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle" [formGroup]="adminForm">
+            <ng-template matStepLabel>Setup Information</ng-template>
+            <div class="group flex flex-col gap-1">
+                <label for="firstName" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    First Name
+                </label>
+                <input matInput id="firstName" name="firstName"
+                    placeholder="Enter professor's first name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="lastName" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Last Name
+                </label>
+                <input matInput id="lastName" name="lastName"
+                    placeholder="Enter professor's last name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="middleName" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Middle Name
+                </label>
+                <input matInput id="middleName" name="middleName"
+                    placeholder="Enter professor's first name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
+            </div>
+            <div class="group flex flex-col gap-1">
+                <label for="suffix" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Suffix
+                </label>
+                <mat-select id="suffix" name="suffix"
+                            placeholder="Choose a professor's suffix" class="bg-transparent
+                            border-b-2 border-darkGray focus:border-brightRed
+                            focus:outline-none transition-colors
+                            duration-300 w-full py-2 px-1" formControlName="suffix">
+                            @for(suffix of allSuffix; track suffix) {
+                                <mat-option [value]="suffix">{{suffix}}</mat-option>
+                            }
+                    </mat-select>
+            </div>
+            <div class="group flex flex-col gap-1">
+              <label for="email" class="text-custom-20
+                      text-darkGray transition-colors duration-300
+                      group-focus-within:text-brightRed">
+                Email Address
+              </label>
+              <input matInput id="email" name="email"
+                     placeholder="Enter professor's email" class="bg-transparent
+                      border-b-2 border-darkGray focus:border-brightRed
+                      focus:outline-none transition-colors
+                      duration-300 w-full py-2 px-1" formControlName="email">
+            </div>
+            <div class="flex justify-between mt-4 button-content">
+              <button mat-button class="cancel-button">
+                  Cancel
+              </button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+          </form>
+        </div>
+      </mat-step>
+      <mat-step [stepControl]="imageForm" label="Profile Picture" [completed]="true">
+        <div class="flex justify-center align-middle mt-5">
+          <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
+            <div class="flex justify-center items-center">
+              <label for="fileInput" class="drop-area">
+                <input type="file" id="fileInput"
+                       formControlName="profileImage" (change)="onFileChanges($event)"
+                       accept="image/*" hidden/>
+                <div class="image-container">
+                  @if(imageSrc) {
+                    <img [src]="imageSrc" alt="Selected Image" class="displayed-image">
+                  }
+                </div>
+                <div class="upload-message">
+                  <mat-icon class="camera-icon">camera_alt</mat-icon>
+                  <p>Click here to upload image</p>
+                </div>
+              </label>
+            </div>
+            <div class="mt-4 flex items-center justify-center">
+              <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button">Take Photo</button>
+            </div>
+            <div class="mt-4 flex justify-between button-content">
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>{{ imageButtonLabel }}</button>
+            </div>
+          </form>
+        </div>
+      </mat-step>
+      <mat-step>
+        <div class="flex justify-center align-middle mt-5">
+          <div class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
+            <ng-template matStepLabel>Get Fingerprint</ng-template>
+            <div class="flex justify-center items-center flex-col gap-8">
+              <div class="fingerprint-container">
+                <div class="flex flex-col gap-2 justify-center">
+                  <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightThumb}">
+                    @if(isRightThumb) {
+                      <div class="check-container">
+                        <div class="check-background">
+                          <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                  <p class="text-center">{{ rightThumbState }}</p>
+                </div>
+                @if(hasRightThumb){
+                  <div class="flex flex-col gap-2 justify-center">
+                    <div class="fingerprint" [ngClass]="{'fingerprint-scanned': isRightIndex}">
+                      @if(isRightIndex) {
+                        <div class="check-container">
+                          <div class="check-background">
+                            <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 25L27.3077 44L58.5 7" stroke="#54C98B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                    <p class="text-center">{{ rightIndexState }}</p>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="mt-4 flex justify-between button-content">
+              <button mat-button matStepperPrevious>Back</button>
+              <button class="add-button"
+                (click)="submit()">
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+</div>
+  
