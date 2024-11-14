@@ -151,10 +151,10 @@ export class StartAttendanceComponent implements OnInit {
                 this.loggedProfessor = professor;
               },
             });
-            this.cookieService.setCookie(
-                'actualTimeStart',
-                Date.now().toString(),
-            );
+            const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
+            if (!actualTimeStart) {
+              this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+            }
             this.reminder = 'Fingerprint verified, Starting Attendance...';
           setTimeout(() => {
             this.instructions = 'Scan Fingerprint to Log Attendance';
