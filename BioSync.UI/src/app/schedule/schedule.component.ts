@@ -111,7 +111,7 @@ export class ScheduleComponent implements OnInit {
   getAllSchedules() {
     this.scheduleService.getAllSchedules().subscribe({
       next: (schedules) => {
-        this.schedules = schedules;
+        this.schedules = schedules.filter(schedule => !schedule.hasFinished);
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
