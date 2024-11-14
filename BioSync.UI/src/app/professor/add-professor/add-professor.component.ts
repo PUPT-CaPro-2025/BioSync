@@ -67,14 +67,15 @@ export class AddProfessorComponent implements OnInit{
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
   rightThumbState = 'Scan Right Thumb';
   hasRightThumb = false;
   isRightThumb = false;
   rightIndexState = 'Scan Right Index';
   isRightIndex = false;
   imageButtonLabel = 'Skip';
+  disableReset = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -97,9 +98,11 @@ export class AddProfessorComponent implements OnInit{
           if(this.rightThumbFingerprintImageSrc == null){
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightThumb = true;
+            this.disableReset = true;
             setTimeout(() => {
               this.rightThumbState = 'Right Thumb Captured';
               this.hasRightThumb = true;
+              this.disableReset = false;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
@@ -197,12 +200,22 @@ export class AddProfessorComponent implements OnInit{
     });
   }
 
+  resetFingerprint(): void{
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Right Thumb';
+    this.rightIndexState = 'Scan Right Index';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User){
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
-    formData.append('fingerprint', this.rightIndexFingerprintImageSrc,
+    formData.append('fingerprint', this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`)
-    formData.append('fingerprint', this.rightThumbFingerprintImageSrc,
+    formData.append('fingerprint', this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`)
 
     this.fingerprintService.registerFingerprint(formData).subscribe({

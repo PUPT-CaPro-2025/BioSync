@@ -28,6 +28,7 @@ import { UserService } from '../../../services/user.service';
 import { AttendanceService } from '../../../services/attendance.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import {CookieService} from "../../../services/cookie.service";
 
 @Component({
   selector: 'app-face-recognition-attendance',
@@ -91,6 +92,7 @@ export class FaceRecognitionAttendanceComponent
     private userService: UserService,
     private fingerprintService: FingerprintService,
     private attendanceService: AttendanceService,
+    private cookieService: CookieService
   ) {}
 
   async ngOnInit() {
@@ -280,6 +282,10 @@ export class FaceRecognitionAttendanceComponent
           next: () => {
             if (this.requestSent === this.MAX_REQUEST_SEND) {
               this.hasProfessorVerified = true;
+              const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
+              if (!actualTimeStart) {
+                this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+              }
               this.loggedUser = this.schedule.professor!;
               this.reminder = 'Scan Students Face ID';
             }
@@ -304,6 +310,13 @@ export class FaceRecognitionAttendanceComponent
     formData.append('studentId', studentId.toString());
     formData.append('scheduleId', scheduleId.toString());
     formData.append('attendanceStatus', attendanceStatus);
+
+    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
+        "actualTimeStart"));
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const isStudentLate = timeDifferenceInMinutes > 30;
+    formData.append('status', isStudentLate ? "LATE" : "PRESENT");
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {

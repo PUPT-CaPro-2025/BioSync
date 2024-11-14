@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
+import { CookieService } from '../../../services/cookie.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-start-attendance',
@@ -30,6 +32,7 @@ import { AttendanceService } from '../../../services/attendance.service';
     SdkService,
     FingerprintService,
     AttendanceService,
+    UserService
   ],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
@@ -60,6 +63,8 @@ export class StartAttendanceComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private attendanceService: AttendanceService,
+    private cookieService: CookieService,
+    private userService: UserService,
   ) {}
 
   async ngOnInit() {
@@ -141,11 +146,21 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
+            this.userService.getUserById(this.selectedProfessorId).subscribe({
+              next: (professor) => {
+                this.loggedProfessor = professor;
+              },
+            });
+            const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
+            if (!actualTimeStart) {
+              this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+            }
             this.reminder = 'Fingerprint verified, Starting Attendance...';
           setTimeout(() => {
-            this.hasProfessorVerified = true;
             this.instructions = 'Scan Fingerprint to Log Attendance';
-            this.reminder = 'Scanning...';
+            this.reminder = 'Scan Student Fingerprint';
+            this.hasProfessorVerified = true;
+            this.loggedProfessor = null;
           }, 2000);
         },
         error: (err) => {
@@ -165,6 +180,13 @@ export class StartAttendanceComponent implements OnInit {
     formData.append('scheduleId', `${this.selectedSchedule.id}`);
     formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
 
+    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
+        "actualTimeStart"));
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const isStudentLate = timeDifferenceInMinutes > 30;
+    formData.append('status', isStudentLate ? "LATE" : "PRESENT");
+
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
         this.loggedStudent = value.student;
@@ -172,15 +194,16 @@ export class StartAttendanceComponent implements OnInit {
         this.reminder = 'WELCOME';
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
+          this.loggedStudent = null;
           this.studentVerified = true;
           this.profileImageUrl = '';
-          this.reminder = 'Scanning...';
+          this.reminder = 'Scan Student Fingerprint';
         }, 3000);
       },
       error: (err) => {
         this.reminder = err['error'];
         setTimeout(() => {
-          this.reminder = 'Scanning...';
+          this.reminder = 'Scan Student Fingerprint';
         }, 2000);
       },
     });
