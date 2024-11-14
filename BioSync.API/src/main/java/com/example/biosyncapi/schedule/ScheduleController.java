@@ -143,8 +143,8 @@ public class ScheduleController {
     }
   }
 
-  @PostMapping("/students/computer")
-  public ResponseEntity<ScheduleStudent> createStudentSchedule(@RequestBody ScheduleStudent scheduleStudent) {
+  @PutMapping("/students/computer")
+  public ResponseEntity<?> createStudentSchedule(@RequestBody ScheduleStudent scheduleStudent) {
     Long computerNumber = scheduleStudent.getComputerNumber();
 
     ScheduleStudent scheduleStudentUpdate =
@@ -156,7 +156,7 @@ public class ScheduleController {
     }
 
     return ResponseEntity.status(HttpStatus.CREATED)
-        .body(scheduleStudentUpdate);
+        .body(scheduleStudentUpdate.getComputerNumber());
   }
 
   @PutMapping
