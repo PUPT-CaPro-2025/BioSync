@@ -72,9 +72,9 @@
                     <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
                         @if(programDescriptionControl.errors?.['required']) {
                             Program Description is required.
-                        } @else if(programForm.get('programDescription')?.value?.length < 100) {
+                        } @else if(programDescriptionControl.errors?.['minlength']) {
                             Description too short. Provide detailed information.
-                        } @else if (programForm.get('programDescription')?.value?.length > 500) {
+                        } @else if (programDescriptionControl.errors?.['maxlength']) {
                             Description too long. Try to shorten the information.
                         }
                     </div>
