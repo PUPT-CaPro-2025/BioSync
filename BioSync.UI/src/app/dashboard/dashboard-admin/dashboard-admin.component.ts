@@ -312,7 +312,7 @@ export class DashboardAdminComponent implements OnInit {
       // Map schedules into days of the week
       const daysMapping = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       const filteredByDay = daysMapping.reduce((acc: any, day: string) => {
-        acc[day] = uniqueRecurrence.filter(schedule => schedule.recurrenceDays!.includes(day));
+        acc[day] = uniqueRecurrence.filter(schedule => schedule.recurrenceDays!.includes(day) && schedule.semester == this.currentSemester);
         return acc;
       }, {});
 
