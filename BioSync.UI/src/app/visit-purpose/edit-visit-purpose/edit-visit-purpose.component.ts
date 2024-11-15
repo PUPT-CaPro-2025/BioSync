@@ -2,12 +2,16 @@ import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Visitpurpose } from '../../../model/visit.purpose.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import { visitPurposeValidator } from '../visit.purpose.validation';
 
 @Component({
   selector: 'app-edit-visit-purpose',
@@ -36,7 +40,7 @@ export class EditVisitPurposeComponent implements OnInit {
 
   initForm(){
     this.visitPurposeForm = this.formBuilder.group({
-      visitPurpose: ['', [Validators.required]],
+      visitPurpose: ['', [Validators.required, visitPurposeValidator()]],
     });
   }
 
@@ -62,5 +66,9 @@ export class EditVisitPurposeComponent implements OnInit {
         this.returnToVisitPurposeView();
       }
     })
+  }
+
+  get visitPurposeControl(): AbstractControl {
+    return this.visitPurposeForm.get('visitPurpose')!;
   }
 }
