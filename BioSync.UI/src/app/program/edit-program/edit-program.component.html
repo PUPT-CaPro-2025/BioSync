@@ -1,4 +1,3 @@
-
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
         <span class="text-custom-32 text-brightRed">Edit Program</span>
@@ -6,8 +5,8 @@
 </div>
 <div class="flex justify-center items-center">
     <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="programForm">
-        <div class="w-[55%] flex flex-col gap-4 row-block">
-            <div class="group flex flex-col gap-1">
+        <div class="w-[55%] flex flex-col gap-6 row-block">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="program-name" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -19,9 +18,19 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programName">
+                    formControlName="programName"
+                    [class.input-error]="programNameControl.invalid && programNameControl.touched">
+                @if(programNameControl.touched && programNameControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if(programNameControl.errors?.['required']) {
+                            Program name is required.
+                        } @else if(programNameControl.errors?.['onlyLettersAllowed']) {
+                            Only letters are allowed.
+                        }
+                    </div>
+                }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="program-abbreviation" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -33,9 +42,19 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programAbbreviation">
+                    formControlName="programAbbreviation"
+                    [class.input-error]="programAbbreviationControl.invalid && programAbbreviationControl.touched">
+                @if(programAbbreviationControl.touched && programAbbreviationControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if(programAbbreviationControl.errors?.['required']) {
+                            Program Abbreviation is required.
+                        } @else if(programAbbreviationControl.errors?.['invalidProgramAbbreviation']) {
+                            Only uppercase letters and hypen symbol are allowed.
+                        }
+                    </div>
+                }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="description" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -47,7 +66,19 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="programDescription">
+                    formControlName="programDescription"
+                    [class.input-error]="programDescriptionControl.invalid && programDescriptionControl.touched">
+                @if(programDescriptionControl.touched && programDescriptionControl.invalid) {                  
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if(programDescriptionControl.errors?.['required']) {
+                            Program Description is required.
+                        } @else if(programForm.get('programDescription')?.value?.length < 100) {
+                            Description too short. Provide detailed information.
+                        } @else if (programForm.get('programDescription')?.value?.length > 500) {
+                            Description too long. Try to shorten the information.
+                        }
+                    </div>
+                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">

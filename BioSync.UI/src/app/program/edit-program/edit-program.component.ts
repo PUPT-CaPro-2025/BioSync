@@ -2,13 +2,19 @@ import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Program } from '../../../model/program.model';
 import { ProgramService } from '../../../services/program.service';
 import { MatDialog } from '@angular/material/dialog';
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import { 
+  programAbbreviationValidator, lettersOnlyValidator  
+} from '../program.validation';
 
 @Component({
   selector: 'app-edit-program',
@@ -44,9 +50,13 @@ export class EditProgramComponent implements OnInit{
   initForm(){
     this.programForm = this.formBuilder.group({
       id: [],
-      programName: ['', [Validators.required]],
-      programAbbreviation: ['', [Validators.required]],
-      programDescription: ['', Validators.required]
+      programName: ['', [Validators.required, lettersOnlyValidator()]],
+      programAbbreviation: ['', [
+        Validators.required, programAbbreviationValidator()
+      ]],
+      programDescription: ['', [
+        Validators.required, Validators.minLength(250), Validators.maxLength(500)
+      ]]
     });
   }
 
@@ -93,5 +103,17 @@ export class EditProgramComponent implements OnInit{
         this.returnToProgramView();
       }
     })
+  }
+
+  get programNameControl(): AbstractControl {
+    return this.programForm.get('programName')!;
+  }
+  
+  get programAbbreviationControl(): AbstractControl {
+    return this.programForm.get('programAbbreviation')!;
+  }
+
+  get programDescriptionControl(): AbstractControl {
+    return this.programForm.get('programDescription')!;
   }
 }
