@@ -20,9 +20,13 @@
                     transition-colors duration-300 w-full py-2 px-1"
                     formControlName="name"
                     [class.input-error]="nameControl.invalid && nameControl.touched">
-                @if(nameControl.touched && nameControl.invalid && nameControl.errors?.['required']) {
+                @if(nameControl.touched && nameControl.invalid) {
                     <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        Laboratory name is required.
+                        @if( nameControl.errors?.['required']) {
+                            Laboratory name is required.
+                        } @else if(nameControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        }
                     </div>
                 }
             </div>
@@ -40,9 +44,13 @@
                     transition-colors duration-300 w-full py-2 px-1"
                     formControlName="roomCode"
                     [class.input-error]="roomCodeControl.invalid && roomCodeControl.touched">
-                @if(roomCodeControl.touched && roomCodeControl.invalid && roomCodeControl.errors?.['required']) {
+                @if(roomCodeControl.touched && roomCodeControl.invalid) {
                     <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        Room Code is required.
+                        @if( roomCodeControl.errors?.['required']) {
+                            Room Code is required.
+                        } @else if(roomCodeControl.errors?.['invalidRoomCode']) {
+                            Only letters, numbers, and hyphens are allowed.
+                        }
                     </div>
                 }
             </div>
@@ -68,6 +76,8 @@
                             Minimum laboratory capacity limit is 1.
                         } @else if(capacityControl.errors?.['max']) {
                                 Maximum laboratory capacity limit is 80.
+                        } @else if (capacityControl.errors?.['invalidCapacity']) {
+                            Capacity must be a whole number.
                         }
                     </div>
                 }

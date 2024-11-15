@@ -12,6 +12,9 @@ import { Laboratory } from '../../../model/laboratory.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import { AddLaboratoryService } from '../../../services/add-laboratory.service';
+import { 
+  laboratoryNameValidator, roomCodeValidator, capacityValidator 
+} from '../laboratory.validation'; 
 
 @Component({
   selector: 'app-add-laboratory',
@@ -43,9 +46,11 @@ export class AddLaboratoryComponent implements OnInit {
 
   initForm(){
     this.laboratoryForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      roomCode: ['', [Validators.required]],
-      capacity: ['', [Validators.required, Validators.min(1), Validators.max(80)]], 
+      name: ['', [Validators.required, laboratoryNameValidator()]],
+      roomCode: ['', [Validators.required, roomCodeValidator()]],
+      capacity: ['', [Validators.required, Validators.min(1), 
+        Validators.max(80), capacityValidator()
+      ]], 
     });
   }
 
