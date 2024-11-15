@@ -5,8 +5,8 @@
 </div>
 <div class="flex justify-center items-center">
     <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="visitPurposeForm">
-        <div class="w-[55%] flex flex-col gap-4 row-block">
-            <div class="group flex flex-col gap-1">
+        <div class="w-[55%] flex flex-col gap-6 row-block">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="purpose-of-visit" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -18,7 +18,17 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="visitPurpose">
+                    formControlName="visitPurpose"
+                    [class.input-error]="visitPurposeControl.invalid && visitPurposeControl.touched">
+                @if(visitPurposeControl.touched && visitPurposeControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( visitPurposeControl.errors?.['required']) {
+                            Purpose of Visit is required.
+                        } @else if(visitPurposeControl.errors?.['invalidVisitPurpose']) {
+                            Only letters are allowed.
+                        }
+                    </div>
+                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">
