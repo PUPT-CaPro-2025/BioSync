@@ -2,7 +2,9 @@ import {Component, Output, EventEmitter, ChangeDetectorRef, Input, OnInit} from 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl
+} from "@angular/forms";
 import {CommonModule, DatePipe} from '@angular/common';
 import {Schedule} from "../../../model/schedule.model";
 import {Section} from "../../../model/section.model";
@@ -20,6 +22,10 @@ import {SchoolYearService} from "../../../services/school.year.service";
 import {ScheduleService} from "../../../services/schedule.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import { 
+  belowStartTimeValidator, aboveStartTimeValidator, 
+  aboveEndTimeValidator, belowEndTimeValidator
+} from '../schedule.validation';
 
 @Component({
   selector: 'app-edit-schedule',
@@ -108,8 +114,13 @@ export class EditScheduleComponent implements OnInit{
   initForm(): void{
     this.editScheduleForm = this.formBuilder.group({
         section: ['', [Validators.required]],
-        startTime: ['', Validators.required],
-        endTime: ['', [Validators.required]],
+        startTime: ['', [Validators.required, 
+          belowStartTimeValidator(), aboveStartTimeValidator()
+        ]],
+        endTime: ['', [Validators.required, 
+          aboveEndTimeValidator(() => this.editScheduleForm.get('startTime')?.value),
+          belowEndTimeValidator()
+        ]],
         scheduleDate: ['', [Validators.required]],
         laboratory: ['', [Validators.required]],
         professor: ['', [Validators.required]],
@@ -348,4 +359,47 @@ export class EditScheduleComponent implements OnInit{
     })
   }
 
+  get subjectControl(): AbstractControl {
+    return this.editScheduleForm.get('subject')!;
+  }
+  
+  get sectionControl(): AbstractControl {
+    return this.editScheduleForm.get('section')!;
+  }
+
+  get startTimeeControl(): AbstractControl {
+    return this.editScheduleForm.get('startTime')!;
+  }
+
+  get endTimeControl(): AbstractControl {
+    return this.editScheduleForm.get('endTime')!;
+  }
+  
+  get scheduleDateControl(): AbstractControl {
+    return this.editScheduleForm.get('scheduleDate')!;
+  }
+
+  get laboratoryControl(): AbstractControl {
+    return this.editScheduleForm.get('laboratory')!;
+  }
+
+  get professorControl(): AbstractControl {
+    return this.editScheduleForm.get('professor')!;
+  }
+
+  get semesterControl(): AbstractControl {
+    return this.editScheduleForm.get('semester')!;
+  }
+
+  get remarksControl(): AbstractControl {
+    return this.editScheduleForm.get('remarks')!;
+  }
+  
+  get recurrenceControl(): AbstractControl {
+    return this.editScheduleForm.get('recurrence')!;
+  }
+
+  get schoolYearControl(): AbstractControl {
+    return this.editScheduleForm.get('schoolYear')!;
+  }
 }
