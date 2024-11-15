@@ -2,7 +2,10 @@ import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Laboratory } from '../../../model/laboratory.model';
@@ -42,7 +45,7 @@ export class AddLaboratoryComponent implements OnInit {
     this.laboratoryForm = this.formBuilder.group({
       name: ['', [Validators.required]],
       roomCode: ['', [Validators.required]],
-      capacity: ['', Validators.required]
+      capacity: ['', [Validators.required, Validators.min(1), Validators.max(80)]], 
     });
   }
 
@@ -80,5 +83,17 @@ export class AddLaboratoryComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       this.backToLaboratory.emit();
     })
+  }
+
+  get nameControl(): AbstractControl {
+    return this.laboratoryForm.get('name')!;
+  }
+  
+  get roomCodeControl(): AbstractControl {
+    return this.laboratoryForm.get('roomCode')!;
+  }
+
+  get capacityControl(): AbstractControl {
+    return this.laboratoryForm.get('capacity')!;
   }
 }
