@@ -60,23 +60,17 @@
                     transition-colors duration-300 w-full py-2 px-1"
                     formControlName="capacity"
                     [class.input-error]="capacityControl.invalid && capacityControl.touched">
-                @if(capacityControl.touched && capacityControl.invalid) {
-                    @if(capacityControl.errors?.['required']) {
+                    @if(capacityControl.touched && capacityControl.invalid) {                   
                         <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            Laboratory Capacity is required.
+                            @if(capacityControl.errors?.['required']) {
+                                Laboratory Capacity is required.
+                            } @else if(capacityControl.errors?.['min']) {
+                                Minimum laboratory capacity limit is 1.
+                            } @else if(capacityControl.errors?.['max']) {
+                                    Maximum laboratory capacity limit is 80.
+                            }
                         </div>
                     }
-                    @if(capacityControl.errors?.['min']) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            Minimum laboratory capacity limit is 1.
-                        </div>
-                    }
-                    @if(capacityControl.errors?.['max']) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            Maximum laboratory capacity limit is 80.
-                        </div>
-                    }
-                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">
