@@ -86,7 +86,7 @@
                                 </button>
                                 @if(activeDropdownId === student.id) {
                                     <div class="action-container" [ngClass]="{
-                                        'bottom-action': filteredStudents.length >= 4 && (filteredStudents[filteredStudents.length - 1] === student || filteredStudents[filteredStudents.length - 2] === student)}">>
+                                        'bottom-action': filteredStudents.length >= 4 && (filteredStudents[filteredStudents.length - 1] === student || filteredStudents[filteredStudents.length - 2] === student)}">
                                         <button class="action-button" 
                                             (click)="toggleEditStudent(student)">
                                             Edit
