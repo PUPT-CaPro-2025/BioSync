@@ -48,7 +48,7 @@
                       @if(firstNameControl.touched && firstNameControl.invalid) {
                         <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
                           @if( firstNameControl.errors?.['required']) {
-                            First is required.
+                            First name is required.
                           } @else if(firstNameControl.errors?.['invalidName']) {
                             Only Letters are Allowed.
                           }
