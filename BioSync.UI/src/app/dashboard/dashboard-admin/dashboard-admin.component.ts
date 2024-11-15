@@ -300,6 +300,7 @@ export class DashboardAdminComponent implements OnInit {
       // Filter schedules based on the selected laboratory
       const filteredSchedules = this.schedules.filter(
           schedule => schedule.laboratory!.id === this.selectedLaboratory.id
+              && schedule.semester!.id === this.currentSemester.id
       );
 
       // Filter for unique recurrenceId schedules
@@ -312,7 +313,7 @@ export class DashboardAdminComponent implements OnInit {
       // Map schedules into days of the week
       const daysMapping = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       const filteredByDay = daysMapping.reduce((acc: any, day: string) => {
-        acc[day] = uniqueRecurrence.filter(schedule => schedule.recurrenceDays!.includes(day) && schedule.semester == this.currentSemester);
+        acc[day] = uniqueRecurrence.filter(schedule => schedule.recurrenceDays!.includes(day));
         return acc;
       }, {});
 
