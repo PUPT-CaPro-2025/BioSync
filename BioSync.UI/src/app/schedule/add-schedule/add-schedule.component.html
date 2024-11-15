@@ -21,10 +21,11 @@
 <form [formGroup]="scheduleForm">
     <div class="flex justify-center items-center">
         <div class="mt-8 flex justify-between w-[94%] bg-transparent">
-            <div class="w-[48%] subject-select">
+            <div class="w-[48%] subject-select relative">
                 <select id="subject" name="subject" class="bg-white custom-select
                         w-full py-2 px-2 rounded-xl text-lightGray"
-                        (change)="onSubjectChange($event)" formControlName="subject">
+                        (change)="onSubjectChange($event)" formControlName="subject"
+                        [class.input-error]="subjectControl.invalid && subjectControl.touched">
                     <option value="">Select a Subject</option>
                     @for(subject of subjects; track subject){
                       <option [value]="subject.id">
@@ -32,6 +33,13 @@
                       </option>
                     }
                 </select>
+                @if(subjectControl.touched && subjectControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if(subjectControl.errors?.['required']) {
+                            Subject is required.
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -60,8 +68,8 @@
         </div>
         <div class="flex justify-center items-center">
             <div class="mt-8 flex justify-between w-[94%] bg-transparent form-content">
-                <div class="w-[48%] flex flex-col gap-4 row-block">
-                    <div class="group flex flex-col gap-1">
+                <div class="w-[48%] flex flex-col gap-8 row-block">
+                    <div class="group flex flex-col gap-1 relative">
                         <label for="section" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -71,16 +79,24 @@
                                 placeholder="Select Section" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="section">
+                                duration-300 w-full py-2 px-1" formControlName="section"
+                                [class.input-error]="sectionControl.invalid && sectionControl.touched">
                                 @for(section of sections; track section) {
                                     <mat-option [value]="section.id">
                                       {{section.program.programAbbreviation}} {{section.year}}-{{section.section}}
                                     </mat-option>
                                 }
                         </mat-select>
+                        @if(sectionControl.touched && sectionControl.invalid) {
+                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                @if(sectionControl.errors?.['required']) {
+                                    Section is required.
+                                }
+                            </div>
+                        }
                     </div>
                     <div class="flex justify-between sub-form-content">
-                        <div class="group flex flex-col gap-1 w-[47%] sub-row-block">
+                        <div class="group flex flex-col gap-1 w-[47%] relative sub-row-block">
                             <label for="start-time" class="text-custom-16
                                 text-darkGray transition-colors duration-300
                                 group-focus-within:text-brightRed">
@@ -90,9 +106,21 @@
                                 value="00:00" type="time" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="startTime">
+                                duration-300 w-full py-2 px-1" formControlName="startTime"
+                                [class.input-error]="startTimeeControl.invalid && startTimeeControl.touched">
+                            @if(startTimeeControl.touched && startTimeeControl.invalid) {
+                                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                    @if(startTimeeControl.errors?.['required']) {
+                                        Start Time is required.
+                                    } @else if(startTimeeControl.errors?.['belowStartTime']) {
+                                        Start time must not be earlier than 7:30 AM.
+                                    } @else if(startTimeeControl.errors?.['aboveStartTime']) {
+                                        Start time must not be later than 6:30 PM.
+                                    }
+                                </div>
+                            }
                         </div>
-                        <div class="group flex flex-col gap-1 w-[47%] sub-row-block-two">
+                        <div class="group flex flex-col gap-1 w-[47%] relative sub-row-block-two">
                             <label for="end-time" class="text-custom-16
                                 text-darkGray transition-colors duration-300
                                 group-focus-within:text-brightRed">
@@ -102,11 +130,25 @@
                                 value="00:00" type="time" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="endTime">
+                                duration-300 w-full py-2 px-1" formControlName="endTime"
+                                [class.input-error]="endTimeControl.invalid && endTimeControl.touched">
+                            @if(endTimeControl.touched && endTimeControl.invalid) {
+                                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                    @if(endTimeControl.errors?.['required']) {
+                                       End Time is required.
+                                    } @else if(endTimeControl.errors?.['aboveStartTime']) {
+                                        End Time must not be later than 9:30 PM.
+                                    } @else if(endTimeControl.errors?.['belowStartTime']) {
+                                        End time must not be earlier than 10:30 AM.
+                                    } @else if (endTimeControl.errors?.['endTimeTooSoon']) {
+                                        Must be at least 3 hours after Start Time.
+                                    }
+                                </div>
+                            }
                         </div>
                     </div>
                     @if(isOneSchedule) {
-                        <div class="group flex flex-col gap-1">
+                        <div class="group flex flex-col gap-1 relative">
                             <label for="subject-date" class="text-custom-16
                                 text-darkGray transition-colors duration-300
                                 group-focus-within:text-brightRed">
@@ -132,6 +174,7 @@
                                 transition-colors duration-300 py-2 px-1"
                                    formControlName="scheduleDate" [min]="today"
                                    (dateChange)="onDateChange($event)"
+                                   [class.input-error]="scheduleDateControl.invalid && scheduleDateControl.touched"
                             readonly>
                             <button (click)="picker.open()">
                               <mat-icon
@@ -142,11 +185,18 @@
                             </button>
                             <mat-datepicker #picker></mat-datepicker>
                           </div>
+                          @if(scheduleDateControl.touched && scheduleDateControl.invalid) {
+                              <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                  @if(scheduleDateControl.errors?.['required']) {
+                                      Schedule date is required.
+                                  }
+                              </div>
+                          }
                         </div>
                     }
                     @if(isWeeklySchedule) {
                         <div class="flex justify-between sub-form-content">
-                            <div class="group flex flex-col gap-1 w-[47%] sub-row-block">
+                            <div class="group flex flex-col gap-1 w-[47%] relative sub-row-block">
                                 <label for="recurrence" class="text-custom-16
                                     text-darkGray transition-colors duration-300
                                     group-focus-within:text-brightRed">
@@ -165,7 +215,7 @@
                                             {{ day }}
                                         </div>
                                     }
-                                </div>
+                                </div>                                                         
                             </div>
                             <div class="group flex flex-col gap-1 w-[47%] sub-row-block-two">
                                 <label for="recurrence" class="text-custom-16
@@ -184,7 +234,7 @@
                             </div>
                         </div>
                     }
-                    <div class="group flex flex-col gap-1">
+                    <div class="group flex flex-col gap-1 relative">
                         <label for="laboratory" class="text-custom-16
                                 text-darkGray transition-colors duration-300
                                 group-focus-within:text-brightRed">
@@ -194,15 +244,23 @@
                                 placeholder="Select a laboratory room" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="laboratory">
+                                duration-300 w-full py-2 px-1" formControlName="laboratory"
+                                [class.input-error]="laboratoryControl.invalid && laboratoryControl.touched">
                                 @for(lab of labs; track lab) {
                                     <mat-option [value]="lab.id">{{lab.name}}</mat-option>
                                 }
                         </mat-select>
+                        @if(laboratoryControl.touched && laboratoryControl.invalid) {
+                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                @if(laboratoryControl.errors?.['required']) {
+                                    Laboratory is required.
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
-                <div class="w-[48%] flex flex-col gap-4 row-block-two">
-                    <div class="group flex flex-col gap-1">
+                <div class="w-[48%] flex flex-col gap-8 row-block-two">
+                    <div class="group flex flex-col gap-1 relative">
                         <label for="professor" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -213,15 +271,23 @@
                                 class="bg-transparent border-b-2 border-darkGray
                                 focus:border-brightRed focus:outline-none
                                 transition-colors duration-300 w-full py-2 px-1"
-                                formControlName="professor" [disabled]="!isRequest">
+                                formControlName="professor" [disabled]="!isRequest"
+                                [class.input-error]="professorControl.invalid && professorControl.touched">
                                 @for(professor of professors; track professor) {
                                     <mat-option [value]="professor.id">
                                       {{professor.firstName}} {{professor.lastName}}
                                     </mat-option>
                                 }
                         </mat-select>
+                        @if(professorControl.touched && professorControl.invalid) {
+                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                @if(professorControl.errors?.['required']) {
+                                    Professor is required.
+                                }
+                            </div>
+                        }
                     </div>
-                    <div class="group flex flex-col gap-1">
+                    <div class="group flex flex-col gap-1 relative">
                       <label for="school-year" class="text-custom-16
                               text-darkGray transition-colors duration-300
                               group-focus-within:text-brightRed">
@@ -233,15 +299,23 @@
                                   focus:outline-none transition-colors
                                   duration-300 w-full py-2 px-1"
                                   (selectionChange)="onSchoolYearChange($event)"
-                                  formControlName="schoolYear">
+                                  formControlName="schoolYear"
+                                  [class.input-error]="schoolYearControl.invalid && schoolYearControl.touched">
                         @for(schoolYear of schoolYear; track schoolYear) {
                           <mat-option [value]="schoolYear.id">
                             {{schoolYear.startYear}} - {{schoolYear.endYear}}
                           </mat-option>
                         }
                       </mat-select>
+                      @if(schoolYearControl.touched && schoolYearControl.invalid) {
+                          <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                              @if(schoolYearControl.errors?.['required']) {
+                                School Year is required.
+                              }
+                          </div>
+                      }
                     </div>
-                    <div class="group flex flex-col gap-1">
+                    <div class="group flex flex-col gap-1 relative">
                         <label for="semester" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -252,14 +326,22 @@
                                 placeholder="Select a semester" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="semester">
+                                duration-300 w-full py-2 px-1" formControlName="semester"
+                                [class.input-error]="semesterControl.invalid && semesterControl.touched">
                                 @for(semester of semesters; track semester) {
                                     <mat-option [value]="semester.id">{{semester.name}}</mat-option>
                                 }
                         </mat-select>
+                        @if(semesterControl.touched && semesterControl.invalid) {
+                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                @if(semesterControl.errors?.['required']) {
+                                    Semester is required.
+                                }
+                            </div>
+                        }
                       }
                     </div>
-                    <div class="group flex flex-col gap-1">
+                    <div class="group flex flex-col gap-1 relative">
                         <label for="remarks" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -269,11 +351,19 @@
                                 placeholder="Select a type of class" class="bg-transparent
                                 border-b-2 border-darkGray focus:border-brightRed
                                 focus:outline-none transition-colors
-                                duration-300 w-full py-2 px-1" formControlName="remarks">
+                                duration-300 w-full py-2 px-1" formControlName="remarks"
+                                [class.input-error]="remarksControl.invalid && remarksControl.touched">
                                 @for(remark of remarks; track remark) {
                                     <mat-option [value]="remark">{{remark}}</mat-option>
                                 }
                         </mat-select>
+                        @if(remarksControl.touched && remarksControl.invalid) {
+                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                                @if(remarksControl.errors?.['required']) {
+                                    Remark is required.
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
