@@ -70,6 +70,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
             docker pull jheankhendrick/bio-sync-api:latest
             docker rm -f bio-sync-api-container || true
-            docker run -d -p 8080:8080 --name bio-sync-api-container --restart always jheankhendrick/bio-sync-api:latest
+            docker run -d \
+             --name bio-sync-api-container \
+             --restart always \
+             --cpus="0.5" \          
+             --memory="512m" \       
+             -p 8080:8080 \      
+             jheankhendrick/bio-sync-api:latest
+
           EOF
         shell: /usr/bin/bash -e {0}
