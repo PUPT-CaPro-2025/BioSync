@@ -2,16 +2,12 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {
-  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
-  Validators, AbstractControl
-} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Subject} from "../../../model/subject-model";
 import {MatButtonModule} from "@angular/material/button";
 import {MatDialog} from "@angular/material/dialog";
 import {SubjectService} from "../../../services/subject.service";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
-import { subjectCodeValidator } from '../subject.validation';
 
 @Component({
   selector: 'app-edit-subject',
@@ -45,9 +41,7 @@ export class EditSubjectComponent implements OnInit{
   initForm(){
     this.subjectForm = this.formBuilder.group({
       id: [],
-      code: ['', [Validators.required, 
-        Validators.maxLength(10), subjectCodeValidator()
-      ]],
+      code: ['', [Validators.required]],
       description: ['', Validators.required]
     });
   }
@@ -94,13 +88,5 @@ export class EditSubjectComponent implements OnInit{
         this.returnToSubjectView();
       }
     })
-  }
-
-  get codeControl(): AbstractControl {
-    return this.subjectForm.get('code')!;
-  }
-  
-  get descriptionControl(): AbstractControl {
-    return this.subjectForm.get('description')!;
   }
 }

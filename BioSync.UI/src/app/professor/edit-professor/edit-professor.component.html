@@ -9,7 +9,7 @@
         <div class="flex justify-center align-middle mt-5">
           <form class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle" [formGroup]="professorForm">
             <ng-template matStepLabel>Setup Information</ng-template>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="usercode" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -20,9 +20,9 @@
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
                     duration-300 w-full py-2 px-1"
-                    formControlName="usercode" readonly>
+                    formControlName="usercode">
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="firstName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -32,19 +32,9 @@
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="firstName"
-                    [class.input-error]="firstNameControl.invalid && firstNameControl.touched">
-                  @if(firstNameControl.touched && firstNameControl.invalid) {
-                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                      @if( firstNameControl.errors?.['required']) {
-                        First name is required.
-                      } @else if(firstNameControl.errors?.['invalidName']) {
-                        Only Letters are Allowed.
-                      }
-                    </div>
-                  }
+                    duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="lastName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -54,19 +44,9 @@
                     placeholder="Enter professor's last name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="lastName"
-                    [class.input-error]="lastNameControl.invalid && lastNameControl.touched">
-                  @if(lastNameControl.touched && lastNameControl.invalid) {
-                      <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                          @if( lastNameControl.errors?.['required']) {
-                              Last name is required.
-                          } @else if(lastNameControl.errors?.['invalidName']) {
-                              Only letters are allowed.
-                          }
-                      </div>
-                  }
+                    duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="middleName" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -76,17 +56,9 @@
                     placeholder="Enter professor's first name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="middleName"
-                    [class.input-error]="middleNameControl.invalid && middleNameControl.touched">
-                @if(middleNameControl.touched && middleNameControl.invalid) {
-                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        @if(middleNameControl.errors?.['invalidName']) {
-                            Only letters are allowed.
-                        }
-                    </div>
-                }
+                    duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
-            <div class="group flex flex-col gap-1 rel">
+            <div class="group flex flex-col gap-1">
                 <label for="suffix" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -96,21 +68,13 @@
                             placeholder="Choose a professor's suffix" class="bg-transparent
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
-                            duration-300 w-full py-2 px-1" formControlName="suffix"
-                            [class.input-error]="suffixControl.invalid && suffixControl.touched">
+                            duration-300 w-full py-2 px-1" formControlName="suffix">
                             @for(suffix of allSuffix; track suffix) {
                                 <mat-option [value]="suffix">{{suffix}}</mat-option>
                             }
-                </mat-select>
-                @if(suffixControl.touched && suffixControl.invalid) {
-                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                      @if(suffixControl.errors?.['required']) {
-                          Suffix is required.
-                      }
-                  </div>
-                }
+                    </mat-select>
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="email" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -120,19 +84,9 @@
                      placeholder="Enter professor's email" class="bg-transparent
                       border-b-2 border-darkGray focus:border-brightRed
                       focus:outline-none transition-colors
-                      duration-300 w-full py-2 px-1" formControlName="email"
-                      [class.input-error]="emailControl.invalid && emailControl.touched">
-                    @if(emailControl.touched && emailControl.invalid) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            @if(emailControl.errors?.['required']) {
-                                Email is Required.
-                            } @else if (emailControl.errors?.['invalidEmail']) {
-                                Not an email format.
-                            }
-                        </div>
-                    }
+                      duration-300 w-full py-2 px-1" formControlName="email">
             </div>
-            <div class="flex justify-between mt-8 button-content">
+            <div class="flex justify-between mt-4 button-content">
               <button mat-button class="cancel-button"
                   (click)="returnToProfessorView()">
                   Cancel

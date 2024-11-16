@@ -2,10 +2,7 @@ import {Component, Output, EventEmitter, OnInit, Input, ViewEncapsulation} from 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {
-  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
-  Validators, AbstractControl
-} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import {UserService} from "../../../services/user.service";
@@ -18,10 +15,6 @@ import {SdkService} from "../../../services/sdk.service";
 import {FingerprintService} from "../../../services/fingerprint.service";
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { 
-  customEmailValidator 
-} from '../../../services/validators/customEmailValidator';
-import { facultyNameValidator } from '../professor.validation';
 
 @Component({
   selector: 'app-edit-professor',
@@ -115,13 +108,11 @@ export class EditProfessorComponent implements OnInit{
   initForm(){
     this.professorForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required, facultyNameValidator()]],
-      lastName: ['', [Validators.required, facultyNameValidator()]],
-      middleName: ['', [facultyNameValidator()]],
+      firstName: ['', [Validators.required]],
+      lastName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      middleName: [''],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, 
-        Validators.email, customEmailValidator()
-      ]],
     });
 
     this.imageForm = this.formBuilder.group({
@@ -251,29 +242,5 @@ export class EditProfessorComponent implements OnInit{
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
-  }
-
-  get userCodeControl(): AbstractControl {
-    return this.professorForm.get('usercode')!;
-  }
-  
-  get firstNameControl(): AbstractControl {
-    return this.professorForm.get('firstName')!;
-  }
-
-  get lastNameControl(): AbstractControl {
-    return this.professorForm.get('lastName')!;
-  }
-
-  get middleNameControl(): AbstractControl {
-    return this.professorForm.get('middleName')!;
-  }
-  
-  get suffixControl(): AbstractControl {
-    return this.professorForm.get('suffix')!;
-  }
-
-  get emailControl(): AbstractControl {
-    return this.professorForm.get('email')!;
   }
 }

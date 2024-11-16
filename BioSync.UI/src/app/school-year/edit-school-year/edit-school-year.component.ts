@@ -2,19 +2,13 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {
-  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
-  Validators, AbstractControl
-} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import {SchoolYear} from "../../../model/school.year.model";
 import {SchoolYearService} from "../../../services/school.year.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
-import {
-  startYearValidator, endYearValidator, oneMonthGapDateValidator
-} from '../school.year.validation';
 
 @Component({
   selector: 'app-edit-school-year',
@@ -49,14 +43,14 @@ export class EditSchoolYearComponent implements OnInit {
 
   initEditSchoolYearForm(){
     this.schoolYearForm = this.formBuilder.group({
-      startYear: ['', [Validators.required, startYearValidator()]],
-      endYear: ['', [Validators.required, endYearValidator()]],
+      startYear: ['', [Validators.required]],
+      endYear: ['', [Validators.required]],
       oneStartDate: ['', Validators.required],
-      oneEndDate: ['', [Validators.required, oneMonthGapDateValidator('oneStartDate')]],
+      oneEndDate: ['', [Validators.required]],
       twoStartDate: ['', [Validators.required]],
-      twoEndDate: ['', [Validators.required, oneMonthGapDateValidator('twoStartDate')]],
+      twoEndDate: ['', [Validators.required]],
       summerStartDate: ['', [Validators.required]],
-      summerEndDate: ['', [Validators.required, oneMonthGapDateValidator('summerStartDate')]],
+      summerEndDate: ['', [Validators.required]],
     });
   }
 
@@ -142,36 +136,5 @@ export class EditSchoolYearComponent implements OnInit {
         endDate: formValues.summerEndDate,
       }
     };
-  }
-
-  get startYearControl(): AbstractControl {
-    return this.schoolYearForm.get('startYear')!;
-  }
-  get endYearControl(): AbstractControl {
-    return this.schoolYearForm.get('endYear')!;
-  }
-
-  get oneStartDateControl(): AbstractControl {
-    return this.schoolYearForm.get('oneStartDate')!;
-  }
-
-  get oneEndDateControl(): AbstractControl {
-    return this.schoolYearForm.get('oneEndDate')!;
-  }
-
-  get twoStartDateControl(): AbstractControl {
-    return this.schoolYearForm.get('twoStartDate')!;
-  }
-
-  get twoEndDateControl(): AbstractControl {
-    return this.schoolYearForm.get('twoEndDate')!;
-  }
-
-  get summerStartDateControl(): AbstractControl {
-    return this.schoolYearForm.get('summerStartDate')!;
-  }
-
-  get summerEndDateControl(): AbstractControl {
-    return this.schoolYearForm.get('summerEndDate')!;
   }
 }

@@ -3,6 +3,7 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgClass} from "@angular/common";
+import {customEmailValidator} from "../../../services/validators/customEmailValidator";
 import {PasswordService} from "../../../services/password.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
@@ -28,7 +29,7 @@ export class PasswordForgotComponent implements OnInit {
 
   ngOnInit(){
     this.passwordResetForm = this.formBuilder.group({
-      email: ['', [Validators.required]],
+      email: ['', [Validators.required, customEmailValidator()]],
     })
   }
 
