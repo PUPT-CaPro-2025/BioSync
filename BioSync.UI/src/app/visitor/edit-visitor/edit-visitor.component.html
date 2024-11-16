@@ -6,7 +6,7 @@
 <div class="flex justify-center items-center mb-16">
     <form class="mt-8 flex justify-between w-[90%] bg-transparent form-container" [formGroup]="visitorForm">
         <div class="w-[45%] flex flex-col gap-4 column-container">
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="visitor-name" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -16,43 +16,22 @@
                     placeholder="Enter visitor's Name" class="bg-transparent
                     border-b-2 border-darkGray focus:border-brightRed
                     focus:outline-none transition-colors
-                    duration-300 w-full py-2 px-1" formControlName="name"
-                    [class.input-error]="nameControl.invalid && nameControl.touched">
-                    @if(nameControl.touched && nameControl.invalid) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            @if( nameControl.errors?.['required']) {
-                                Visitor name is required.
-                            } @else if(nameControl.errors?.['invalidName']) {
-                                Only letters are allowed.
-                            }
-                        </div>
-                    }
+                    duration-300 w-full py-2 px-1" formControlName="name">
             </div>
-            <div class="group flex flex-col gap-1 relative">
-                <label for="visit-purpose" class="text-custom-20
+            <div class="group flex flex-col gap-1">
+                <label for="visit" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
                     Purpose of Visit
                 </label>
-                <mat-select id="visit_purpose" name="visit-purpose" placeholder="Select your Purpose of Visit"
-                        class="bg-transparent border-b-2 border-darkGray focus:border-brightRed
-                        focus:outline-none transition-colors 
-                        duration-300 w-full py-2 px-1" formControlName="purposeOfVisit"
-                        [class.input-error]="purposeOfVisitControl.invalid && purposeOfVisitControl.touched">
-                        @for(visitPurpose of visitPurposes; track visitPurpose) {
-                            <mat-option [value]="visitPurpose">{{visitPurpose}}</mat-option>
-                        }
-                        <mat-option value="Others">Others</mat-option>
-                </mat-select>
-                @if(purposeOfVisitControl.touched && purposeOfVisitControl.invalid) {
-                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        @if( purposeOfVisitControl.errors?.['required']) {
-                            Purpose of visit is required.
-                        }
-                    </div>
-                }
+                <input matInput id="visit" name="visit"
+                    placeholder="Enter visitor purpose of visit"
+                    class="bg-transparent border-b-2 border-darkGray
+                    focus:border-brightRed focus:outline-none
+                    transition-colors duration-300 w-full py-2 px-1"
+                    formControlName="purposeOfVisit">
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="detail" class="text-custom-20
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -63,19 +42,9 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="otherDetails"
-                    [class.input-error]="otherDetailsControl.invalid && otherDetailsControl.touched">
-                @if(otherDetailsControl.touched && otherDetailsControl.invalid) {
-                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        @if(otherDetailsControl.errors?.['invalidName']) {
-                            Only letters are allowed.
-                        } @else if (otherDetailsControl.errors?.['maxlength']) {
-                            Purpose of visit is too long.
-                        }
-                    </div>
-                }
+                    formControlName="otherDetails">
             </div>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
                 <label for="laboratory" class="text-custom-16
                     text-darkGray transition-colors duration-300
                     group-focus-within:text-brightRed">
@@ -85,19 +54,11 @@
                         placeholder="Select a laboratory room" class="bg-transparent
                         border-b-2 border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
-                        duration-300 w-full py-2 px-1" formControlName="destination"
-                        [class.input-error]="destinationControl.invalid && destinationControl.touched">
+                        duration-300 w-full py-2 px-1" formControlName="destination">
                         @for(lab of labs; track lab) {
                             <mat-option [value]="lab">{{lab}}</mat-option>
                         }
                 </mat-select>
-                @if(destinationControl.touched && destinationControl.invalid) {
-                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                        @if( destinationControl.errors?.['required']) {
-                            Destination is required.
-                        }
-                    </div>
-                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-container">

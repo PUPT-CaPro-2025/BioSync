@@ -9,7 +9,7 @@
         <div class="flex justify-center align-middle mt-5">
           <form [formGroup]="editStudentForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
             <ng-template matStepLabel>Setup Information</ng-template>
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="student-number" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -23,7 +23,7 @@
                      formControlName="usercode" readonly>
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="first-name" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -33,20 +33,10 @@
                      placeholder="Enter student's first name" class="bg-transparent
                       border-b-2 border-darkGray focus:border-brightRed
                       focus:outline-none transition-colors
-                      duration-300 w-full py-2 px-1" formControlName="firstName"
-                      [class.input-error]="firstNameControl.invalid && firstNameControl.touched">
-                    @if(firstNameControl.touched && firstNameControl.invalid) {
-                      <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                          @if(firstNameControl.errors?.['required']) {
-                              First name is Required.
-                          } @else if (firstNameControl.errors?.['invalidName']) {
-                              Only Letters are allowed.
-                          }
-                      </div>
-                    }
+                      duration-300 w-full py-2 px-1" formControlName="firstName">
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="last-name" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -56,20 +46,10 @@
                      placeholder="Enter student's last name" class="bg-transparent
                       border-b-2 border-darkGray focus:border-brightRed
                       focus:outline-none transition-colors
-                      duration-300 w-full py-2 px-1" formControlName="lastName"
-                      [class.input-error]="lastNameControl.invalid && lastNameControl.touched">
-                    @if(lastNameControl.touched && lastNameControl.invalid) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            @if( lastNameControl.errors?.['required']) {
-                                Last name is required.
-                            } @else if(lastNameControl.errors?.['invalidName']) {
-                                Only letters are allowed.
-                            }
-                        </div>
-                    }
+                      duration-300 w-full py-2 px-1" formControlName="lastName">
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="middle-name" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -79,18 +59,10 @@
                      placeholder="Enter student's first name" class="bg-transparent
                       border-b-2 border-darkGray focus:border-brightRed
                       focus:outline-none transition-colors
-                      duration-300 w-full py-2 px-1" formControlName="middleName"
-                      [class.input-error]="middleNameControl.invalid && middleNameControl.touched">
-                    @if(middleNameControl.touched && middleNameControl.invalid) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            @if(middleNameControl.errors?.['invalidName']) {
-                                Only letters are allowed.
-                            }
-                        </div>
-                    }
+                      duration-300 w-full py-2 px-1" formControlName="middleName">
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="suffix" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -100,22 +72,14 @@
                           placeholder="Choose a student's suffix" class="bg-transparent
                               border-b-2 border-darkGray focus:border-brightRed
                               focus:outline-none transition-colors
-                              duration-300 w-full py-2 px-1" formControlName="suffix"
-                              [class.input-error]="suffixControl.invalid && suffixControl.touched">
+                              duration-300 w-full py-2 px-1" formControlName="suffix">
                 @for(suffix of allSuffix; track suffix) {
                   <mat-option [value]="suffix">{{suffix}}</mat-option>
                 }
               </mat-select>
-              @if(suffixControl.touched && suffixControl.invalid) {
-                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                    @if(suffixControl.errors?.['required']) {
-                        Suffix is required.
-                    }
-                </div>
-              }
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="email" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -125,20 +89,10 @@
                      placeholder="Enter student's email" class="bg-transparent
                       border-b-2 border-darkGray focus:border-brightRed
                       focus:outline-none transition-colors
-                      duration-300 w-full py-2 px-1" formControlName="email"
-                      [class.input-error]="emailControl.invalid && emailControl.touched">
-                    @if(emailControl.touched && emailControl.invalid) {
-                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                            @if(emailControl.errors?.['required']) {
-                                Email is Required.
-                            } @else if (emailControl.errors?.['invalidEmail']) {
-                                Not an email format.
-                            }
-                        </div>
-                    }
+                      duration-300 w-full py-2 px-1" formControlName="email">
             </div>
 
-            <div class="group flex flex-col gap-1 relative">
+            <div class="group flex flex-col gap-1">
               <label for="program" class="text-custom-20
                       text-darkGray transition-colors duration-300
                       group-focus-within:text-brightRed">
@@ -149,23 +103,15 @@
                               border-b-2 border-darkGray focus:border-brightRed
                               focus:outline-none transition-colors
                               duration-300 w-full py-2 px-1" formControlName="program"
-                          (selectionChange)="onProgramChange($event)"
-                          [class.input-error]="programControl.invalid && programControl.touched">
+                          (selectionChange)="onProgramChange($event)">
                 @for(program of allPrograms; track program) {
                   <mat-option [value]="program.id">{{program.programAbbreviation}}</mat-option>
                 }
               </mat-select>
-              @if(programControl.touched && programControl.invalid) {
-                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                    @if( programControl.errors?.['required']) {
-                        Program is required.
-                    }
-                </div>
-              }
             </div>
 
             <div class="flex justify-between">
-              <div class="group flex flex-col gap-1 w-full relative">
+              <div class="group flex flex-col gap-1 w-full">
                 <label for="Year" class="text-custom-16
                           text-darkGray transition-colors duration-300
                           group-focus-within:text-brightRed">
@@ -176,24 +122,16 @@
                               border-b-2 border-darkGray focus:border-brightRed
                               focus:outline-none transition-colors
                               duration-300 w-full py-2 px-1"
-                            formControlName="section"
-                            [class.input-error]="sectionControl.invalid && sectionControl.touched">
+                            formControlName="section">
                   @for(section of filteredSections; track section) {
                     <mat-option [value]="section.id">
                       {{section.year}} - {{section.section}}
                     </mat-option>
                   }
                 </mat-select>
-                @if(sectionControl.touched && sectionControl.invalid) {
-                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                      @if( sectionControl.errors?.['required']) {
-                          Section is required.
-                      }
-                  </div>
-                }
               </div>
             </div>
-            <div class="flex justify-between mt-8 button-content">
+            <div class="flex justify-between mt-4 button-content">
               <button mat-button class="cancel-button"
                   (click)="returnToStudentView()">
                   Cancel

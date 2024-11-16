@@ -1,3 +1,4 @@
+
 <div class="flex justify-center items-center">
     <mat-toolbar class="toolbar-container">
         <span class="text-custom-32 text-brightRed">Add School Year</span>
@@ -7,7 +8,7 @@
     <form class="mt-8 w-[90%] bg-transparent form-content" [formGroup]="addSchoolYearForm">
         <div class="w-[70%] flex flex-col gap-4">
             <div class="flex justify-between w-[100%] row-block">
-                <div class="group flex flex-col gap-1 w-[48%] row-input relative">
+                <div class="group flex flex-col gap-1 w-[48%] row-input">
                     <label for="year-start" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -18,19 +19,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="startYear"
-                            [class.input-error]="startYearControl.invalid && startYearControl.touched">
-                            @if(startYearControl.touched && startYearControl.invalid) {
-                                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                    @if( startYearControl.errors?.['required']) {
-                                        Year Start is required.
-                                    } @else if(startYearControl.errors?.['invalidNumber']) {
-                                        Year Start must be a valid 4-digit number.
-                                    }
-                                </div>
-                            }
+                            formControlName="startYear">
                 </div>
-                <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                <div class="group flex flex-col gap-1 w-[48%] row-input">
                     <label for="year-end" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -41,25 +32,13 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="endYear"
-                            [class.input-error]="endYearControl.invalid && endYearControl.touched">
-                        @if(endYearControl.touched && endYearControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if( endYearControl.errors?.['required']) {
-                                    Year End is required.
-                                } @else if(endYearControl.errors?.['invalidNumber']) {
-                                    Year End must be a valid 4-digit number.
-                                } @else if(endYearControl.errors?.['yearEndNotValid']) {
-                                    End Year must be exactly one year greater than Year Start.
-                                }
-                            </div>
-                        }
+                            formControlName="endYear">
                 </div>
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">First Semester</h6>
                 <div class="flex justify-between w-[100%] row-block">
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="one-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -70,19 +49,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="oneStartDate"
-                            [min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="oneStartDateControl.invalid && oneStartDateControl.touched">
-                        @if(oneStartDateControl.touched && oneStartDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(oneStartDateControl.errors?.['required']) {
-                                    First Semester Start Date is required.
-                                }
-                            </div>
-                        }
+                            formControlName="oneStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="one-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -93,26 +62,14 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="oneEndDate"
-                            [min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="oneEndDateControl.invalid && oneEndDateControl.touched">
-                        @if(oneEndDateControl.touched && oneEndDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(oneEndDateControl.errors?.['required']) {
-                                    First Semester End Date is required.
-                                } @else if(oneEndDateControl.errors?.['insufficientGap']) {
-                                    Must have a 1 month gap from the Start Date.
-                                }
-                            </div>
-                        }
+                            formControlName="oneEndDate">
                     </div>
                 </div>
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Second Semester</h6>
                 <div class="flex justify-between w-[100%] row-block">
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="two-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -123,19 +80,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="twoStartDate"
-                            [min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="twoStartDateControl.invalid && twoStartDateControl.touched">
-                        @if(twoStartDateControl.touched && twoStartDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(twoStartDateControl.errors?.['required']) {
-                                    Second Semester Start Date is required.
-                                }
-                            </div>
-                        }
+                            formControlName="twoStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="two-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -146,26 +93,14 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="twoEndDate"
-                            [min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="twoEndDateControl.invalid && twoEndDateControl.touched">
-                        @if(twoEndDateControl.touched && twoEndDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(twoEndDateControl.errors?.['required']) {
-                                    Second Semester End Date is required.
-                                } @else if(twoEndDateControl.errors?.['insufficientGap']) {
-                                    Must have a 1 month gap from the Start Date.
-                                }
-                            </div>
-                        }
+                            formControlName="twoEndDate">
                     </div>
                 </div>
             </div>
             <div class="flex flex-col mt-4 gap-[10px]">
                 <h6 class="text-custom-20 text-lightGray font-weight400">Summer Semester</h6>
                 <div class="flex justify-between w-[100%] row-block">
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="summer-start-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -176,19 +111,9 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="summerStartDate"
-                            [min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="summerStartDateControl.invalid && summerStartDateControl.touched">
-                        @if(summerStartDateControl.touched && summerStartDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(summerStartDateControl.errors?.['required']) {
-                                    Summer Semester Start Date is required.
-                                }
-                            </div>
-                        }
+                            formControlName="summerStartDate">
                     </div>
-                    <div class="group flex flex-col gap-1 w-[48%] relative row-input">
+                    <div class="group flex flex-col gap-1 w-[48%] row-input">
                         <label for="summer-end-date" class="text-custom-16
                             text-darkGray transition-colors duration-300
                             group-focus-within:text-brightRed">
@@ -199,18 +124,7 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1"
-                            formControlName="summerEndDate"[min]="startYearControl.value + '-01-01'" 
-                            [max]="endYearControl.value + '-12-31'"
-                            [class.input-error]="summerEndDateControl.invalid && summerEndDateControl.touched">
-                        @if(summerEndDateControl.touched && summerEndDateControl.invalid) {
-                            <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
-                                @if(summerEndDateControl.errors?.['required']) {
-                                    Summer Semester End Date is required.
-                                } @else if(summerEndDateControl.errors?.['insufficientGap']) {
-                                    Must have a 1 month gap from the Start Date.
-                                }
-                            </div>
-                        }
+                            formControlName="summerEndDate">
                     </div>
                 </div>
             </div>
@@ -224,7 +138,7 @@
                     <button class="text-custom-14 text-white py-2 px-19
                         bg-gradient-red rounded-full
                         hover:bg-gradient-dark-red hover:text-f4White add-button"
-                        (click)="submit()" [disabled]="addSchoolYearForm.invalid">
+                        (click)="submit()">
                         Add School Year
                     </button>
                 </div>
