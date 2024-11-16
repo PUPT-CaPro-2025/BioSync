@@ -67,16 +67,16 @@ jobs:
         run: |
           EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
 
-          ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
+          ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/bio-sync-api:latest
             docker rm -f bio-sync-api-container || true
             docker run -d \
-             --name bio-sync-api-container \
-             --restart always \
-             --cpus="0.5" \          
-             --memory="512m" \       
-             -p 8080:8080 \      
-             jheankhendrick/bio-sync-api:latest
-
+              --name bio-sync-api-container \
+              --restart always \
+              --cpus="0.5" \
+              --memory="512m" \
+              -p 8080:8080 \
+              jheankhendrick/bio-sync-api:latest
           EOF
         shell: /usr/bin/bash -e {0}
+        
