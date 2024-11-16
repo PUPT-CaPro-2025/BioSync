@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Set Computer</h1>
+<div mat-dialog-content>
+  <p>
+    Current Assigned PC:
+    {{ data.computerNumber ? data.computerNumber : "Unassigned" }}
+  </p>
+  <mat-form-field class="example-full-width mt-4">
+    <label>Assigned PC Number</label>
+    <input matInput [(ngModel)]="newComputerNumber" />
+  </mat-form-field>
+</div>
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true" (click)="onSubmit()">Set</button>
+</mat-dialog-actions>
