@@ -223,7 +223,7 @@ export class SubjectComponent implements OnInit{
     doc.text(currentDate, pageWidth / 2, 35);
 
     const columns = ['Subject Code', 'Subject Name', 'Description'];
-    const rows = this.subjects.map(subject => [subject.code, subject.name, subject.description]);
+    const rows = this.subjects.map(subject => [subject.code, subject.description, subject.description]);
 
     doc.autoTable({
       head: [columns],
