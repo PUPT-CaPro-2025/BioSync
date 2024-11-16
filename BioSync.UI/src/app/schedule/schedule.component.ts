@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {Schedule} from '../../model/schedule.model';
@@ -431,7 +431,6 @@ export class ScheduleComponent implements OnInit {
 
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
     const imgWidth = 115;
     const imgHeight = 15;
@@ -454,7 +453,7 @@ export class ScheduleComponent implements OnInit {
     const rows = this.schedules.map(schedule =>
       [
         schedule.subject?.code,
-        schedule.subject?.name,
+        schedule.subject?.description,
         schedule.recurrenceDays,
         `${this.convertTimeFormat(
           schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
