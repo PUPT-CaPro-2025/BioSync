@@ -15,6 +15,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -39,6 +40,12 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MailService } from '../../../services/mail.service';
+import { 
+  usercodeValidator, studentNameValidator 
+} from '../student.validation'; 
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-edit-student',
@@ -149,13 +156,15 @@ export class EditStudentComponent implements OnInit {
   initForm() {
     this.editStudentForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      middleName: [''],
+      firstName: ['', [Validators.required, studentNameValidator()]],
+      lastName: ['', [Validators.required, studentNameValidator()]],
+      middleName: ['', [studentNameValidator()]],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()
+      ]],
       program: ['', [Validators.required]],
-      section: [0, [Validators.required]],
+      section: ['',Validators.required],
     });
   }
 
@@ -344,5 +353,33 @@ export class EditStudentComponent implements OnInit {
         this.currentStepLabel = 'Unknown Step';
         break;
     }
+  }
+  
+  get firstNameControl(): AbstractControl {
+    return this.editStudentForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.editStudentForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.editStudentForm.get('middleName')!;
+  }
+  
+  get suffixControl(): AbstractControl {
+    return this.editStudentForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.editStudentForm.get('email')!;
+  }
+
+  get programControl(): AbstractControl {
+    return this.editStudentForm.get('program')!;
+  }
+  
+  get sectionControl(): AbstractControl {
+    return this.editStudentForm.get('section')!;
   }
 }

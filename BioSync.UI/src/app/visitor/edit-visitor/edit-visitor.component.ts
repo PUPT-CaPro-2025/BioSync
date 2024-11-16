@@ -2,13 +2,18 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
+import { MatSelectChange } from '@angular/material/select';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import {VisitorService} from "../../../services/visitor.service";
 import {Visitor} from "../../../model/visitor.model";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import { letterOnlyValidator } from '../visitor.validation';
 
 @Component({
   selector: 'app-edit-visitor',
@@ -19,7 +24,8 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
-    MatSelectModule],
+    MatSelectModule
+  ],
   providers: [VisitorService],
   templateUrl: './edit-visitor.component.html',
   styleUrl: './edit-visitor.component.css'
@@ -35,6 +41,12 @@ export class EditVisitorComponent implements OnInit{
     'Aboitiz Laboratory',
   ];
 
+  visitPurposes: string[] =[
+    'Panelist',
+    'Organizer',
+    'Clearance'
+  ];
+
   constructor(
     private formBuilder: FormBuilder,
     private visitorService: VisitorService,
@@ -45,14 +57,14 @@ export class EditVisitorComponent implements OnInit{
     this.initEditForm();
     this.setFormValues();
   }
-
+  
   initEditForm(){
     this.visitorForm = this.formBuilder.group({
       id: ['', [Validators.required]],
-      name: ['', [Validators.required]],
-      purposeOfVisit: ['', Validators.required],
-      otherDetails: ['', [Validators.required]],
-      destination: ['', Validators.required],
+      name: ['', [Validators.required, letterOnlyValidator()]],
+      purposeOfVisit: ['', [Validators.required]],
+      otherDetails: ['',[Validators.maxLength(50), letterOnlyValidator()]],
+      destination: ['', [Validators.required]],
       visitDate: ['', [Validators.required]],
     });
   }
@@ -102,5 +114,21 @@ export class EditVisitorComponent implements OnInit{
         this.returnToVisitorPage();
       }
     })
+  }
+
+  get nameControl(): AbstractControl {
+    return this.visitorForm.get('name')!;
+  }
+  
+  get purposeOfVisitControl(): AbstractControl {
+    return this.visitorForm.get('purposeOfVisit')!;
+  }
+
+  get otherDetailsControl(): AbstractControl {
+    return this.visitorForm.get('otherDetails')!;
+  }
+  
+  get destinationControl(): AbstractControl {
+    return this.visitorForm.get('destination')!;
   }
 }
