@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  FormBuilder, FormGroup, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from "@angular/forms";
 import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
@@ -9,6 +12,7 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
 import {VisitorService} from "../../../services/visitor.service";
 import {Visitor} from "../../../model/visitor.model";
 import {Router} from "@angular/router";
+import { letterOnlyValidator } from '../visitor.validation';
 
 @Component({
   selector: 'app-login-visitor',
@@ -55,9 +59,9 @@ export class LoginVisitorComponent implements OnInit {
 
   initForm(): void{
     this.visitorLogForm = this.formBuilder.group({
-        name: ['', [Validators.required]],
+        name: ['', [Validators.required, letterOnlyValidator()]],
         purposeOfVisit: ['', [Validators.required]],
-        otherDetails: [''],
+        otherDetails: ['',[Validators.maxLength(50), letterOnlyValidator()]],
         destination: ['', [Validators.required]],
       }
     )
@@ -93,5 +97,21 @@ export class LoginVisitorComponent implements OnInit {
 
   navigateTo(route: string) {
     this.router.navigate([route]).then();
+  }
+
+  get nameControl(): AbstractControl {
+    return this.visitorLogForm.get('name')!;
+  }
+  
+  get purposeOfVisitControl(): AbstractControl {
+    return this.visitorLogForm.get('purposeOfVisit')!;
+  }
+
+  get otherDetailsControl(): AbstractControl {
+    return this.visitorLogForm.get('otherDetails')!;
+  }
+  
+  get destinationControl(): AbstractControl {
+    return this.visitorLogForm.get('destination')!;
   }
 }
