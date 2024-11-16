@@ -338,7 +338,7 @@ export class DashboardAdminComponent implements OnInit {
                 return this.scheduleFitsInSlot(schedule.startTime,
                     schedule.endTime, timeSlot);
               })
-              .map((schedule: any) => `${schedule.subject.name},\n${schedule.section.program.programAbbreviation} ${schedule.section.year}-${schedule.section.section}\n${schedule.professor.lastName}\n${this.formatTime(schedule.startTime)} - ${this.formatTime(schedule.endTime)}`)
+              .map((schedule: any) => `${schedule.subject.description},\n${schedule.section.program.programAbbreviation} ${schedule.section.year}-${schedule.section.section}\n${schedule.professor.lastName}\n${this.formatTime(schedule.startTime)} - ${this.formatTime(schedule.endTime)}`)
               .join("\n\n");
 
           row.push(cellData || ""); // Add cell data or leave empty
