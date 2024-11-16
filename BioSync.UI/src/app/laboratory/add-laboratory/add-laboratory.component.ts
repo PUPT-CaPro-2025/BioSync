@@ -2,19 +2,13 @@ import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {
-  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
-  Validators, AbstractControl
-} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Laboratory } from '../../../model/laboratory.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import { AddLaboratoryService } from '../../../services/add-laboratory.service';
-import { 
-  laboratoryNameValidator, roomCodeValidator, capacityValidator 
-} from '../laboratory.validation'; 
 
 @Component({
   selector: 'app-add-laboratory',
@@ -46,11 +40,9 @@ export class AddLaboratoryComponent implements OnInit {
 
   initForm(){
     this.laboratoryForm = this.formBuilder.group({
-      name: ['', [Validators.required, laboratoryNameValidator()]],
-      roomCode: ['', [Validators.required, roomCodeValidator()]],
-      capacity: ['', [Validators.required, Validators.min(1), 
-        Validators.max(80), capacityValidator()
-      ]], 
+      name: ['', [Validators.required]],
+      roomCode: ['', [Validators.required]],
+      capacity: ['', Validators.required]
     });
   }
 
@@ -88,17 +80,5 @@ export class AddLaboratoryComponent implements OnInit {
     dialogRef.afterClosed().subscribe(() => {
       this.backToLaboratory.emit();
     })
-  }
-
-  get nameControl(): AbstractControl {
-    return this.laboratoryForm.get('name')!;
-  }
-  
-  get roomCodeControl(): AbstractControl {
-    return this.laboratoryForm.get('roomCode')!;
-  }
-
-  get capacityControl(): AbstractControl {
-    return this.laboratoryForm.get('capacity')!;
   }
 }

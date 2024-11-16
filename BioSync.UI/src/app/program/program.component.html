@@ -56,7 +56,7 @@
                                             <button (click)="toggleDropdownAction(program.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                             @if(activeDropdownId === program.id) {
                                                 <div class="action-container" [ngClass]="{
-                                                    'bottom-action': filteredPrograms.length >= 4 && (filteredPrograms[filteredPrograms.length - 1] === program || filteredPrograms[filteredPrograms.length - 2] === program)}">
+                                                    'bottom-action': filteredPrograms.length >= 4 && (filteredPrograms[filteredPrograms.length - 1] === program || filteredPrograms[filteredPrograms.length - 2] === program)}">>
                                                     <button class="action-button" (click)="toggleEditProgram(program)">Edit</button>
                                                     <button class="action-button" (click)="openDeleteDialog(program)">Delete</button>
                                                 </div>
