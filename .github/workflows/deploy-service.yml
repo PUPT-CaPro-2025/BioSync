@@ -57,7 +57,6 @@ jobs:
               --env-file /home/ubuntu/biosync/env/.env \
               --name face-recog-service-container \
               --restart always \
-              --memory 384m \
               jheankhendrick/face-recog-service:latest
 
           EOF
