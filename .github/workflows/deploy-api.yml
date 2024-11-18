@@ -73,8 +73,7 @@ jobs:
             docker run -d \
               --name bio-sync-api-container \
               --restart always \
-              --cpus="0.5" \
-              --memory="768m" \
+              --memory="512m" \
               -p 8080:8080 \
               jheankhendrick/bio-sync-api:latest
           EOF
