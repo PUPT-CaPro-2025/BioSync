@@ -13,9 +13,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          
+          distribution: "temurin"
+          java-version: "17"
+
       - name: Update application.properties
         run: |
           # Set environment variables based on the branch
@@ -73,9 +73,8 @@ jobs:
             docker run -d \
               --name bio-sync-api-container \
               --restart always \
-              --memory="512m" \
               -p 8080:8080 \
               jheankhendrick/bio-sync-api:latest
           EOF
         shell: /usr/bin/bash -e {0}
-        
+
