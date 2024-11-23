@@ -63,7 +63,7 @@
       <div class="subject-table">
         <div class="attributes text-custom-16">
           <div class="cell">Subject Code</div>
-          <div class="cell">Subject Name</div>
+          <div class="cell">Subject Description</div>
           <div class="cell">Schedule</div>
           <div class="cell">Time</div>
           <div class="cell">Laboratory</div>
@@ -73,7 +73,7 @@
           @for (schedule of filteredSchedules; track schedule) {
             <div class="row">
               <div class="cell">{{ schedule?.subject?.code }}</div>
-              <div class="cell">{{ schedule?.subject?.name }}</div>
+              <div class="cell">{{ schedule?.subject?.description }}</div>
               <div class="cell">
                 <div class="flex flex-col">
                   <div class="flex gap-1 text-xs">
