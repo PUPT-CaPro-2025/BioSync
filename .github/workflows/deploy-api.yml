@@ -13,9 +13,9 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
-          
+          distribution: "temurin"
+          java-version: "17"
+
       - name: Update application.properties
         run: |
           # Set environment variables based on the branch
@@ -67,9 +67,14 @@ jobs:
         run: |
           EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
 
-          ssh -o StrictHostKeyChecking=no $EC2_HOST << EOF
+          ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/bio-sync-api:latest
             docker rm -f bio-sync-api-container || true
-            docker run -d -p 8080:8080 --name bio-sync-api-container --restart always jheankhendrick/bio-sync-api:latest
+            docker run -d \
+              --name bio-sync-api-container \
+              --restart always \
+              -p 8080:8080 \
+              jheankhendrick/bio-sync-api:latest
           EOF
         shell: /usr/bin/bash -e {0}
+
