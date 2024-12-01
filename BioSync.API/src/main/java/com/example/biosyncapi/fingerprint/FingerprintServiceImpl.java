@@ -55,6 +55,11 @@ public class FingerprintServiceImpl implements FingerprintService {
         return fingerprintRepository.getAllByUserId(userId);
     }
 
+    @Override
+    public boolean hasFingerprintByUserId(Long userId) {
+        return fingerprintRepository.existsById(userId);
+    }
+
     //system file storage support for when it isn't hosted
     @Override
     public void processFingerprints(Long userId, List<MultipartFile> images) {
