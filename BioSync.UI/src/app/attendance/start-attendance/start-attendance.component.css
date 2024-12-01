@@ -84,6 +84,26 @@
     display: inline-block;
 }
 
+.error-image {
+    position: relative;
+    width: 175px;
+    height: 175px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #F2E8E9;
+}
+
+.already-logged-image {
+    position: relative;
+    width: 175px;
+    height: 175px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #A1DB7A;
+}
+
 .fingerprint-container {
     position: relative;
     width: 175px;
