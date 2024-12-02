@@ -1,6 +1,11 @@
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">View Schedule Attendance</span>
+    <div class="toolbar-button">
+      <button class="header-button" (click)="generatePdf()">
+        Print Attendance Report
+      </button>
+    </div>
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
@@ -27,7 +32,8 @@
           When:
         </p>
         <p class="text-darkGray text-custom-16 w-[80%] data">
-          {{ convertTo12HourFormat(schedule.startTime) }} - {{ convertTo12HourFormat(schedule.endTime) }} |
+          {{ convertTo12HourFormat(schedule.startTime) }} -
+          {{ convertTo12HourFormat(schedule.endTime) }} |
           {{ schedule.scheduleDate }}
         </p>
       </div>
@@ -78,10 +84,10 @@
 </div>
 <div class="flex justify-center items-center">
   <div class="mb-10 flex justify-end w-[94%] button-content">
-    <button class="text-custom-14 text-white py-2 px-19
-            bg-gradient-red rounded-full
-            hover:bg-gradient-dark-red hover:text-f4White"
-            (click)="returnToSchoolYearView()">
+    <button
+      class="text-custom-14 text-white py-2 px-19 bg-gradient-red rounded-full hover:bg-gradient-dark-red hover:text-f4White"
+      (click)="returnToSchoolYearView()"
+    >
       Back
     </button>
   </div>

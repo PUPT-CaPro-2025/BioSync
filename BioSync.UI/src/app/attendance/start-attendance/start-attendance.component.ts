@@ -12,7 +12,7 @@ import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confi
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { NgOptimizedImage } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
@@ -26,6 +26,7 @@ import { UserService } from '../../../services/user.service';
     FormsModule,
     MatIconModule,
     NgOptimizedImage,
+    CommonModule
   ],
   providers: [
     ScheduleService,
@@ -54,6 +55,9 @@ export class StartAttendanceComponent implements OnInit {
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
+  isError: boolean = false;
+  isSuccess: boolean = false;
+  isAlreadyLogged: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -156,18 +160,20 @@ export class StartAttendanceComponent implements OnInit {
               this.cookieService.setCookie('actualTimeStart', Date.now().toString());
             }
             this.reminder = 'Fingerprint verified, Starting Attendance...';
+            this.isSuccess = true;
           setTimeout(() => {
-            this.instructions = 'Scan Fingerprint to Log Attendance';
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
             this.loggedProfessor = null;
-          }, 2000);
+            this.isSuccess = false;
+          }, 3000);
         },
         error: (err) => {
           console.log(err);
-          this.reminder = err['error'];
+          this.isError = true;
           setTimeout(() => {
-            this.reminder = 'Scanning In-charge fingerprint...';
+            this.reminder = 'Scanning In-Charge Fingerprint...';
+            this.isError = false;
           }, 3000);
         },
       });
@@ -191,20 +197,33 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
-        this.reminder = 'WELCOME';
+        this.reminder = 'Attendance Recorded';
+        this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
           this.loggedStudent = null;
           this.studentVerified = true;
           this.profileImageUrl = '';
           this.reminder = 'Scan Student Fingerprint';
+          this.isSuccess = false;
         }, 3000);
       },
       error: (err) => {
-        this.reminder = err['error'];
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          this.loggedStudent = this.studentsLogged.find(student => student.id == err.error)!;
+          this.isAlreadyLogged = true;
+        }
+        else {
+          this.isError = true;
+          this.reminder = '';
+        }
         setTimeout(() => {
+          this.loggedStudent = null;
           this.reminder = 'Scan Student Fingerprint';
-        }, 2000);
+          this.isAlreadyLogged = false;
+          this.isError = false;
+      }, 3000);
       },
     });
   }
@@ -213,6 +232,7 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
+        console.log(this.profileImageUrl);
       },
     });
   }
