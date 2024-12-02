@@ -196,22 +196,10 @@ export class StartAttendanceComponent implements OnInit {
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
+        console.log(value);
         const isAlreadyLoggedStudent = this.studentsLogged.find(
           (student) => student.id === value.student.id
         );
-  
-        if (isAlreadyLoggedStudent) {
-          this.reminder = 'Attendance has already been recorded';
-          this.loggedStudent = value.student;
-          this.isSuccess = true;
-          this.isAlreadyLogged = true;
-          setTimeout(() => {
-            this.reminder = 'Scan Student Fingerprint';
-            this.isAlreadyLogged = false;
-            this.isSuccess = false;
-          }, 3000);
-          return;
-        }
 
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
@@ -227,12 +215,27 @@ export class StartAttendanceComponent implements OnInit {
         }, 3000);
       },
       error: (err) => {
-        this.reminder = err['error'];
-        this.isError = true;
+        console.log(err);
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          /// this.loggedStudent = value.student;
+          this.isSuccess = true;
+          this.isAlreadyLogged = true;
+          setTimeout(() => {
+            this.reminder = 'Scan Student Fingerprint';
+            this.isAlreadyLogged = false;
+            this.isSuccess = false;
+          }, 3000);
+        }
+        else {
+          this.isError = true;
+        }
         setTimeout(() => {
-          this.reminder = 'Scan Student Fingerprint';
-          this.isError = false;
-        }, 2000);
+        this.reminder = 'Scan Student Fingerprint';
+        this.isAlreadyLogged = false;
+        this.isSuccess = false;
+        this.isError = false;
+      }, 3000);
       },
     });
   }
