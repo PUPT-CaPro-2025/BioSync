@@ -17,8 +17,6 @@
             </p>
           </div>
         </div>
-        <button (click)="simulateFingerprintScan()" class="px-1 py-3 bg-blue-500 mb-6">Simulate Scan</button>
-        <button (click)="tempoProfVerified()" class="px-1 py-3 bg-blue-500">Make prof Verified</button>
         <div class="flex flex-col gap-2 mt-12">
           <p class="text-brightRed text-custom-24">Attendance List</p>
           <hr class="border-t border-1 border-brightRed" />
@@ -64,8 +62,9 @@
           </div>
         </div>
       </div>
-      <div class="h-[75vh] w-full bg-[#E7D7D7] rounded-xl flex justify-center items center" [ngClass]="{
-        'bg-[#73AC4D]': isSuccess || isAlreadyLogged,
+      <div class="h-[75vh] w-full rounded-xl flex justify-center items center" [ngClass]="{
+        'bg-[#73AC4D]': isSuccess,
+        'bg-[#6a9e47]': isAlreadyLogged,
         'bg-[#AB3130]': isError,
         'bg-[#E7D7D7]': !isSuccess && !isError
       }">
@@ -135,8 +134,8 @@
               </div>
             </div>
           } @else {
-            <p class="text-custom-32 text-brightRed font-medium" [ngClass]="{
-              'text-[#F2F2F2]': isSuccess || isAlreadyLogged,
+            <p class="text-custom-32 font-medium" [ngClass]="{
+              'text-[#F2F2F2]': isSuccess || isAlreadyLogged, 
               'text-[#AB3130]': !isSuccess && !isError
             }">
               @if (loggedStudent) {

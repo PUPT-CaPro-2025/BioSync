@@ -162,7 +162,6 @@ export class StartAttendanceComponent implements OnInit {
             this.reminder = 'Fingerprint verified, Starting Attendance...';
             this.isSuccess = true;
           setTimeout(() => {
-            this.instructions = 'Scan Fingerprint to Log Attendance';
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
             this.loggedProfessor = null;
@@ -210,41 +209,24 @@ export class StartAttendanceComponent implements OnInit {
         }, 3000);
       },
       error: (err) => {
-        console.log(err);
         if (err.status == 409) {
           this.reminder = 'Attendance has already been recorded';
           this.loggedStudent = this.studentsLogged.find(student => student.id == err.error)!;
           this.isAlreadyLogged = true;
-          setTimeout(() => {
-            this.reminder = 'Scan Student Fingerprint';
-            this.isAlreadyLogged = false;
-          }, 3000);
         }
         else {
           this.isError = true;
+          this.reminder = '';
         }
         setTimeout(() => {
-        this.reminder = 'Scan Student Fingerprint';
-        this.isAlreadyLogged = false;
-        this.isError = false;
+          this.loggedStudent = null;
+          this.reminder = 'Scan Student Fingerprint';
+          this.isAlreadyLogged = false;
+          this.isError = false;
       }, 3000);
       },
     });
   }
-
-  simulateFingerprintScan() {
-    this.fingerprintImageSrc = new Blob();
-    if (!this.hasProfessorVerified) {
-      this.submitProfessor();
-    } else {
-      this.submitStudent();
-    }
-  }
-
-  tempoProfVerified() {
-    this.hasProfessorVerified = true;
-  }
-
 
   getUserProfileImage(userId: number) {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
