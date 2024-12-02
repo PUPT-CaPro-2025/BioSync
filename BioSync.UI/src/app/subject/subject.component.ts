@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from '../../model/subject-model';
@@ -26,7 +26,7 @@ import 'jspdf-autotable';
   ],
   providers: [SubjectService],
   templateUrl: './subject.component.html',
-  styleUrl: './subject.component.css'
+  styleUrls: ['./subject.component.css', '../schedule/schedule.component.css']
 })
 export class SubjectComponent implements OnInit{
   entries: string[] = [
@@ -39,14 +39,15 @@ export class SubjectComponent implements OnInit{
 
   subjects: Subject[] = []
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSubject: boolean = false;
   isEditSubject: boolean = false;
   subjectToEdit!: Subject;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private subjectService: SubjectService,
@@ -66,6 +67,8 @@ export class SubjectComponent implements OnInit{
         subjects.forEach((subject) => {
           this.subjects.push(subject);
         })
+        this.totalItems = this.subjects.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
@@ -74,6 +77,15 @@ export class SubjectComponent implements OnInit{
 
   onSubjectAdded(newSubject: Subject){
     this.subjects.push(newSubject);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.subjects.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onSubjectUpdate(updatedSubject: Subject) {
@@ -87,6 +99,7 @@ export class SubjectComponent implements OnInit{
   }
 
   openDeleteDialog(subject: Subject): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -106,6 +119,7 @@ export class SubjectComponent implements OnInit{
     this.subjectService.deleteSubject(subject.id).subscribe({
       next: () => {
         this.subjects = this.subjects.filter(s => s.id !== subject.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });
@@ -153,6 +167,22 @@ export class SubjectComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(SubjectId: number): void {
+    this.activeDropdownId = this.activeDropdownId === SubjectId ? null : SubjectId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddSubject(): void {
     this.isAddSubject = !this.isAddSubject;
   }
@@ -162,6 +192,7 @@ export class SubjectComponent implements OnInit{
   }
 
   toggleEditSubject(subject: Subject): void {
+    this.activeDropdownId = null;
     this.isEditSubject = !this.isEditSubject;
     this.subjectToEdit = subject;
   }
@@ -192,7 +223,7 @@ export class SubjectComponent implements OnInit{
     doc.text(currentDate, pageWidth / 2, 35);
 
     const columns = ['Subject Code', 'Subject Name', 'Description'];
-    const rows = this.subjects.map(subject => [subject.code, subject.name, subject.description]);
+    const rows = this.subjects.map(subject => [subject.code, subject.description, subject.description]);
 
     doc.autoTable({
       head: [columns],

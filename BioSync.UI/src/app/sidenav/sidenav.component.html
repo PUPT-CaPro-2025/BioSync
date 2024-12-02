@@ -117,10 +117,16 @@
                 <button (click)="navigateTo('/program')">Program</button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
+                <button (click)="navigateTo('/visit-purpose')">Purpose of Visit</button>
+            </div>
+            <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/school-year')">School Year</button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/section')">Section</button>
+            </div>
+            <div class="hover:bg-semiGray hover:text-dark">
+                <button (click)="navigateTo('/suffix')">Suffix</button>
             </div>
         </div>
     } } @if(getRole() === "FACULTY"){

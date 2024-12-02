@@ -39,6 +39,15 @@ jobs:
         fi
       shell: /usr/bin/bash -e {0}
 
+    - name: Substitute Service Uri in app.settings
+      run: |
+        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+          sed -i -e "s~serviceUrl: '.*'~serviceUrl: '${{ secrets.ALLOWED_ORIGIN }}'~" environment/app.setting.ts
+        elif [[ "${GITHUB_REF}" == "refs/heads/staging" ]]; then
+          sed -i -e "s~serviceUrl: '.*'~serviceUrl: '${{ secrets.ALLOWED_ORIGIN_TEST }}'~" environment/app.setting.ts
+        fi
+      shell: /usr/bin/bash -e {0}
+
     - name: Build Angular Project
       run: npm run build
 

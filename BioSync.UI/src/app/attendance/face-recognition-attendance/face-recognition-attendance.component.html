@@ -5,7 +5,7 @@
                 <div class="flex flex-col gap-3">
                     <p class="text-custom-24 text-brightRed">
                         {{ schedule.subject?.code }} - {{
-                            schedule.subject?.name
+                            schedule.subject?.description
                         }}
                     </p>
                     <div class="flex flex-col">
@@ -92,7 +92,7 @@
                                         </p>
                                     </div>
                                     <div class="w-[20vw] flex justify-center items-center">
-                                        <div class="image-area">
+                                        <div class="w-32 h-32 max-w-32 max-h-32">
                                                 @if(profileImageUrl){
                                                     <img
                                                             src="{{ profileImageUrl }}"
@@ -122,7 +122,7 @@
                                                 <div class="flex flex-col">
                                                     <p class="text-lightGray text-custom-16">
                                                         Student Number</p>
-                                                    <p class="text-darkGray text-custom-20 font-weight400">
+                                                    <p class="text-darkGray text-custom-20 font-weight400 text-center">
                                                         {{ loggedUser.usercode }}
                                                     </p>
                                                 </div>
@@ -130,7 +130,7 @@
                                                     <p class="text-lightGray text-custom-16">
                                                         Course Year & Section
                                                     </p>
-                                                    <p class="text-darkGray text-custom-16 font-weight400">
+                                                    <p class="text-darkGray text-custom-16 font-weight400 text-center">
                                                         {{ loggedUser.section?.year }}
                                                         - {{ loggedUser.section?.section }}
                                                     </p>

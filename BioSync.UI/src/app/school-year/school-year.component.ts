@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -35,7 +35,7 @@ import jsPDF from "jspdf";
   ],
   providers: [SchoolYearService],
   templateUrl: './school-year.component.html',
-  styleUrl: './school-year.component.css',
+  styleUrls: ['./school-year.component.css', '../schedule/schedule.component.css']
 })
 export class SchoolYearComponent implements OnInit {
   entries: string[] = ['10', '20', '30', '40', '50'];
@@ -44,15 +44,16 @@ export class SchoolYearComponent implements OnInit {
 
   schoolYear: SchoolYear[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddSchoolYear: boolean = false;
   isEditSchoolYear: boolean = false;
   isViewSchoolYear: boolean = false;
   schoolYearToEdit!: SchoolYear;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private schoolYearService: SchoolYearService,
@@ -71,6 +72,8 @@ export class SchoolYearComponent implements OnInit {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (schoolYears: SchoolYear[]) => {
         this.schoolYear = schoolYears;
+        this.totalItems = this.schoolYear.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
     });
   }
@@ -88,6 +91,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   openConfirmationDialog(schoolYear: SchoolYear): void {
+    this. activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -105,6 +109,15 @@ export class SchoolYearComponent implements OnInit {
 
   onSchoolYearCreate(schoolYear: SchoolYear): void {
     this.schoolYear.push(schoolYear);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.schoolYear.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onSchoolYearEdit(schoolYear: SchoolYear): void {
@@ -118,6 +131,7 @@ export class SchoolYearComponent implements OnInit {
       next: () => {
         this.schoolYear = this.schoolYear.filter(
           v => v.id !== schoolYear.id);
+        this.updatePagination();
       }
     })
   }
@@ -166,6 +180,22 @@ export class SchoolYearComponent implements OnInit {
     }
   }
 
+  toggleDropdownAction(schoolYearId: number): void {
+    this.activeDropdownId = this.activeDropdownId === schoolYearId ? null : schoolYearId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddSchoolYear(): void {
     this.isAddSchoolYear = !this.isAddSchoolYear;
   }
@@ -175,6 +205,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   toggleEditSchoolYear(schoolYear: SchoolYear): void {
+    this.activeDropdownId = null;
     this.isEditSchoolYear = !this.isEditSchoolYear;
     this.schoolYearToEdit = schoolYear;
 
@@ -185,6 +216,7 @@ export class SchoolYearComponent implements OnInit {
   }
 
   toggleViewSchoolYear(): void {
+    this. activeDropdownId = null;
     this.isViewSchoolYear = !this.isViewSchoolYear;
   }
 

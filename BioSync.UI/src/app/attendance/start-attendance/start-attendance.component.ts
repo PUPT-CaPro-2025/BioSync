@@ -12,14 +12,29 @@ import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confi
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import {NgOptimizedImage} from "@angular/common";
-import {AttendanceService} from "../../../services/attendance.service";
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { AttendanceService } from '../../../services/attendance.service';
+import { CookieService } from '../../../services/cookie.service';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-start-attendance',
   standalone: true,
-  imports: [MatToolbar, MatButton, FormsModule, MatIconModule, NgOptimizedImage],
-  providers: [ScheduleService, SdkService, FingerprintService, AttendanceService],
+  imports: [
+    MatToolbar,
+    MatButton,
+    FormsModule,
+    MatIconModule,
+    NgOptimizedImage,
+    CommonModule
+  ],
+  providers: [
+    ScheduleService,
+    SdkService,
+    FingerprintService,
+    AttendanceService,
+    UserService
+  ],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
 })
@@ -35,13 +50,14 @@ export class StartAttendanceComponent implements OnInit {
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
   studentVerified = false;
-  selectedDevice: string = '';
   profileImageUrl!: string;
   hasFingerprintScanner = false;
   hasCamera = false;
   hasDevice = false;
-  notRegistered = true;
-  notEnrolled = false;
+  studentsLogged: User[] = [];
+  isError: boolean = false;
+  isSuccess: boolean = false;
+  isAlreadyLogged: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -50,6 +66,9 @@ export class StartAttendanceComponent implements OnInit {
     private fingerprintService: FingerprintService,
     private dialog: MatDialog,
     private router: Router,
+    private attendanceService: AttendanceService,
+    private cookieService: CookieService,
+    private userService: UserService,
   ) {}
 
   async ngOnInit() {
@@ -84,14 +103,14 @@ export class StartAttendanceComponent implements OnInit {
     this.currentTime = now.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     });
 
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     };
 
     const formattedDate = now.toLocaleDateString('en-US', options);
@@ -111,17 +130,9 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
-        console.log(this.selectedProfessorId);
+        this.getLoggedStudents(value.id);
       },
     });
-  }
-
-  getMonth(date: string) {
-    return this.scheduleService.getMonth(date);
-  }
-
-  getDay(date: string) {
-    return this.scheduleService.getDay(date);
   }
 
   private base64ToBlob(base64: string, contentType: string) {
@@ -139,18 +150,30 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
+            this.userService.getUserById(this.selectedProfessorId).subscribe({
+              next: (professor) => {
+                this.loggedProfessor = professor;
+              },
+            });
+            const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
+            if (!actualTimeStart) {
+              this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+            }
             this.reminder = 'Fingerprint verified, Starting Attendance...';
+            this.isSuccess = true;
           setTimeout(() => {
+            this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
-            this.instructions = 'Scan Fingerprint to Log Attendance';
-            this.reminder = 'Scanning...';
-          }, 2000);
+            this.loggedProfessor = null;
+            this.isSuccess = false;
+          }, 3000);
         },
         error: (err) => {
           console.log(err);
-          this.reminder = err['error'];
+          this.isError = true;
           setTimeout(() => {
-            this.reminder = 'Scanning In-charge fingerprint...';
+            this.reminder = 'Scanning In-Charge Fingerprint...';
+            this.isError = false;
           }, 3000);
         },
       });
@@ -163,23 +186,44 @@ export class StartAttendanceComponent implements OnInit {
     formData.append('scheduleId', `${this.selectedSchedule.id}`);
     formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
 
+    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
+        "actualTimeStart"));
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const isStudentLate = timeDifferenceInMinutes > 30;
+    formData.append('status', isStudentLate ? "LATE" : "PRESENT");
+
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
         this.loggedStudent = value.student;
-        this.reminder = 'WELCOME';
+        this.studentsLogged.push(this.loggedStudent);
+        this.reminder = 'Attendance Recorded';
+        this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
         setTimeout(() => {
-          this.studentVerified = true;
           this.loggedStudent = null;
-          this.profileImageUrl = "";
-          this.reminder = 'Scanning...';
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Scan Student Fingerprint';
+          this.isSuccess = false;
         }, 3000);
       },
       error: (err) => {
-        this.reminder = err['error'];
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          this.loggedStudent = this.studentsLogged.find(student => student.id == err.error)!;
+          this.isAlreadyLogged = true;
+        }
+        else {
+          this.isError = true;
+          this.reminder = '';
+        }
         setTimeout(() => {
-          this.reminder = 'Scanning...';
-        }, 2000);
+          this.loggedStudent = null;
+          this.reminder = 'Scan Student Fingerprint';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+      }, 3000);
       },
     });
   }
@@ -188,6 +232,7 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
+        console.log(this.profileImageUrl);
       },
     });
   }
@@ -234,11 +279,11 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  //temporary data
-  logstudents = [
-    'Kylie Ross Ayacocho', 
-    'Andronicus Dimasacat', 
-    'Jhean Khendrick Galope', 
-    'Christian Harrel Go'
-  ]
+  getLoggedStudents(scheduleId: number) {
+    this.attendanceService.getStudentsLogged(scheduleId).subscribe({
+      next: (value) => {
+        this.studentsLogged = value;
+      },
+    });
+  }
 }

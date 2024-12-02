@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -34,7 +34,7 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
   ],
   providers: [UserService],
   templateUrl: './student.component.html',
-  styleUrl: './student.component.css'
+  styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];
@@ -54,17 +54,17 @@ export class StudentComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
   sortBy = '';
   searchQuery!: string;
-
+  activeDropdownId: number | null = null;
 
   constructor(
     private userService: UserService,
@@ -83,7 +83,9 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
-        this.queriedStudents = [...this.students]
+        this.queriedStudents = [...this.students];
+        this.totalItems = this.students.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
 
@@ -92,6 +94,15 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.queriedStudents.push(newStudent);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.students.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onStudentUpdate(updatedStudent: User){
@@ -105,6 +116,7 @@ export class StudentComponent implements OnInit{
   }
 
   openConfirmationDialog(student: User){
+    this.activeDropdownId = null;
     const dialog = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -172,6 +184,22 @@ export class StudentComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(studentId: number): void {
+    this.activeDropdownId = this.activeDropdownId === studentId ? null : studentId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddStudent(): void {
     this.isAddStudent = !this.isAddStudent;
   }
@@ -181,6 +209,7 @@ export class StudentComponent implements OnInit{
   }
 
   toggleEditStudent(studentToEdit: User): void {
+    this.activeDropdownId = null;
     this.isEditStudent = !this.isEditStudent;
     this.studentToEdit = studentToEdit;
   }
@@ -233,6 +262,7 @@ export class StudentComponent implements OnInit{
       next: () => {
         this.queriedStudents = this.queriedStudents.filter(student => studentToDelete.id !== student.id);
         this.openMessageDialog(true);
+        this.updatePagination();
       },
       error: err => {
         console.log(err.error);

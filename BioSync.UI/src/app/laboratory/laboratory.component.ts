@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -32,7 +32,7 @@ import jsPDF from "jspdf";
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
-  styleUrl: './laboratory.component.css'
+  styleUrls: ['./laboratory.component.css', '../schedule/schedule.component.css']
 })
 export class LaboratoryComponent implements OnInit {
   entries: string[] = [
@@ -45,16 +45,17 @@ export class LaboratoryComponent implements OnInit {
 
   laboratories: Laboratory[] = [];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddLaboratory: boolean = false;
   isEditLaboratory: boolean = false;
   isViewLaboratory: boolean = false;
   laboratoryToEdit!: Laboratory;
   currentLaboratory: number | undefined;
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private laboratoryService: LaboratoryService,
@@ -74,6 +75,8 @@ export class LaboratoryComponent implements OnInit {
         laboratories.forEach((laboratory) => {
           this.laboratories.push(laboratory);
         })
+        this.totalItems = this.laboratories.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
       error: (error) => { console.error(error) }
     }
@@ -82,6 +85,15 @@ export class LaboratoryComponent implements OnInit {
 
   onLaboratoryAdded(newLaboratory: Laboratory){
     this.laboratories.push(newLaboratory);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.laboratories.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onLaboratoryUpdate(updatedLaboratory: Laboratory) {
@@ -95,6 +107,7 @@ export class LaboratoryComponent implements OnInit {
   }
 
   openDeleteDialog(laboratory: Laboratory): void {
+    this.activeDropdownId = null;
     const dialogRef = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -114,6 +127,7 @@ export class LaboratoryComponent implements OnInit {
     this.laboratoryService.deleteLaboratoryById(laboratoryToDelete).subscribe({
       next: () => {
         this.laboratories = this.laboratories.filter(laboratory => laboratory.id !== laboratoryToDelete.id);
+        this.updatePagination();
       },
       error: err => console.error(err)
     });
@@ -161,6 +175,22 @@ export class LaboratoryComponent implements OnInit {
     }
   }
 
+  toggleDropdownAction(laboratoryId: number): void {
+    this.activeDropdownId = this.activeDropdownId === laboratoryId ? null : laboratoryId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddLaboratory(): void {
     this.isAddLaboratory = !this.isAddLaboratory;
   }
@@ -170,6 +200,7 @@ export class LaboratoryComponent implements OnInit {
   }
 
   toggleEditLaboratory(laboratory: Laboratory): void {
+    this.activeDropdownId = null;
     this.isEditLaboratory = !this.isEditLaboratory;
     this.laboratoryToEdit = laboratory;
   }

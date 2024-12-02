@@ -8,57 +8,68 @@ import jakarta.persistence.*;
 @Table(name = "schedule_students")
 public class ScheduleStudent {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+  @ManyToOne
+  @JoinColumn(name = "schedule_id", nullable = false)
+  private Schedule schedule;
 
-    @ManyToOne
-    @JoinColumn(name = "student_id", nullable = false)
-    private User student;
+  @ManyToOne
+  @JoinColumn(name = "student_id", nullable = false)
+  private User student;
 
-    private boolean hasLogged;
+  private boolean hasLogged;
 
-    public ScheduleStudent() {}
+  private Long computerNumber;
 
-    public ScheduleStudent(Schedule schedule, User student) {
-        this.schedule = schedule;
-        this.student = student;
-        this.hasLogged = false;
-    }
+  public ScheduleStudent() {}
 
-    public Long getId() {
-        return id;
-    }
+  public ScheduleStudent(Schedule schedule, User student) {
+    this.schedule = schedule;
+    this.student = student;
+    this.hasLogged = false;
+    this.computerNumber = 0L;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Schedule getSchedule() {
-        return schedule;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public void setSchedule(Schedule schedule) {
-        this.schedule = schedule;
-    }
+  public Schedule getSchedule() {
+    return schedule;
+  }
 
-    public User getStudent() {
-        return student;
-    }
+  public void setSchedule(Schedule schedule) {
+    this.schedule = schedule;
+  }
 
-    public void setStudent(User student) {
-        this.student = student;
-    }
+  public User getStudent() {
+    return student;
+  }
 
-    public boolean isHasLogged() {
-        return hasLogged;
-    }
+  public void setStudent(User student) {
+    this.student = student;
+  }
 
-    public void setHasLogged(boolean hasLogged) {
-        this.hasLogged = hasLogged;
-    }
+  public boolean isHasLogged() {
+    return hasLogged;
+  }
+
+  public void setHasLogged(boolean hasLogged) {
+    this.hasLogged = hasLogged;
+  }
+
+  public Long getComputerNumber() {
+    return computerNumber;
+  }
+
+  public void setComputerNumber(Long computerNumber) {
+    this.computerNumber = computerNumber;
+  }
 }

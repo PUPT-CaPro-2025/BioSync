@@ -5,8 +5,8 @@
                     <mat-toolbar class="toolbar-container">
                         <span>List of Laboratories - ALL</span>
                         <div class="toolbar-button">
-                            <button (click)="toggleAddLaboratory()">Add New Laboratory</button>
-                            <button (click)="generatePdf()">Print Laboratory Reports</button>
+                            <button class="header-button" (click)="toggleAddLaboratory()">Add New Laboratory</button>
+                            <button class="header-button" (click)="generatePdf()">Print Laboratory Reports</button>
                         </div>
                     </mat-toolbar>
                 </div>
@@ -55,10 +55,14 @@
                                         <div class="cell">{{ laboratory.roomCode }}</div>
                                         <div class="cell">{{ laboratory.capacity }}</div>
                                         <div class="cell">
-                                            <div class="action-container">
-                                                <button class="edit-button" (click)="toggleEditLaboratory(laboratory)"><mat-icon>edit</mat-icon></button>
-                                                <button class="delete-button" (click)="openDeleteDialog(laboratory)"><mat-icon>delete</mat-icon></button>
-                                            </div>
+                                            <button (click)="toggleDropdownAction(laboratory.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
+                                            @if(activeDropdownId === laboratory.id) {
+                                                <div class="action-container" [ngClass]="{
+                                                    'bottom-action': filteredLaboratories.length >= 4 && (filteredLaboratories[filteredLaboratories.length - 1] === laboratory || filteredLaboratories[filteredLaboratories.length - 2] === laboratory)}">
+                                                    <button class="action-button" (click)="toggleEditLaboratory(laboratory)">Edit</button>
+                                                    <button class="action-button" (click)="openDeleteDialog(laboratory)">Delete</button>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 }

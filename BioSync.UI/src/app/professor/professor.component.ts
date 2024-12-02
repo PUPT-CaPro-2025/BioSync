@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -24,7 +24,7 @@ import jsPDF from "jspdf";
     EditProfessorComponent],
   providers: [UserService],
   templateUrl: './professor.component.html',
-  styleUrl: './professor.component.css'
+  styleUrls: ['./professor.component.css', '../schedule/schedule.component.css']
 })
 export class ProfessorComponent implements OnInit{
   professors: User[] = [];
@@ -37,14 +37,15 @@ export class ProfessorComponent implements OnInit{
     'Subject Code', 'Alphabetical', 'Date'
   ];
 
-  @Input() totalItems: number = 500;
+  totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
+  totalPages!: number;
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
   professorToUpdate!: User
   headerImage!: string;
+  activeDropdownId: number | null = null;
 
   constructor(
     private userService: UserService,
@@ -63,12 +64,23 @@ export class ProfessorComponent implements OnInit{
     this.userService.getUsersByRole("FACULTY").subscribe({
       next: (professors: User[]) => {
         this.professors = professors;
+        this.totalItems = this.professors.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
 
   onProfessorAdded(newProfessor: User){
     this.professors.push(newProfessor);
+    this.updatePagination();
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.professors.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   onProfessorUpdate(updatedProfessor: User){
@@ -122,6 +134,22 @@ export class ProfessorComponent implements OnInit{
     }
   }
 
+  toggleDropdownAction(professorId: number): void {
+    this.activeDropdownId = this.activeDropdownId === professorId ? null : professorId;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    const isDropdownClicked = target.closest('.action-container') !== null;
+    const isToggleButtonClicked = target.closest('.dropdown-toggle') !== null;
+
+    if (!isDropdownClicked && !isToggleButtonClicked) {
+      this.activeDropdownId = null;
+    }
+  }
+
   toggleAddProfessor(): void {
     this.isAddProfessor = !this.isAddProfessor;
   }
@@ -131,6 +159,7 @@ export class ProfessorComponent implements OnInit{
   }
 
   toggleEditProfessor(professor: User): void {
+    this.activeDropdownId = null;
     this.isEditProfessor = !this.isEditProfessor;
     this.professorToUpdate = professor;
   }
@@ -140,6 +169,7 @@ export class ProfessorComponent implements OnInit{
   }
 
   openDeleteConfirmation(professor: User){
+    this.activeDropdownId = null;
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -149,7 +179,8 @@ export class ProfessorComponent implements OnInit{
     });
 
     ref.afterClosed().subscribe({
-      next: () => {
+      next: (result) => {
+        if(!result) return;
         this.deleteProfessor(professor);
       }
     })
@@ -172,6 +203,7 @@ export class ProfessorComponent implements OnInit{
         this.professors = this.professors.filter(
           prof => prof.id !== professor.id
         );
+        this.updatePagination();
       },
       error: () => this.openSomethingWentWrong()
     })

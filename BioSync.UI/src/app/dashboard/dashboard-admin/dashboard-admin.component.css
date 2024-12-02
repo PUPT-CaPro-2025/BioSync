@@ -9,6 +9,18 @@
   align-items: center;
 }
 
+.fc .fc-printCalendarButton-button {
+  background-color: #AB3130;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.fc .fc-printCalendarButton-button:hover {
+  background-color: #8B2625;
+}
+
+
 .toolbar-container {
     margin-top: 2rem;
     background: none;
