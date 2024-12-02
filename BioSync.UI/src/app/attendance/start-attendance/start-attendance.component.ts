@@ -196,11 +196,6 @@ export class StartAttendanceComponent implements OnInit {
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
-        console.log(value);
-        const isAlreadyLoggedStudent = this.studentsLogged.find(
-          (student) => student.id === value.student.id
-        );
-
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
         this.reminder = 'Attendance Recorded';
@@ -218,13 +213,11 @@ export class StartAttendanceComponent implements OnInit {
         console.log(err);
         if (err.status == 409) {
           this.reminder = 'Attendance has already been recorded';
-          /// this.loggedStudent = value.student;
-          this.isSuccess = true;
+          this.loggedStudent = this.studentsLogged.find(student => student.id == err.error)!;
           this.isAlreadyLogged = true;
           setTimeout(() => {
             this.reminder = 'Scan Student Fingerprint';
             this.isAlreadyLogged = false;
-            this.isSuccess = false;
           }, 3000);
         }
         else {
@@ -233,12 +226,25 @@ export class StartAttendanceComponent implements OnInit {
         setTimeout(() => {
         this.reminder = 'Scan Student Fingerprint';
         this.isAlreadyLogged = false;
-        this.isSuccess = false;
         this.isError = false;
       }, 3000);
       },
     });
   }
+
+  simulateFingerprintScan() {
+    this.fingerprintImageSrc = new Blob();
+    if (!this.hasProfessorVerified) {
+      this.submitProfessor();
+    } else {
+      this.submitStudent();
+    }
+  }
+
+  tempoProfVerified() {
+    this.hasProfessorVerified = true;
+  }
+
 
   getUserProfileImage(userId: number) {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
