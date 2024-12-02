@@ -232,6 +232,7 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
+        console.log(this.profileImageUrl);
       },
     });
   }

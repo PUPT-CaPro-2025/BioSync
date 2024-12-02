@@ -25,7 +25,6 @@
     width: 350px;
     height: 350px;
     justify-content: center;
-    background-color: #F2E8E9;
     border-radius: 20px;
     padding: 20px;
     position: relative;
@@ -68,11 +67,11 @@
   gap: 30px;
 }
 
-.camera-icon {
-    color: white;
-    font-size: 75px;
-    width: 75px;
-    height: 75px;
+.person {
+    color: #AB3130;
+    font-size: 15rem;
+    width: 15rem;
+    height: 15rem;
     display: inline-block;
 }
 

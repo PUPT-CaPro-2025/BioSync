@@ -71,11 +71,11 @@
         <div class="flex flex-col w-[45vw] justify-center gap-4">
           @if (!hasProfessorVerified) {
               @if (!loggedProfessor) {
-                <p class="text-custom-32 text-[#AB3130] font-medium">
+                <p class="text-custom-40 text-[#AB3130] font-medium">
                   {{ reminder }}
                 </p>
               } @else if (loggedProfessor) {
-                <p class="text-custom-32 text-[#F2F2F2] font-medium">
+                <p class="text-custom-40 text-[#F2F2F2] font-medium">
                   {{ reminder }}
                 </p>
               }
@@ -84,18 +84,18 @@
                 <div class="flex gap-6 flex-col w-[30vh] justify-center">
                   @if (loggedProfessor) {
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">
+                      <p class="text-lightGray text-custom-24">
                         In-Charge Name
                       </p>
-                      <p class="text-brightRed text-custom-24 font-weight400">
+                      <p class="text-brightRed text-custom-32 font-weight400">
                         {{ selectedSchedule.professor?.firstName }}
                         {{ selectedSchedule.professor?.lastName }}
                       </p>
                     </div>
                   } @else if (isError) {
                     <div class="flex flex-col">
-                      <p class="text-brightRed font-semibold text-custom-32">
-                        In-charge Fingerprint is not recognized. 
+                      <p class="text-brightRed font-semibold text-custom-40">
+                        In-charge Fingerprint Is Not Recognized. 
                       </p>
                       <p class="text-brightRed text-custom-20">Please try again.</p>
                     </div>
@@ -104,7 +104,7 @@
               </div>
               <div class="flex justify-center">
                 <div class="w-[20vw] flex justify-center items-center">
-                  <div class="drop-area">
+                  <div class="drop-area bg-[#F2E8E9]">
                     @if (!loggedProfessor) {
                       @if (isError) {
                         <div class="error-image">
@@ -120,21 +120,23 @@
                         </div>
                       }
                     } @else if (loggedProfessor) {
-                      <div class="upload-message">
                         @if (profileImageUrl) {
                           <img
                             src="{{ profileImageUrl }}"
                             alt="user profile image"
+                            class="object-cover w-full h-full"
                           />
                         }
-                      </div>
+                        @else {
+                          <mat-icon class="person">person</mat-icon>
+                        }
                     }
                   </div>
                 </div>
               </div>
             </div>
           } @else {
-            <p class="text-custom-32 font-medium" [ngClass]="{
+            <p class="text-custom-40 font-medium" [ngClass]="{
               'text-[#F2F2F2]': isSuccess || isAlreadyLogged, 
               'text-[#AB3130]': !isSuccess && !isError
             }">
@@ -151,10 +153,10 @@
                 <div class="flex gap-6 flex-col w-[20vw] justify-center">
                   @if (loggedStudent) {
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">
+                      <p class="text-lightGray text-custom-24">
                         Student's Name
                       </p>
-                      <p class="text-brightRed text-custom-24 font-weight400" [ngClass]="{
+                      <p class="text-brightRed text-custom-32 font-weight400" [ngClass]="{
                         'text-[#73AC4D]': isAlreadyLogged,
                         'text-brightRed': isSuccess
                       }">
@@ -163,18 +165,18 @@
                       </p>
                     </div>
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">
+                      <p class="text-lightGray text-custom-24">
                         Student Number
                       </p>
-                      <p class="text-darkGray text-custom-20 font-weight400">
+                      <p class="text-darkGray text-custom-32 font-weight400">
                         {{ loggedStudent.usercode }}
                       </p>
                     </div>
                     <div class="flex flex-col">
-                      <p class="text-lightGray text-custom-16">
+                      <p class="text-lightGray text-custom-24">
                         Course Year & Section
                       </p>
-                      <p class="text-darkGray text-custom-16 font-weight400">
+                      <p class="text-darkGray text-custom-32 font-weight400">
                         {{
                           loggedStudent.section?.program?.programAbbreviation
                         }}
@@ -185,8 +187,8 @@
                   } 
                   @else if (isError) {
                     <div class="flex flex-col">
-                      <p class="text-brightRed font-semibold text-custom-32">
-                        Student Fingerprint is not recognized. 
+                      <p class="text-brightRed font-semibold text-custom-40">
+                        Student Fingerprint Is Not Recognized. 
                       </p>
                       <p class="text-brightRed text-custom-20">Please try again.</p>
                     </div>
@@ -195,26 +197,22 @@
               </div>
               <div class="flex justify-center">
                 <div class="w-[20vw] flex justify-center items-center">
-                  <div class="drop-area" [ngClass]="{
-                    'bg-[#A1DB7A]': isAlreadyLogged,
-                    'bg-[#F2E8E9]': !isSuccess && !isError
-                  }">
+                  <div class="drop-area" [class]="isAlreadyLogged ? 'bg-[#A1DB7A]' : 'bg-[#F2E8E9]'">
                     @if (loggedStudent) {
                       @if(isAlreadyLogged) {
                         <div class="already-logged-image">
                           <img src="../../../assets/already-logged-check.png">
                         </div>
                       } @else {
-                        <div class="upload-message">
                           @if (profileImageUrl) {
                             <img
                               src="{{ profileImageUrl }}"
                               alt="user profile image"
+                              class="object-cover w-full h-full"
                             />
                           } @else {
-                            <mat-icon class="camera-icon">camera_alt</mat-icon>
+                            <mat-icon class="person">person</mat-icon>
                           }
-                        </div>
                       }
                     } @else if (!loggedStudent) {
                       @if (isError) {
