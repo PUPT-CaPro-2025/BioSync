@@ -98,7 +98,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Right Thumb';
+  rightThumbState = 'Scan Left Index';
   hasRightThumb = false;
   isRightThumb = false;
   rightIndexState = 'Scan Right Index';
@@ -137,7 +137,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Right Thumb Captured';
+              this.rightThumbState = 'Left Index Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
