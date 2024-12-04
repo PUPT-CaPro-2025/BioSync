@@ -135,7 +135,7 @@ public class AttendanceController {
         student.getId());
     boolean hasLogged = !hasExistingAttendance.isEmpty();
     if (hasLogged)
-      return ResponseEntity.status(409).body("User has already logged.");
+      return ResponseEntity.status(409).body(student.getId());
 
     Attendance attendance = new Attendance(status, student, schedule.get(),
         ZonedDateTime.now(ZoneId.of("UTC+8")));
