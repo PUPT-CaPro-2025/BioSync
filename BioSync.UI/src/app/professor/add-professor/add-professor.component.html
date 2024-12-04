@@ -1,4 +1,3 @@
-
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">Add Professor - {{currentStepLabel}}</span>
@@ -101,7 +100,7 @@
       <div class="flex justify-center align-middle mt-5">
         <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
           <div class="flex justify-center items-center">
-            <label for="fileInput" class="drop-area">
+            <label for="fileInput" class="drop-area" *ngIf="!isCameraOpen">
               <input type="file" id="fileInput"
                      formControlName="profileImage" (change)="onFileChanges($event)"
                      accept="image/*" hidden/>
@@ -115,9 +114,10 @@
                 <p>Click here to upload image</p>
               </div>
             </label>
+            <video #videoElement class="video-container" *ngIf="isCameraOpen"></video>
           </div>
           <div class="mt-4 flex items-center justify-center">
-            <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button">Take Photo</button>
+            <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button" (click)="isCameraOpen ? capturePhoto() : openCamera()">{{ captureButtonLabel }}</button>
           </div>
           <div class="mt-4 flex justify-between button-content">
             <button mat-button matStepperPrevious>Back</button>
