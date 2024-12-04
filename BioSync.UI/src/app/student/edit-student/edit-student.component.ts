@@ -175,12 +175,13 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   }
 
   setFormValues() {
+    console.log(this.selectedStudent.suffix)
     this.editStudentForm.patchValue({
       usercode: this.selectedStudent.usercode,
       firstName: this.selectedStudent.firstName,
       lastName: this.selectedStudent.lastName,
       middleName: this.selectedStudent.middleName,
-      suffix: this.selectedStudent.suffix,
+      suffix: this.selectedStudent.suffix ? this.selectedStudent.suffix : 'N/A',
       email: this.selectedStudent.email,
       program: this.selectedStudent.program?.id,
       section: this.selectedStudent.section?.id,
