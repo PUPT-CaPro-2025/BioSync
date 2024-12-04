@@ -1,4 +1,4 @@
-import {Component, Output, EventEmitter, OnInit, Input, ViewEncapsulation, ViewChild} from '@angular/core';
+import {Component, Output, EventEmitter, OnInit, Input, ViewEncapsulation, ViewChild, OnDestroy} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -39,7 +39,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./edit-professor.component.css', '../../student/add-student/add-student.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class EditProfessorComponent implements OnInit{
+export class EditProfessorComponent implements OnInit, OnDestroy{
   @Output() backToEditProfessor = new EventEmitter<void>();
   @Output() editedProfessor = new EventEmitter<User>();
   @Input() professorToBeUpdated!: User;
@@ -75,6 +75,7 @@ export class EditProfessorComponent implements OnInit{
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
+  private stream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -248,6 +249,7 @@ export class EditProfessorComponent implements OnInit{
     this.isCameraOpen = true;
     this.captureButtonLabel = 'Capture Photo';
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      this.stream = stream
       this.videoElement = this.videoElementRef.nativeElement;
       this.videoElement.srcObject = stream;
       this.videoElement.play();
@@ -255,6 +257,12 @@ export class EditProfessorComponent implements OnInit{
       // Handle error silently
     });
   }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop());
+    }
+  }  
 
   capturePhoto() {
     const canvas = document.createElement('canvas');
