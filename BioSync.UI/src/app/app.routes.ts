@@ -46,12 +46,14 @@ import {
 } from "./attendance/face-recognition-attendance/face-recognition-attendance.component";
 import { SuffixComponent } from './suffix/suffix.component';
 import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
+import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
     {path: "visitor-log", component: LoginVisitorComponent},
     {path: "forgot-password", component: PasswordForgotComponent},
     {path: "reset-password", component: PasswordResetComponent},
+    {path: "profile", component: AdminProfileComponent},
     {path: "dashboard", component: DashboardComponent},
     {path: "schedule", component: ScheduleComponent},
     {path: "requests", component: RequestListScheduleComponent},
