@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -142,10 +143,14 @@ public class FingerprintServiceImpl implements FingerprintService {
     @Override
     public User verifyProfessorFingerprintForAttendanceInBucket(Long professorId, MultipartFile scannedFingerprintImage) throws IOException {
         List<Fingerprint> professorFingerprints = fingerprintRepository.getAllByUserId(professorId);
-        User admin = userRepository.getUsersByRole(Role.ADMIN).getFirst();
-        List<Fingerprint> adminFingerprints =
-            fingerprintRepository.getAllByUserId(admin.getId());
-        professorFingerprints.addAll(adminFingerprints);
+        Optional<User> admin =
+            userRepository.getUsersByRole(Role.ADMIN).stream().findFirst();
+
+        if (admin.isPresent()) {
+            List<Fingerprint> adminFingerprints =
+                fingerprintRepository.getAllByUserId(admin.get().getId());
+            professorFingerprints.addAll(adminFingerprints);
+        }
 
         if (professorFingerprints.isEmpty()) return null;
 
