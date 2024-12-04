@@ -2,7 +2,9 @@
     <mat-icon class="close-icon">close</mat-icon>
 </button>
 <mat-toolbar class="toolbar-container">
-    <img class="biosync-logo" src="../../assets/BioSyncLogo.png" alt="Biosync Logo" />
+    <img class="w-[130px] h-[130px]" 
+        src="../../assets/BioSyncLogo.png" 
+        alt="Biosync Logo" />
     @if(getRole() === "ADMIN") {
         <div class="role-container">
             <p>Admin Portal</p>
@@ -18,64 +20,81 @@
     }
 </mat-toolbar>
 <mat-nav-list class="list-container">
-    <div routerLinkActive="router-link-active" class="menu-container" (click)="onButtonClick('dashboard')"
-        [class.clicked]="activeButton === 'dashboard'">
-        <button routerLink="/dashboard" routerLinkActive="router-link-active" class="menu-content">
-          <mat-icon>dashboard</mat-icon>
-          <p>Overview</p>
+    <div routerLinkActive="router-link-active" class="menu-container" 
+            (click)="onButtonClick('dashboard')"
+            [class.clicked]="activeButton === 'dashboard'">
+        <button routerLink="/dashboard" 
+                routerLinkActive="router-link-active" 
+                class="menu-content">
+            <mat-icon>dashboard</mat-icon>
+            <p>Overview</p>
         </button>
     </div>
     @if(getRole() === "ADMIN") {
-    <div class="menu-container" (click)="onButtonClick('visitor')" [class.clicked]="activeButton === 'visitor'">
+    <div class="menu-container" (click)="onButtonClick('visitor')" 
+            [class.clicked]="activeButton === 'visitor'">
         <button routerLink="/visitor" class="menu-content">
-          <mat-icon>home</mat-icon>
-          <p>Visitor</p>
+            <mat-icon>home</mat-icon>
+            <p>Visitor</p>
         </button>
     </div>
-    <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
-        <div class="flex justify-between items-center" (click)="toggleScheduleDropdown($event)">
+    <div class="menu-container" (click)="onButtonClick('schedule')" 
+            [class.clicked]="activeButton === 'schedule'">
+        <div class="flex justify-between items-center" 
+                (click)="toggleScheduleDropdown($event)">
             <button class="menu-content">
-              <mat-icon>calendar_month</mat-icon>
-              <p>Schedules</p>
-              <div class="schedule-arrow">
-                <mat-icon>{{
-                    isDropdownOpenSchedule ? "keyboard_arrow_up" : "keyboard_arrow_down"
-                  }}</mat-icon>
-              </div>
+                <mat-icon>calendar_month</mat-icon>
+                <p>Schedules</p>
+                <div class="schedule-arrow">
+                    <mat-icon>{{
+                        isDropdownOpenSchedule 
+                        ? "keyboard_arrow_up" 
+                        : "keyboard_arrow_down"
+                    }}</mat-icon>
+                </div>
             </button>
         </div>
     </div>
     @if(isDropdownOpenSchedule) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/schedule')">List of Schedules</button>
+                <button (click)="navigateTo('/schedule')">
+                    List of Schedules
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/requests')">List of Requests</button>
+                <button (click)="navigateTo('/requests')">
+                    List of Requests
+                </button>
             </div>
         </div>
     }
-    <div class="menu-container" (click)="onButtonClick('subject')" [class.clicked]="activeButton === 'subject'">
+    <div class="menu-container" (click)="onButtonClick('subject')" 
+            [class.clicked]="activeButton === 'subject'">
         <button routerLink="/subject" class="menu-content">
-          <mat-icon>subject</mat-icon>
-          <p>Subjects</p>
+            <mat-icon>subject</mat-icon>
+            <p>Subjects</p>
         </button>
     </div>
-    <div class="menu-container" (click)="onButtonClick('professor')" [class.clicked]="activeButton === 'professor'">
+    <div class="menu-container" (click)="onButtonClick('professor')" 
+            [class.clicked]="activeButton === 'professor'">
         <button routerLink="/professor" class="menu-content">
-          <mat-icon>school</mat-icon>
-          <p>Professor</p>
+            <mat-icon>school</mat-icon>
+            <p>Professor</p>
         </button>
     </div>
-    <div class="menu-container" (click)="onButtonClick('student')" [class.clicked]="activeButton === 'student'">
+    <div class="menu-container" (click)="onButtonClick('student')" 
+            [class.clicked]="activeButton === 'student'">
         <div class="flex justify-between items-center" (click)="toggleStudentDropdown($event)">
             <button class="menu-content">
-              <mat-icon>people</mat-icon>
-              <p>Student</p>
-              <div class="schedule-arrow">
-                <mat-icon>{{
-                    isDropdownOpenStudent ? "keyboard_arrow_up" : "keyboard_arrow_down"
-                  }}</mat-icon>
+                <mat-icon>people</mat-icon>
+                <p>Student</p>
+                <div class="schedule-arrow">
+                    <mat-icon>{{
+                        isDropdownOpenStudent 
+                        ? "keyboard_arrow_up" 
+                        : "keyboard_arrow_down"
+                    }}</mat-icon>
               </div>
             </button>
         </div>
@@ -83,44 +102,58 @@
     @if(isDropdownOpenStudent) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/student')">List of Student</button>
+                <button (click)="navigateTo('/student')">
+                    List of Student
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/attendance')">List of Attendance</button>
+                <button (click)="navigateTo('/attendance')">
+                    List of Attendance
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/violation')">Violations</button>
+                <button (click)="navigateTo('/violation')">
+                    Violations
+                </button>
             </div>
         </div>
     }
-    <div class="menu-container" (click)="onButtonClick('maintenance')" [class.clicked]="activeButton === 'maintenance'">
-        <div class="flex justify-between items-center" (click)="toggleMaintenanceDropdown($event)">
+    <div class="menu-container" (click)="onButtonClick('maintenance')" 
+            [class.clicked]="activeButton === 'maintenance'">
+        <div class="flex justify-between items-center" 
+                (click)="toggleMaintenanceDropdown($event)">
             <button class="menu-content">
-              <mat-icon>settings</mat-icon>
-              <p>Maintenance</p>
-              <div class="schedule-arrow">
-                <mat-icon>{{
-                    isDropdownOpenMaintenance
-                      ? "keyboard_arrow_up"
-                      : "keyboard_arrow_down"
-                  }}</mat-icon>
-              </div>
+                <mat-icon>settings</mat-icon>
+                <p>Maintenance</p>
+                <div class="schedule-arrow">
+                    <mat-icon>{{
+                        isDropdownOpenMaintenance
+                          ? "keyboard_arrow_up"
+                          : "keyboard_arrow_down"
+                    }}</mat-icon>
+                </div>
             </button>
         </div>
     </div>
     @if(isDropdownOpenMaintenance) {
         <div class="dropdown-content flex flex-col">
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/laboratory')">Laboratory</button>
+                <button (click)="navigateTo('/laboratory')">
+                    Laboratory
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/program')">Program</button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/visit-purpose')">Purpose of Visit</button>
+                <button (click)="navigateTo('/visit-purpose')">
+                    Purpose of Visit
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
-                <button (click)="navigateTo('/school-year')">School Year</button>
+                <button (click)="navigateTo('/school-year')">
+                    School Year
+                </button>
             </div>
             <div class="hover:bg-semiGray hover:text-dark">
                 <button (click)="navigateTo('/section')">Section</button>
@@ -130,59 +163,82 @@
             </div>
         </div>
     } } @if(getRole() === "FACULTY"){
-        <div class="menu-container" (click)="onButtonClick('schedule')" [class.clicked]="activeButton === 'schedule'">
-            <div class="flex justify-between items-center" (click)="toggleScheduleDropdown($event)">
+        <div class="menu-container" (click)="onButtonClick('schedule')" 
+                [class.clicked]="activeButton === 'schedule'">
+            <div class="flex justify-between items-center" 
+                    (click)="toggleScheduleDropdown($event)">
                 <button class="menu-content">
-                  <mat-icon>calendar_month</mat-icon>
-                  <p>Schedules</p>
-                  <div class="schedule-arrow">
-                    <mat-icon>{{
-                        isDropdownOpenSchedule ? "keyboard_arrow_up" : "keyboard_arrow_down"
-                      }}</mat-icon>
-                  </div>
+                    <mat-icon>calendar_month</mat-icon>
+                    <p>Schedules</p>
+                    <div class="schedule-arrow">
+                        <mat-icon>{{
+                            isDropdownOpenSchedule 
+                            ? "keyboard_arrow_up" 
+                            : "keyboard_arrow_down"
+                        }}</mat-icon>
+                    </div>
                 </button>
             </div>
         </div>
         @if(isDropdownOpenSchedule) {
             <div class="dropdown-content flex flex-col">
                 <div class="hover:bg-semiGray hover:text-dark">
-                    <button (click)="navigateTo('/schedule')">List of Schedules</button>
+                    <button (click)="navigateTo('/schedule')">
+                        List of Schedules
+                    </button>
                 </div>
                 <div class="hover:bg-semiGray hover:text-dark">
-                    <button (click)="navigateTo('/my-requests')">My Requests</button>
+                    <button (click)="navigateTo('/my-requests')">
+                        My Requests
+                    </button>
                 </div>
             </div>
         }
-        <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
-          <button routerLink="/attendance" class="menu-content">
-            <mat-icon>check_circle</mat-icon>
-            <p>Attendance</p>
-          </button>
+        <div class="menu-container" (click)="onButtonClick('attendance')" 
+                [class.clicked]="activeButton === 'attendance'">
+            <button routerLink="/attendance" class="menu-content">
+                <mat-icon>check_circle</mat-icon>
+                <p>Attendance</p>
+            </button>
         </div>
         } @if(getRole() === "STUDENT"){
-        <div class="menu-container" (click)="onButtonClick('schedules')" [class.clicked]="activeButton === 'schedules'">
+        <div class="menu-container" (click)="onButtonClick('schedules')" 
+                [class.clicked]="activeButton === 'schedules'">
             <button routerLink="/schedule" class="menu-content">
-              <mat-icon>calendar_month</mat-icon>
-              <p>Subjects and Schedules</p>
+                <mat-icon>calendar_month</mat-icon>
+                <p>Subjects and Schedules</p>
             </button>
         </div>
 
-        <div class="menu-container" (click)="onButtonClick('attendance')" [class.clicked]="activeButton === 'attendance'">
-          <button routerLink="/attendance" class="menu-content">
-            <mat-icon>check_circle</mat-icon>
-            <p>Attendance</p>
-          </button>
+        <div class="menu-container" (click)="onButtonClick('attendance')" 
+                [class.clicked]="activeButton === 'attendance'">
+            <button routerLink="/attendance" class="menu-content">
+                <mat-icon>check_circle</mat-icon>
+                <p>Attendance</p>
+            </button>
         </div>
     }
 </mat-nav-list>
-<div class="bottom-container">
-    <div class="line-container">
-        <img src="../../assets/line.svg" alt="divider"/>
+<div class="absolute bottom-0 w-[100%] pb-4">
+    @if(getRole() === "ADMIN") {
+        <div class="flex flex-col">
+            <button class="flex flex-row items-center gap-[23px] ml-6 bg-none 
+                border-none cursor-pointer mb-6" 
+                (click)="navigateTo('/profile')">
+              <mat-icon>account_circle</mat-icon>
+              <p class="text-custom-16">PROFILE</p>
+            </button>
+        </div>
+    }
+    <div class="flex justify-center items-center">
+        <img class="w-[90%]" src="../../assets/line.svg" alt="divider"/>
     </div>
-    <div class="logout-container">
-        <button class="logout-content" (click)="openLogoutDialog()">
-          <mat-icon class="text-[#AB3130]">logout</mat-icon>
-          <p>LOGOUT</p>
+    <div class="flex flex-col">
+        <button class="flex flex-row items-center gap-[23px] ml-6 bg-none 
+            border-none cursor-pointer mt-2" 
+            (click)="openLogoutDialog()">
+          <mat-icon class="text-brightRed">logout</mat-icon>
+          <p class="text-custom-16 text-brightRed">LOGOUT</p>
         </button>
     </div>
 </div>
