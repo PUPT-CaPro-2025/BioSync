@@ -34,6 +34,14 @@ public class FingerprintController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        boolean hasFingerprint =
+            this.fingerprintService.hasFingerprintByUserId(id);
+
+        return ResponseEntity.ok().body(hasFingerprint);
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<?> upload(
             @RequestParam("userId") Long userId,
