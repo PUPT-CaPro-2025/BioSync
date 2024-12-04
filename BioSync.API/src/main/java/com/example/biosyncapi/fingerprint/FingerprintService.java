@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface FingerprintService {
     List<Fingerprint> getAllByUserId(Long userId);
+    boolean hasFingerprintByUserId(Long userId);
     void processFingerprints(Long userId, List<MultipartFile> images);
     void processFingerprintsToBucket(Long userId, List<MultipartFile> images) throws IOException;
     Boolean verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile image) throws IOException;

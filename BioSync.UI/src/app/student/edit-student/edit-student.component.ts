@@ -5,6 +5,8 @@ import {
   Output,
   Input,
   ViewEncapsulation,
+  ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
@@ -67,10 +69,11 @@ import { MailService } from '../../../services/mail.service';
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class EditStudentComponent implements OnInit {
+export class EditStudentComponent implements OnInit, OnDestroy {
   @Output() backToEditStudent = new EventEmitter<void>();
   @Output() editedStudent = new EventEmitter<User>();
   @Input() selectedStudent!: User;
+  @ViewChild('videoElement') videoElementRef!: any;
 
   allSuffix: string[] = [
     'N/A',
@@ -95,13 +98,17 @@ export class EditStudentComponent implements OnInit {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Right Thumb';
+  rightThumbState = 'Scan Left Index';
   hasRightThumb = false;
   isRightThumb = false;
   rightIndexState = 'Scan Right Index';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
+  videoElement!: HTMLVideoElement;
+  isCameraOpen = false;
+  captureButtonLabel = 'Take Photo';
+  private stream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -110,7 +117,7 @@ export class EditStudentComponent implements OnInit {
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService,
+    private fingerprintService: FingerprintService
   ) {}
 
   ngOnInit() {
@@ -126,17 +133,17 @@ export class EditStudentComponent implements OnInit {
           if (this.rightThumbFingerprintImageSrc == null) {
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Right Thumb Captured';
+              this.rightThumbState = 'Left Index Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
@@ -168,12 +175,13 @@ export class EditStudentComponent implements OnInit {
   }
 
   setFormValues() {
+    console.log(this.selectedStudent.suffix)
     this.editStudentForm.patchValue({
       usercode: this.selectedStudent.usercode,
       firstName: this.selectedStudent.firstName,
       lastName: this.selectedStudent.lastName,
       middleName: this.selectedStudent.middleName,
-      suffix: this.selectedStudent.suffix,
+      suffix: this.selectedStudent.suffix ? this.selectedStudent.suffix : 'N/A',
       email: this.selectedStudent.email,
       program: this.selectedStudent.program?.id,
       section: this.selectedStudent.section?.id,
@@ -203,12 +211,12 @@ export class EditStudentComponent implements OnInit {
     const updatedValues = this.editStudentForm.value;
 
     let selectedProgram = this.allPrograms.find(
-      (program: Program) => program.id === this.selectedStudent.program?.id,
+      (program: Program) => program.id === this.selectedStudent.program?.id
     );
 
     let selectedSection = this.sections.find(
       (section: Section) =>
-        section.id === this.editStudentForm.get('section')?.value,
+        section.id === this.editStudentForm.get('section')?.value
     );
 
     const studentToUpdate = {
@@ -239,7 +247,7 @@ export class EditStudentComponent implements OnInit {
 
   onProgramChange(event: MatSelectChange) {
     this.filteredSections = this.sections.filter(
-      (section) => section.program.id === event.value,
+      (section) => section.program.id === event.value
     );
   }
 
@@ -249,7 +257,7 @@ export class EditStudentComponent implements OnInit {
         this.sections = sections;
         this.filteredSections = this.sections.filter(
           (section) =>
-            section.program.id === this.selectedStudent.section?.program.id,
+            section.program.id === this.selectedStudent.section?.program.id
         );
       },
     });
@@ -277,7 +285,7 @@ export class EditStudentComponent implements OnInit {
     formData.append(
       'profileImage',
       this.selectedProfileImage,
-      `user-${studentId}-img.png`,
+      `user-${studentId}-img.png`
     );
     this.userService.editProfileImage(formData).subscribe({
       next: (value) => {
@@ -293,12 +301,12 @@ export class EditStudentComponent implements OnInit {
     formData.append(
       'fingerprint',
       this.rightIndexFingerprintImageSrc,
-      `right-index-${student.lastName}.png`,
+      `right-index-${student.lastName}.png`
     );
     formData.append(
       'fingerprint',
       this.rightThumbFingerprintImageSrc,
-      `right-thumb-${student.lastName}.png`,
+      `right-thumb-${student.lastName}.png`
     );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
@@ -306,6 +314,55 @@ export class EditStudentComponent implements OnInit {
         console.log(value);
       },
     });
+  }
+
+  openCamera() {
+    this.isCameraOpen = true;
+    this.captureButtonLabel = 'Capture Photo';
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        this.stream = stream;
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
+      })
+      .catch((err) => {
+        // Handle error silently
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
+  }
+
+  capturePhoto() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.videoElement.videoWidth;
+    canvas.height = this.videoElement.videoHeight;
+    const context = canvas.getContext('2d');
+    context?.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      this.selectedProfileImage = blob!;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+        this.photoButtonLabel = 'Next';
+      };
+      reader.readAsDataURL(blob!);
+    });
+    this.closeCamera();
+  }
+
+  closeCamera() {
+    this.isCameraOpen = false;
+    this.captureButtonLabel = 'Retake Photo';
+    const stream = this.videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    this.videoElement.srcObject = null;
   }
 
   private base64ToBlob(src: string, imagePng: string) {

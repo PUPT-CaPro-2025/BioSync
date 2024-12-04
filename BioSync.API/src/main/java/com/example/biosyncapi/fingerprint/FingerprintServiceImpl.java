@@ -2,6 +2,7 @@ package com.example.biosyncapi.fingerprint;
 
 import com.example.biosyncapi.schedule.Schedule;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
+import com.example.biosyncapi.user.Role;
 import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.schedule.ScheduleRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
@@ -53,6 +54,11 @@ public class FingerprintServiceImpl implements FingerprintService {
     @Override
     public List<Fingerprint> getAllByUserId(Long userId) {
         return fingerprintRepository.getAllByUserId(userId);
+    }
+
+    @Override
+    public boolean hasFingerprintByUserId(Long userId) {
+        return fingerprintRepository.existsById(userId);
     }
 
     //system file storage support for when it isn't hosted
@@ -136,6 +142,10 @@ public class FingerprintServiceImpl implements FingerprintService {
     @Override
     public User verifyProfessorFingerprintForAttendanceInBucket(Long professorId, MultipartFile scannedFingerprintImage) throws IOException {
         List<Fingerprint> professorFingerprints = fingerprintRepository.getAllByUserId(professorId);
+        User admin = userRepository.getUsersByRole(Role.ADMIN).getFirst();
+        List<Fingerprint> adminFingerprints =
+            fingerprintRepository.getAllByUserId(admin.getId());
+        professorFingerprints.addAll(adminFingerprints);
 
         if (professorFingerprints.isEmpty()) return null;
 
