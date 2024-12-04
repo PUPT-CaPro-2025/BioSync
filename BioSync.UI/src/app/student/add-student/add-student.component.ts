@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output, ViewEncapsulation, ViewChild} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ViewEncapsulation, ViewChild, OnDestroy} from '@angular/core';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -28,7 +28,8 @@ import {
 @Component({
   selector: 'app-add-student',
   standalone: true,
-  imports: [MatToolbarModule,
+  imports: [
+    MatToolbarModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -41,19 +42,14 @@ import {
     MatStepperNext,
     MatStepperPrevious,
     MatIconModule,
-    CommonModule
+    CommonModule,
   ],
-  providers: [
-    ProgramService,
-    UserService,
-    SectionService,
-    MailService
-  ],
+  providers: [ProgramService, UserService, SectionService, MailService],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class AddStudentComponent implements OnInit{
+export class AddStudentComponent implements OnInit, OnDestroy {
   @Output() backToStudent = new EventEmitter<void>();
   @Output() addedStudent = new EventEmitter<User>();
   @ViewChild('videoElement') videoElementRef!: any;
@@ -69,7 +65,7 @@ export class AddStudentComponent implements OnInit{
     'Jr.',
     '1st',
     '2nd',
-    '3rd'
+    '3rd',
   ];
 
   allPrograms: Program[] = [];
@@ -92,6 +88,7 @@ export class AddStudentComponent implements OnInit{
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
+  private stream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -102,7 +99,7 @@ export class AddStudentComponent implements OnInit{
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private mailService: MailService,
-    private faceRecognitionService: FaceRecognitionService,
+    private faceRecognitionService: FaceRecognitionService
   ) {}
 
   ngOnInit() {
@@ -114,26 +111,32 @@ export class AddStudentComponent implements OnInit{
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
-          if(this.rightThumbFingerprintImageSrc == null){
-            this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+          if (this.rightThumbFingerprintImageSrc == null) {
+            this.rightThumbFingerprintImageSrc = this.base64ToBlob(
+              src,
+              'image/png'
+            );
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
               this.rightThumbState = 'Right Thumb Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
-            }, 2000)
+            }, 2000);
           } else {
-            this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
+            this.rightIndexFingerprintImageSrc = this.base64ToBlob(
+              src,
+              'image/png'
+            );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
           }
         }
-      }
+      },
     });
   }
 
-  initForm(){
+  initForm() {
     this.studentForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
@@ -142,78 +145,84 @@ export class AddStudentComponent implements OnInit{
       suffix: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       program: ['', [Validators.required]],
-      section: ['',Validators.required],
+      section: ['', Validators.required],
     });
 
     this.imageForm = this.formBuilder.group({
-      profileImage: [null, Validators.required]
-    })
+      profileImage: [null, Validators.required],
+    });
   }
 
-  onProgramChange(event: MatSelectChange){
-    this.filteredSections = this.sections.filter(section =>
-      section.program.id === event.value);
+  onProgramChange(event: MatSelectChange) {
+    this.filteredSections = this.sections.filter(
+      (section) => section.program.id === event.value
+    );
   }
 
-  getAllPrograms() : Program[] {
+  getAllPrograms(): Program[] {
     this.programService.getAllPrograms().subscribe({
       next: (programs: Program[]) => {
         this.allPrograms = programs;
       },
-      error: error => { console.error(error); }
-    })
+      error: (error) => {
+        console.error(error);
+      },
+    });
 
     return this.allPrograms;
   }
 
-  getAllSections(){
+  getAllSections() {
     this.sectionService.getSections().subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
-      }
-    })
+      },
+    });
   }
 
   returnToStudentView(): void {
     this.backToStudent.emit();
   }
 
-  submit(){
-    if(!this.studentForm.valid || !this.studentForm.touched) return;
+  submit() {
+    if (!this.studentForm.valid || !this.studentForm.touched) return;
 
     let studentToAdd = this.studentForm.value;
 
     let selectedProgram = this.allPrograms.find(
-      (program: Program) => program.id === studentToAdd.program);
+      (program: Program) => program.id === studentToAdd.program
+    );
 
     const generatedPassword = this.userService.generatePassword();
 
     studentToAdd = {
       ...studentToAdd,
-      section: this.sections.find((section: Section) =>
-        section.id === this.studentForm.get('section')?.value),
+      section: this.sections.find(
+        (section: Section) =>
+          section.id === this.studentForm.get('section')?.value
+      ),
       program: selectedProgram,
       role: 'STUDENT',
-      password: generatedPassword
-    }
+      password: generatedPassword,
+    };
 
     this.userService.createUser(studentToAdd).subscribe({
       next: (student: User) => {
-        if(!student.id) return;
-        if(this.selectedProfileImage){
-          this.processProfileImage(student)
+        if (!student.id) return;
+        if (this.selectedProfileImage) {
+          this.processProfileImage(student);
         }
-        if(this.isRightIndex && this.isRightThumb){
+        if (this.isRightIndex && this.isRightThumb) {
           this.registerFingerprintData(student);
         }
         this.openMessageDialog(true);
         this.addedStudent.emit(student);
         this.sendCredentials(studentToAdd, generatedPassword);
       },
-      error: error => {
+      error: (error) => {
         this.openMessageDialog(false, error.error);
-      }
-    })
+      },
+    });
   }
 
   private sendCredentials(studentToAdd: User, generatedPassword: string) {
@@ -223,8 +232,8 @@ export class AddStudentComponent implements OnInit{
       text: `
         Hello! Welcome to BioSync. Please save your account credentials below\n\n
         Usercode: ${studentToAdd.usercode} \n
-        Password: ${generatedPassword}`
-    }
+        Password: ${generatedPassword}`,
+    };
 
     this.mailService.sendMail(mailContent).subscribe();
   }
@@ -232,28 +241,34 @@ export class AddStudentComponent implements OnInit{
   processProfileImage(student: User) {
     const formData = new FormData();
     formData.append('userId', `${student.id}`);
-    formData.append('profileImage', this.selectedProfileImage , `user-${student.id}-img.png`);
+    formData.append(
+      'profileImage',
+      this.selectedProfileImage,
+      `user-${student.id}-img.png`
+    );
     this.userService.processProfileImage(formData).subscribe({
       next: () => {
         const reader = new FileReader();
         reader.onload = () => {
           const base64Image = reader.result as string;
 
-          this.faceRecognitionService.encodeFaceData(student, base64Image).subscribe();
+          this.faceRecognitionService
+            .encodeFaceData(student, base64Image)
+            .subscribe();
         };
 
         reader.onerror = (error) => {
-          console.error("Error converting image to base64:", error);
+          console.error('Error converting image to base64:', error);
         };
 
         if (this.selectedProfileImage) {
           reader.readAsDataURL(this.selectedProfileImage);
         }
-      }
+      },
     });
   }
 
-  resetFingerprint(){
+  resetFingerprint() {
     this.isRightThumb = false;
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
@@ -263,36 +278,42 @@ export class AddStudentComponent implements OnInit{
     this.hasRightThumb = false;
   }
 
-  registerFingerprintData(student: User){
+  registerFingerprintData(student: User) {
     const formData = new FormData();
     formData.append('userId', `${student.id}`);
-    formData.append('fingerprint', this.rightIndexFingerprintImageSrc!,
-      `right-index-${student.lastName}.png`)
-    formData.append('fingerprint', this.rightThumbFingerprintImageSrc!,
-      `right-thumb-${student.lastName}.png`)
+    formData.append(
+      'fingerprint',
+      this.rightIndexFingerprintImageSrc!,
+      `right-index-${student.lastName}.png`
+    );
+    formData.append(
+      'fingerprint',
+      this.rightThumbFingerprintImageSrc!,
+      `right-thumb-${student.lastName}.png`
+    );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
       next: (value) => {
         console.log(value);
-      }
-    })
+      },
+    });
   }
 
-  openMessageDialog(success: boolean, message?: string){
+  openMessageDialog(success: boolean, message?: string) {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: success ? 'Student Added!' : 'Something went wrong',
         message: success ? 'Student has been added successfully.' : message,
-      }
+      },
     });
 
     ref.afterClosed().subscribe({
       next: () => {
-        if(!success) return;
+        if (!success) return;
         this.returnToStudentView();
       },
-    })
+    });
   }
 
   private base64ToBlob(src: string, imagePng: string) {
@@ -317,13 +338,23 @@ export class AddStudentComponent implements OnInit{
   openCamera() {
     this.isCameraOpen = true;
     this.captureButtonLabel = 'Capture Photo';
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      this.videoElement = this.videoElementRef.nativeElement;
-      this.videoElement.srcObject = stream;
-      this.videoElement.play();
-    }).catch(err => {
-      // Handle error silently
-    });
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        this.stream = stream;
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
+      })
+      .catch((err) => {
+        // Handle error silently
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
   }
 
   capturePhoto() {
@@ -332,7 +363,7 @@ export class AddStudentComponent implements OnInit{
     canvas.height = this.videoElement.videoHeight;
     const context = canvas.getContext('2d');
     context?.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob(blob => {
+    canvas.toBlob((blob) => {
       this.selectedProfileImage = blob!;
       const reader = new FileReader();
       reader.onload = () => {
@@ -349,7 +380,7 @@ export class AddStudentComponent implements OnInit{
     this.captureButtonLabel = 'Retake Photo';
     const stream = this.videoElement.srcObject as MediaStream;
     const tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
+    tracks.forEach((track) => track.stop());
     this.videoElement.srcObject = null;
   }
 
@@ -361,10 +392,10 @@ export class AddStudentComponent implements OnInit{
         this.currentStepLabel = 'Set Up Information';
         break;
       case 1:
-        this.currentStepLabel = 'Student\'s Picture';
+        this.currentStepLabel = "Student's Picture";
         break;
       case 2:
-        this.currentStepLabel = 'Student\'s Biometrics';
+        this.currentStepLabel = "Student's Biometrics";
         break;
       default:
         this.currentStepLabel = 'Unknown Step';

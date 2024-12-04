@@ -6,6 +6,7 @@ import {
   Input,
   ViewEncapsulation,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
@@ -68,7 +69,7 @@ import { MailService } from '../../../services/mail.service';
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class EditStudentComponent implements OnInit {
+export class EditStudentComponent implements OnInit, OnDestroy {
   @Output() backToEditStudent = new EventEmitter<void>();
   @Output() editedStudent = new EventEmitter<User>();
   @Input() selectedStudent!: User;
@@ -107,6 +108,7 @@ export class EditStudentComponent implements OnInit {
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
+  private stream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -115,7 +117,7 @@ export class EditStudentComponent implements OnInit {
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService,
+    private fingerprintService: FingerprintService
   ) {}
 
   ngOnInit() {
@@ -131,7 +133,7 @@ export class EditStudentComponent implements OnInit {
           if (this.rightThumbFingerprintImageSrc == null) {
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightThumb = true;
             setTimeout(() => {
@@ -141,7 +143,7 @@ export class EditStudentComponent implements OnInit {
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
@@ -208,12 +210,12 @@ export class EditStudentComponent implements OnInit {
     const updatedValues = this.editStudentForm.value;
 
     let selectedProgram = this.allPrograms.find(
-      (program: Program) => program.id === this.selectedStudent.program?.id,
+      (program: Program) => program.id === this.selectedStudent.program?.id
     );
 
     let selectedSection = this.sections.find(
       (section: Section) =>
-        section.id === this.editStudentForm.get('section')?.value,
+        section.id === this.editStudentForm.get('section')?.value
     );
 
     const studentToUpdate = {
@@ -244,7 +246,7 @@ export class EditStudentComponent implements OnInit {
 
   onProgramChange(event: MatSelectChange) {
     this.filteredSections = this.sections.filter(
-      (section) => section.program.id === event.value,
+      (section) => section.program.id === event.value
     );
   }
 
@@ -254,7 +256,7 @@ export class EditStudentComponent implements OnInit {
         this.sections = sections;
         this.filteredSections = this.sections.filter(
           (section) =>
-            section.program.id === this.selectedStudent.section?.program.id,
+            section.program.id === this.selectedStudent.section?.program.id
         );
       },
     });
@@ -282,7 +284,7 @@ export class EditStudentComponent implements OnInit {
     formData.append(
       'profileImage',
       this.selectedProfileImage,
-      `user-${studentId}-img.png`,
+      `user-${studentId}-img.png`
     );
     this.userService.editProfileImage(formData).subscribe({
       next: (value) => {
@@ -298,12 +300,12 @@ export class EditStudentComponent implements OnInit {
     formData.append(
       'fingerprint',
       this.rightIndexFingerprintImageSrc,
-      `right-index-${student.lastName}.png`,
+      `right-index-${student.lastName}.png`
     );
     formData.append(
       'fingerprint',
       this.rightThumbFingerprintImageSrc,
-      `right-thumb-${student.lastName}.png`,
+      `right-thumb-${student.lastName}.png`
     );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
@@ -316,13 +318,23 @@ export class EditStudentComponent implements OnInit {
   openCamera() {
     this.isCameraOpen = true;
     this.captureButtonLabel = 'Capture Photo';
-    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-      this.videoElement = this.videoElementRef.nativeElement;
-      this.videoElement.srcObject = stream;
-      this.videoElement.play();
-    }).catch((err) => {
-      // Handle error silently
-    });
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        this.stream = stream;
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
+      })
+      .catch((err) => {
+        // Handle error silently
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
   }
 
   capturePhoto() {
