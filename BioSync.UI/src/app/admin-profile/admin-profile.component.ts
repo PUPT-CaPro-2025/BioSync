@@ -81,7 +81,7 @@ export class AdminProfileComponent implements OnInit {
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Right Thumb';
+  rightThumbState = 'Scan Left Index';
   hasRightThumb = false;
   isRightThumb = false;
   rightIndexState = 'Scan Right Index';
@@ -95,7 +95,7 @@ export class AdminProfileComponent implements OnInit {
     private userService: UserService,
     private dialog: MatDialog,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService,
+    private fingerprintService: FingerprintService
   ) {}
 
   ngOnInit() {
@@ -108,17 +108,17 @@ export class AdminProfileComponent implements OnInit {
           if (this.rightThumbFingerprintImageSrc == null) {
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Right Thumb Captured';
+              this.rightThumbState = 'Left Index Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png',
+              'image/png'
             );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
@@ -168,7 +168,25 @@ export class AdminProfileComponent implements OnInit {
   }
 
   submit() {
-    console.log('Submit clicked!');
+    const updatedValues = this.adminForm.value;
+
+    this.admin = {
+      ...this.admin,
+      ...updatedValues,
+    };
+
+    this.userService.updateUser(this.admin).subscribe({
+      next: (updatedUser: User) => {
+        if (!updatedUser.id) return;
+        if (this.selectedProfileImage) {
+          this.processProfileImage(updatedUser.id);
+        }
+        if (this.isRightIndex && this.isRightThumb) {
+          this.registerFingerprintData(updatedUser);
+        }
+        this.openSuccessDialog();
+      },
+    });
     return;
   }
 
@@ -183,7 +201,7 @@ export class AdminProfileComponent implements OnInit {
 
     ref.afterClosed().subscribe({
       next: () => {
-        //return to what...
+        this.unsetEditMode();
       },
     });
   }
@@ -194,7 +212,7 @@ export class AdminProfileComponent implements OnInit {
     formData.append(
       'profileImage',
       this.selectedProfileImage,
-      `user-${professorId}-img.png`,
+      `user-${professorId}-img.png`
     );
     this.userService.processProfileImage(formData).subscribe();
   }
@@ -205,12 +223,12 @@ export class AdminProfileComponent implements OnInit {
     formData.append(
       'fingerprint',
       this.rightIndexFingerprintImageSrc,
-      `right-index-${professor.lastName}.png`,
+      `right-index-${professor.lastName}.png`
     );
     formData.append(
       'fingerprint',
       this.rightThumbFingerprintImageSrc,
-      `right-thumb-${professor.lastName}.png`,
+      `right-thumb-${professor.lastName}.png`
     );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
