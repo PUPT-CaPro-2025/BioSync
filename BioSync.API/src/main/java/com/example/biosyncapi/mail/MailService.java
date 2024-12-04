@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.mail.javamail.MimeMessageHelper;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 @Service
 public class MailService {
 
@@ -22,11 +26,16 @@ public class MailService {
     }
 
     public void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("BioSync <"+ from + ">");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("BioSync <" + from + ">");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, true); // true indicates HTML content
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
 
         mailSender.send(message);
     }
@@ -36,19 +45,27 @@ public class MailService {
             User user = entry.getKey();
             String password = entry.getValue();
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("BioSync <" + from + ">");
-            message.setTo(user.getEmail());
-            message.setSubject("BioSync Account Credentials");
+            MimeMessage message = mailSender.createMimeMessage();
+            try {
+                MimeMessageHelper helper = new MimeMessageHelper(message, true);
+                helper.setFrom("BioSync <" + from + ">");
+                helper.setTo(user.getEmail());
+                helper.setSubject("BioSync Account Credentials");
 
-            String emailBody = String.format("""
-            Hello! Welcome to BioSync. Please save your account credentials below:
-            
-            Usercode: %s \n
-            Password: %s \n
-            """, user.getUsercode(), password);
+                String emailBody = String.format("""
+                <html>
+                <body>
+                <p>Hello! Welcome to BioSync. Please save your account credentials below:</p>
+                <p>Usercode: %s</p>
+                <p>Password: %s</p>
+                </body>
+                </html>
+                """, user.getUsercode(), password);
 
-            message.setText(emailBody);
+                helper.setText(emailBody, true); // true indicates HTML content
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
 
             mailSender.send(message);
         }
