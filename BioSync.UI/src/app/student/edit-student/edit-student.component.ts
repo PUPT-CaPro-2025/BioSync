@@ -5,6 +5,7 @@ import {
   Output,
   Input,
   ViewEncapsulation,
+  ViewChild,
 } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
@@ -71,6 +72,7 @@ export class EditStudentComponent implements OnInit {
   @Output() backToEditStudent = new EventEmitter<void>();
   @Output() editedStudent = new EventEmitter<User>();
   @Input() selectedStudent!: User;
+  @ViewChild('videoElement') videoElementRef!: any;
 
   allSuffix: string[] = [
     'N/A',
@@ -102,6 +104,9 @@ export class EditStudentComponent implements OnInit {
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
+  videoElement!: HTMLVideoElement;
+  isCameraOpen = false;
+  captureButtonLabel = 'Take Photo';
 
   constructor(
     private formBuilder: FormBuilder,
@@ -306,6 +311,45 @@ export class EditStudentComponent implements OnInit {
         console.log(value);
       },
     });
+  }
+
+  openCamera() {
+    this.isCameraOpen = true;
+    this.captureButtonLabel = 'Capture Photo';
+    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+      this.videoElement = this.videoElementRef.nativeElement;
+      this.videoElement.srcObject = stream;
+      this.videoElement.play();
+    }).catch((err) => {
+      // Handle error silently
+    });
+  }
+
+  capturePhoto() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.videoElement.videoWidth;
+    canvas.height = this.videoElement.videoHeight;
+    const context = canvas.getContext('2d');
+    context?.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      this.selectedProfileImage = blob!;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+        this.photoButtonLabel = 'Next';
+      };
+      reader.readAsDataURL(blob!);
+    });
+    this.closeCamera();
+  }
+
+  closeCamera() {
+    this.isCameraOpen = false;
+    this.captureButtonLabel = 'Retake Photo';
+    const stream = this.videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    this.videoElement.srcObject = null;
   }
 
   private base64ToBlob(src: string, imagePng: string) {
