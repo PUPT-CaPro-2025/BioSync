@@ -262,7 +262,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Schedule updatePartialSchedule(Long id, Status updates) {
         Schedule existingSchedule = scheduleRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+
+        if(existingSchedule.getRecurrence() != Recurrence.NONE) {
+            List<Schedule> relatedSchedules = scheduleRepository.findByRecurrenceId(existingSchedule.getRecurrenceId());
+
+            for (Schedule relatedSchedule : relatedSchedules) {
+                relatedSchedule.setStatus(updates);
+            }
+
+            scheduleRepository.saveAll(relatedSchedules);
+            return existingSchedule;
+        }
+
         existingSchedule.setStatus(updates);
+
         return scheduleRepository.save(existingSchedule);
     }
 
