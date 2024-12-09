@@ -111,6 +111,9 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
 
             schedule.setScheduleStudents(scheduleStudents);
+            if(schedule.getRequester() != null){
+                schedule.setRequester(schedule.getProfessor());
+            }
             schedules.add(schedule);
             scheduleRepository.saveAll(schedules);
             return schedules;
@@ -142,6 +145,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
+                if(schedule.getRequester() != null){
+                    newSchedule.setRequester(schedule.getProfessor());
+                }
                 newSchedule.setStatus(schedule.getStatus());
 
                 List<ScheduleStudent> scheduleStudents = new ArrayList<>();
