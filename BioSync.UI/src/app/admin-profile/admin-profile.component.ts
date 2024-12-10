@@ -79,6 +79,7 @@ export class AdminProfileComponent implements OnInit {
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
+  image!: string;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
   rightThumbState = 'Scan Left Index';
@@ -132,6 +133,11 @@ export class AdminProfileComponent implements OnInit {
     this.userService.getUsersByRole('ADMIN').subscribe({
       next: (user: User[]) => {
         this.admin = user[0];
+        this.fingerprintService.getProfileImageUrl(this.admin.id).subscribe({
+          next: (imageLink) => {
+            this.image = imageLink.profileImageUrl;
+          },
+        });
         console.log(this.admin);
         this.setFormValues();
         this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
