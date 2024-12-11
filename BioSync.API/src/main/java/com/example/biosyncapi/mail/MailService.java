@@ -59,7 +59,3 @@ public class MailService {
             mailSender.send(message);
         }
     }
-
-
-
-}
