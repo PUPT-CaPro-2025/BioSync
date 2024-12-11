@@ -66,7 +66,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy{
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Right Thumb';
+  rightThumbState = 'Scan Left Index';
   hasRightThumb = false;
   isRightThumb = false;
   rightIndexState = 'Scan Right Index';
@@ -97,7 +97,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy{
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Right Thumb Captured';
+              this.rightThumbState = 'Left Index Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -132,6 +132,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy{
       lastName: this.professorToBeUpdated.lastName,
       middleName: this.professorToBeUpdated.middleName,
       suffix: this.professorToBeUpdated.suffix,
+      email: this.professorToBeUpdated.email
     })
   }
 
@@ -140,8 +141,6 @@ export class EditProfessorComponent implements OnInit, OnDestroy{
   }
 
   submit(){
-    if(!this.professorForm.touched || !this.professorForm.valid) return;
-
     const updatedValues = this.professorForm.value;
 
     this.professorToBeUpdated = {
@@ -152,12 +151,18 @@ export class EditProfessorComponent implements OnInit, OnDestroy{
     }
 
     this.userService.updateUser(this.professorToBeUpdated).subscribe({
-      next: (updatedProfessor: User) => {
-        if(!updatedProfessor.id) return;
-        this.editedProfessor.emit(updatedProfessor);
+      next: (updatedUser: User) => {
+        if (!updatedUser.id) return;
+        if (this.selectedProfileImage) {
+          this.processProfileImage(updatedUser.id);
+        }
+        if (this.isRightIndex && this.isRightThumb) {
+          this.registerFingerprintData(updatedUser);
+        }
+        this.editedProfessor.emit(updatedUser);
         this.openSuccessDialog();
-      }
-    })
+      },
+    });
     return;
   }
 

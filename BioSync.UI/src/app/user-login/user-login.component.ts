@@ -1,85 +1,82 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import {MatInput} from "@angular/material/input";
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {Authentication} from "../../model/authentication.model";
-import {Router} from "@angular/router";
-import {LoginService} from "../../services/auth/login.service";
-import {AuthService} from "../../services/auth/auth.service";
-import {CookieService} from "../../services/cookie.service";
-import {CryptoService} from "../../services/crypto.service";
+import { MatInput } from '@angular/material/input';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Authentication } from '../../model/authentication.model';
+import { Router } from '@angular/router';
+import { LoginService } from '../../services/auth/login.service';
+import { AuthService } from '../../services/auth/auth.service';
+import { CookieService } from '../../services/cookie.service';
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-user-login',
   standalone: true,
   imports: [MatIconModule, MatInput, ReactiveFormsModule],
-  providers: [
-    LoginService,
-    AuthService,
-    CookieService,
-    CryptoService
-  ],
+  providers: [LoginService, AuthService, CookieService, CryptoService],
   templateUrl: './user-login.component.html',
-  styleUrl: './user-login.component.css'
+  styleUrl: './user-login.component.css',
 })
-export class UserLoginComponent implements OnInit{
-    userLoginForm!: FormGroup;
-    credentialsError = false;
+export class UserLoginComponent implements OnInit {
+  userLoginForm!: FormGroup;
+  credentialsError = false;
 
-    constructor(
-      private router: Router,
-      private formBuilder: FormBuilder,
-      private loginService: LoginService,
-      private authService: AuthService,
-      private cookieService: CookieService,
-      private cryptoService: CryptoService
-    ) {}
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private loginService: LoginService,
+    private authService: AuthService,
+    private cookieService: CookieService,
+    private cryptoService: CryptoService,
+  ) {}
 
-    ngOnInit(): void {
-      this.initForm();
-      if (this.authService.isAuthenticated()) {
-        this.router.navigate(['/dashboard']).then();
-      }
+  ngOnInit(): void {
+    this.initForm();
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']).then();
     }
+  }
 
-    initForm(){
-      this.userLoginForm = this.formBuilder.group({
-        usercode: ['', Validators.required],
-        password: ['', Validators.required],
-      })
-    }
+  initForm() {
+    this.userLoginForm = this.formBuilder.group({
+      usercode: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+  }
 
-    submit(): void {
-      if(!this.userLoginForm.valid) return;
+  submit(): void {
+    if (!this.userLoginForm.valid) return;
 
-      const userCredentials = this.userLoginForm.value;
+    const userCredentials = this.userLoginForm.value;
 
-      this.loginService.login(userCredentials).subscribe({
-        next: (response: Authentication) => {
-          const token = response.token;
+    this.loginService.login(userCredentials).subscribe({
+      next: (response: Authentication) => {
+        const token = response.token;
 
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          const expiry = payload.exp * 1000;
-          const encryptedRole = this.cryptoService.encrypt(response.role);
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const expiry = payload.exp * 1000;
+        const encryptedRole = this.cryptoService.encrypt(response.role);
 
-          this.cookieService.setCookie("authToken", token, expiry)
-          this.cookieService.setCookie("role", encryptedRole, expiry);
+        this.cookieService.setCookie('authToken', token, expiry);
+        this.cookieService.setCookie('role', encryptedRole, expiry);
 
-          if(response.role !== 'ADMIN'){
-            const encryptedUserId = this.cryptoService.encrypt(response.userId);
-            this.cookieService.setCookie("user_id", encryptedUserId, expiry);
-          }
+        const encryptedUserId = this.cryptoService.encrypt(response.userId);
+        this.cookieService.setCookie('user_id', encryptedUserId, expiry);
 
-          this.navigateTo('/dashboard');
-        },
-        error: () => {
-          this.credentialsError = !this.credentialsError;
-        }
-      })
-    }
+        this.navigateTo('/dashboard');
+      },
+      error: () => {
+        this.credentialsError = !this.credentialsError;
+      },
+    });
+  }
 
-    navigateTo(route: string) {
-      this.router.navigate([route]).then();
-    }
-
+  navigateTo(route: string) {
+    this.router.navigate([route]).then();
+  }
 }
