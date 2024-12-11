@@ -1,0 +1,218 @@
+<div class="h-screen">
+  <button
+    mat-button
+    class="text-2xl flex items-center m-5"
+    (click)="history.back()"
+  >
+    <mat-icon class="mr-2">arrow_back</mat-icon>
+    Back
+  </button>
+  <div class="flex items-center justify-center">
+    <div class="gap-8 flex flex-row">
+      <div
+        class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center"
+      >
+        <div class="w-[23vw] h-[85vh] flex justify-start flex-col">
+          <div class="flex flex-col gap-3">
+            <p class="text-custom-24 text-brightRed">
+              {{ selectedSchedule.subject?.code }} -
+              {{ selectedSchedule.subject?.description }}
+            </p>
+            <div class="flex flex-col">
+              <p class="text-lightGray text-custom-12">Professor</p>
+              <p class="text-custom-16 font-medium text-darkGray">
+                {{ selectedSchedule.professor?.firstName }}
+                {{ selectedSchedule.professor?.lastName }}
+              </p>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2 mt-12">
+            <p class="text-brightRed text-custom-24">Attendance List</p>
+            <hr class="border-t border-1 border-brightRed" />
+          </div>
+          <div class="mt-5 h-[55vh] overflow-y-auto row-container">
+            @for (student of studentsLogged; track student) {
+              <p class="text-darkGray text-custom-16">
+                {{ studentsLogged.indexOf(student) + 1 }}.
+                {{ student.firstName }} {{ student.lastName }}
+              </p>
+            }
+          </div>
+          @if (hasProfessorVerified) {
+            <div class="flex-grow"></div>
+            <div class="flex justify-center items-center">
+              <button
+                mat-flat-button
+                (click)="openConfirmationDialog(selectedSchedule)"
+                class="stop-attendance"
+              >
+                Stop Attendance
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="w-[54vw] h-[90vh] flex flex-col justify-between">
+        <div class="flex flex-row gap-8 bg-transparent">
+          <div
+            class="flex justify-start w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white"
+          >
+            <div class="flex flex-col">
+              <p class="text-custom-40">{{ currentTime }}</p>
+              <p class="text-custom-16 current-date">{{ currentDate }}</p>
+            </div>
+          </div>
+          <div
+            class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white"
+          >
+            <div class="flex flex-col">
+              <p class="text-custom-40">{{ studentsLogged.length }}</p>
+              <p class="text-custom-16">Total of Students Logged</p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="h-[75vh] w-full rounded-xl flex justify-center items-center"
+          [ngClass]="{
+            'bg-[#73AC4D]': simulate,
+            'bg-[#E7D7D7]': !simulate,
+          }"
+        >
+          <div class="flex flex-col w-[45vw] justify-center gap-4">
+            @if (!getStudent) {
+              <div
+                class="w-full rounded-xl h-[55vh] bg-white flex flex-col items-center justify-start pt-5 relative"
+              >
+                <div class="w-[98%] mt-5 flex flex-col items-start">
+                  <p class="text-custom-32 text-[#AB3130]">
+                    Add a student manually (from the class)
+                  </p>
+                </div>
+                <div class="w-[98%] mt-5">
+                  <div class="search-container">
+                    <mat-icon class="search-icon">search</mat-icon>
+                    <input type="text" placeholder="SEARCH" />
+                  </div>
+                  <div class="row-container mt-5">
+                    @for (student of class; track student) {
+                      <div
+                        class="row"
+                        [ngClass]="{
+                          'row-selected': selectedStudentId === student.student.id,
+                        }"
+                        (click)="selectStudent(student.student.id)"
+                      >
+                        <div class="cell">{{ student.student.firstName }} {{ student.student.lastName }}</div>
+                        <div class="cell">{{ student.student.section?.program?.programAbbreviation }} 
+                          {{ student.student.section?.year }} - {{ student.student.section?.section }}
+                        </div>
+                        <div
+                          class="cell"
+                          [ngClass]="{
+                            'text-[#AB3130]':
+                              student.hasLogged === false,
+                            'text-[#73AC4D]': student.hasLogged === true,
+                          }"
+                        >
+                          {{ student.hasLogged === true ? 'Logged' : 'Not Logged Yet' }} 
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                <div
+                  class="flex absolute right-0 bottom-0 w-full p-4 gap-4 bg-[#F84C421A] justify-end mt-10"
+                >
+                  <button
+                    class="bg-transparent text-[#7F7F7F] border-[#7F7F7F] border-2 px-8 py-2 rounded-3xl hover:bg-[#7F7F7F] hover:text-[#cecdcd]"
+                  >
+                    Back
+                  </button>
+                  <button
+                    class="bg-[#AB3130] text-white px-8 py-2 rounded-3xl hover:bg-[#7e2323] hover:text-[#cecdcd]"
+                    (click)="pickStudent()"
+                  >                              
+                    Done
+                  </button>
+                </div>
+              </div>
+            } @else if (getStudent) {
+              <div>
+                @if (!simulate) {
+                  <p class="text-custom-40 text-[#AB3130] font-medium">
+                    {{ reminder }}
+                  </p>
+                  <p class="text-custom-16 text-[#7F7F7F]">
+                    Please scan your fingerprint to confirm student presence.
+                  </p>
+                } @else if (simulate) {
+                  <p class="text-custom-40 text-[#F2F2F2] font-medium">
+                    {{ reminder }}
+                  </p>
+                }
+              </div>
+              <div
+                class="w-full rounded-xl h-[55vh] bg-white flex justify-center gap-9"
+              >
+                <div class="flex justify-between items-center">
+                  <div class="flex justify-center">
+                    <div class="flex gap-6 flex-col w-[20vw] justify-center">
+                      <div class="flex flex-col">
+                        <p class="text-lightGray text-custom-24">
+                          Student's Name
+                        </p>
+                        <p class="text-brightRed text-custom-32 font-weight400">
+                          {{ getStudent.firstName }} {{ getStudent.lastName }}
+                        </p>
+                      </div>
+                      <div class="flex flex-col">
+                        <p class="text-lightGray text-custom-24">
+                          Student Number
+                        </p>
+                        <p class="text-darkGray text-custom-32 font-weight400">
+                          {{ getStudent.usercode }}
+                        </p>
+                      </div>
+                      <div class="flex flex-col">
+                        <p class="text-lightGray text-custom-24">
+                          Course Year & Section
+                        </p>
+                        <p class="text-darkGray text-custom-32 font-weight400">
+                          {{ getStudent.section?.program?.programAbbreviation }} 
+                          {{ getStudent.section?.year }} - {{ getStudent.section?.section }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex justify-center">
+                    <div class="w-[20vw] flex justify-center items-center">
+                      <div class="drop-area">
+                        @if (profileImageUrl) {
+                          <img
+                            src="{{ profileImageUrl }}"
+                            alt="user profile image"
+                            class="object-cover w-full h-full"
+                          />
+                        } @else {
+                          <mat-icon class="person">person</mat-icon>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @if (!simulate) {
+                <p class="text-brightRed text-custom-14">
+                  <strong>Note</strong>: Only authorized personnel, such as the
+                  <strong>Admin</strong> or <strong>Professor</strong>, may
+                  initiate the scanning process.
+                </p>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

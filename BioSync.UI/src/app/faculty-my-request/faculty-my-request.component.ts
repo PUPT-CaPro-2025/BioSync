@@ -1,55 +1,57 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-import {ScheduleService} from "../../services/schedule.service";
-import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
-import {MatDialog} from "@angular/material/dialog";
-import {SchoolYearService} from "../../services/school.year.service";
-import {SchoolYear} from "../../model/school.year.model";
-import {Router} from "@angular/router";
-import {CryptoService} from "../../services/crypto.service";
-import {CookieService} from "../../services/cookie.service";
-import {User} from "../../model/user.model";
-import {UserService} from "../../services/user.service";
-import jsPDF from "jspdf";
+import { ScheduleService } from '../../services/schedule.service';
+import { PromptConfirmComponent } from '../prompt/prompt-confirm/prompt-confirm.component';
+import { MatDialog } from '@angular/material/dialog';
+import { SchoolYearService } from '../../services/school.year.service';
+import { SchoolYear } from '../../model/school.year.model';
+import { Router } from '@angular/router';
+import { CryptoService } from '../../services/crypto.service';
+import { CookieService } from '../../services/cookie.service';
+import { User } from '../../model/user.model';
+import { UserService } from '../../services/user.service';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-faculty-my-request',
   standalone: true,
-  imports: [MatToolbarModule,
+  imports: [
+    MatToolbarModule,
     MatIconModule,
     CommonModule,
     FormsModule,
     MatSelectModule,
   ],
-  providers: [ScheduleService,
+  providers: [
+    ScheduleService,
     SchoolYearService,
     UserService,
     CookieService,
-    CryptoService
+    CryptoService,
   ],
   templateUrl: './faculty-my-request.component.html',
-  styleUrls: ['./faculty-my-request.component.css', '../schedule/schedule.component.css']
+  styleUrls: [
+    './faculty-my-request.component.css',
+    '../schedule/schedule.component.css',
+  ],
 })
 export class FacultyMyRequestComponent implements OnInit {
-  entries: string[] = [
-    '10', '20', '30', '40', '50'
-  ];
+  entries: string[] = ['10', '20', '30', '40', '50'];
 
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
+  sorting: string[] = ['Subject Code', 'Alphabetical', 'Date'];
 
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-
   semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
+    'First Semester',
+    'Second Semester',
+    'Summer Semester',
   ];
   selectedSemester = 1;
 
@@ -59,7 +61,7 @@ export class FacultyMyRequestComponent implements OnInit {
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
-  totalPages!: number;;
+  totalPages!: number;
   isOneAddSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
@@ -77,16 +79,16 @@ export class FacultyMyRequestComponent implements OnInit {
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
-    private router : Router,
+    private router: Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
-    private userService: UserService
-    ) {}
+    private userService: UserService,
+  ) {}
 
   ngOnInit() {
-    if(this.getRole() === "ADMIN"){
+    if (this.getRole() === 'ADMIN') {
       this.getAllSchedules();
-    } else if (this.getRole() === "FACULTY"){
+    } else if (this.getRole() === 'FACULTY') {
       this.getUserId();
       this.getFacultySchedule(this.userId);
     } else {
@@ -116,19 +118,23 @@ export class FacultyMyRequestComponent implements OnInit {
     });
   }
 
-  getUserId(){
-    const encryptedUserId = decodeURIComponent(this.cookieService.getCookie("user_id")!);
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+      this.cookieService.getCookie('user_id')!,
+    );
     this.userId = +this.cryptoService.decrypt(encryptedUserId);
   }
 
-  getRole(){
+  getRole() {
     return this.cryptoService.decrypt(
-      decodeURIComponent(this.cookieService.getCookie("role")!));
+      decodeURIComponent(this.cookieService.getCookie('role')!),
+    );
   }
 
   getFacultySchedule(facultyId: number) {
     this.scheduleService.getAllRequestedSchedules(facultyId).subscribe({
       next: (schedules: Schedule[]) => {
+        console.log(schedules);
         this.schedules = schedules;
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
@@ -137,8 +143,8 @@ export class FacultyMyRequestComponent implements OnInit {
         this.setLatestSchoolYear();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-      }
-    })
+      },
+    });
   }
 
   setLatestSchoolYear() {
@@ -157,17 +163,19 @@ export class FacultyMyRequestComponent implements OnInit {
     if (schedules) {
       const daysSet = new Set<string>();
       schedules.forEach((schedule) => {
-        schedule.recurrenceDays!.forEach((day: String) => daysSet.add(day.toString()));
+        schedule.recurrenceDays!.forEach((day: String) =>
+          daysSet.add(day.toString()),
+        );
       });
       return Array.from(daysSet);
     }
     return [];
   }
 
-  onScheduleCreation(schedule: Schedule[]){
+  onScheduleCreation(schedule: Schedule[]) {
     schedule.forEach((schedule: Schedule) => {
       this.schedules.push(schedule);
-    })
+    });
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
@@ -183,8 +191,9 @@ export class FacultyMyRequestComponent implements OnInit {
   }
 
   onScheduleUpdate(updatedSchedule: Schedule) {
-    const index = this.schedules.findIndex(schedule =>
-      schedule.id === updatedSchedule.id);
+    const index = this.schedules.findIndex(
+      (schedule) => schedule.id === updatedSchedule.id,
+    );
 
     this.schedules[index] = updatedSchedule;
     this.getAllSchedules();
@@ -200,10 +209,10 @@ export class FacultyMyRequestComponent implements OnInit {
       data: {
         title: 'Delete Schedule',
         message: 'Are you sure you want to delete this schedule?',
-      }
+      },
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.deleteSchedule(schedule);
       }
@@ -214,28 +223,29 @@ export class FacultyMyRequestComponent implements OnInit {
     return this.scheduleService.getDayOfWeek(date);
   }
 
-  deleteSchedule(scheduleToDelete: Schedule){
-    this.scheduleService.deleteSchedule(scheduleToDelete)
-      .subscribe({
-        next: () => {
-          this.schedules = this.schedules.filter(
-            schedule => schedule.id !== scheduleToDelete.id
-          );
-          this.updatePagination();
-        }
-      })
+  deleteSchedule(scheduleToDelete: Schedule) {
+    this.scheduleService.deleteSchedule(scheduleToDelete).subscribe({
+      next: () => {
+        this.schedules = this.schedules.filter(
+          (schedule) => schedule.id !== scheduleToDelete.id,
+        );
+        this.updatePagination();
+      },
+    });
   }
 
   getAcademicYears() {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (academicYears: SchoolYear[]) => {
         this.academicYears = academicYears;
-      }
-    })
+      },
+    });
   }
 
   get pages(): number[] {
-    return Array(this.totalPages).fill(0).map((_, i) => i + 1);
+    return Array(this.totalPages)
+      .fill(0)
+      .map((_, i) => i + 1);
   }
 
   getDisplayRange(): string {
@@ -277,7 +287,8 @@ export class FacultyMyRequestComponent implements OnInit {
   }
 
   toggleDropdownAction(scheduleId: number): void {
-    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+    this.activeDropdownId =
+      this.activeDropdownId === scheduleId ? null : scheduleId;
   }
 
   @HostListener('document:click', ['$event'])
@@ -320,7 +331,7 @@ export class FacultyMyRequestComponent implements OnInit {
   }
 
   toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId) {
+    if (schedule.recurrenceId) {
       this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
     } else {
       this.router.navigate(['/attendance/start/', schedule.id]).then();
@@ -339,30 +350,33 @@ export class FacultyMyRequestComponent implements OnInit {
   filteredRepeatedSchedules(): void {
     const filteredSchedules: Schedule[] = [];
     const recurrenceIdStorage: string[] = [];
-    this.schedules.forEach(schedule => {
+    this.schedules.forEach((schedule) => {
       if (schedule.recurrenceId != null) {
-        if(!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+        if (!recurrenceIdStorage.includes(schedule.recurrenceId)) {
           recurrenceIdStorage.push(schedule.recurrenceId);
           filteredSchedules.push(schedule);
         }
       } else {
         filteredSchedules.push(schedule);
       }
-    })
+    });
 
     this.schedules = filteredSchedules;
   }
 
   groupSchedulesByRecurrenceId() {
-    this.groupedSchedules = this.schedules.reduce((acc, schedule) => {
-      if (schedule.recurrenceId) {
-        if (!acc[schedule.recurrenceId]) {
-          acc[schedule.recurrenceId] = [];
+    this.groupedSchedules = this.schedules.reduce(
+      (acc, schedule) => {
+        if (schedule.recurrenceId) {
+          if (!acc[schedule.recurrenceId]) {
+            acc[schedule.recurrenceId] = [];
+          }
+          acc[schedule.recurrenceId].push(schedule);
         }
-        acc[schedule.recurrenceId].push(schedule);
-      }
-      return acc;
-    }, {} as { [key: string]: Schedule[] });
+        return acc;
+      },
+      {} as { [key: string]: Schedule[] },
+    );
   }
 
   onAddScheduleClick() {
@@ -375,43 +389,43 @@ export class FacultyMyRequestComponent implements OnInit {
 
   onFilterChange() {
     this.schedules = this.scheduleContainer.filter(
-      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-      && schedule.semester?.id === this.selectedSemester
-    )
+      (schedule) =>
+        schedule.schoolYear?.id === this.selectedAcademicYear &&
+        schedule.semester?.id === this.selectedSemester,
+    );
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
   }
 
   toggleViewSchedule(schedule: Schedule) {
-    this.router.navigate(["/view/schedule", schedule.id]).then();
+    this.router.navigate(['/view/schedule', schedule.id]).then();
   }
 
   getSectionId(userId: number) {
     this.userService.getUserById(userId).subscribe({
       next: (user: User) => {
-        if(!user.id) return;
+        if (!user.id) return;
         this.getStudentSchedules(+user.section?.id!);
-      }
-    })
+      },
+    });
   }
 
-  getStudentSchedules(sectionId: number){
+  getStudentSchedules(sectionId: number) {
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules)
+        console.log(schedules);
         this.schedules = schedules;
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
-      }
-    })
+      },
+    });
   }
 
   generatePdf() {
-
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -433,17 +447,24 @@ export class FacultyMyRequestComponent implements OnInit {
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, pageWidth / 2, 35);
 
-    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
-    const rows = this.schedules.map(schedule =>
-      [
-        schedule.subject?.code,
-        schedule.subject?.name,
-        schedule.recurrenceDays,
-        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
-        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
-        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
-        schedule.laboratory?.name
-      ]);
+    const columns = [
+      'Subject Code',
+      'Subject Name',
+      'Schedule',
+      'Time',
+      'Faculty',
+      'Class',
+      'Laboratory',
+    ];
+    const rows = this.schedules.map((schedule) => [
+      schedule.subject?.code,
+      schedule.subject?.name,
+      schedule.recurrenceDays,
+      `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+      `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
+      `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
+      schedule.laboratory?.name,
+    ]);
 
     doc.autoTable({
       head: [columns],
@@ -463,13 +484,16 @@ export class FacultyMyRequestComponent implements OnInit {
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
     });
 
     doc.save('schedule-list.pdf');
   }
 
-  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
+  loadImageToBase64(
+    url: string,
+    callback: (base64Image: string) => void,
+  ): void {
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.src = url;

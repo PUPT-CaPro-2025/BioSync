@@ -13,6 +13,10 @@ public interface ScheduleStudentService {
       Schedule schedule,
       User student) throws DataAccessException;
 
+  void removeStudentFromSchedule(
+      Schedule schedule,
+      User student) throws DataAccessException;
+
   List<User> getStudentsByScheduleId(Long scheduleId) throws RuntimeException;
 
   ScheduleStudent setStudentComputerNumber(

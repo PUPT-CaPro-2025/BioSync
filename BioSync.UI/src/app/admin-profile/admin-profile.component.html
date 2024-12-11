@@ -3,21 +3,29 @@
     <span class="text-custom-32 text-brightRed">{{ currentStepLabel }}</span>
   </mat-toolbar>
 </div>
-<div
-  class="flex justify-center items-center mt-8 w-[90%] bg-transparent form-content"
->
+<div class="flex justify-center items-center mt-8 w-full bg-transparent">
   @if (!editMode) {
-    <div>
-      <p>Admin Information</p>
-      <ul>
-        <li>{{ admin.firstName }} {{ admin.lastName }}</li>
-        <li>{{ admin.usercode }}</li>
-        <li>
-          Fingerprint: {{ hasFingerprint ? "Registered" : "Unregistered" }}
-        </li>
-      </ul>
-      <button mat-button (click)="setEditMode()">Edit</button>
+    <div class="h-[75vh] w-[94%] flex justify-center items-center rounded-xl bg-[#AB3130]">
+      <div class="h-[50vh] w-[50%] flex justify-center items-center rounded-xl bg-[#FFFFFF] gap-8 p-6">
+        <div class="w-[90%] flex flex-col justify-start">
+          <img
+            src="{{ image }}"
+            alt="user profile image"
+            class="object-cover w-full h-full"
+          />
+        </div>
+          
+        <div class="w-[90%] flex flex-col justify-start items-start bg-transparent text-left">
+          <p class="text-lightGray">Admin</p>
+          <p class="text-custom-24 text-brightRed">{{ admin.firstName }} {{ admin.lastName }}</p>
+          <p class="mt-2 text-lightGray">Fingerprint</p>
+          <p class="font-semibold">{{ hasFingerprint ? "Registered" : "Unregistered" }}</p>
+          <button mat-button (click)="setEditMode()">Edit</button>
+        </div>
+      </div>
     </div>
+    
+    
   } @else {
     <mat-stepper
       [linear]="true"

@@ -30,6 +30,8 @@ import { CommonModule } from '@angular/common';
 import { Mail } from '../../model/mail.model';
 import { MailService } from '../../services/mail.service';
 import { FaceRecognitionService } from '../../services/face.recognition.service';
+import { CookieService } from '../../services/cookie.service';
+import { CryptoService } from '../../services/crypto.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -79,6 +81,7 @@ export class AdminProfileComponent implements OnInit {
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
+  image!: string;
   rightThumbFingerprintImageSrc!: Blob;
   rightIndexFingerprintImageSrc!: Blob;
   rightThumbState = 'Scan Left Index';
@@ -89,16 +92,20 @@ export class AdminProfileComponent implements OnInit {
   imageButtonLabel = 'Skip';
   editMode = false;
   hasFingerprint: boolean = false;
+  userId!: number;
 
   constructor(
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dialog: MatDialog,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private cookieService: CookieService,
+    private cryptoService: CryptoService,
   ) {}
 
   ngOnInit() {
+    this.getUserId();
     this.initForm();
     this.sdkService.loadSDK();
     this.getAdminInfo();
@@ -108,7 +115,7 @@ export class AdminProfileComponent implements OnInit {
           if (this.rightThumbFingerprintImageSrc == null) {
             this.rightThumbFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png'
+              'image/png',
             );
             this.isRightThumb = true;
             setTimeout(() => {
@@ -118,7 +125,7 @@ export class AdminProfileComponent implements OnInit {
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(
               src,
-              'image/png'
+              'image/png',
             );
             this.isRightIndex = true;
             this.rightIndexState = 'Right Index Captured';
@@ -128,10 +135,22 @@ export class AdminProfileComponent implements OnInit {
     });
   }
 
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+      this.cookieService.getCookie('user_id')!,
+    );
+    this.userId = +this.cryptoService.decrypt(encryptedUserId);
+  }
+
   getAdminInfo() {
-    this.userService.getUsersByRole('ADMIN').subscribe({
-      next: (user: User[]) => {
-        this.admin = user[0];
+    this.userService.getUserById(this.userId).subscribe({
+      next: (user: User) => {
+        this.admin = user;
+        this.fingerprintService.getProfileImageUrl(this.admin.id).subscribe({
+          next: (imageLink) => {
+            this.image = imageLink.profileImageUrl;
+          },
+        });
         console.log(this.admin);
         this.setFormValues();
         this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
@@ -212,7 +231,7 @@ export class AdminProfileComponent implements OnInit {
     formData.append(
       'profileImage',
       this.selectedProfileImage,
-      `user-${professorId}-img.png`
+      `user-${professorId}-img.png`,
     );
     this.userService.processProfileImage(formData).subscribe();
   }
@@ -223,12 +242,12 @@ export class AdminProfileComponent implements OnInit {
     formData.append(
       'fingerprint',
       this.rightIndexFingerprintImageSrc,
-      `right-index-${professor.lastName}.png`
+      `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
       this.rightThumbFingerprintImageSrc,
-      `right-thumb-${professor.lastName}.png`
+      `right-thumb-${professor.lastName}.png`,
     );
 
     this.fingerprintService.registerFingerprint(formData).subscribe({
