@@ -84,7 +84,7 @@ public class AttendanceController {
   public ResponseEntity<List<User>> getAttendanceByStudentId(@PathVariable Long id) {
     List<User> students = attendanceService.getStudentsLoggedByScheduleId(id);
 
-    if (students.isEmpty()) return ResponseEntity.notFound().build();
+    if (students.isEmpty()) return ResponseEntity.noContent().build();
 
     return ResponseEntity.ok(students);
   }
