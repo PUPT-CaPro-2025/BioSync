@@ -16,14 +16,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
-
-export interface AllStudents {
-  id: number;
-  name: string;
-  program: string;
-  status  : string;
-  usercode: string;
-}
+import { ClassResponse } from '../../../model/class.model';
 
 @Component({
   selector: 'app-manual-attendance',
@@ -54,34 +47,17 @@ export class ManualAttendanceComponent implements OnInit {
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
   reminder = 'Fingerprint Verification Required';
-  loggedProfessor!: User | null;
-  loggedStudent!: User | null;
-  studentVerified = false;
   profileImageUrl!: string;
   hasFingerprintScanner = false;
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
-  isError: boolean = false;
-  isSuccess: boolean = false;
-  isAlreadyLogged: boolean = false;
+  class: ClassResponse[] = [];
 
   //new/temporary variables
   simulate = false;
   selectedStudentId: number | null = null;
-  getStudent!: AllStudents | null;
-  allstudents: AllStudents[] = [ //temporary data
-    { id: 1, name: 'John Doe', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00123-TG-0' },
-    { id: 2, name: 'Jane Smith', program: 'BSIT 1-1', status: 'Logged', usercode: '2024-00233-TG-0' },
-    { id: 3, name: 'Alice Johnson', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00321-TG-0' },
-    { id: 4, name: 'Bob Brown', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00124-TG-0' },
-    { id: 5, name: 'Charlie Davis', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00100-TG-0' },
-    { id: 6, name: 'John Smith', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00131-TG-0' },
-    { id: 7, name: 'Jane Doe', program: 'BSIT 1-1', status: 'Logged', usercode: '2024-00117-TG-0' },
-    { id: 8, name: 'Zain Noir', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00118-TG-0' },
-    { id: 9, name: 'Rizz Love', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-00110-TG-0' },
-    { id: 10, name: 'Chair Lecler', program: 'BSIT 1-1', status: 'Not Logged Yet', usercode: '2024-001222-TG-0' },
-  ];
+  getStudent!: User | null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -112,11 +88,6 @@ export class ManualAttendanceComponent implements OnInit {
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-          if (!this.hasProfessorVerified) {
-            this.submitProfessor();
-          } else {
-            this.submitStudent();
-          }
         }
       },
     });
@@ -154,17 +125,27 @@ export class ManualAttendanceComponent implements OnInit {
       next: (value) => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
+        this.getUsersByScheduleId(value.id!);
         this.getLoggedStudents(value.id);
       },
     });
   }
 
-  private base64ToBlob(base64: string, contentType: string) {
-    return this.sdkService.base64ToBlob(base64, contentType);
+  getUsersByScheduleId(scheduleId: number) {
+    this.userService.getUsersByScheduleId(scheduleId).subscribe({
+      next: (value: ClassResponse[]) => {
+        this.class = value;
+        console.log(this.class);
+      },
+      error: (err) => {
+        console.error('Error fetching users by schedule ID:', err);
+      },
+    });
   }
 
-  get filteredAllStudent(): AllStudents[] {
-    return this.allstudents;
+
+  private base64ToBlob(base64: string, contentType: string) {
+    return this.sdkService.base64ToBlob(base64, contentType);
   }
 
   selectStudent(id: number): void {
@@ -173,110 +154,19 @@ export class ManualAttendanceComponent implements OnInit {
 
   pickStudent(): void {
     if (this.selectedStudentId !== null) {
-      this.getStudent = this.allstudents.find(student => student.id === this.selectedStudentId) || null;
+      const foundClass = this.class
+        .find(cls => cls.student.id === this.selectedStudentId);
+  
+      this.getStudent = foundClass ? foundClass.student : null;
+      this.getUserProfileImage(this.selectedStudentId);
       this.reminder = 'Fingerprint Verification Required';
     }
   }
 
+  //temporary function must do if fingerprint success
   simulateFingerprint(): void {
     this.simulate = true;
     this.reminder = 'Attendance Recorded';
-  }
-
-  submitProfessor() {
-    const formData = new FormData();
-
-    formData.append('userId', this.selectedProfessorId.toString());
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
-
-    this.fingerprintService
-      .verifyProfessorFingerprintForAttendance(formData)
-      .subscribe({
-        next: (value) => {
-          if (value)
-            this.userService.getUserById(this.selectedProfessorId).subscribe({
-              next: (professor) => {
-                this.loggedProfessor = professor;
-              },
-            });
-          const actualTimeStart =
-            this.cookieService.getCookie('actualTimeStart');
-          if (!actualTimeStart) {
-            this.cookieService.setCookie(
-              'actualTimeStart',
-              Date.now().toString(),
-            );
-          }
-          this.reminder = 'Fingerprint verified, Starting Attendance...';
-          this.isSuccess = true;
-          setTimeout(() => {
-            this.reminder = 'Scan Student Fingerprint';
-            this.hasProfessorVerified = true;
-            this.loggedProfessor = null;
-            this.isSuccess = false;
-          }, 3000);
-        },
-        error: (err) => {
-          console.log(err);
-          this.isError = true;
-          setTimeout(() => {
-            this.reminder = 'Scanning In-Charge Fingerprint...';
-            this.isError = false;
-          }, 3000);
-        },
-      });
-  }
-
-  submitStudent() {
-    const formData = new FormData();
-
-    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
-    formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
-
-    const actualTimeStart = parseInt(
-      <string>this.cookieService.getCookie('actualTimeStart'),
-    );
-    const currentTime = Date.now();
-    const timeDifferenceInMinutes =
-      (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('status', isStudentLate ? 'LATE' : 'PRESENT');
-
-    this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
-      next: (value) => {
-        this.loggedStudent = value.student;
-        this.studentsLogged.push(this.loggedStudent);
-        this.reminder = 'Attendance Recorded';
-        this.isSuccess = true;
-        this.getUserProfileImage(value.student.id);
-        setTimeout(() => {
-          this.loggedStudent = null;
-          this.studentVerified = true;
-          this.profileImageUrl = '';
-          this.reminder = 'Scan Student Fingerprint';
-          this.isSuccess = false;
-        }, 3000);
-      },
-      error: (err) => {
-        if (err.status == 409) {
-          this.reminder = 'Attendance has already been recorded';
-          this.loggedStudent = this.studentsLogged.find(
-            (student) => student.id == err.error,
-          )!;
-          this.isAlreadyLogged = true;
-        } else {
-          this.isError = true;
-          this.reminder = '';
-        }
-        setTimeout(() => {
-          this.loggedStudent = null;
-          this.reminder = 'Scan Student Fingerprint';
-          this.isAlreadyLogged = false;
-          this.isError = false;
-        }, 3000);
-      },
-    });
   }
 
   getUserProfileImage(userId: number) {

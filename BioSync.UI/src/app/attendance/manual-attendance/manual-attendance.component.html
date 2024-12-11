@@ -94,25 +94,27 @@
                     <input type="text" placeholder="SEARCH" />
                   </div>
                   <div class="row-container mt-5">
-                    @for (student of filteredAllStudent; track student) {
+                    @for (student of class; track student) {
                       <div
                         class="row"
                         [ngClass]="{
-                          'row-selected': selectedStudentId === student.id,
+                          'row-selected': selectedStudentId === student.student.id,
                         }"
-                        (click)="selectStudent(student.id)"
+                        (click)="selectStudent(student.student.id)"
                       >
-                        <div class="cell">{{ student.name }}</div>
-                        <div class="cell">{{ student.program }}</div>
+                        <div class="cell">{{ student.student.firstName }} {{ student.student.lastName }}</div>
+                        <div class="cell">{{ student.student.section?.program?.programAbbreviation }} 
+                          {{ student.student.section?.year }} - {{ student.student.section?.section }}
+                        </div>
                         <div
                           class="cell"
                           [ngClass]="{
                             'text-[#AB3130]':
-                              student.status === 'Not Logged Yet',
-                            'text-[#73AC4D]': student.status === 'Logged',
+                              student.hasLogged === false,
+                            'text-[#73AC4D]': student.hasLogged === true,
                           }"
                         >
-                          {{ student.status }}
+                          {{ student.hasLogged === true ? 'Logged' : 'Not Logged Yet' }} 
                         </div>
                       </div>
                     }
@@ -129,7 +131,7 @@
                   <button
                     class="bg-[#AB3130] text-white px-8 py-2 rounded-3xl hover:bg-[#7e2323] hover:text-[#cecdcd]"
                     (click)="pickStudent()"
-                  >
+                  >                              
                     Done
                   </button>
                 </div>
@@ -160,7 +162,7 @@
                           Student's Name
                         </p>
                         <p class="text-brightRed text-custom-32 font-weight400">
-                          {{ getStudent.name }}
+                          {{ getStudent.firstName }} {{ getStudent.lastName }}
                         </p>
                       </div>
                       <div class="flex flex-col">
@@ -176,7 +178,8 @@
                           Course Year & Section
                         </p>
                         <p class="text-darkGray text-custom-32 font-weight400">
-                          {{ getStudent.program }}
+                          {{ getStudent.section?.program?.programAbbreviation }} 
+                          {{ getStudent.section?.year }} - {{ getStudent.section?.section }}
                         </p>
                       </div>
                     </div>
