@@ -1,8 +1,6 @@
 <div class="flex items-center justify-center h-screen">
   <div class="gap-8 flex flex-row">
-    <div
-      class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center"
-    >
+    <div class="w-[25vw] h-[90vh] bg-white rounded-xl flex justify-center items-center">
       <div class="w-[23vw] h-[85vh] flex justify-start flex-col">
         <div class="flex flex-col gap-3">
           <p class="text-custom-24 text-brightRed">
@@ -234,6 +232,13 @@
               </div>
             </div>
           }
+          <div class="flex justify-center items-center">
+            @if(!isSuccess && !isError && hasProfessorVerified) {
+              <button mat-flat-button class="add-manual-student" (click)="goToManualAttendance()">
+                  Add Student Manually
+              </button>
+            }
+          </div>
         </div>
       </div>
     </div>

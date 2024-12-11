@@ -294,4 +294,9 @@ export class StartAttendanceComponent implements OnInit {
       },
     });
   }
+
+  goToManualAttendance() {
+    const url = this.router.serializeUrl(this.router.createUrlTree(['/attendance/manual']));
+    window.open(url, '_blank');
+  }
 }
