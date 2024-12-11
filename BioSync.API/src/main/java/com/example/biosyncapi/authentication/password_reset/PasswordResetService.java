@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.UUID;
 
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class PasswordResetService {
       return token;
   }
 
-  public void sendPasswordResetToken(User user, String token) {
+  public void sendPasswordResetToken(User user, String token) throws MessagingException {
     String resetUrl = origin + "/reset-password?token=" + token;
     String subject = "Password Reset Request";
     String text = "Click the link to reset your password: " + resetUrl;
