@@ -51,7 +51,7 @@ public class PasswordResetService {
 
   public void sendPasswordResetToken(User user, String token) throws MessagingException {
     String resetUrl = origin + "/reset-password?token=" + token;
-    String subject = "Password Reset Request";
+    String subject = "Reset your password for BioSync";
     String text = """
     <!DOCTYPE html>
     <html xmlns='http://www.w3.org/1999/xhtml'>
