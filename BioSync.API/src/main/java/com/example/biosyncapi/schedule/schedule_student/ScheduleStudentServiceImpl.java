@@ -90,4 +90,28 @@ public class ScheduleStudentServiceImpl implements ScheduleStudentService {
 
   }
 
+  @Override
+  public void removeStudentFromSchedule(
+      Schedule schedule,
+      User student) throws DataAccessException
+  {
+    if (schedule.getRecurrenceId() == null) {
+      ScheduleStudent scheduleStudent =
+          scheduleStudentRepository.findByStudentIdAndScheduleId(
+              student.getId(), schedule.getId());
+      scheduleStudentRepository.delete(scheduleStudent);
+      return;
+    }
+
+    List<Schedule> scheduleList =
+        scheduleRepository.findByRecurrenceId(schedule.getRecurrenceId());
+
+    for (Schedule scheduleItem : scheduleList) {
+
+      ScheduleStudent scheduleStudent =
+          scheduleStudentRepository.findByStudentIdAndScheduleId(
+              student.getId(), scheduleItem.getId());
+      scheduleStudentRepository.delete(scheduleStudent);
+    }
+  }
 }

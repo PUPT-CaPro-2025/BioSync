@@ -21,6 +21,16 @@ export class FingerprintService {
     private cookieService: CookieService,
   ) {}
 
+  hasFingerprint(userId: number) {
+    return this.http.get<boolean>(
+      `${environment.apiUrl}/api/v1/fingerprints/${userId}`,
+      {
+        headers: this.headers,
+        withCredentials: true,
+      },
+    );
+  }
+
   registerFingerprint(formData: FormData) {
     return this.http.post(
       `${environment.apiUrl}/api/v1/fingerprints/upload`,
