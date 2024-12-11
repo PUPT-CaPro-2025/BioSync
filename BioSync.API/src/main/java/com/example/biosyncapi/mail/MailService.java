@@ -45,7 +45,7 @@ public class MailService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("BioSync <" + from + ">");
             message.setTo(user.getEmail());
-            message.setSubject("BioSync Account Credentials");
+            message.setSubject("Get Started with BioSync");
 
             String emailBody = String.format("""
             Hello! Welcome to BioSync. Please save your account credentials below:
