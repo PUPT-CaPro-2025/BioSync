@@ -338,4 +338,6 @@ export class ManualAttendanceComponent implements OnInit {
       },
     });
   }
+
+  protected readonly history = history;
 }

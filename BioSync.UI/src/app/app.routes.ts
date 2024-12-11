@@ -73,7 +73,7 @@ export const routes: Routes = [
         path: "attendance/face/start/:id",
         component: FaceRecognitionAttendanceComponent
     },
-    {path: "attendance/start/manual/:id", component: ManualAttendanceComponent},
+    {path: "attendance/manual/start/:id", component: ManualAttendanceComponent},
     {path: "view/attendance/:id", component: ViewAttendanceComponent},
     {path: "school-year", component: SchoolYearComponent},
     {path: "program", component: ProgramComponent},

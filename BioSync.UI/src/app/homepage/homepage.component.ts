@@ -22,7 +22,9 @@ export class HomepageComponent implements AfterViewInit {
     '/login',
     '/forgot-password',
     '/reset-password',
-    '/visitor-log'
+    '/visitor-log',
+    '/attendance/fingerprint/start/',
+    '/attendance/manual/start/',
   ];
 
   constructor(private router: Router, private cd: ChangeDetectorRef) {

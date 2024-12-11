@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { SdkService } from '../../../services/sdk.service';
@@ -298,7 +298,13 @@ export class StartAttendanceComponent implements OnInit {
   }
 
   goToManualAttendance() {
-    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/start/manual/`, this.id]));
+    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/manual/start/`, this.id]));
     window.open(url, '_blank');
   }
+
+  handleBackEvent(){
+    this.router.navigate(['/schedule']).then();
+  }
+
+  protected readonly history = history;
 }
