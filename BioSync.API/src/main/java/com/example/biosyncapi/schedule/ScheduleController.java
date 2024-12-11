@@ -143,6 +143,31 @@ public class ScheduleController {
     }
   }
 
+  @PostMapping("student/remove")
+  public ResponseEntity<?> removeStudent(
+      @RequestParam("schedule_id") Long scheduleId,
+      @RequestParam("student_id") Long studentId)
+  {
+    try {
+      Schedule schedule =
+          scheduleService.getScheduleById(scheduleId).orElse(null);
+      if (schedule == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+
+      User student = userService.getUserById(studentId).orElse(null);
+      if (student == null) {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+
+      this.scheduleStudentService.removeStudentFromSchedule(schedule, student);
+      return new ResponseEntity<>(HttpStatus.OK);
+
+    } catch (DataIntegrityViolationException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @PutMapping("/students/computer")
   public ResponseEntity<?> createStudentSchedule(@RequestBody ScheduleStudent scheduleStudent) {
     Long computerNumber = scheduleStudent.getComputerNumber();

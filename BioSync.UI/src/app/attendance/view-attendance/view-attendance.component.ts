@@ -25,7 +25,7 @@ export class ViewAttendanceComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
   ) {}
 
   ngOnInit() {
@@ -79,10 +79,10 @@ export class ViewAttendanceComponent implements OnInit {
     doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
     doc.setFontSize(10);
-    const leftX = 20; 
-    const rightX = pageWidth - 20; 
+    const leftX = 20;
+    const rightX = pageWidth - 20;
     let currentY = 40;
-    const lineHeight = 6; 
+    const lineHeight = 6;
 
     doc.setFont('helvetica', 'bold');
     doc.text('Course:', leftX, currentY);
@@ -98,6 +98,30 @@ export class ViewAttendanceComponent implements OnInit {
     currentY += lineHeight;
 
     doc.setFont('helvetica', 'bold');
+    doc.text('Faculty:', leftX, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(
+      `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` ||
+        '',
+      leftX + 40,
+      currentY,
+    );
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Start/End Time:', rightX - 40, currentY, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(
+      `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` ||
+        '',
+      rightX,
+      currentY,
+      {
+        align: 'right',
+      },
+    );
+    currentY += lineHeight;
+
+    doc.setFont('helvetica', 'bold');
     doc.text('Program & Year:', leftX, currentY);
     doc.setFont('helvetica', 'normal');
     doc.text(
@@ -105,7 +129,7 @@ export class ViewAttendanceComponent implements OnInit {
         this.schedule.section?.section || ''
       }`,
       leftX + 40,
-      currentY
+      currentY,
     );
 
     doc.setFont('helvetica', 'bold');
@@ -141,13 +165,16 @@ export class ViewAttendanceComponent implements OnInit {
       },
     });
 
-    doc.save(`attendance-${this.schedule.subject?.code}-${this.
-      schedule.scheduleDate}.pdf`);
+    doc.save(
+      `attendance-${this.schedule.subject?.code}-${
+        this.schedule.scheduleDate
+      }.pdf`,
+    );
   }
 
   loadImageToBase64(
     url: string,
-    callback: (base64Image: string) => void
+    callback: (base64Image: string) => void,
   ): void {
     const img = new Image();
     img.crossOrigin = 'Anonymous';

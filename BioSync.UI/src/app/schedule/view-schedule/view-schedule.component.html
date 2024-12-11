@@ -1,122 +1,133 @@
 <div class="flex justify-center items-center">
-    <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">View Schedule</span>
-        <button class="header-button">Print Schedule Report</button>
-    </mat-toolbar>
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">View Schedule</span>
+    <button class="header-button">Print Schedule Report</button>
+  </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
-    <div class="mt-2 w-[94%] bg-white py-4 px-4 rounded-2xl">
-        <div class="flex flex-col gap-6">
-            <div class="flex justify-start items-start row-content">
-                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
-                    Subject Description:
-                </p>
-                <p class="text-darkGray text-custom-16 w-[80%] data">
-                    {{ schedule.subject?.description }}
-                </p>
-            </div>
-            <div class="flex justify-start items-start row-content">
-                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
-                    Room:
-                </p>
-                <p class="text-darkGray text-custom-16 w-[80%] data">
-                    {{ schedule.laboratory?.name }}
-                </p>
-            </div>
-            <div class="flex justify-start items-start row-content">
-                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
-                    When:
-                </p>
-                <p class="text-darkGray text-custom-16 w-[80%] data">
-                    {{ convertTo12HourFormat(schedule.startTime) }} -
-                    {{ convertTo12HourFormat(schedule.endTime) }} |
-                    @if (schedule.recurrenceId) {
-                        {{ schedule.recurrenceDays }} / {{ schedule.recurrence }}
-                    } @else {
-                        {{ getReadableDate(schedule.scheduleDate) }}
-                    }
-                </p>
-            </div>
-            <div class="flex justify-start items-start row-content">
-                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
-                    Who:
-                </p>
-                <p class="text-darkGray text-custom-16 w-[80%] data">
-                    {{ schedule.section?.program?.programAbbreviation }}
-                    {{ schedule.section?.year }} - {{ schedule.section?.section }}
-                </p>
-            </div>
-            <div class="flex justify-start items-start row-content">
-                <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
-                    Professor:
-                </p>
-                <p class="text-darkGray text-custom-16 w-[80%] data">
-                    {{ schedule.professor?.firstName }} {{ schedule.professor?.lastName }}
-                </p>
-            </div>
-        </div>
+  <div class="mt-2 w-[94%] bg-white py-4 px-4 rounded-2xl">
+    <div class="flex flex-col gap-6">
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Subject Description:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.subject?.description }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Room:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.laboratory?.name }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          When:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ convertTo12HourFormat(schedule.startTime) }} -
+          {{ convertTo12HourFormat(schedule.endTime) }} |
+          @if (schedule.recurrenceId) {
+            {{ schedule.recurrenceDays }} / {{ schedule.recurrence }}
+          } @else {
+            {{ getReadableDate(schedule.scheduleDate) }}
+          }
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Who:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.section?.program?.programAbbreviation }}
+          {{ schedule.section?.year }} - {{ schedule.section?.section }}
+        </p>
+      </div>
+      <div class="flex justify-start items-start row-content">
+        <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+          Professor:
+        </p>
+        <p class="text-darkGray text-custom-16 w-[80%] data">
+          {{ schedule.professor?.firstName }} {{ schedule.professor?.lastName }}
+        </p>
+      </div>
     </div>
+  </div>
 </div>
 <div class="flex justify-center items-center">
-    <mat-toolbar class="toolbar-container">
-        <span class="text-custom-32 text-brightRed">Students</span>
-        <div class="flex gap-5">
-            @if(getRole() !== "STUDENT"){
-                <div class="toolbar-button">
-                    <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
-                    <mat-menu #menu="matMenu">
-                        <button mat-menu-item (click)="toggleAddStudent()">
-                            Add Single Student
-                        </button>
-                        <button mat-menu-item (click)="toggleBulkAddStudent()">
-                            Add Multiple Student
-                        </button>
-                    </mat-menu>
-                </div>
-            }
+  <mat-toolbar class="toolbar-container">
+    <span class="text-custom-32 text-brightRed">Students</span>
+    <div class="flex gap-5">
+      @if (getRole() !== "STUDENT") {
+        <div class="toolbar-button">
+          <button mat-button [matMenuTriggerFor]="menu">Add Student</button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="toggleAddStudent()">
+              Add Single Student
+            </button>
+            <button mat-menu-item (click)="toggleBulkAddStudent()">
+              Add Multiple Student
+            </button>
+          </mat-menu>
         </div>
-    </mat-toolbar>
+      }
+    </div>
+  </mat-toolbar>
 </div>
 <div class="table-container">
-    <div class="subject-table">
-        <div class="attributes text-custom-16">
-            <div class="cell">Student Number</div>
-            <div class="cell">Student Name</div>
-            <div class="cell">Assigned PC</div>
-            <div class="cell">Actions</div>
-        </div>
-        <div class="row-container text-custom-12">
-            @for (student of class; track student) {
-                <div class="row">
-                    <div class="cell">{{ student.student.usercode }}</div>
-                    <div class="cell">
-                        {{ student.student.lastName }} {{ student.student.firstName }}
-                    </div>
-                    <div class="cell">
-                        {{ student.computerNumber ? student.computerNumber : "Unassigned" }}
-                    </div>
-                    <div class="cell">
-                        <button
-                                mat-mini-fab
-                                (click)="
-                toggleAssignedComputer(student)
-              "
-                        >
-                            <mat-icon>computer</mat-icon>
-                        </button>
-                    </div>
-                </div>
-            }
-        </div>
+  <div class="subject-table">
+    <div class="attributes text-custom-16">
+      <div class="cell">Student Number</div>
+      <div class="cell">Student Name</div>
+      <div class="cell">Assigned PC</div>
+      <div class="cell">Actions</div>
     </div>
+    <div class="row-container text-custom-12">
+      @for (student of class; track student) {
+        <div class="row">
+          <div class="cell">{{ student.student.usercode }}</div>
+          <div class="cell">
+            {{ student.student.lastName }} {{ student.student.firstName }}
+          </div>
+          <div class="cell">
+            {{ student.computerNumber ? student.computerNumber : "Unassigned" }}
+          </div>
+          <div class="cell">
+            <button
+              (click)="toggleDropdownAction(student.id)"
+              class="dropdown-toggle"
+            >
+              <mat-icon>more_horiz</mat-icon>
+            </button>
+            @if (activeDropdownId === student.id) {
+              <div class="action-container">
+                <button
+                  class="action-button"
+                  (click)="toggleAssignedComputer(student)"
+                >
+                  Assign PC
+                </button>
+                <button class="action-button" (click)="removeStudent(student)">
+                  Remove
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
 </div>
 <div class="flex justify-center items-center">
-    <div class="mb-10 flex justify-end w-[94%] button-content">
-        <button
-                class="text-custom-14 text-white py-2 px-19 bg-gradient-red rounded-full hover:bg-gradient-dark-red hover:text-f4White"
-                (click)="returnToSchoolYearView()"
-        >
-            Back
-        </button>
-    </div>
+  <div class="mb-10 flex justify-end w-[94%] button-content">
+    <button
+      class="text-custom-14 text-white py-2 px-19 bg-gradient-red rounded-full hover:bg-gradient-dark-red hover:text-f4White"
+      (click)="returnToSchoolYearView()"
+    >
+      Back
+    </button>
+  </div>
 </div>

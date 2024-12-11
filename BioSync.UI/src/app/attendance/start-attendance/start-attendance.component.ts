@@ -26,14 +26,14 @@ import { UserService } from '../../../services/user.service';
     FormsModule,
     MatIconModule,
     NgOptimizedImage,
-    CommonModule
+    CommonModule,
   ],
   providers: [
     ScheduleService,
     SdkService,
     FingerprintService,
     AttendanceService,
-    UserService
+    UserService,
   ],
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
@@ -155,12 +155,16 @@ export class StartAttendanceComponent implements OnInit {
                 this.loggedProfessor = professor;
               },
             });
-            const actualTimeStart = this.cookieService.getCookie("actualTimeStart");
-            if (!actualTimeStart) {
-              this.cookieService.setCookie('actualTimeStart', Date.now().toString());
-            }
-            this.reminder = 'Fingerprint verified, Starting Attendance...';
-            this.isSuccess = true;
+          const actualTimeStart =
+            this.cookieService.getCookie('actualTimeStart');
+          if (!actualTimeStart) {
+            this.cookieService.setCookie(
+              'actualTimeStart',
+              Date.now().toString(),
+            );
+          }
+          this.reminder = 'Fingerprint verified, Starting Attendance...';
+          this.isSuccess = true;
           setTimeout(() => {
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
@@ -186,12 +190,14 @@ export class StartAttendanceComponent implements OnInit {
     formData.append('scheduleId', `${this.selectedSchedule.id}`);
     formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
 
-    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
-        "actualTimeStart"));
+    const actualTimeStart = parseInt(
+      <string>this.cookieService.getCookie('actualTimeStart'),
+    );
     const currentTime = Date.now();
-    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const timeDifferenceInMinutes =
+      (currentTime - actualTimeStart) / (1000 * 60);
     const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('status', isStudentLate ? "LATE" : "PRESENT");
+    formData.append('status', isStudentLate ? 'LATE' : 'PRESENT');
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
@@ -211,10 +217,11 @@ export class StartAttendanceComponent implements OnInit {
       error: (err) => {
         if (err.status == 409) {
           this.reminder = 'Attendance has already been recorded';
-          this.loggedStudent = this.studentsLogged.find(student => student.id == err.error)!;
+          this.loggedStudent = this.studentsLogged.find(
+            (student) => student.id == err.error,
+          )!;
           this.isAlreadyLogged = true;
-        }
-        else {
+        } else {
           this.isError = true;
           this.reminder = '';
         }
@@ -223,7 +230,7 @@ export class StartAttendanceComponent implements OnInit {
           this.reminder = 'Scan Student Fingerprint';
           this.isAlreadyLogged = false;
           this.isError = false;
-      }, 3000);
+        }, 3000);
       },
     });
   }
@@ -249,7 +256,8 @@ export class StartAttendanceComponent implements OnInit {
     });
 
     ref.afterClosed().subscribe({
-      next: () => {
+      next: (result) => {
+        if (!result) return;
         this.stopAttendance(schedule);
       },
     });
