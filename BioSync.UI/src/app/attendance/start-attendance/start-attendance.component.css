@@ -18,6 +18,21 @@
     font-weight: 500 !important;
 }
 
+.add-manual-student {
+    color: white !important;
+    padding: 8px 60px !important;
+    background: #AB3130 !important;
+    border: none !important;
+    border-radius: 20px !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    width: 15vw !important;
+}
+
+.add-manual-student:hover {
+    background: #77221e !important;
+}
+
 .drop-area {
     display: flex;
     flex-direction: column;
