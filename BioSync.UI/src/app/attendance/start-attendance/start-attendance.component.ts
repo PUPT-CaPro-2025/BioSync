@@ -58,6 +58,7 @@ export class StartAttendanceComponent implements OnInit {
   isError: boolean = false;
   isSuccess: boolean = false;
   isAlreadyLogged: boolean = false;
+  id!: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -77,6 +78,7 @@ export class StartAttendanceComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
         const scheduleId = +params.get('id')!;
+        this.id = scheduleId;
         this.getScheduleDetails(scheduleId);
       },
     });
@@ -296,7 +298,7 @@ export class StartAttendanceComponent implements OnInit {
   }
 
   goToManualAttendance() {
-    const url = this.router.serializeUrl(this.router.createUrlTree(['/attendance/manual']));
+    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/start/manual/`, this.id]));
     window.open(url, '_blank');
   }
 }
