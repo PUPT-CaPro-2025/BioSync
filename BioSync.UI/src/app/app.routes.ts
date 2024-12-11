@@ -47,6 +47,7 @@ import {
 import { SuffixComponent } from './suffix/suffix.component';
 import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
 import { AdminProfileComponent } from './admin-profile/admin-profile.component';
+import { ManualAttendanceComponent } from './attendance/manual-attendance/manual-attendance.component';
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
@@ -72,6 +73,7 @@ export const routes: Routes = [
         path: "attendance/face/start/:id",
         component: FaceRecognitionAttendanceComponent
     },
+    {path: "attendance/start/manual/:id", component: ManualAttendanceComponent},
     {path: "view/attendance/:id", component: ViewAttendanceComponent},
     {path: "school-year", component: SchoolYearComponent},
     {path: "program", component: ProgramComponent},
