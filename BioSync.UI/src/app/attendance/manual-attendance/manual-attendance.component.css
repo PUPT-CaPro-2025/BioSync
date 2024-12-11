@@ -1,0 +1,75 @@
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    color: gray;
+}
+
+.search-container input {
+    font-size: 16px;
+    padding: 4px 80px 4px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #7F7F7F;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: calc(100vh - 675px);
+    overflow-y: auto;
+}
+
+.row {
+    font-size: 16px;
+    display: flex;
+    align-items: center; 
+    padding: 12px;
+    border: 2px solid #EFE9E9;
+    border-radius: 12px;
+    position: relative;
+    overflow: visible;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.row:hover {
+  background-color: #f1f1f1;
+}
+
+.row-selected {
+    border-color: #AB3130 !important; 
+}
+
+.cell {
+    flex: 1;
+    padding: 0 10px;
+    text-align: left;    
+}
+
+.row-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.row-container::-webkit-scrollbar-track {
+    background-color: #E3E3E3;
+    border-radius: 10px;
+}
+
+.row-container::-webkit-scrollbar-thumb {
+    background-color: #D33C33;
+    border-radius: 10px;
+    border: 2px solid #E3E3E3;
+}
+
+.row-container::-webkit-scrollbar-thumb:hover {
+    background-color: #F9653F;
+}
