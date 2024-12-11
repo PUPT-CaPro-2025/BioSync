@@ -57,9 +57,16 @@
                     </div>
                 </div>
             </div>
-            <div class="h-[75vh] w-full bg-gradient-red rounded-xl flex justify-center items center">
+            <div class="h-[75vh] w-full rounded-xl flex justify-center items center" [ngClass]="{
+                'bg-[#73AC4D]': loggedUser,
+                'bg-[#AB3130]': unrecognized,
+                'bg-[#E7D7D7]': !loggedUser && !unrecognized
+              }">
                 <div class="flex flex-col w-[45vw] justify-center gap-4">
-                    <p class="text-custom-32 text-f2White font-medium">
+                    <p class="text-custom-32 font-medium" [ngClass]="{
+                        'text-[#F2F2F2]': loggedUser || unrecognized,
+                        'text-[#AB3130]': !loggedUser
+                      }">
                         @if (!loggedUser) {
                             {{ reminder }}
                         } @else if (loggedUser) {
@@ -142,10 +149,19 @@
                             </div>
                         } @else if(unrecognized) {
                             <div class="w-[23vw] rounded-xl h-[55vh] bg-white flex justify-center gap-9">
-                                <div class="flex justify-center flex-col gap-24">
-                                    <div class="w-[20vw] flex justify-center items-center text-red-400 gap-2">
-                                        <span class="material-icons text-3xl">warning</span>
-                                        <span class="text-xl font-bold">USER IS NOT RECOGNIZED</span>
+                                <div class="flex justify-center items-center flex-col gap-14 w-[50%]">
+                                    <div class="w-[10vw] rounded-2xl flex justify-center items-center bg-[#F2E8E9]">
+                                        <div class="error-image">
+                                            <img src="../../../assets/exclamation-error.png">
+                                        </div>
+                                    </div>
+                                    <div class="w-[20vw] flex justify-center items-center text-brightRed gap-2">
+                                        <div class="flex flex-col">
+                                            <p class="text-brightRed font-semibold text-custom-32">
+                                              User Is Not Recognized. 
+                                            </p>
+                                            <p class="text-brightRed text-custom-20">Please try again.</p>
+                                          </div>
                                     </div>
                                 </div>
                             </div>

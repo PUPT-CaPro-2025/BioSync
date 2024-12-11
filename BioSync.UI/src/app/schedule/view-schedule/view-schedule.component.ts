@@ -17,8 +17,9 @@ import { PromptCsvComponent } from '../../prompt/prompt-csv/prompt-csv.component
 import { AddToScheduleComponent } from '../../prompt/add-to-schedule/add-to-schedule.component';
 import { SetComputerComponent } from '../../prompt/set-computer/set-computer.component';
 import { ClassResponse } from '../../../model/class.model';
-import {CookieService} from "../../../services/cookie.service";
-import {CryptoService} from "../../../services/crypto.service";
+import { CookieService } from '../../../services/cookie.service';
+import { CryptoService } from '../../../services/crypto.service';
+import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confirm.component';
 
 @Component({
   selector: 'app-view-schedule',
@@ -30,9 +31,7 @@ import {CryptoService} from "../../../services/crypto.service";
     MatMenu,
     MatMenuItem,
     MatMenuTrigger,
-    MatIconButton,
     MatMiniFabButton,
-    MatFabButton,
   ],
   providers: [ScheduleService, UserService, CookieService, CryptoService],
   templateUrl: './view-schedule.component.html',
@@ -41,7 +40,7 @@ import {CryptoService} from "../../../services/crypto.service";
 export class ViewScheduleComponent implements OnInit {
   schedule!: Schedule;
   class: ClassResponse[] = [];
-
+  activeDropdownId: number | null = null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -49,7 +48,7 @@ export class ViewScheduleComponent implements OnInit {
     private userService: UserService,
     private dialog: MatDialog,
     private cookieService: CookieService,
-    private cryptoService: CryptoService
+    private cryptoService: CryptoService,
   ) {}
 
   ngOnInit() {
@@ -66,7 +65,6 @@ export class ViewScheduleComponent implements OnInit {
         this.getUsersByScheduleId(this.schedule.id!);
       },
     });
-
   }
 
   getUsersByScheduleId(scheduleId: number) {
@@ -122,7 +120,7 @@ export class ViewScheduleComponent implements OnInit {
       width: '450px',
       height: '280px',
       data: data,
-      autoFocus: false
+      autoFocus: false,
     });
   }
 
@@ -136,8 +134,41 @@ export class ViewScheduleComponent implements OnInit {
     });
   }
 
-  getRole(): string{
-    const getTheRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+  getRole(): string {
+    const getTheRole = <string>(
+      decodeURIComponent(this.cookieService.getCookie('role')!)
+    );
     return this.cryptoService.decrypt(getTheRole);
+  }
+
+  toggleDropdownAction(scheduleId: number): void {
+    this.activeDropdownId =
+      this.activeDropdownId === scheduleId ? null : scheduleId;
+  }
+
+  removeStudent(data: ClassResponse) {
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        title: 'Remove Student',
+        message: 'Are you sure you want to remove this student?',
+        action: 'Remove',
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if (result) {
+          this.userService
+            .removeUserToSchedule(data.schedule.id, data.student.id)
+            .subscribe({
+              next: () => {
+                this.class = this.class.filter((cls) => cls.id != data.id);
+              },
+            });
+        }
+      },
+    });
   }
 }

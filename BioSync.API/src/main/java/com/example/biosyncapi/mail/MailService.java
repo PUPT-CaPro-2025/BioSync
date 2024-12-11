@@ -1,9 +1,12 @@
 package com.example.biosyncapi.mail;
 
 import com.example.biosyncapi.user.User;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,12 +24,15 @@ public class MailService {
         this.mailSender = mailSender;
     }
 
-    public void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("BioSync <"+ from + ">");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+    public void sendMail(String to, String subject, String text)
+        throws MessagingException
+    {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("BioSync <"+ from + ">");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(text, true);
 
         mailSender.send(message);
     }
@@ -53,7 +59,4 @@ public class MailService {
             mailSender.send(message);
         }
     }
-
-
-
 }

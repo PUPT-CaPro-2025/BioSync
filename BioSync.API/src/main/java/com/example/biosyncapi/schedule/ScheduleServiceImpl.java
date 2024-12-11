@@ -111,6 +111,9 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
 
             schedule.setScheduleStudents(scheduleStudents);
+            if(schedule.getRequester() != null){
+                schedule.setRequester(schedule.getProfessor());
+            }
             schedules.add(schedule);
             scheduleRepository.saveAll(schedules);
             return schedules;
@@ -142,6 +145,9 @@ public class ScheduleServiceImpl implements ScheduleService {
                 Schedule newSchedule = setNewSchedule(schedule, startDate);
                 newSchedule.setRecurrenceId(recurrenceId);
                 newSchedule.setRecurrence(schedule.getRecurrence());
+                if(schedule.getRequester() != null){
+                    newSchedule.setRequester(schedule.getProfessor());
+                }
                 newSchedule.setStatus(schedule.getStatus());
 
                 List<ScheduleStudent> scheduleStudents = new ArrayList<>();
@@ -256,7 +262,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Schedule updatePartialSchedule(Long id, Status updates) {
         Schedule existingSchedule = scheduleRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+
+        if(existingSchedule.getRecurrence() != Recurrence.NONE) {
+            List<Schedule> relatedSchedules = scheduleRepository.findByRecurrenceId(existingSchedule.getRecurrenceId());
+
+            for (Schedule relatedSchedule : relatedSchedules) {
+                relatedSchedule.setStatus(updates);
+            }
+
+            scheduleRepository.saveAll(relatedSchedules);
+            return existingSchedule;
+        }
+
         existingSchedule.setStatus(updates);
+
         return scheduleRepository.save(existingSchedule);
     }
 

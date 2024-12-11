@@ -1,5 +1,6 @@
 package com.example.biosyncapi.authentication.password_reset;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ public class PasswordResetController {
   }
 
   @PostMapping("/forgot")
-  public ResponseEntity<?> processForgotPassword(@RequestParam String email) {
+  public ResponseEntity<?> processForgotPassword(@RequestParam String email) throws MessagingException {
     User user = userRepository.findByEmail(email);
 
     if (user == null)
