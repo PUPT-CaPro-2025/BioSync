@@ -195,7 +195,7 @@ export class AddScheduleComponent implements OnInit {
               scheduleDate: this.convertToISOFormat(
                 scheduleDay.toString(),
               )?.split('T')[0],
-            });
+            }, {emitEvent: false});
           }
 
           if (this.isFormValid(formValues)) {
