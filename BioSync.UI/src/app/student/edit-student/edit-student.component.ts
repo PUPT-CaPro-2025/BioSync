@@ -96,8 +96,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   studentForm!: FormGroup;
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
   rightThumbState = 'Scan Left Index';
   hasRightThumb = false;
   isRightThumb = false;
@@ -109,6 +109,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
   private stream: MediaStream | null = null;
+  disableReset = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -136,9 +137,11 @@ export class EditStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightThumb = true;
+            this.disableReset = true;
             setTimeout(() => {
               this.rightThumbState = 'Left Index Captured';
               this.hasRightThumb = true;
+              this.disableReset = false;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(
@@ -239,6 +242,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         }
         this.editedStudent.emit(updatedUser);
         this.openSuccessDialog();
+        this.resetFingerprint();
       },
     });
 
@@ -300,12 +304,12 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     formData.append('userId', `${student.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${student.lastName}.png`
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${student.lastName}.png`
     );
 
@@ -401,5 +405,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         this.currentStepLabel = 'Unknown Step';
         break;
     }
+  }
+
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Left Index';
+    this.rightIndexState = 'Scan Right Index';
+    this.hasRightThumb = false;
   }
 }

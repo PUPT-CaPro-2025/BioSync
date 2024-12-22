@@ -19,7 +19,7 @@ import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confi
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { NgOptimizedImage } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import * as faceapi from 'face-api.js';
 import { finalize, Subscription } from 'rxjs';
 import { RecognitionResponse } from '../../../model/recognition.response.model';
@@ -41,6 +41,7 @@ import {CookieService} from "../../../services/cookie.service";
     NgOptimizedImage,
     MatProgressSpinner,
     MatProgressBar,
+    CommonModule
   ],
   providers: [
     ScheduleService,

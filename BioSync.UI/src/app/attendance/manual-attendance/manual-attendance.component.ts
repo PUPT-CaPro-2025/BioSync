@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
-import {ActivatedRoute, Router} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { SdkService } from '../../../services/sdk.service';
@@ -16,9 +16,10 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
+import { ClassResponse } from '../../../model/class.model';
 
 @Component({
-  selector: 'app-start-attendance',
+  selector: 'app-manual-attendance',
   standalone: true,
   imports: [
     MatToolbar,
@@ -35,30 +36,28 @@ import { UserService } from '../../../services/user.service';
     AttendanceService,
     UserService,
   ],
-  templateUrl: './start-attendance.component.html',
-  styleUrl: './start-attendance.component.css',
+  templateUrl: './manual-attendance.component.html',
+  styleUrls: ['./manual-attendance.component.css', '../start-attendance/start-attendance.component.css'],
 })
-export class StartAttendanceComponent implements OnInit {
+export class ManualAttendanceComponent implements OnInit {
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
   hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
-  instructions = 'Scan Professors Fingerprint to Start Attendance';
-  reminder = 'Scanning In-Charge Fingerprint...';
-  loggedProfessor!: User | null;
-  loggedStudent!: User | null;
-  studentVerified = false;
+  reminder = 'Fingerprint Verification Required';
   profileImageUrl!: string;
   hasFingerprintScanner = false;
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
-  isError: boolean = false;
-  isSuccess: boolean = false;
-  isAlreadyLogged: boolean = false;
-  id!: number;
+  class: ClassResponse[] = [];
+
+  //new/temporary variables
+  simulate = false;
+  selectedStudentId: number | null = null;
+  getStudent!: User | null;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -78,7 +77,6 @@ export class StartAttendanceComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
         const scheduleId = +params.get('id')!;
-        this.id = scheduleId;
         this.getScheduleDetails(scheduleId);
       },
     });
@@ -90,11 +88,6 @@ export class StartAttendanceComponent implements OnInit {
       next: (src) => {
         if (src) {
           this.fingerprintImageSrc = this.base64ToBlob(src, 'image/png');
-          if (!this.hasProfessorVerified) {
-            this.submitProfessor();
-          } else {
-            this.submitStudent();
-          }
         }
       },
     });
@@ -132,109 +125,48 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.selectedSchedule = value;
         this.selectedProfessorId = value.professor?.id!;
+        this.getUsersByScheduleId(value.id!);
         this.getLoggedStudents(value.id);
       },
     });
   }
 
+  getUsersByScheduleId(scheduleId: number) {
+    this.userService.getUsersByScheduleId(scheduleId).subscribe({
+      next: (value: ClassResponse[]) => {
+        this.class = value;
+        console.log(this.class);
+      },
+      error: (err) => {
+        console.error('Error fetching users by schedule ID:', err);
+      },
+    });
+  }
+
+
   private base64ToBlob(base64: string, contentType: string) {
     return this.sdkService.base64ToBlob(base64, contentType);
   }
 
-  submitProfessor() {
-    const formData = new FormData();
-
-    formData.append('userId', this.selectedProfessorId.toString());
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
-
-    this.fingerprintService
-      .verifyProfessorFingerprintForAttendance(formData)
-      .subscribe({
-        next: (value) => {
-          if (value)
-            this.userService.getUserById(this.selectedProfessorId).subscribe({
-              next: (professor) => {
-                this.loggedProfessor = professor;
-              },
-            });
-          const actualTimeStart =
-            this.cookieService.getCookie('actualTimeStart');
-          if (!actualTimeStart) {
-            this.cookieService.setCookie(
-              'actualTimeStart',
-              Date.now().toString(),
-            );
-          }
-          this.reminder = 'Fingerprint verified, Starting Attendance...';
-          this.isSuccess = true;
-          setTimeout(() => {
-            this.reminder = 'Scan Student Fingerprint';
-            this.hasProfessorVerified = true;
-            this.loggedProfessor = null;
-            this.isSuccess = false;
-          }, 3000);
-        },
-        error: (err) => {
-          console.log(err);
-          this.isError = true;
-          setTimeout(() => {
-            this.reminder = 'Scanning In-Charge Fingerprint...';
-            this.isError = false;
-          }, 3000);
-        },
-      });
+  selectStudent(id: number): void {
+    this.selectedStudentId = id; 
   }
 
-  submitStudent() {
-    const formData = new FormData();
+  pickStudent(): void {
+    if (this.selectedStudentId !== null) {
+      const foundClass = this.class
+        .find(cls => cls.student.id === this.selectedStudentId);
+  
+      this.getStudent = foundClass ? foundClass.student : null;
+      this.getUserProfileImage(this.selectedStudentId);
+      this.reminder = 'Fingerprint Verification Required';
+    }
+  }
 
-    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
-    formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
-
-    const actualTimeStart = parseInt(
-      <string>this.cookieService.getCookie('actualTimeStart'),
-    );
-    const currentTime = Date.now();
-    const timeDifferenceInMinutes =
-      (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('status', isStudentLate ? 'LATE' : 'PRESENT');
-
-    this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
-      next: (value) => {
-        this.loggedStudent = value.student;
-        this.studentsLogged.push(this.loggedStudent);
-        this.reminder = 'Attendance Recorded';
-        this.isSuccess = true;
-        this.getUserProfileImage(value.student.id);
-        setTimeout(() => {
-          this.loggedStudent = null;
-          this.studentVerified = true;
-          this.profileImageUrl = '';
-          this.reminder = 'Scan Student Fingerprint';
-          this.isSuccess = false;
-        }, 3000);
-      },
-      error: (err) => {
-        if (err.status == 409) {
-          this.reminder = 'Attendance has already been recorded';
-          this.loggedStudent = this.studentsLogged.find(
-            (student) => student.id == err.error,
-          )!;
-          this.isAlreadyLogged = true;
-        } else {
-          this.isError = true;
-          this.reminder = '';
-        }
-        setTimeout(() => {
-          this.loggedStudent = null;
-          this.reminder = 'Scan Student Fingerprint';
-          this.isAlreadyLogged = false;
-          this.isError = false;
-        }, 3000);
-      },
-    });
+  //temporary function must do if fingerprint success
+  simulateFingerprint(): void {
+    this.simulate = true;
+    this.reminder = 'Attendance Recorded';
   }
 
   getUserProfileImage(userId: number) {
@@ -295,15 +227,6 @@ export class StartAttendanceComponent implements OnInit {
         this.studentsLogged = value;
       },
     });
-  }
-
-  goToManualAttendance() {
-    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/manual/start/`, this.id]));
-    window.open(url, '_blank');
-  }
-
-  handleBackEvent(){
-    this.router.navigate(['/schedule']).then();
   }
 
   protected readonly history = history;
