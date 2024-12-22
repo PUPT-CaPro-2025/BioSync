@@ -217,25 +217,12 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         }
         this.openMessageDialog(true);
         this.addedStudent.emit(student);
-        this.sendCredentials(studentToAdd, generatedPassword);
+        this.mailService.mailCredentials(studentToAdd, generatedPassword);
       },
       error: (error) => {
         this.openMessageDialog(false, error.error);
       },
     });
-  }
-
-  private sendCredentials(studentToAdd: User, generatedPassword: string) {
-    const mailContent: Mail = {
-      to: studentToAdd.email,
-      subject: `BioSync Account Credentials`,
-      text: `
-        Hello! Welcome to BioSync. Please save your account credentials below\n\n
-        Usercode: ${studentToAdd.usercode} \n
-        Password: ${generatedPassword}`,
-    };
-
-    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(student: User) {
