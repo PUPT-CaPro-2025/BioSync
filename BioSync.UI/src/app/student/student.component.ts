@@ -93,8 +93,7 @@ export class StudentComponent implements OnInit{
   }
 
   onStudentAdded(newStudent: User){
-    this.queriedStudents.push(newStudent);
-    this.updatePagination();
+    this.getStudents();
   }
 
   updatePagination(): void {
@@ -233,12 +232,18 @@ export class StudentComponent implements OnInit{
   }
 
   toggleBulkAddStudent() {
-    this.dialog.open(PromptCsvComponent, {
+    const ref = this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
         scheduleId: null,
       }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getStudents()
+    }
     })
   }
 
