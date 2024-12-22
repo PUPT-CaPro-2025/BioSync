@@ -11,7 +11,6 @@ import {MatButton} from "@angular/material/button";
 import {environment} from "../../../../environment/app.setting";
 import {MatTabLink} from "@angular/material/tabs";
 import {FormsModule} from "@angular/forms";
-import {Schedule} from "../../../model/schedule.model";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatIcon} from "@angular/material/icon";
 import {UserService} from "../../../services/user.service";
