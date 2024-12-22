@@ -4,7 +4,6 @@ import com.example.biosyncapi.user.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,35 +18,34 @@ public class MailService {
 
     @Value("${spring.mail.username}")
     private String from;
-  
+
     public MailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
-    public void sendMail(String to, String subject, String text)
-        throws MessagingException
-    {
+    public void sendMail(String to, String subject, String text) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("BioSync <"+ from + ">");
+        helper.setFrom("BioSync <" + from + ">");
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(text, true);
+        helper.setText(text, true); // "true" indicates the content is HTML
 
         mailSender.send(message);
     }
 
-    public void autoSendCredentials(HashMap<User, String> credentials) {
+    public void autoSendCredentials(HashMap<User, String> credentials) throws MessagingException {
         for (Map.Entry<User, String> entry : credentials.entrySet()) {
             User user = entry.getKey();
             String password = entry.getValue();
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("BioSync <" + from + ">");
-            message.setTo(user.getEmail());
-            message.setSubject("Get Started with BioSync");
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("BioSync <" + from + ">");
+            helper.setTo(user.getEmail());
+            helper.setSubject("Get Started with BioSync");
 
-            String emailBody = text("""
+            String emailBody = String.format("""
             <!DOCTYPE html>
             <html xmlns='http://www.w3.org/1999/xhtml'>
             <head>
@@ -79,9 +77,9 @@ public class MailService {
                         margin-top: 2rem;
                         text-decoration: none;
                     }
-                    p { 
-                        margin: 0; 
-                        padding: 0; 
+                    p {
+                        margin: 0;
+                        padding: 0;
                     }
                     table.wrapper {
                         width: 100% !important;
@@ -90,16 +88,16 @@ public class MailService {
                     img.max-width {
                         max-width: 100% !important;
                     }
-                    .title { 
+                    .title {
                         font-weight: bold;
-                        font-size: 24px; 
+                        font-size: 24px;
                     }
                     .app-name {
                         color: #68191F;
                         font-weight: bold;
                     }
                     .contact-text {
-                        font-size: 12px; 
+                        font-size: 12px;
                     }
                     @media screen and (max-width:480px) {
                         table.wrapper-mobile {
@@ -191,7 +189,7 @@ public class MailService {
             </html>
             """, user.getUsercode(), password);
 
-            message.setText(emailBody);
+            helper.setText(emailBody, true); // "true" indicates HTML content
 
             mailSender.send(message);
         }
