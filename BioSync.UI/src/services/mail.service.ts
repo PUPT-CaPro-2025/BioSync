@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Mail } from '../model/mail.model';
 import { environment } from '../../environment/app.setting';
 import { CookieService } from './cookie.service';
-import {User} from "../model/user.model";
+import { User } from '../model/user.model';
 
 @Injectable({
   providedIn: 'root',
