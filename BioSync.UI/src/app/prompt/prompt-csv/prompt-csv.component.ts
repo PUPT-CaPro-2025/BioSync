@@ -40,6 +40,7 @@ export class PromptCsvComponent {
   submitted = false;
   success = false;
   error = false;
+  count = 0;
 
   constructor(
     public dialogRef: MatDialogRef<PromptCsvComponent>,
@@ -66,8 +67,10 @@ export class PromptCsvComponent {
 
     this.userService.createBulkUserOrSchedule(formData).subscribe({
       next: (value) => {
+        console.log(value)
         if(value.success){
           this.success = true;
+          this.count = value.count;
         }
       },
       error: () => this.error = true
