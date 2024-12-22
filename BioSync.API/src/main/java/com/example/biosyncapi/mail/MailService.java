@@ -29,7 +29,7 @@ public class MailService {
         helper.setFrom("BioSync <" + from + ">");
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(text, true); // "true" indicates the content is HTML
+        helper.setText(text, true);
 
         mailSender.send(message);
     }
@@ -189,7 +189,7 @@ public class MailService {
             </html>
             """, user.getUsercode(), password);
 
-            helper.setText(emailBody, true); // "true" indicates HTML content
+            helper.setText(emailBody, true);
 
             mailSender.send(message);
         }
