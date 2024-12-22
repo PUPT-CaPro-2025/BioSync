@@ -4,6 +4,8 @@ import com.example.biosyncapi.mail.MailService;
 import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.user.UserRepository;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -55,7 +57,7 @@ public class PasswordResetService {
   }
 
   public void sendPasswordResetToken(User user, String token) throws MessagingException {
-    String resetUrl = origin + "/reset-password?token=" + token;
+    String resetUrl = origin + "/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8);
     String subject = "Reset your password for BioSync";
 
     String text = String.format("""
