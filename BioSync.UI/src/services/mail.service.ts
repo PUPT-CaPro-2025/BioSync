@@ -29,7 +29,7 @@ export class MailService {
     });
   }
 
-  mailCredentials(professorToCreate: User, generatedPassword: string) {
+  mailCredentials(user: User, generatedPassword: string) {
     const emailBody = `
     <!DOCTYPE html>
     <html xmlns='http://www.w3.org/1999/xhtml'>
@@ -129,7 +129,7 @@ export class MailService {
                                                                     <p>Here are your account credentials:</p>
                                                                 </div>
                                                                 <div style='text-align: center; margin-top: 1rem;'>
-                                                                    <p><strong>Username:</strong> ${professorToCreate.usercode}</p>
+                                                                    <p><strong>Username:</strong> ${user.usercode}</p>
                                                                     <p><strong>Password:</strong> ${generatedPassword}</p>
                                                                 </div>
                                                                 <div style='text-align: center; margin-top: 2rem;'>
@@ -172,7 +172,7 @@ export class MailService {
   `;
 
     const mailContent: Mail = {
-      to: professorToCreate.email,
+      to: user.email,
       subject: `BioSync Account Credentials`,
       text: emailBody,
     };
