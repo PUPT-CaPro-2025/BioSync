@@ -161,25 +161,12 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
         }
         this.displayMessage(true);
         this.professorAdded.emit(userCreated);
-        this.mailCredentials(professorToCreate, generatedPassword);
+        this.mailService.mailCredentials(professorToCreate, generatedPassword);
       },
       error: error => {
         this.displayMessage(false, error.error);
       }
     });
-  }
-
-  private mailCredentials(professorToCreate: User, generatedPassword: string) {
-    const mailContent: Mail = {
-      to: professorToCreate.email,
-      subject: `BioSync Account Credentials`,
-      text: `
-        Hello! Welcome to BioSync. Please save your account credentials below\n\n
-        Usercode: ${professorToCreate.usercode} \n
-        Password: ${generatedPassword}`
-    }
-
-    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(professor: User) {
