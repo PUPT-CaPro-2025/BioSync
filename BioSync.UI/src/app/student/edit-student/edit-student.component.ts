@@ -313,7 +313,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       `right-thumb-${student.lastName}.png`
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
+    this.fingerprintService.updateFingerprint(student.id ,formData).subscribe({
       next: (value) => {
         console.log(value);
       },
@@ -331,7 +331,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         this.videoElement.srcObject = stream;
         this.videoElement.play();
       })
-      .catch((err) => {
+      .catch(() => {
         // Handle error silently
       });
   }

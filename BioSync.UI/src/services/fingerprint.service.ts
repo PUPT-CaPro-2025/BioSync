@@ -43,6 +43,18 @@ export class FingerprintService {
     );
   }
 
+  updateFingerprint(userid: number, formData: FormData) {
+    return this.http.put(
+      `${environment.apiUrl}/api/v1/fingerprints/update/${userid}`,
+      formData,
+      {
+        headers: this.headers,
+        withCredentials: true,
+        responseType: 'text' as 'json',
+      },
+    );
+  }
+
   getProfileImageUrl(userId: number) {
     return this.http.get<{ profileImageUrl: string }>(
       `${environment.apiUrl}/api/v1/users/profile-image/${userId}`,
