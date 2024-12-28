@@ -10,7 +10,8 @@ public class Fingerprint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fingerprintURL;
+    @Column(columnDefinition = "bytea")
+    private byte[] fingerprint;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -19,9 +20,9 @@ public class Fingerprint {
     public Fingerprint() {
     }
 
-    public Fingerprint(Long id, String fingerprintURL, User user) {
+    public Fingerprint(Long id, byte[] fingerprint, User user) {
         this.id = id;
-        this.fingerprintURL = fingerprintURL;
+        this.fingerprint = fingerprint;
         this.user = user;
     }
 
@@ -32,14 +33,10 @@ public class Fingerprint {
     public void setId(Long id) {
         this.id = id;
     }
+    
+    public byte[] getFingerprint() { return fingerprint; }
 
-    public String getFingerprintURL() {
-        return fingerprintURL;
-    }
-
-    public void setFingerprintURL(String fingerprintURL) {
-        this.fingerprintURL = fingerprintURL;
-    }
+    public void setFingerprint(byte[] fingerprint) { this.fingerprint = fingerprint; }
 
     public User getUser() {
         return user;
