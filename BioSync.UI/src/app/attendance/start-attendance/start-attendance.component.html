@@ -108,8 +108,8 @@
                           In-Charge Name
                         </p>
                         <p class="text-brightRed text-custom-32 font-weight400">
-                          {{ selectedSchedule.professor?.firstName }}
-                          {{ selectedSchedule.professor?.lastName }}
+                          {{ loggedProfessor.firstName }}
+                          {{ loggedProfessor.lastName }}
                         </p>
                       </div>
                     } @else if (isError) {
@@ -160,7 +160,7 @@
               <p
                 class="text-custom-40 font-medium"
                 [ngClass]="{
-                  'text-[#F2F2F2]': isSuccess || isAlreadyLogged,
+                  'text-[#F2F2F2]': isSuccess,
                   'text-[#AB3130]': !isSuccess && !isError,
                 }"
               >

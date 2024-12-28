@@ -144,8 +144,9 @@ export class StartAttendanceComponent implements OnInit {
     return this.sdkService.base64ToBlob(base64, contentType);
   }
 
+
   submitProfessor() {
-    this.loading = true;
+    this.setLoadingProf();
     const formData = new FormData();
 
     formData.append('userId', this.selectedProfessorId.toString());
@@ -156,11 +157,8 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
-            this.userService.getUserById(this.selectedProfessorId).subscribe({
-              next: (professor) => {
-                this.loggedProfessor = professor;
-              },
-            });
+            this.loggedProfessor = value;
+            this.getUserProfileImage(value.id);
           const actualTimeStart =
             this.cookieService.getCookie('actualTimeStart');
           if (!actualTimeStart) {
@@ -176,6 +174,7 @@ export class StartAttendanceComponent implements OnInit {
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
             this.loggedProfessor = null;
+            this.profileImageUrl = '';
             this.isSuccess = false;
           }, 3000);
         },
@@ -191,8 +190,16 @@ export class StartAttendanceComponent implements OnInit {
       });
   }
 
-  submitStudent() {
+  private setLoadingProf(){
     this.loading = true;
+    this.loggedProfessor = null;
+    this.profileImageUrl = '';
+    this.isSuccess = false;
+  }
+
+  submitStudent() {
+    this.setLoadingStudent();
+
     const formData = new FormData();
 
     formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
@@ -246,6 +253,14 @@ export class StartAttendanceComponent implements OnInit {
 
     });
 
+  }
+
+  private setLoadingStudent(){
+    this.loading = true;
+    this.loggedStudent = null;
+    this.profileImageUrl = '';
+    this.isSuccess = false;
+    this.isAlreadyLogged = false;
   }
 
   getUserProfileImage(userId: number) {
