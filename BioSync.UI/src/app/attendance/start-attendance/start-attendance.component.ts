@@ -16,6 +16,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-start-attendance',
@@ -27,6 +28,7 @@ import { UserService } from '../../../services/user.service';
     MatIconModule,
     NgOptimizedImage,
     CommonModule,
+    MatProgressSpinner,
   ],
   providers: [
     ScheduleService,
@@ -59,6 +61,7 @@ export class StartAttendanceComponent implements OnInit {
   isSuccess: boolean = false;
   isAlreadyLogged: boolean = false;
   id!: number;
+  loading = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -142,6 +145,7 @@ export class StartAttendanceComponent implements OnInit {
   }
 
   submitProfessor() {
+    this.loading = true;
     const formData = new FormData();
 
     formData.append('userId', this.selectedProfessorId.toString());
@@ -167,6 +171,7 @@ export class StartAttendanceComponent implements OnInit {
           }
           this.reminder = 'Fingerprint verified, Starting Attendance...';
           this.isSuccess = true;
+          this.loading = false;
           setTimeout(() => {
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
@@ -177,6 +182,7 @@ export class StartAttendanceComponent implements OnInit {
         error: (err) => {
           console.log(err);
           this.isError = true;
+          this.loading = false;
           setTimeout(() => {
             this.reminder = 'Scanning In-Charge Fingerprint...';
             this.isError = false;
@@ -186,6 +192,7 @@ export class StartAttendanceComponent implements OnInit {
   }
 
   submitStudent() {
+    this.loading = true;
     const formData = new FormData();
 
     formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
@@ -208,6 +215,7 @@ export class StartAttendanceComponent implements OnInit {
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
+        this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
           this.studentVerified = true;
@@ -227,6 +235,7 @@ export class StartAttendanceComponent implements OnInit {
           this.isError = true;
           this.reminder = '';
         }
+        this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
           this.reminder = 'Scan Student Fingerprint';
@@ -234,7 +243,9 @@ export class StartAttendanceComponent implements OnInit {
           this.isError = false;
         }, 3000);
       },
+
     });
+
   }
 
   getUserProfileImage(userId: number) {
