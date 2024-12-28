@@ -145,8 +145,8 @@ public class MailService {
                                                                               <p>Here are your account credentials:</p>
                                                                           </div>
                                                                           <div style='text-align: center; margin-top: 1rem;'>
-                                                                              <p><strong>Username:</strong> Usercode: %s</p>
-                                                                              <p><strong>Password:</strong> Password: %s</p>
+                                                                              <p><strong>Username:</strong>%s</p>
+                                                                              <p><strong>Password:</strong>%s</p>
                                                                           </div>
                                                                           <div style='text-align: center; margin-top: 2rem;'>
                                                                               <p>You may log in to your account at
