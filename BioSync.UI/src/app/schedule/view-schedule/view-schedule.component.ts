@@ -125,11 +125,17 @@ export class ViewScheduleComponent implements OnInit {
   }
 
   toggleBulkAddStudent() {
-    this.dialog.open(PromptCsvComponent, {
+    const ref = this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
         scheduleId: this.schedule.id,
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getUsersByScheduleId(this.schedule.id!);
       },
     });
   }

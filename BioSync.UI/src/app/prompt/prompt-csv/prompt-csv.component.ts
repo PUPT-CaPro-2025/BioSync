@@ -11,7 +11,6 @@ import {MatButton} from "@angular/material/button";
 import {environment} from "../../../../environment/app.setting";
 import {MatTabLink} from "@angular/material/tabs";
 import {FormsModule} from "@angular/forms";
-import {Schedule} from "../../../model/schedule.model";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatIcon} from "@angular/material/icon";
 import {UserService} from "../../../services/user.service";
@@ -40,6 +39,7 @@ export class PromptCsvComponent {
   submitted = false;
   success = false;
   error = false;
+  count = 0;
 
   constructor(
     public dialogRef: MatDialogRef<PromptCsvComponent>,
@@ -66,8 +66,10 @@ export class PromptCsvComponent {
 
     this.userService.createBulkUserOrSchedule(formData).subscribe({
       next: (value) => {
+        console.log(value)
         if(value.success){
           this.success = true;
+          this.count = value.count;
         }
       },
       error: () => this.error = true

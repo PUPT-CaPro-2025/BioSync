@@ -6,6 +6,7 @@ import com.example.biosyncapi.authentication.password_reset.PasswordResetReposit
 import com.example.biosyncapi.program.Program;
 import com.example.biosyncapi.program.ProgramRepository;
 import com.example.biosyncapi.schedule.Schedule;
+import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentService;
 import com.example.biosyncapi.section.Section;
@@ -249,7 +250,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
         if (user.isPresent()) {
-          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, user.get()));
+          schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
           continue;
         }
 
@@ -340,6 +341,17 @@ public class UserServiceImpl implements UserService {
     }
 
     return password.toString();
+  }
+
+  private void addStudentToScheduleIfNotPresent(
+      User user,
+      Schedule schedule)
+  {
+    ScheduleStudent scheduleStudent =
+        this.scheduleStudentRepository.findByStudentIdAndScheduleId(user.getId(), schedule.getId());
+    if(scheduleStudent == null) {
+      this.scheduleStudentService.addStudentToSchedule(schedule, user);
+    }
   }
   // endregion
 }
