@@ -222,7 +222,7 @@ public class FingerprintServiceImpl implements FingerprintService {
     ) {
         FingerprintMatcher matcher = new FingerprintMatcher(probeTemplate);
 
-        return batch.stream()
+        return batch.parallelStream()
                 .map(fingerprint -> {
                     FingerprintTemplate template = new FingerprintTemplate(
                             new FingerprintImage(fingerprint.getFingerprint())
