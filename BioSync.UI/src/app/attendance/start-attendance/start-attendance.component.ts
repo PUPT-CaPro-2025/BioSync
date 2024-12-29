@@ -47,7 +47,6 @@ export class StartAttendanceComponent implements OnInit {
   hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
-  instructions = 'Scan Professors Fingerprint to Start Attendance';
   reminder = 'Scanning In-Charge Fingerprint...';
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
@@ -72,7 +71,6 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
-    private userService: UserService,
   ) {}
 
   async ngOnInit() {
@@ -191,6 +189,7 @@ export class StartAttendanceComponent implements OnInit {
     this.loggedProfessor = null;
     this.profileImageUrl = '';
     this.isSuccess = false;
+    this.isError = false;
   }
 
   submitStudent() {
@@ -257,6 +256,8 @@ export class StartAttendanceComponent implements OnInit {
     this.profileImageUrl = '';
     this.isSuccess = false;
     this.isAlreadyLogged = false;
+    this.isError = false;
+    this.reminder = 'Scan Student Fingerprint';
   }
 
   getUserProfileImage(userId: number) {
