@@ -19,12 +19,26 @@ import {User} from "../../model/user.model";
 import jsPDF from "jspdf";
 import {AttendanceService} from "../../services/attendance.service";
 import {Attendance} from "../../model/attendance.model";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
+
 
 @Component({
   selector: 'app-attendance',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, AddScheduleComponent, MatSelectModule, EditScheduleComponent],
-  providers: [ScheduleService, SchoolYearService, UserService, CookieService, CryptoService, AttendanceService],
+  imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule],
+  providers: [
+    ScheduleService, 
+    SchoolYearService,
+    ProgramService,
+    SectionService,
+    UserService, 
+    CookieService, 
+    CryptoService, 
+    AttendanceService
+  ],
   templateUrl: './attendance.component.html',
   styleUrls: ['./attendance.component.css', '../schedule/schedule.component.css']
 })
@@ -40,11 +54,16 @@ export class AttendanceComponent implements OnInit{
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-
   semesters: string[] = [
     'First Semester', 'Second Semester', 'Summer Semester',
   ];
   selectedSemester = 1;
+
+  programs: Program[] = [];
+  selectedProgram: number | undefined;
+
+  sections: Section[] = [];
+  selectedYearAndSection: string | undefined;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -62,6 +81,8 @@ export class AttendanceComponent implements OnInit{
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
+    private sectionService: SectionService,
+    private programService: ProgramService,
     private router : Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
@@ -80,6 +101,8 @@ export class AttendanceComponent implements OnInit{
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
+    this. getAllPrograms();
+    this.getSections();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -140,6 +163,20 @@ export class AttendanceComponent implements OnInit{
     }
   }
 
+  setLatestProgram() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedProgram = latestSchedule.section?.program.id;
+    }
+  }
+
+  setLatestYearAndSection() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedYearAndSection = `${latestSchedule.section?.year} - ${latestSchedule.section?.section}`;
+    }
+  }
+
   sortSchedulesById(schedules: Schedule[]): Schedule[] {
     return schedules.sort((a, b) => b.id - a.id);
   }
@@ -156,6 +193,22 @@ export class AttendanceComponent implements OnInit{
     this.schoolYearService.getSchoolYears().subscribe({
       next: (academicYears: SchoolYear[]) => {
         this.academicYears = academicYears;
+      }
+    })
+  }
+
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
       }
     })
   }
@@ -238,9 +291,13 @@ export class AttendanceComponent implements OnInit{
   onFilterChange() {
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester
+        && schedule.semester?.id === this.selectedSemester 
+        && schedule.section?.program.id === this.selectedProgram 
+        && `${schedule.section?.year} - ${schedule.section?.section}` === this.selectedYearAndSection
     )
     this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   toggleViewAttendance(schedule: Schedule) {
