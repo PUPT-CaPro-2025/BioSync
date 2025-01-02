@@ -17,6 +17,11 @@ import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
+
 @Component({
   selector: 'app-request-list-schedule',
   standalone: true,
@@ -28,6 +33,8 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
   ],
   providers: [ScheduleService,
     SchoolYearService,
+    ProgramService,
+    SectionService,
     UserService,
     CookieService,
     CryptoService
@@ -53,6 +60,12 @@ export class RequestListScheduleComponent implements OnInit {
   ];
   selectedSemester = 1;
 
+  programs: Program[] = [];
+  selectedProgram: number | undefined;
+
+  sections: Section[] = [];
+  selectedYearAndSection: string | undefined;
+
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
 
@@ -77,6 +90,8 @@ export class RequestListScheduleComponent implements OnInit {
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
+    private sectionService: SectionService,
+    private programService: ProgramService,
     private router : Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
@@ -94,6 +109,8 @@ export class RequestListScheduleComponent implements OnInit {
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
+    this. getAllPrograms();
+    this.getSections();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -145,6 +162,20 @@ export class RequestListScheduleComponent implements OnInit {
     if (this.schedules && this.schedules.length > 0) {
       const latestSchedule = this.schedules[this.schedules.length - 1];
       this.selectedAcademicYear = latestSchedule.schoolYear?.id;
+    }
+  }
+
+  setLatestProgram() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedProgram = latestSchedule.section?.program.id;
+    }
+  }
+
+  setLatestYearAndSection() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedYearAndSection = `${latestSchedule.section?.year} - ${latestSchedule.section?.section}`;
     }
   }
 
@@ -214,6 +245,22 @@ export class RequestListScheduleComponent implements OnInit {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (academicYears: SchoolYear[]) => {
         this.academicYears = academicYears;
+      }
+    })
+  }
+
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
       }
     })
   }
@@ -360,11 +407,15 @@ export class RequestListScheduleComponent implements OnInit {
   onFilterChange() {
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-      && schedule.semester?.id === this.selectedSemester
+        && schedule.semester?.id === this.selectedSemester 
+        && schedule.section?.program.id === this.selectedProgram 
+        && `${schedule.section?.year} - ${schedule.section?.section}` === this.selectedYearAndSection
     )
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   toggleViewSchedule(schedule: Schedule) {
