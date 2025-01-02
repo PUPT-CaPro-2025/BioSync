@@ -15,6 +15,10 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatButton} from "@angular/material/button";
 import {PromptCsvComponent} from "../prompt/prompt-csv/prompt-csv.component";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
 
 @Component({
   selector: 'app-student',
@@ -32,13 +36,14 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
     MatButton,
     MatMenuItem
   ],
-  providers: [UserService],
+  providers: [UserService, SectionService, ProgramService],
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];
   students: User[] = [];
+  studentContainer: User[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
@@ -54,6 +59,12 @@ export class StudentComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
+  programs: Program[] = [];
+  selectedProgram: number | undefined;
+
+  sections: Section[] = [];
+  selectedYearAndSection: string | undefined;
+
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -68,11 +79,15 @@ export class StudentComponent implements OnInit{
 
   constructor(
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sectionService: SectionService,
+    private programService: ProgramService,
   ) {}
 
   ngOnInit() {
     this.getStudents();
+    this. getAllPrograms();
+    this.getSections();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -83,6 +98,7 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        this.studentContainer = students;
         this.queriedStudents = [...this.students];
         this.totalItems = this.students.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -94,6 +110,20 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.getStudents();
+  }
+
+  setLatestProgram() {
+    if (this.students && this.students.length > 0) {
+      const latestStudent = this.students[this.students.length - 1];
+      this.selectedProgram = latestStudent.program?.id;
+    }
+  }
+
+  setLatestYearAndSection() {
+    if (this.students && this.students.length > 0) {
+      const latestStudent = this.students[this.students.length - 1];
+      this.selectedYearAndSection = `${latestStudent.section?.year} - ${latestStudent.section?.section}`;
+    }
   }
 
   updatePagination(): void {
@@ -141,6 +171,22 @@ export class StudentComponent implements OnInit{
     })
   }
 
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    this.sectionService.getSections().subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+      }
+    })
+  }
+
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
   }
@@ -159,6 +205,15 @@ export class StudentComponent implements OnInit{
 
   onPageChange(): void {
     // Handle page change logic here
+  }
+
+  onFilterChange() {
+    this.students = this.studentContainer.filter(
+      student => student.section?.program.id === this.selectedProgram 
+        && `${student.section?.year} - ${student.section?.section}` === this.selectedYearAndSection
+    )
+    this.totalItems = this.students.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   onItemsPerPageChange(): void {
