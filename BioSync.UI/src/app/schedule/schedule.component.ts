@@ -20,6 +20,7 @@ import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
+import {Semester} from "../../model/semester.model";
 
 @Component({
   selector: 'app-schedule',
@@ -54,11 +55,8 @@ export class ScheduleComponent implements OnInit {
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-
-  semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
-  ];
-  selectedSemester = 1;
+  semesters!: Semester[];
+  selectedSemester!: number;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -117,6 +115,7 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -144,6 +143,7 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
@@ -156,6 +156,31 @@ export class ScheduleComponent implements OnInit {
       this.selectedAcademicYear = latestSchedule.schoolYear?.id;
     }
   }
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
+  }
+
 
   sortSchedulesById(schedules: Schedule[]): Schedule[] {
     return schedules.sort((a, b) => b.id - a.id);
