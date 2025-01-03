@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -60,10 +60,10 @@ export class StudentComponent implements OnInit{
   selectedYearSem = 'School Year 2324 - Summer';
 
   programs: Program[] = [];
-  selectedProgram: number | undefined;
+  selectedProgram = -1;
 
   sections: Section[] = [];
-  selectedYearAndSection: string | undefined;
+  selectedYearAndSection = -1;
 
   totalItems!: number;
   itemsPerPage: number = 10;
@@ -87,7 +87,6 @@ export class StudentComponent implements OnInit{
   ngOnInit() {
     this.getStudents();
     this. getAllPrograms();
-    this.getSections();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -110,20 +109,6 @@ export class StudentComponent implements OnInit{
 
   onStudentAdded(newStudent: User){
     this.getStudents();
-  }
-
-  setLatestProgram() {
-    if (this.students && this.students.length > 0) {
-      const latestStudent = this.students[this.students.length - 1];
-      this.selectedProgram = latestStudent.program?.id;
-    }
-  }
-
-  setLatestYearAndSection() {
-    if (this.students && this.students.length > 0) {
-      const latestStudent = this.students[this.students.length - 1];
-      this.selectedYearAndSection = `${latestStudent.section?.year} - ${latestStudent.section?.section}`;
-    }
   }
 
   updatePagination(): void {
@@ -179,13 +164,14 @@ export class StudentComponent implements OnInit{
     })
   }
 
-  getSections() {
-    this.sectionService.getSections().subscribe({
+  getSections(programId: number) {
+    this.sectionService.getSectionByProgramId(programId).subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
       }
     })
   }
+
 
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
@@ -207,12 +193,32 @@ export class StudentComponent implements OnInit{
     // Handle page change logic here
   }
 
-  onFilterChange() {
-    this.students = this.studentContainer.filter(
-      student => student.section?.program.id === this.selectedProgram 
-        && `${student.section?.year} - ${student.section?.section}` === this.selectedYearAndSection
-    )
-    this.totalItems = this.students.length;
+  onProgramChange() {
+    if(this.selectedProgram == -1){
+      this.queriedStudents = this.students;
+      this.sections = [];
+    } else {
+      this.getSections(this.selectedProgram);
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.program.id === this.selectedProgram
+      )
+    }
+
+    this.selectedYearAndSection = -1;
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+
+  onSectionChange() {
+    if(this.selectedYearAndSection == -1){
+      this.queriedStudents = this.students;
+    } else {
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.id === this.selectedYearAndSection
+      )
+    }
+    this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
@@ -334,7 +340,6 @@ export class StudentComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
     const imgWidth = 115;
     const imgHeight = 15;
