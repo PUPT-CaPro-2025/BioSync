@@ -27,9 +27,7 @@ import { SdkService } from '../../services/sdk.service';
 import { FingerprintService } from '../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { Mail } from '../../model/mail.model';
 import { MailService } from '../../services/mail.service';
-import { FaceRecognitionService } from '../../services/face.recognition.service';
 import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
 
@@ -250,7 +248,7 @@ export class AdminProfileComponent implements OnInit {
       `right-thumb-${professor.lastName}.png`,
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
+    this.fingerprintService.updateFingerprint(professor.id, formData).subscribe({
       next: (value) => {
         console.log(value);
       },

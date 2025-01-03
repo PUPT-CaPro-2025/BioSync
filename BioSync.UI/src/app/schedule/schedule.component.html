@@ -105,10 +105,11 @@
                       [(value)]="selectedSemester"
                       id="semester"
                       class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                      (selectionChange)="onFilterChange()">
-                      @for (semester of semesters; track $index) {
-                        <mat-option [value]="$index + 1">{{
-                          semester
+                      (selectionChange)="onFilterChange()"
+                    >
+                      @for (semester of semesters; track semester) {
+                        <mat-option [value]="semester.id">{{
+                          semester.name
                         }}</mat-option>
                       }
                     </mat-select>

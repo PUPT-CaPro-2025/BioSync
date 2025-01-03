@@ -96,14 +96,20 @@
               >
                 <div class="flex justify-center">
                   <div class="flex gap-6 flex-col w-[30vh] justify-center">
+                    @if(loading) {
+                      <div class="flex justify-center items-center content-center flex-col h-full gap-4">
+                        <mat-spinner></mat-spinner>
+                        <p class="italic accent-gray-600">Verifying...</p>
+                      </div>
+                    }
                     @if (loggedProfessor) {
                       <div class="flex flex-col">
                         <p class="text-lightGray text-custom-24">
                           In-Charge Name
                         </p>
                         <p class="text-brightRed text-custom-32 font-weight400">
-                          {{ selectedSchedule.professor?.firstName }}
-                          {{ selectedSchedule.professor?.lastName }}
+                          {{ loggedProfessor.firstName }}
+                          {{ loggedProfessor.lastName }}
                         </p>
                       </div>
                     } @else if (isError) {
@@ -154,7 +160,7 @@
               <p
                 class="text-custom-40 font-medium"
                 [ngClass]="{
-                  'text-[#F2F2F2]': isSuccess || isAlreadyLogged,
+                  'text-[#F2F2F2]': isSuccess,
                   'text-[#AB3130]': !isSuccess && !isError,
                 }"
               >
@@ -171,6 +177,12 @@
               >
                 <div class="flex justify-center">
                   <div class="flex gap-6 flex-col w-[20vw] justify-center">
+                    @if(loading) {
+                      <div class="flex justify-center items-center content-center flex-col h-full gap-4">
+                        <mat-spinner></mat-spinner>
+                        <p class="italic accent-gray-600">Verifying...</p>
+                      </div>
+                    }
                     @if (loggedStudent) {
                       <div class="flex flex-col">
                         <p class="text-lightGray text-custom-24">
