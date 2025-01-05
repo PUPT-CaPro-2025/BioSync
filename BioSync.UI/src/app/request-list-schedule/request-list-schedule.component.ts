@@ -338,7 +338,6 @@ export class RequestListScheduleComponent implements OnInit {
         && schedule.section?.program.id === this.selectedProgram 
     )
 
-    this.prevSelectedProgram = this.selectedProgram;
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);

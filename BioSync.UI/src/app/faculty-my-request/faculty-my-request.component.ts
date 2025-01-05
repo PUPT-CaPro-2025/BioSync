@@ -62,10 +62,11 @@ export class FacultyMyRequestComponent implements OnInit {
   selectedSemester = 1;
 
   programs: Program[] = [];
-  selectedProgram: number | undefined;
+  selectedProgram!: number;
+  prevSelectedProgram = -1;
 
   sections: Section[] = [];
-  selectedYearAndSection: string | undefined;
+  selectedYearAndSection = -1;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -110,9 +111,8 @@ export class FacultyMyRequestComponent implements OnInit {
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
-    this. getAllPrograms();
+    this.getAllPrograms();
     this.getSections();
-
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
     });
@@ -127,6 +127,8 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -157,6 +159,8 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -173,17 +177,9 @@ export class FacultyMyRequestComponent implements OnInit {
   setLatestProgram() {
     if (this.schedules && this.schedules.length > 0) {
       const latestSchedule = this.schedules[this.schedules.length - 1];
-      this.selectedProgram = latestSchedule.section?.program.id;
+      this.selectedProgram = latestSchedule.section?.program.id!;
     }
   }
-
-  setLatestYearAndSection() {
-    if (this.schedules && this.schedules.length > 0) {
-      const latestSchedule = this.schedules[this.schedules.length - 1];
-      this.selectedYearAndSection = `${latestSchedule.section?.year} - ${latestSchedule.section?.section}`;
-    }
-  }
-
 
   sortSchedulesById(schedules: Schedule[]): Schedule[] {
     return schedules.sort((a, b) => b.id - a.id);
@@ -203,31 +199,12 @@ export class FacultyMyRequestComponent implements OnInit {
     return [];
   }
 
-  onScheduleCreation(schedule: Schedule[]) {
-    schedule.forEach((schedule: Schedule) => {
-      this.schedules.push(schedule);
-    });
-    this.groupSchedulesByRecurrenceId();
-    this.filteredRepeatedSchedules();
-    this.sortSchedulesById(this.schedules);
-    this.updatePagination();
-  }
-
   updatePagination(): void {
     this.totalItems = this.schedules.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;
     }
-  }
-
-  onScheduleUpdate(updatedSchedule: Schedule) {
-    const index = this.schedules.findIndex(
-      (schedule) => schedule.id === updatedSchedule.id,
-    );
-
-    this.schedules[index] = updatedSchedule;
-    this.getAllSchedules();
   }
 
   convertTimeFormat(time: string): string {
@@ -282,7 +259,7 @@ export class FacultyMyRequestComponent implements OnInit {
   }
 
   getSections() {
-    this.sectionService.getSections().subscribe({
+    this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
       }
@@ -426,21 +403,22 @@ export class FacultyMyRequestComponent implements OnInit {
     );
   }
 
-  onAddScheduleClick() {
-    this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-  }
-
-  onRequestScheduleClick() {
-    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
-  }
-
   onFilterChange() {
+    const isProgramDiff = this.prevSelectedProgram != this.selectedProgram
+
+    if(isProgramDiff) {
+      this.sections = [];
+      this.selectedYearAndSection = -1;
+      this.getSections();
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
         && schedule.semester?.id === this.selectedSemester 
         && schedule.section?.program.id === this.selectedProgram 
-        && `${schedule.section?.year} - ${schedule.section?.section}` === this.selectedYearAndSection
     );
+
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
@@ -462,13 +440,14 @@ export class FacultyMyRequestComponent implements OnInit {
   getStudentSchedules(sectionId: number) {
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules);
         this.schedules = schedules;
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
       },
     });
   }
@@ -554,5 +533,28 @@ export class FacultyMyRequestComponent implements OnInit {
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  onSectionChange(){
+    if(this.selectedYearAndSection == -1){
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+              && schedule.section?.id === this.selectedYearAndSection
+      )
+    }
+
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 }
