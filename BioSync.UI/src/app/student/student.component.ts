@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,10 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatButton} from "@angular/material/button";
 import {PromptCsvComponent} from "../prompt/prompt-csv/prompt-csv.component";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
 
 @Component({
   selector: 'app-student',
@@ -32,13 +36,14 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
     MatButton,
     MatMenuItem
   ],
-  providers: [UserService],
+  providers: [UserService, SectionService, ProgramService],
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];
   students: User[] = [];
+  studentContainer: User[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
@@ -54,6 +59,12 @@ export class StudentComponent implements OnInit{
 
   selectedYearSem = 'School Year 2324 - Summer';
 
+  programs: Program[] = [];
+  selectedProgram = -1;
+
+  sections: Section[] = [];
+  selectedYearAndSection = -1;
+
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -68,11 +79,14 @@ export class StudentComponent implements OnInit{
 
   constructor(
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sectionService: SectionService,
+    private programService: ProgramService,
   ) {}
 
   ngOnInit() {
     this.getStudents();
+    this. getAllPrograms();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -83,6 +97,7 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        this.studentContainer = students;
         this.queriedStudents = [...this.students];
         this.totalItems = this.students.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -141,6 +156,23 @@ export class StudentComponent implements OnInit{
     })
   }
 
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections(programId: number) {
+    this.sectionService.getSectionByProgramId(programId).subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+      }
+    })
+  }
+
+
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
   }
@@ -159,6 +191,35 @@ export class StudentComponent implements OnInit{
 
   onPageChange(): void {
     // Handle page change logic here
+  }
+
+  onProgramChange() {
+    if(this.selectedProgram == -1){
+      this.queriedStudents = this.students;
+      this.sections = [];
+    } else {
+      this.getSections(this.selectedProgram);
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.program.id === this.selectedProgram
+      )
+    }
+
+    this.selectedYearAndSection = -1;
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+
+  onSectionChange() {
+    if(this.selectedYearAndSection == -1){
+      this.queriedStudents = this.students;
+    } else {
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.id === this.selectedYearAndSection
+      )
+    }
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   onItemsPerPageChange(): void {
@@ -279,7 +340,6 @@ export class StudentComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
     const imgWidth = 115;
     const imgHeight = 15;

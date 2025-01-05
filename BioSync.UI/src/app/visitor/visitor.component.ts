@@ -32,7 +32,7 @@ export class VisitorComponent implements OnInit{
   ];
 
   sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
+    'Alphabetical', 'Date', 'Purpose of Visit'
   ];
 
   totalItems!: number;

@@ -16,27 +16,6 @@
                         <mat-icon class="search-icon">search</mat-icon>
                         <input type="text" placeholder="SEARCH">
                     </div>
-                    <div class="dropdown-container">
-                        <div class="dropdown-content">
-                            <div class="entry-container">
-                                <span>Show</span>
-                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                    @for(entry of entries; track entry) {
-                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                    }
-                                </select>
-                                <span>Entries</span>
-                            </div>
-                            <div class="sort-container">
-                                <select>
-                                    <option>Sort by</option>
-                                    @for(sort of sorting; track sort) {
-                                        <option [value]="sort">{{sort}}</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-                    </div>
                 </mat-toolbar>
             </div>
             @if(filteredProfessors.length > 0) {
@@ -82,12 +61,33 @@
                           {{ getDisplayRange() }} of {{ totalItems }}
                         </div>
                         <div class="paginator-controls">
-                          <span>Page</span>
-                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                                @for (page of pages; track page) {
-                                    <option [value]="page">{{ page }}</option>
-                                }
-                          </select>
+                          <div>
+                            <span>Sort By</span>
+                            <select>
+                              @for (sort of sorting; track sort) {
+                                <option [value]="sort">{{ sort }}</option>
+                              }
+                            </select>
+                          </div>
+                          <div>
+                            <span>Show Entries</span>
+                            <select [(ngModel)]="itemsPerPage"
+                                (change)="onItemsPerPageChange()">
+                              @for (entry of entries; track entry) {
+                                <option [value]="entry" [selected]="entry === '10'">
+                                  {{ entry }}
+                                </option>
+                              }
+                            </select>
+                          </div>    
+                          <div>
+                              <span>Page</span>
+                              <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                                    @for (page of pages; track page) {
+                                        <option [value]="page">{{ page }}</option>
+                                    }
+                              </select>
+                          </div>
                           <div class="paginator-button-container">
                             <button (click)="previousPage()"
                                     [disabled]="currentPage === 1"
