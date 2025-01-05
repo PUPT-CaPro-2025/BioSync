@@ -134,10 +134,11 @@
                         [(value)]="selectedYearAndSection"
                         id="year"
                         class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                        (selectionChange)="onFilterChange()">
-                      @for(yearAndSection of sections; track yearAndSection) {
-                        <mat-option [value]="yearAndSection.year + ' - ' + yearAndSection.section">
-                           {{ yearAndSection.year }} - {{ yearAndSection.section }}
+                        (selectionChange)="onSectionChange()">
+                        <mat-option [value]="-1">All</mat-option>
+                      @for(section of sections; track section) {
+                        <mat-option [value]="section.id">
+                           {{ section.year }} - {{ section.section }}
                         </mat-option>
                       }
                     </mat-select>
