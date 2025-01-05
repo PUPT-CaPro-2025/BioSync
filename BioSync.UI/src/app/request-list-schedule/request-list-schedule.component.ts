@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
@@ -61,10 +61,11 @@ export class RequestListScheduleComponent implements OnInit {
   selectedSemester = 1;
 
   programs: Program[] = [];
-  selectedProgram: number | undefined;
+  selectedProgram!: number;
+  prevSelectedProgram = -1;
 
   sections: Section[] = [];
-  selectedYearAndSection: string | undefined;
+  selectedYearAndSection = -1;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -73,15 +74,7 @@ export class RequestListScheduleComponent implements OnInit {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages!: number;
-  isOneAddSchedule: boolean = false;
-  isWeeklyAddSchedule: boolean = false;
-  isRequestOneSchedule: boolean = false;
-  isRequestWeeklySchedule: boolean = false;
-  isEditSchedule: boolean = false;
   groupedSchedules: { [key: string]: Schedule[] } = {};
-  selectedSchedule!: Schedule;
-  isDropdownOpenAddSchedule: boolean = false;
-  isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
   activeDropdownId: number | null = null;
@@ -126,6 +119,8 @@ export class RequestListScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -152,6 +147,8 @@ export class RequestListScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
@@ -168,14 +165,7 @@ export class RequestListScheduleComponent implements OnInit {
   setLatestProgram() {
     if (this.schedules && this.schedules.length > 0) {
       const latestSchedule = this.schedules[this.schedules.length - 1];
-      this.selectedProgram = latestSchedule.section?.program.id;
-    }
-  }
-
-  setLatestYearAndSection() {
-    if (this.schedules && this.schedules.length > 0) {
-      const latestSchedule = this.schedules[this.schedules.length - 1];
-      this.selectedYearAndSection = `${latestSchedule.section?.year} - ${latestSchedule.section?.section}`;
+      this.selectedProgram = latestSchedule.section?.program.id!;
     }
   }
 
@@ -213,32 +203,12 @@ export class RequestListScheduleComponent implements OnInit {
     }
   }
 
-  onScheduleUpdate(updatedSchedule: Schedule) {
-    const index = this.schedules.findIndex(schedule =>
-      schedule.id === updatedSchedule.id);
-
-    this.schedules[index] = updatedSchedule;
-    this.getAllSchedules();
-  }
-
   convertTimeFormat(time: string): string {
     return this.scheduleService.convertTimeFormat(time);
   }
 
   getDayOfWeek(date: string | Date): string {
     return this.scheduleService.getDayOfWeek(date);
-  }
-
-  deleteSchedule(scheduleToDelete: Schedule){
-    this.scheduleService.deleteSchedule(scheduleToDelete)
-      .subscribe({
-        next: () => {
-          this.schedules = this.schedules.filter(
-            schedule => schedule.id !== scheduleToDelete.id
-          );
-          this.updatePagination();
-        }
-      })
   }
 
   getAcademicYears() {
@@ -258,7 +228,7 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   getSections() {
-    this.sectionService.getSections().subscribe({
+    this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
       }
@@ -323,50 +293,6 @@ export class RequestListScheduleComponent implements OnInit {
     }
   }
 
-  toggleOneAddSchedule(): void {
-    this.isDropdownOpenAddSchedule = false;
-    this.isOneAddSchedule = !this.isOneAddSchedule;
-  }
-
-  toggleWeeklyAddSchedule(): void {
-    this.isDropdownOpenAddSchedule = false;
-    this.isWeeklyAddSchedule = !this.isWeeklyAddSchedule;
-  }
-
-  toggleRequestOneSchedule(): void {
-    this.isDropdownOpenRequestSchedule = false;
-    this.isRequestOneSchedule = !this.isRequestOneSchedule;
-  }
-
-  toggleRequestWeeklySchedule(): void {
-    this.isDropdownOpenRequestSchedule = false;
-    this.isRequestWeeklySchedule = !this.isRequestWeeklySchedule;
-  }
-
-  handleBackToSchedule(): void {
-    this.isOneAddSchedule = false;
-    this.isWeeklyAddSchedule = false;
-    this.isRequestOneSchedule = false;
-    this.isRequestWeeklySchedule = false;
-  }
-
-  toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId) {
-      this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
-    } else {
-      this.router.navigate(['/attendance/start/', schedule.id]).then();
-    }
-  }
-
-  toggleEditSchedule(schedule: Schedule): void {
-    this.isEditSchedule = !this.isEditSchedule;
-    this.selectedSchedule = schedule;
-  }
-
-  handleEditBackToSchedule(): void {
-    this.isEditSchedule = false;
-  }
-
   filteredRepeatedSchedules(): void {
     const filteredSchedules: Schedule[] = [];
     const recurrenceIdStorage: string[] = [];
@@ -396,21 +322,23 @@ export class RequestListScheduleComponent implements OnInit {
     }, {} as { [key: string]: Schedule[] });
   }
 
-  onAddScheduleClick() {
-    this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-  }
-
-  onRequestScheduleClick() {
-    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
-  }
-
   onFilterChange() {
+    const hasProgramChanged = this.prevSelectedProgram != this.selectedProgram;
+
+    if(hasProgramChanged) {
+      this.sections = [];
+      this.selectedYearAndSection = -1;
+      this.getSections();
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
         && schedule.semester?.id === this.selectedSemester 
         && schedule.section?.program.id === this.selectedProgram 
-        && `${schedule.section?.year} - ${schedule.section?.section}` === this.selectedYearAndSection
     )
+
+    this.prevSelectedProgram = this.selectedProgram;
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
@@ -418,8 +346,27 @@ export class RequestListScheduleComponent implements OnInit {
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  toggleViewSchedule(schedule: Schedule) {
-    this.router.navigate(["/view/schedule", schedule.id]).then();
+  onSectionChange(){
+    if(this.selectedYearAndSection == -1){
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+              && schedule.section?.id === this.selectedYearAndSection
+      )
+    }
+
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   getSectionId(userId: number) {
