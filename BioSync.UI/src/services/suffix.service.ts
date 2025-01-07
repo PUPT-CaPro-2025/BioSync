@@ -26,6 +26,13 @@ export class SuffixService {
     })
   }
 
+  updateSuffix(suffix: Suffix){
+    return this.http.put<Suffix>(this.url, suffix, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deleteSuffix(suffix: Suffix){
     return this.http.delete(this.url, {
       body: { id: suffix.id },

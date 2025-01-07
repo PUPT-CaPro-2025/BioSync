@@ -188,6 +188,12 @@ export class SuffixComponent implements OnInit{
     this.updatePagination();
   }
 
+  OnSuffixUpdate(suffix: Suffix) {
+    const index = this.suffixes.findIndex(s => s.id === suffix.id);
+
+    this.suffixes[index] = suffix;
+  }
+
   updatePagination(): void {
     this.totalItems = this.suffixes.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);

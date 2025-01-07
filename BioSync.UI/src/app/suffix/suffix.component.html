@@ -110,6 +110,8 @@
             }
         } @else {
             <app-edit-suffix
+              [suffix]="suffixToEdit"
+              (updatedSuffix)="OnSuffixUpdate($event)"
               (backToEditSuffix)="handleBackToEditSuffix()"/>
         }
     } @else {
