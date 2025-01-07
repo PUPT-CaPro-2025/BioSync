@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -12,7 +12,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddVisitPurposeComponent } from './add-visit-purpose/add-visit-purpose.component';
 import { EditVisitPurposeComponent } from './edit-visit-purpose/edit-visit-purpose.component';
 import {VisitPurposeService} from "../../services/visit.purpose.service";
-import {Suffix} from "../../model/suffix.model";
 import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
