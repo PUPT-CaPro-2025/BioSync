@@ -40,11 +40,11 @@
                     </label>
                     <mat-select id="visit_purpose" name="visit-purpose" placeholder="Select your Purpose of Visit"
                             class="bg-transparent border-b-2 border-darkGray focus:border-brightRed
-                            focus:outline-none transition-colors 
+                            focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="purposeOfVisit"
                             (selectionChange)="onVisitPurposeChange($event)">
                             @for(visitPurpose of visitPurposes; track visitPurpose) {
-                                <mat-option [value]="visitPurpose">{{visitPurpose}}</mat-option>
+                                <mat-option [value]="visitPurpose.purposeOfVisit">{{visitPurpose.purposeOfVisit}}</mat-option>
                             }
                             <mat-option value="Others">Others</mat-option>
                     </mat-select>

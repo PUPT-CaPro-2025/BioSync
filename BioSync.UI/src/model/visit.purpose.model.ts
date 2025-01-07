@@ -1,5 +1,4 @@
-export interface Visitpurpose {
+export interface VisitPurpose {
     id: number;
-    visitPurpose: string;
+    purposeOfVisit: string;
   }
-  
