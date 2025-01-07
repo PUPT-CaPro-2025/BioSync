@@ -26,6 +26,13 @@ export class VisitPurposeService {
     })
   }
 
+  updatePurpose(purpose: VisitPurpose){
+    return this.http.put<VisitPurpose>(this.url, purpose, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deletePurpose(id: number){
     return this.http.delete(this.url, {
       body: { id: id },

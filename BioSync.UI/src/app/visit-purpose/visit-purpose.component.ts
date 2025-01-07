@@ -139,7 +139,7 @@ export class VisitPurposeComponent implements OnInit {
     this.isAddVisitPurpose = false;
   }
 
-  toggleEdittVisitPurpose(visitPurpose: VisitPurpose): void {
+  toggleEditVisitPurpose(visitPurpose: VisitPurpose): void {
     this.activeDropdownId = null;
     this.isEditVisitPurpose = !this.isEditVisitPurpose;
     this.visitPurposeToEdit = visitPurpose;
@@ -194,6 +194,12 @@ export class VisitPurposeComponent implements OnInit {
   onPurposeAdded(purpose: VisitPurpose){
     this.visitPurposes.push(purpose);
     this.updatePagination();
+  }
+
+  onPurposeUpdate(purpose: VisitPurpose){
+    const index = this.visitPurposes.findIndex(p => p.id === purpose.id);
+
+    this.visitPurposes[index] = purpose;
   }
 
   protected readonly open = open;
