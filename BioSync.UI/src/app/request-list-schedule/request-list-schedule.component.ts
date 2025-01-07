@@ -21,6 +21,7 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
+import {Semester} from "../../model/semester.model";
 
 @Component({
   selector: 'app-request-list-schedule',
@@ -49,9 +50,7 @@ export class RequestListScheduleComponent implements OnInit {
 
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
-  semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
-  ];
+  semesters: Semester[] = [];
   selectedSemester = 1;
   programs: Program[] = [];
   selectedProgram!: number;
@@ -112,6 +111,7 @@ export class RequestListScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.setLatestProgram();
         this.getSections();
         this.totalItems = this.schedules.length;
@@ -139,6 +139,7 @@ export class RequestListScheduleComponent implements OnInit {
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
+        this.getSemester();
         this.setLatestSchoolYear();
         this.setLatestProgram();
         this.getSections();
@@ -164,6 +165,30 @@ export class RequestListScheduleComponent implements OnInit {
 
   sortSchedulesById(schedules: Schedule[]): Schedule[] {
     return schedules.sort((a, b) => b.id - a.id);
+  }
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
   }
 
   getRecurrenceDays(recId: string): string[] {

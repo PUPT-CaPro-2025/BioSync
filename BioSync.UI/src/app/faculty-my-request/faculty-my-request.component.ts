@@ -20,6 +20,7 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
+import {Semester} from "../../model/semester.model";
 
 @Component({
   selector: 'app-faculty-my-request',
@@ -54,11 +55,7 @@ export class FacultyMyRequestComponent implements OnInit {
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-  semesters: string[] = [
-    'First Semester',
-    'Second Semester',
-    'Summer Semester',
-  ];
+  semesters: Semester[] = [];
   selectedSemester = 1;
 
   programs: Program[] = [];
@@ -127,6 +124,7 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.setLatestProgram();
         this.getSections();
         this.totalItems = this.schedules.length;
@@ -159,6 +157,7 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.setLatestProgram();
         this.getSections();
         this.totalItems = this.schedules.length;
@@ -197,6 +196,30 @@ export class FacultyMyRequestComponent implements OnInit {
       return Array.from(daysSet);
     }
     return [];
+  }
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
   }
 
   updatePagination(): void {
@@ -415,8 +438,8 @@ export class FacultyMyRequestComponent implements OnInit {
 
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester 
-        && schedule.section?.program.id === this.selectedProgram 
+        && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     );
 
     this.groupSchedulesByRecurrenceId();
