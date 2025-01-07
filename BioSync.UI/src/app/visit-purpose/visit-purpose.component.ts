@@ -191,5 +191,10 @@ export class VisitPurposeComponent implements OnInit {
     }
   }
 
+  onPurposeAdded(purpose: VisitPurpose){
+    this.visitPurposes.push(purpose);
+    this.updatePagination();
+  }
+
   protected readonly open = open;
 }

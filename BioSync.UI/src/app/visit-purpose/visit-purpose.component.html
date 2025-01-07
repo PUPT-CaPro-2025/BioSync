@@ -111,6 +111,6 @@
               (backToEditVisitPurpose)="handleBackToEditVisitPurpose()"/>
         }
     } @else {
-        <app-add-visit-purpose (backToVisitPurpose)="handleBackToVisitPurpose()"/>
+        <app-add-visit-purpose (purposeAdded)="onPurposeAdded($event)" (backToVisitPurpose)="handleBackToVisitPurpose()"/>
     }
 </div>

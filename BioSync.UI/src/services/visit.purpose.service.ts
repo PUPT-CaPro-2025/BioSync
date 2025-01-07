@@ -19,6 +19,13 @@ export class VisitPurposeService {
     })
   }
 
+  addPurpose(purpose: VisitPurpose){
+    return this.http.post<VisitPurpose>(this.url, purpose, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   deletePurpose(id: number){
     return this.http.delete(this.url, {
       body: { id: id },
