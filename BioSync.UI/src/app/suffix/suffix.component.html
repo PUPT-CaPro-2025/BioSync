@@ -37,7 +37,7 @@
                                             <div class="action-container" [ngClass]="{
                                                 'bottom-action': filteredSuffixes.length >= 4 && (filteredSuffixes[filteredSuffixes.length - 1] === suffix || filteredSuffixes[filteredSuffixes.length - 2] === suffix)}">
                                                 <button class="action-button" (click)="toggleEditSuffix(suffix)">Edit</button>
-                                                <button class="action-button">Delete</button>
+                                                <button class="action-button" (click)="openDeleteDialog(suffix)">Delete</button>
                                             </div>
                                         }
                                     </div>

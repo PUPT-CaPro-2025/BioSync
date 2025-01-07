@@ -18,4 +18,12 @@ export class SuffixService {
       withCredentials: true
     })
   }
+
+  deleteSuffix(suffix: Suffix){
+    return this.http.delete(this.url, {
+      body: { id: suffix.id },
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
 }

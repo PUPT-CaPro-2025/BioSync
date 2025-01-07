@@ -12,6 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddSuffixComponent } from './add-suffix/add-suffix.component';
 import { EditSuffixComponent } from './edit-suffix/edit-suffix.component';
 import {SuffixService} from "../../services/suffix.service";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-suffix',
@@ -56,10 +58,6 @@ export class SuffixComponent implements OnInit{
   constructor(private dialog: MatDialog, private suffixService: SuffixService) {}
 
   ngOnInit() {
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
-    });
-
     this.getSuffixes();
   }
 
@@ -151,18 +149,46 @@ export class SuffixComponent implements OnInit{
     this.isEditSuffix = false;
   }
 
-  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
-    img.src = url;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0);
-      const base64Image = canvas.toDataURL('image/png');
-      callback(base64Image);
-    };
+  openDeleteDialog(suffix: Suffix){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '350px',
+      data: {
+        title: "Delete Suffix",
+        message: "Are you sure you want to delete suffix?"
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: result => {
+        if (!result) return
+
+        this.suffixService.deleteSuffix(suffix).subscribe({
+          next: () => {
+            this.suffixes = this.suffixes.filter(s => s.id !== suffix.id)
+            this.updatePagination();
+            this.openSuccessDialog();
+          }
+        })
+      }
+    })
   }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '350px',
+      data: {
+        title: "Suffix Deleted",
+        message: "Suffix has been deleted."
+      }
+    })
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.suffixes.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
 }
