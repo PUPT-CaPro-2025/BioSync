@@ -13,10 +13,7 @@ export class VisitPurposeService {
   constructor(private http: HttpClient, private cookieService: CookieService) {}
 
   getVisitPurposes(){
-    return this.http.get<VisitPurpose[]>(this.url, {
-      headers: this.headers,
-      withCredentials: true
-    })
+    return this.http.get<VisitPurpose[]>(this.url)
   }
 
   addPurpose(purpose: VisitPurpose){
