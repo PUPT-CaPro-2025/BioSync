@@ -24,6 +24,8 @@ import {Mail} from "../../../model/mail.model";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
+import {Suffix} from "../../../model/suffix.model";
+import {SuffixService} from "../../../services/suffix.service";
 
 @Component({
   selector: 'app-add-student',
@@ -44,7 +46,7 @@ import {
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -54,19 +56,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   @Output() addedStudent = new EventEmitter<User>();
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+  allSuffix: Suffix[] = [];
 
   allPrograms: Program[] = [];
 
@@ -99,13 +89,15 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private mailService: MailService,
-    private faceRecognitionService: FaceRecognitionService
+    private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.getAllPrograms();
     this.initForm();
     this.getAllSections();
+    this.getAllSuffix();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -178,6 +170,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         this.sections = sections;
       },
     });
+  }
+
+  getAllSuffix(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   returnToStudentView(): void {

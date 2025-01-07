@@ -112,7 +112,7 @@ export class StudentComponent implements OnInit{
   }
 
   updatePagination(): void {
-    this.totalItems = this.students.length;
+    this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;

@@ -37,6 +37,8 @@ import { FingerprintService } from '../../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
+import {SuffixService} from "../../../services/suffix.service";
+import {Suffix} from "../../../model/suffix.model";
 
 @Component({
   selector: 'app-edit-professor',
@@ -57,7 +59,7 @@ import { FaceRecognitionService } from '../../../services/face.recognition.servi
     MatIconModule,
     CommonModule,
   ],
-  providers: [UserService, SdkService, FingerprintService],
+  providers: [UserService, SdkService, FingerprintService, SuffixService],
   templateUrl: './edit-professor.component.html',
   styleUrls: [
     './edit-professor.component.css',
@@ -70,21 +72,8 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
   @Output() editedProfessor = new EventEmitter<User>();
   @Input() professorToBeUpdated!: User;
   @ViewChild('videoElement') videoElementRef!: any;
-  //Temporary Suffixes
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
 
+  allSuffix: Suffix[] = [];
   professorForm!: FormGroup;
   currentStepLabel: string = 'Set Up Information';
   imageForm!: FormGroup;
@@ -110,11 +99,13 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.setFormValues();
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -156,6 +147,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     this.imageForm = this.formBuilder.group({
       profileImage: [null, Validators.required],
     });
+  }
+
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   setFormValues() {

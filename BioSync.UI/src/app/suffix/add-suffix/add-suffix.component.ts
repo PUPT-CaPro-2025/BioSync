@@ -8,6 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { Suffix } from '../../../model/suffix.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import {SuffixService} from "../../../services/suffix.service";
+import {User} from "../../../model/user.model";
 
 @Component({
   selector: 'app-add-suffix',
@@ -20,15 +22,17 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
     MatButtonModule,
     MatSelectModule,
   ],
+  providers: [SuffixService],
   templateUrl: './add-suffix.component.html',
   styleUrls: ['./add-suffix.component.css', '../../program/add-program/add-program.component.css']
 })
 export class AddSuffixComponent implements OnInit {
   suffixForm!: FormGroup;
   @Output() backToSuffix = new EventEmitter<void>();
+  @Output() addedSuffix = new EventEmitter<Suffix>();
 
   constructor(private formBuilder: FormBuilder,
-    private dialog: MatDialog) {}
+    private dialog: MatDialog, private suffixService: SuffixService) {}
 
   ngOnInit() {
     this.initForm();
@@ -36,8 +40,8 @@ export class AddSuffixComponent implements OnInit {
 
   initForm(){
     this.suffixForm = this.formBuilder.group({
-      suffixName: ['', [Validators.required]],
-      suffixAbbreviation: ['', [Validators.required]]
+      name: ['', [Validators.required]],
+      abbreviation: ['', [Validators.required]]
     });
   }
 
@@ -46,7 +50,14 @@ export class AddSuffixComponent implements OnInit {
   }
 
   submit(){
-    console.log('Submit button was click!');
+    if(!this.suffixForm.valid) return;
+
+    this.suffixService.createSuffix(this.suffixForm.value).subscribe({
+      next: addedSuffix => {
+        this.openDialog();
+        this.addedSuffix.emit(addedSuffix);
+      }
+    })
   }
 
   openDialog(): void {

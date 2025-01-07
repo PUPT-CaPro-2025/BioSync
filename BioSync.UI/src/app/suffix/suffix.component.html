@@ -29,15 +29,15 @@
                         <div class="row-container text-custom-12">
                             @for (suffix of filteredSuffixes; track suffix ) {
                                 <div class="row">
-                                    <div class="cell">{{ suffix.suffix_name }}</div>
-                                    <div class="cell">{{ suffix.suffix_abbbreviation }}</div>
+                                    <div class="cell">{{ suffix.name }}</div>
+                                    <div class="cell">{{ suffix.abbreviation }}</div>
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(suffix.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === suffix.id) {
                                             <div class="action-container" [ngClass]="{
                                                 'bottom-action': filteredSuffixes.length >= 4 && (filteredSuffixes[filteredSuffixes.length - 1] === suffix || filteredSuffixes[filteredSuffixes.length - 2] === suffix)}">
                                                 <button class="action-button" (click)="toggleEditSuffix(suffix)">Edit</button>
-                                                <button class="action-button">Delete</button>
+                                                <button class="action-button" (click)="openDeleteDialog(suffix)">Delete</button>
                                             </div>
                                         }
                                     </div>
@@ -55,14 +55,6 @@
                           {{ getDisplayRange() }} of {{ totalItems }}
                         </div>
                         <div class="paginator-controls">
-                          <div>
-                            <span>Sort By</span>
-                            <select>
-                              @for (sort of sorting; track sort) {
-                                <option [value]="sort">{{ sort }}</option>
-                              }
-                            </select>
-                          </div>
                           <div>
                             <span>Show Entries</span>
                             <select [(ngModel)]="itemsPerPage"
@@ -107,12 +99,14 @@
             <div class="flex justify-center items-center h-[50vh]">
                 No Suffix Data Yet.
             </div>
-            }    
+            }
         } @else {
             <app-edit-suffix
+              [suffix]="suffixToEdit"
+              (updatedSuffix)="OnSuffixUpdate($event)"
               (backToEditSuffix)="handleBackToEditSuffix()"/>
-        }    
+        }
     } @else {
-        <app-add-suffix (backToSuffix)="handleBackToSuffix()"/>
+        <app-add-suffix (addedSuffix)="OnSuffixAdded($event)" (backToSuffix)="handleBackToSuffix()"/>
     }
 </div>
