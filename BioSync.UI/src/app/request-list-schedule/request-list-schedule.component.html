@@ -15,10 +15,10 @@
         <div class="select-top-container w-full">
           <p>Academic Year</p>
           <mat-select [(value)]="selectedAcademicYear" id="academic-year"
-                      name="section" class="bg-transparent border-b-2 
+                      name="section" class="bg-transparent border-b-2
                       border-darkGray focus:border-brightRed
                         focus:outline-none transition-colors
-                        duration-300 w-full py-2 px-1" 
+                        duration-300 w-full py-2 px-1"
                         (selectionChange)="onFilterChange()">
                 @for(academicYear of academicYears; track academicYear) {
                   <mat-option [value]="academicYear.id">
@@ -30,16 +30,16 @@
         <div class="select-top-container w-full">
           <p>Semester</p>
           <mat-select [(value)]="selectedSemester" id="semester"
-                      name="section" class="bg-transparent border-b-2 
+                      name="section" class="bg-transparent border-b-2
                         border-darkGray focus:border-brightRed
-                          focus:outline-none transition-colors duration-300 
+                          focus:outline-none transition-colors duration-300
                           w-full py-2 px-1" (selectionChange)="onFilterChange()">
                 @for(semester of semesters; track $index) {
                   <mat-option [value]="$index + 1">{{semester}}</mat-option>
                 }
           </mat-select>
         </div>
-        <div class="select-top-container w-full"> 
+        <div class="select-top-container w-full">
           <p>Program</p>
           <mat-select
               [(value)]="selectedProgram"
@@ -52,8 +52,8 @@
               </mat-option>
             }
           </mat-select>
-        </div>    
-        <div class="select-top-container w-full"> 
+        </div>
+        <div class="select-top-container w-full">
           <p>Year and Section</p>
           <mat-select
               [(value)]="selectedYearAndSection"
@@ -116,18 +116,18 @@
                 {{convertTimeFormat(schedule.endTime)}}</div>
               <div class="cell">{{schedule.laboratory?.name}}</div>
               <div class="cell">
-                <button (click)="toggleDropdownAction(schedule.id)" 
+                <button (click)="toggleDropdownAction(schedule.id)"
                     class="dropdown-toggle">
                     <mat-icon>more_horiz</mat-icon>
                 </button>
                 @if(activeDropdownId === schedule.id) {
                     <div class="action-container" [ngClass]="{
                       'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
-                        <button class="action-button" 
+                        <button class="action-button"
                             (click)="toggleAcceptSchedule(schedule)">
                             Accept
                         </button>
-                        <button class="action-button" 
+                        <button class="action-button"
                             (click)="toggleRejectSchedule(schedule)">
                             Reject
                         </button>
@@ -148,14 +148,6 @@
           {{ getDisplayRange() }} of {{ totalItems }}
         </div>
         <div class="paginator-controls">
-          <div>
-            <span>Sort By</span>
-            <select>
-              @for (sort of sorting; track sort) {
-                <option [value]="sort">{{ sort }}</option>
-              }
-            </select>
-          </div>
           <div>
             <span>Show Entries</span>
             <select [(ngModel)]="itemsPerPage"
