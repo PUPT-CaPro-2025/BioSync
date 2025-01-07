@@ -34,7 +34,17 @@ public class AttendanceServiceImpl implements AttendanceService {
 
   @Override
   public List<Attendance> getAttendanceByScheduleId(Long scheduleId) {
-    return attendanceRepository.findByScheduleId(scheduleId);
+    List<Attendance> attendances = attendanceRepository.findByScheduleId(scheduleId);
+
+    attendances.sort((a1, a2) -> {
+      String lastName1 = a1.getUser().getLastName();
+      String lastName2 = a2.getUser().getLastName();
+      if (lastName1 == null) lastName1 = "";
+      if (lastName2 == null) lastName2 = "";
+      return lastName1.compareToIgnoreCase(lastName2);
+    });
+
+    return attendances;
   }
 
   @Override
