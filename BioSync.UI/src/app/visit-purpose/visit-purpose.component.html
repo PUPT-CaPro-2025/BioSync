@@ -35,7 +35,7 @@
                                             <div class="action-container" [ngClass]="{
                                                 'bottom-action': filteredVisitPurposes.length >= 4 && (filteredVisitPurposes[filteredVisitPurposes.length - 1] === visitPurpose || filteredVisitPurposes[filteredVisitPurposes.length - 2] === visitPurpose)}">
                                                 <button class="action-button" (click)="toggleEdittVisitPurpose(visitPurpose)">Edit</button>
-                                                <button class="action-button">Delete</button>
+                                                <button class="action-button" (click)="openDeleteDialog(visitPurpose)">Delete</button>
                                             </div>
                                         }
                                     </div>

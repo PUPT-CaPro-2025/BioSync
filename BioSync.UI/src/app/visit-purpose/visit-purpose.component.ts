@@ -12,6 +12,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddVisitPurposeComponent } from './add-visit-purpose/add-visit-purpose.component';
 import { EditVisitPurposeComponent } from './edit-visit-purpose/edit-visit-purpose.component';
 import {VisitPurposeService} from "../../services/visit.purpose.service";
+import {Suffix} from "../../model/suffix.model";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-visit-purpose',
@@ -146,5 +149,47 @@ export class VisitPurposeComponent implements OnInit {
     this.isEditVisitPurpose = false;
   }
 
+  openDeleteDialog(purpose: VisitPurpose){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '350px',
+      data: {
+        title: "Delete Suffix",
+        message: "Are you sure you want to delete suffix?"
+      }
+    })
 
+    ref.afterClosed().subscribe({
+      next: result => {
+        if (!result) return
+
+        this.visitPurposeService.deletePurpose(purpose.id).subscribe({
+          next: () => {
+            this.visitPurposes = this.visitPurposes.filter(p => p.id !== purpose.id)
+            this.updatePagination();
+            this.openSuccessDialog();
+          }
+        })
+      }
+    })
+  }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '350px',
+      data: {
+        title: "Purpose Deleted",
+        message: "Visit Purpose has been deleted."
+      }
+    })
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.visitPurposes.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  protected readonly open = open;
 }

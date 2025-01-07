@@ -18,4 +18,12 @@ export class VisitPurposeService {
       withCredentials: true
     })
   }
+
+  deletePurpose(id: number){
+    return this.http.delete(this.url, {
+      body: { id: id },
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
 }
