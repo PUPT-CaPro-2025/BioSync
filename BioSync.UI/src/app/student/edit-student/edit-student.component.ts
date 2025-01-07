@@ -41,6 +41,8 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MailService } from '../../../services/mail.service';
+import {SuffixService} from "../../../services/suffix.service";
+import {Suffix} from "../../../model/suffix.model";
 
 @Component({
   selector: 'app-edit-student',
@@ -61,7 +63,7 @@ import { MailService } from '../../../services/mail.service';
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './edit-student.component.html',
   styleUrls: [
     './edit-student.component.css',
@@ -75,25 +77,11 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   @Input() selectedStudent!: User;
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
-
+  allSuffix: Suffix[] = [];
   allPrograms: Program[] = [];
   sections: Section[] = [];
   filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
-  studentForm!: FormGroup;
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
@@ -118,7 +106,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
@@ -126,6 +115,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.getAllPrograms();
     this.setFormValues();
     this.getAllSections();
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -175,6 +165,14 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         this.allPrograms = programs;
       },
     });
+  }
+
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   setFormValues() {
