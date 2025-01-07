@@ -113,6 +113,6 @@
               (backToEditSuffix)="handleBackToEditSuffix()"/>
         }
     } @else {
-        <app-add-suffix (backToSuffix)="handleBackToSuffix()"/>
+        <app-add-suffix (addedSuffix)="OnSuffixAdded($event)" (backToSuffix)="handleBackToSuffix()"/>
     }
 </div>

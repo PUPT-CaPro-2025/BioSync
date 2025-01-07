@@ -183,6 +183,11 @@ export class SuffixComponent implements OnInit{
     })
   }
 
+  OnSuffixAdded(suffix: Suffix){
+    this.suffixes.push(suffix);
+    this.updatePagination();
+  }
+
   updatePagination(): void {
     this.totalItems = this.suffixes.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
