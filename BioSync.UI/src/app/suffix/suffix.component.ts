@@ -39,10 +39,6 @@ export class SuffixComponent implements OnInit{
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Alphabetical', 'Date'
-  ];
-
   suffixes: Suffix[] = [];
 
   totalItems: number = this.suffixes.length; //temporary value
