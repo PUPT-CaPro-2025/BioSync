@@ -28,7 +28,7 @@
                         <div class="row-container text-custom-12">
                             @for (visitPurpose of filteredVisitPurposes; track visitPurpose) {
                                 <div class="row">
-                                    <div class="cell">{{ visitPurpose.visitPurpose }}</div>
+                                    <div class="cell">{{ visitPurpose.purposeOfVisit }}</div>
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(visitPurpose.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === visitPurpose.id) {
@@ -103,13 +103,13 @@
                 </div>
             } @else {
             <div class="flex justify-center items-center h-[50vh]">
-                No Suffix Data Yet.
+                No Purpose Data Yet.
             </div>
-            }    
+            }
         } @else {
             <app-edit-visit-purpose
               (backToEditVisitPurpose)="handleBackToEditVisitPurpose()"/>
-        }    
+        }
     } @else {
         <app-add-visit-purpose (backToVisitPurpose)="handleBackToVisitPurpose()"/>
     }
