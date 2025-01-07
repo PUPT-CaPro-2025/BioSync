@@ -114,7 +114,7 @@
                       }
                     </mat-select>
                   </div>
-                  <div class="select-top-container w-full"> 
+                  <div class="select-top-container w-full">
                     <p>Program</p>
                     <mat-select
                         [(value)]="selectedProgram"
@@ -127,8 +127,8 @@
                         </mat-option>
                       }
                     </mat-select>
-                  </div>    
-                  <div class="select-top-container w-full"> 
+                  </div>
+                  <div class="select-top-container w-full">
                     <p>Year and Section</p>
                     <mat-select
                         [(value)]="selectedYearAndSection"
@@ -142,7 +142,7 @@
                         </mat-option>
                       }
                     </mat-select>
-                  </div>                                     
+                  </div>
                 </div>
                 <div class="search-container mt-10">
                   <mat-icon class="search-icon">search</mat-icon>
@@ -270,14 +270,6 @@
                     {{ getDisplayRange() }} of {{ totalItems }}
                   </div>
                   <div class="paginator-controls">
-                    <div>
-                      <span>Sort By</span>
-                      <select>
-                        @for (sort of sorting; track sort) {
-                          <option [value]="sort">{{ sort }}</option>
-                        }
-                      </select>
-                    </div>
                     <div>
                       <span>Show Entries</span>
                       <select [(ngModel)]="itemsPerPage"

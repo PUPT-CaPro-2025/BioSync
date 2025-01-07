@@ -47,19 +47,12 @@ export class RequestListScheduleComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
-
-
   semesters: string[] = [
     'First Semester', 'Second Semester', 'Summer Semester',
   ];
   selectedSemester = 1;
-
   programs: Program[] = [];
   selectedProgram!: number;
   prevSelectedProgram = -1;
@@ -334,8 +327,8 @@ export class RequestListScheduleComponent implements OnInit {
 
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester 
-        && schedule.section?.program.id === this.selectedProgram 
+        && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     )
 
     this.groupSchedulesByRecurrenceId();

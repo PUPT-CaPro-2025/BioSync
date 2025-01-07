@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from '../../model/subject-model';
@@ -32,13 +32,7 @@ export class SubjectComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
-
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   subjects: Subject[] = []
-
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;

@@ -56,14 +56,6 @@
                             </div>
                             <div class="paginator-controls">
                               <div>
-                                <span>Sort By</span>
-                                <select>
-                                  @for (sort of sorting; track sort) {
-                                    <option [value]="sort">{{ sort }}</option>
-                                  }
-                                </select>
-                              </div>
-                              <div>
                                 <span>Show Entries</span>
                                 <select [(ngModel)]="itemsPerPage"
                                     (change)="onItemsPerPageChange()">

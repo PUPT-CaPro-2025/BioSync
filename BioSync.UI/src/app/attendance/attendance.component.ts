@@ -28,13 +28,13 @@ import { SectionService } from '../../services/section.service';
   standalone: true,
   imports: [MatToolbarModule, MatIconModule, CommonModule, FormsModule, MatSelectModule],
   providers: [
-    ScheduleService, 
+    ScheduleService,
     SchoolYearService,
     ProgramService,
     SectionService,
-    UserService, 
-    CookieService, 
-    CryptoService, 
+    UserService,
+    CookieService,
+    CryptoService,
     AttendanceService
   ],
   templateUrl: './attendance.component.html',
@@ -43,10 +43,6 @@ import { SectionService } from '../../services/section.service';
 export class AttendanceComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
-  ];
-
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
   ];
 
   academicYears: SchoolYear[] = [];
@@ -278,8 +274,8 @@ export class AttendanceComponent implements OnInit{
 
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester 
-        && schedule.section?.program.id === this.selectedProgram 
+        && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     )
 
     this.sortSchedulesById(this.schedules);

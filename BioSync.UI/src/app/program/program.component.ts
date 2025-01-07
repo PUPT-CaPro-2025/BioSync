@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -37,10 +37,6 @@ import jsPDF from "jspdf";
 export class ProgramComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
-  ];
-
-  sorting: string[] = [
-    'Alphabetical', 'Date'
   ];
 
   programs: Program[] = [];

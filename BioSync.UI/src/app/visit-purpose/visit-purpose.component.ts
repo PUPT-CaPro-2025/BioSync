@@ -39,10 +39,6 @@ export class VisitPurposeComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Alphabetical', 'Date'
-  ];
-
   visitPurposes: VisitPurpose[] = [];
 
   totalItems: number = this.visitPurposes.length; //temporary value
