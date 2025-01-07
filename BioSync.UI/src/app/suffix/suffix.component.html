@@ -29,8 +29,8 @@
                         <div class="row-container text-custom-12">
                             @for (suffix of filteredSuffixes; track suffix ) {
                                 <div class="row">
-                                    <div class="cell">{{ suffix.suffix_name }}</div>
-                                    <div class="cell">{{ suffix.suffix_abbbreviation }}</div>
+                                    <div class="cell">{{ suffix.name }}</div>
+                                    <div class="cell">{{ suffix.abbreviation }}</div>
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(suffix.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === suffix.id) {
@@ -107,11 +107,11 @@
             <div class="flex justify-center items-center h-[50vh]">
                 No Suffix Data Yet.
             </div>
-            }    
+            }
         } @else {
             <app-edit-suffix
               (backToEditSuffix)="handleBackToEditSuffix()"/>
-        }    
+        }
     } @else {
         <app-add-suffix (backToSuffix)="handleBackToSuffix()"/>
     }
