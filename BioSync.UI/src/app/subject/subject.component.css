@@ -1,0 +1,20 @@
+.subject-print-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 190px;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.subject-print-content div {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 8px;
+    margin: 0;
+}

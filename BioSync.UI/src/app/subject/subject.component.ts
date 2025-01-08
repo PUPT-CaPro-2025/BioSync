@@ -42,6 +42,7 @@ export class SubjectComponent implements OnInit{
   subjectToEdit!: Subject;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private subjectService: SubjectService,
@@ -195,6 +196,10 @@ export class SubjectComponent implements OnInit{
     this.isEditSubject = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -216,8 +221,8 @@ export class SubjectComponent implements OnInit{
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, pageWidth / 2, 35);
 
-    const columns = ['Subject Code', 'Subject Name', 'Description'];
-    const rows = this.subjects.map(subject => [subject.code, subject.description, subject.description]);
+    const columns = ['Subject Code', 'Description'];
+    const rows = this.subjects.map(subject => [subject.code, subject.description]);
 
     doc.autoTable({
       head: [columns],
@@ -242,6 +247,31 @@ export class SubjectComponent implements OnInit{
 
     doc.save('subjects-list.pdf');
   }
+
+  generateCSV() {
+    const columns = ['Subject Code', 'Description'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    this.subjects.forEach(subject => {
+      const row = [subject.code, subject.description];
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'subjects-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
     const img = new Image();
