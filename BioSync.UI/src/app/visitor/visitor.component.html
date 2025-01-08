@@ -3,12 +3,27 @@
         <div class="header">
             <mat-toolbar class="toolbar-container">
                 <span>Visitor Logs</span>
-                <div class="toolbar-button">
-                    <button (click)="generatePdf()" 
-                        class="header-button">
-                        Print Visitor Report
-                    </button>
-                </div>
+                    <div class="toolbar-button select-none">
+                        <div class="header-button flex" (click)="toggleDropdown()">
+                            Print Visitor Reports
+                        </div>
+                        @if (reportDropdown) {
+                            <div class="subject-print-content flex flex-col">
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generatePdf()"
+                                >
+                                    Print PDF
+                                </div>
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generateCSV()"
+                                >
+                                    Print CSV
+                                </div>
+                            </div>
+                        }
+                    </div>
             </mat-toolbar>
         </div>
         <div class="filter-container">
