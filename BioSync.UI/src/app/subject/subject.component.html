@@ -36,19 +36,19 @@
                                     <div class="cell">{{ subject.code }}</div>
                                 <div class="cell">{{ subject.description }}</div>
                                 <div class="cell">
-                                    <button 
-                                        (click)="toggleDropdownAction(subject.id)" 
+                                    <button
+                                        (click)="toggleDropdownAction(subject.id)"
                                         class="dropdown-toggle">
                                         <mat-icon>more_horiz</mat-icon>
                                     </button>
                                     @if(activeDropdownId === subject.id) {
                                         <div class="action-container" [ngClass]="{
                                             'bottom-action': filteredSubjects.length >= 4 && (filteredSubjects[filteredSubjects.length - 1] === subject || filteredSubjects[filteredSubjects.length - 2] === subject)}">
-                                            <button class="action-button" 
+                                            <button class="action-button"
                                                 (click)="toggleEditSubject(subject)">
                                                 Edit
                                             </button>
-                                            <button class="action-button" 
+                                            <button class="action-button"
                                                 (click)="openDeleteDialog(subject)">
                                                 Delete
                                             </button>
@@ -70,14 +70,6 @@
                         </div>
                         <div class="paginator-controls">
                           <div>
-                            <span>Sort By</span>
-                            <select>
-                              @for (sort of sorting; track sort) {
-                                <option [value]="sort">{{ sort }}</option>
-                              }
-                            </select>
-                          </div>
-                          <div>
                             <span>Show Entries</span>
                             <select [(ngModel)]="itemsPerPage"
                                 (change)="onItemsPerPageChange()">
@@ -87,7 +79,7 @@
                                 </option>
                               }
                             </select>
-                          </div>    
+                          </div>
                           <div>
                             <span>Page</span>
                             <select [(ngModel)]="currentPage" (change)="onPageChange()">
@@ -128,9 +120,9 @@
               (updatedSubject)="onSubjectUpdate($event)"
               (backToEditSubject)="handleBackToEditSubject()"/>
         }
-    
+
     } @else {
-        <app-add-subject (subjectAdded)="onSubjectAdded($event)" 
+        <app-add-subject (subjectAdded)="onSubjectAdded($event)"
             (backToSubject)="handleBackToSubject()"/>
-    }    
+    }
 </div>

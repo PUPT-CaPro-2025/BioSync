@@ -54,10 +54,6 @@ export class ScheduleComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 

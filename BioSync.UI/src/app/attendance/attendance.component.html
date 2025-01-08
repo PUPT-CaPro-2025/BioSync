@@ -36,7 +36,7 @@
             }
           </mat-select>
         </div>
-        <div class="select-top-container w-full"> 
+        <div class="select-top-container w-full">
           <p>Program</p>
           <mat-select
               [(value)]="selectedProgram"
@@ -49,8 +49,8 @@
               </mat-option>
             }
           </mat-select>
-        </div>    
-        <div class="select-top-container w-full"> 
+        </div>
+        <div class="select-top-container w-full">
           <p>Year and Section</p>
           <mat-select
               [(value)]="selectedYearAndSection"
@@ -132,14 +132,6 @@
         </div>
         <div class="paginator-controls">
           <div>
-            <span>Sort By</span>
-            <select>
-              @for (sort of sorting; track sort) {
-                <option [value]="sort">{{ sort }}</option>
-              }
-            </select>
-          </div>
-          <div>
             <span>Show Entries</span>
             <select [(ngModel)]="itemsPerPage"
                 (change)="onItemsPerPageChange()">
@@ -183,5 +175,5 @@
     <div class="flex justify-center items-center h-[50vh]">
       No Attendance Yet.
     </div>
-  }  
+  }
 </div>
