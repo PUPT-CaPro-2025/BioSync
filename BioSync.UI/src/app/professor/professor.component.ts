@@ -24,7 +24,8 @@ import jsPDF from "jspdf";
     EditProfessorComponent],
   providers: [UserService],
   templateUrl: './professor.component.html',
-  styleUrls: ['./professor.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./professor.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class ProfessorComponent implements OnInit{
   professors: User[] = [];
@@ -41,6 +42,7 @@ export class ProfessorComponent implements OnInit{
   professorToUpdate!: User
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private userService: UserService,
@@ -204,6 +206,10 @@ export class ProfessorComponent implements OnInit{
     })
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -259,6 +265,36 @@ export class ProfessorComponent implements OnInit{
     });
 
     doc.save('professor-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Faculty Code', 'First Name', 'Middle Name', 'Last Name', 'Suffix'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    this.professors.forEach(professor => {
+      const row = [
+        professor.usercode,
+        professor.firstName,
+        professor.middleName,
+        professor.lastName,
+        professor.suffix
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'professor-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
