@@ -7,7 +7,27 @@
                         <span>List of School Years - ALL</span>
                         <div class="toolbar-button">
                             <button class="header-button" (click)="toggleAddSchoolYear()">Add New School Year</button>
-                            <button class="header-button" (click)="generatePdf()">Print School Year Reports</button>
+                            <div class="toolbar-button select-none">
+                                <div class="header-button flex" (click)="toggleDropdown()">
+                                    Print School Year Reports
+                                </div>
+                                @if (reportDropdown) {
+                                    <div class="add-schedule-content flex flex-col">
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generatePdf()"
+                                        >
+                                            Print PDF
+                                        </div>
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generateCSV()"
+                                        >
+                                            Print CSV
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </mat-toolbar>
                 </div>
