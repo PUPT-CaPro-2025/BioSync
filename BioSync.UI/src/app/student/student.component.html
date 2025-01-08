@@ -16,9 +16,27 @@
                             Add Multiple Student
                         </button>
                     </mat-menu>
-                    <button (click)="generatePdf()">
-                        Print Student Report
-                    </button>
+                    <div class="toolbar-button select-none">
+                        <div class="header-button flex" (click)="toggleDropdown()">
+                            Print Student Report
+                        </div>
+                        @if (reportDropdown) {
+                            <div class="subject-print-content flex flex-col">
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generatePdf()"
+                                >
+                                    Print PDF
+                                </div>
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generateCSV()"
+                                >
+                                    Print CSV
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </mat-toolbar>
         </div>
