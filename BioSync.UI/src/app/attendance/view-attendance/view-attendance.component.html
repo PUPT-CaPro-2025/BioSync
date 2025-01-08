@@ -2,9 +2,27 @@
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">View Schedule Attendance</span>
     <div class="toolbar-button">
-      <button class="header-button" (click)="generatePdf()">
-        Print Attendance Report
-      </button>
+      <div class="flex flex-col items-center select-none">
+        <div class="header-button" (click)="toggleDropdown()">
+          Print Attendance Report
+        </div>
+        @if (reportDropdown) {
+          <div class="add-schedule-content flex flex-col">
+            <div
+              class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+              (click)="generatePdf()"
+            >
+              Print PDF
+            </div>
+            <div
+              class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+              (click)="generateCSV()"
+            >
+              Print CSV
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </mat-toolbar>
 </div>

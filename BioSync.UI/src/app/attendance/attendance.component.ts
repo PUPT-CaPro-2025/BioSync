@@ -7,20 +7,19 @@ import { MatSelectModule } from '@angular/material/select';
 import {SchoolYear} from "../../model/school.year.model";
 import {Schedule} from "../../model/schedule.model";
 import {ScheduleService} from "../../services/schedule.service";
-import {MatDialog} from "@angular/material/dialog";
 import {SchoolYearService} from "../../services/school.year.service";
 import {Router} from "@angular/router";
 import {CryptoService} from "../../services/crypto.service";
 import {CookieService} from "../../services/cookie.service";
 import {UserService} from "../../services/user.service";
 import {User} from "../../model/user.model";
-import jsPDF from "jspdf";
 import {AttendanceService} from "../../services/attendance.service";
 import {Attendance} from "../../model/attendance.model";
 import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
+import {Semester} from "../../model/semester.model";
 
 
 @Component({
@@ -48,9 +47,7 @@ export class AttendanceComponent implements OnInit{
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-  semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
-  ];
+  semesters: Semester[] = [];
   selectedSemester = 1;
 
   programs: Program[] = [];
@@ -68,13 +65,11 @@ export class AttendanceComponent implements OnInit{
   currentPage: number = 1;
   totalPages!: number;
   userId!: number;
-  headerImage!: string;
   attendances: Attendance[] = [];
   activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
-    private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
     private sectionService: SectionService,
     private programService: ProgramService,
@@ -96,12 +91,8 @@ export class AttendanceComponent implements OnInit{
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
-    this. getAllPrograms();
+    this.getAllPrograms();
     this.getSections();
-
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
-    });
   }
 
   getAllSchedules() {
@@ -114,6 +105,7 @@ export class AttendanceComponent implements OnInit{
         this.setLatestSchoolYear();
         this.setLatestProgram();
         this.getSections();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -148,10 +140,35 @@ export class AttendanceComponent implements OnInit{
         this.setLatestSchoolYear();
         this.setLatestProgram();
         this.getSections();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
+  }
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
   }
 
   setLatestSchoolYear() {
@@ -332,74 +349,4 @@ export class AttendanceComponent implements OnInit{
     })
   }
 
-  generatePdf() {
-
-    const doc = new jsPDF('landscape', 'mm', 'a4');
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'ATTENDANCE LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
-    const columns = ['Subject', 'Date', 'Student Name', 'Status'];
-    const rows = this.attendances.map(attendance =>
-      [
-        attendance.schedule.subject?.name,
-        attendance.schedule.scheduleDate,
-        `${attendance.user.firstName} ${attendance.user.lastName}`,
-        attendance.status
-      ]);
-
-    doc.autoTable({
-      head: [columns],
-      body: rows,
-      startY: 40,
-      theme: 'grid',
-      styles: {
-        fontSize: 10,
-        halign: 'center',
-      },
-      headStyles: {
-        fillColor: [255, 255, 255],
-        textColor: [0, 0, 0],
-        lineWidth: 0.4,
-        lineColor: [0, 0, 0],
-      },
-      bodyStyles: {
-        lineColor: [0, 0, 0],
-        textColor: [0, 0, 0],
-      }
-    });
-
-    doc.save('schedule-list.pdf');
-  }
-
-  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.src = url;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0);
-      const base64Image = canvas.toDataURL('image/png');
-      callback(base64Image);
-    };
-  }
 }

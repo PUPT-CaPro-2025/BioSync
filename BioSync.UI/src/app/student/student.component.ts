@@ -38,7 +38,8 @@ import { SectionService } from '../../services/section.service';
   ],
   providers: [UserService, SectionService, ProgramService],
   templateUrl: './student.component.html',
-  styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./student.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];
@@ -48,16 +49,6 @@ export class StudentComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
-
-  sorting: string[] = [
-    'Section', 'Program'
-  ];
-
-  yearSemesters: string[] = [
-    'School Year 2324 - First Semester', 'School Year 2324 - Second Semester', 'School Year 2324 - Summer'
-  ];
-
-  selectedYearSem = 'School Year 2324 - Summer';
 
   programs: Program[] = [];
   selectedProgram = -1;
@@ -73,9 +64,9 @@ export class StudentComponent implements OnInit{
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
-  sortBy = '';
   searchQuery!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private userService: UserService,
@@ -278,20 +269,6 @@ export class StudentComponent implements OnInit{
     this.isEditStudent = false;
   }
 
-  sortStudents() {
-    if(this.sortBy === 'Section') {
-      this.queriedStudents.sort((a, b) => {
-        return a.section?.id! - b.section?.id!
-      })
-    } else if (this.sortBy === 'Program'){
-      this.queriedStudents.sort((a, b) => {
-        return a.program?.id! - b.program?.id!
-      })
-    } else {
-      this.getStudents();
-    }
-  }
-
   toggleBulkAddStudent() {
     const ref = this.dialog.open(PromptCsvComponent, {
       width: '450px',
@@ -359,7 +336,13 @@ export class StudentComponent implements OnInit{
     doc.text(currentDate, pageWidth / 2, 35);
 
     const columns = ['Student Code','Program', 'First Name', 'Middle Name', 'Last Name', ];
-    const rows = this.students.map(students =>
+    let studentsToPrint: User[];
+    if(this.selectedProgram == -1 && this.selectedYearAndSection == -1){
+      studentsToPrint = this.studentContainer;
+    } else {
+      studentsToPrint = this.queriedStudents;
+    }
+    const rows = studentsToPrint.map(students =>
       [
         students.usercode,
         students.program?.programAbbreviation,
@@ -390,6 +373,47 @@ export class StudentComponent implements OnInit{
     });
 
     doc.save('student-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Student Code', 'Program', 'First Name', 'Middle Name', 'Last Name'];
+
+    let studentsToPrint: User[];
+    if (this.selectedProgram == -1 && this.selectedYearAndSection == -1) {
+      studentsToPrint = this.studentContainer;
+    } else {
+      studentsToPrint = this.queriedStudents;
+    }
+
+    let csvContent = columns.join(',') + '\n';
+
+    studentsToPrint.forEach(student => {
+      const row = [
+        student.usercode,
+        student.program?.programAbbreviation || '',
+        student.firstName,
+        student.middleName,
+        student.lastName
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'student-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

@@ -1,5 +1,5 @@
 import { Visitor } from '../../model/visitor.model';
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -21,10 +21,10 @@ import jsPDF from "jspdf";
     EditVisitorComponent],
   providers: [VisitorService],
   templateUrl: './visitor.component.html',
-  styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css',
+    '../subject/subject.component.css']
 })
 export class VisitorComponent implements OnInit{
-  //Temporary Data
   visitors: Visitor[] = [];
 
   entries: string[] = [
@@ -43,6 +43,7 @@ export class VisitorComponent implements OnInit{
   visitorToEdit!: Visitor;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private visitorService: VisitorService,
@@ -201,6 +202,10 @@ export class VisitorComponent implements OnInit{
     this.isEditVisitor = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -256,6 +261,39 @@ export class VisitorComponent implements OnInit{
 
     doc.save('visitor-list.pdf');
   }
+
+  generateCSV() {
+    const columns = ['Visitor Name', 'Purpose of Visit', 'Date', 'Time', 'Destination'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    const rows = this.visitors.map(visitor =>
+        [
+          visitor.name,
+          visitor.purposeOfVisit,
+          this.getDate(visitor.visitDate),
+          this.getTime(visitor.visitDate),
+          visitor.destination
+        ]
+    );
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'visitor-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
     const img = new Image();
