@@ -2,9 +2,6 @@
   <div class="header">
     <mat-toolbar class="toolbar-container">
         <span>List of Attendance</span>
-      <div class="toolbar-button">
-        <button class="header-button" (click)="generatePdf()">Print Attendance Reports</button>
-      </div>
     </mat-toolbar>
   </div>
   <div class="filter-container">
@@ -32,7 +29,7 @@
                                       focus:outline-none transition-colors
                                       duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
             @for(semester of semesters; track $index) {
-              <mat-option [value]="$index + 1">{{semester}}</mat-option>
+              <mat-option [value]="semester.id">{{semester.name}}</mat-option>
             }
           </mat-select>
         </div>
