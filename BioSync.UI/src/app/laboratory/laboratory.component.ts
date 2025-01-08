@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -32,15 +32,12 @@ import jsPDF from "jspdf";
   ],
   providers: [LaboratoryService],
   templateUrl: './laboratory.component.html',
-  styleUrls: ['./laboratory.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./laboratory.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class LaboratoryComponent implements OnInit {
   entries: string[] = [
     '10', '20', '30', '40', '50'
-  ];
-
-  sorting: string[] = [
-    'Alphabetical', 'Date'
   ];
 
   laboratories: Laboratory[] = [];
@@ -51,11 +48,10 @@ export class LaboratoryComponent implements OnInit {
   totalPages!: number;
   isAddLaboratory: boolean = false;
   isEditLaboratory: boolean = false;
-  isViewLaboratory: boolean = false;
   laboratoryToEdit!: Laboratory;
-  currentLaboratory: number | undefined;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private laboratoryService: LaboratoryService,
@@ -209,6 +205,10 @@ export class LaboratoryComponent implements OnInit {
     this.isEditLaboratory = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -261,6 +261,36 @@ export class LaboratoryComponent implements OnInit {
 
     doc.save('laboratory-list.pdf');
   }
+
+  generateCSV() {
+    const columns = ['Room Code', 'Laboratory Name', 'Capacity'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    const rows = this.laboratories.map(laboratory => [
+      laboratory.roomCode,
+      laboratory.name,
+      laboratory.capacity
+    ]);
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'laboratory-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
     const img = new Image();

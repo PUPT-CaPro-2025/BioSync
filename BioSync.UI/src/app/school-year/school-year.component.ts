@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -40,8 +40,6 @@ import jsPDF from "jspdf";
 export class SchoolYearComponent implements OnInit {
   entries: string[] = ['10', '20', '30', '40', '50'];
 
-  sorting: string[] = ['Alphabetical', 'Date'];
-
   schoolYear: SchoolYear[] = [];
 
   totalItems!: number;
@@ -54,6 +52,7 @@ export class SchoolYearComponent implements OnInit {
   schoolYearToEdit!: SchoolYear;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private schoolYearService: SchoolYearService,
@@ -78,7 +77,7 @@ export class SchoolYearComponent implements OnInit {
     });
   }
 
-  dateToReadable(isoDate: Date): string {
+  dateToReadable(isoDate: Date, csv=false): string {
     const date = new Date(isoDate);
 
     const options: Intl.DateTimeFormatOptions = {
@@ -87,7 +86,13 @@ export class SchoolYearComponent implements OnInit {
       day: 'numeric',
     };
 
-    return date.toLocaleDateString('en-US', options);
+    if(csv){
+      return date.toLocaleDateString('en-GB', options)
+          .replace(/\s/g, '-');
+    } else {
+      return date.toLocaleDateString('en-US', options);
+    }
+
   }
 
   openConfirmationDialog(schoolYear: SchoolYear): void {
@@ -224,6 +229,9 @@ export class SchoolYearComponent implements OnInit {
     this.isViewSchoolYear = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
 
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
@@ -278,6 +286,46 @@ export class SchoolYearComponent implements OnInit {
     });
 
     doc.save('academic-year-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = [
+      'Academic Year',
+      'First Semester Start',
+      'First Semester End',
+      'Second Semester Start',
+      'Second Semester End',
+      'Summer Semester Start',
+      'Summer Semester End'
+    ];
+
+    let csvContent = columns.join(',') + '\n'; // Add CSV header
+
+    const rows = this.schoolYear.map(sy => [
+      `${sy.startYear} - ${sy.endYear}`,
+       this.dateToReadable(sy.firstSemester.startDate, true),
+       this.dateToReadable(sy.firstSemester.endDate, true),
+       this.dateToReadable(sy.secondSemester.startDate, true),
+       this.dateToReadable(sy.secondSemester.endDate, true),
+       this.dateToReadable(sy.summerSemester.startDate, true),
+       this.dateToReadable(sy.summerSemester.endDate, true),
+    ]);
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n'; // Add rows to CSV
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' }); // Create a blob for CSV
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'academic-year-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

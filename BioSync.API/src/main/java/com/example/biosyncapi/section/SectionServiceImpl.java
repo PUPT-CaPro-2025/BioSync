@@ -25,6 +25,11 @@ public class SectionServiceImpl implements SectionService {
     }
 
     @Override
+    public List<Section> getSectionsByProgramId(long programId) {
+        return sectionRepository.findByProgramId(programId);
+    }
+
+    @Override
     public Section saveSection(Section section) {
         return sectionRepository.save(section);
     }

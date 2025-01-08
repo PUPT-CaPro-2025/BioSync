@@ -6,6 +6,7 @@ import com.example.biosyncapi.authentication.password_reset.PasswordResetReposit
 import com.example.biosyncapi.program.Program;
 import com.example.biosyncapi.program.ProgramRepository;
 import com.example.biosyncapi.schedule.Schedule;
+import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentService;
 import com.example.biosyncapi.section.Section;
@@ -56,10 +57,10 @@ public class UserServiceImpl implements UserService {
 
   public UserServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
       FingerprintRepository fingerprintRepository, S3Client s3Client, ProfileImageRepository profileImageRepository,
-                         ProgramRepository programRepository, SectionRepository sectionRepository,
-                         AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService,
-                          ScheduleStudentRepository scheduleStudentRepository, PasswordResetRepository resetTokenRepository,
-                         AttendanceRepository attendanceRepository) {
+      ProgramRepository programRepository, SectionRepository sectionRepository,
+      AuthenticationServiceImpl authenticationService, ScheduleStudentService scheduleStudentService,
+      ScheduleStudentRepository scheduleStudentRepository, PasswordResetRepository resetTokenRepository,
+      AttendanceRepository attendanceRepository) {
     this.userRepository = userRepository;
     this.tokenRepository = tokenRepository;
     this.fingerprintRepository = fingerprintRepository;
@@ -102,7 +103,8 @@ public class UserServiceImpl implements UserService {
   @Override
   public void deleteUser(Long id) {
     Optional<User> user = this.userRepository.findById(id);
-    if (user.isEmpty()) throw new IllegalArgumentException("User does not exist");
+    if (user.isEmpty())
+      throw new IllegalArgumentException("User does not exist");
 
     this.profileImageRepository.deleteByUserId(id);
     this.attendanceRepository.deleteByUserId(id);
@@ -151,13 +153,13 @@ public class UserServiceImpl implements UserService {
 
     ProfileImage profileImage = profileImageRepository.findByUserId(user.getId());
 
-    if(profileImage == null) {
+    if (profileImage == null) {
       profileImage = new ProfileImage();
       profileImage.setUser(user);
     } else {
       String currentImagePath = profileImage.getImageUrl();
 
-      if(currentImagePath != null) {
+      if (currentImagePath != null) {
         String existingFileName = currentImagePath
             .replace("https://pupt-biosync-team.s3.amazonaws.com/", "");
         s3Client.deleteObject(
@@ -180,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
     String s3Url = String.format("https://%s.s3.amazonaws.com/%s", bucketName, uniqueFileName);
 
-     profileImage.setImageUrl(s3Url);
+    profileImage.setImageUrl(s3Url);
 
     profileImageRepository.save(profileImage);
   }
@@ -228,10 +230,11 @@ public class UserServiceImpl implements UserService {
    * for adding multiple students
    *
    * @param file - csv of student data
+   * 
    * @param <optional> schedule id - include student in schedule
    */
   @Override
-  public HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule ) throws Exception {
+  public HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception {
     HashMap<User, String> mailPassword = new HashMap<>();
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
@@ -247,10 +250,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
         if (user.isPresent()) {
-          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, user.get()));
+          schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
           continue;
         }
-        System.out.println(Arrays.toString(csvRow));
+
         String generatedPassword = generatePassword(8);
         User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
         schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
@@ -277,7 +280,7 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
-  //region Helper methods
+  // region Helper methods
   private String getValue(String value) {
     if (value.isEmpty())
       return null;
@@ -285,15 +288,16 @@ public class UserServiceImpl implements UserService {
     return value;
   }
 
-  private String getEmail(String value){
-    if(!value.contains("(locked)")) return value;
+  private String getEmail(String value) {
+    if (!value.contains("(locked)"))
+      return value;
 
     int extraIndex = value.indexOf("(locked)");
 
     return value.substring(0, extraIndex);
   }
 
-  private Section getSection(String sectionCode){
+  private Section getSection(String sectionCode) {
     int tgIndex = sectionCode.indexOf("TG");
 
     String yearSection = sectionCode.substring(tgIndex + 2).trim();
@@ -301,7 +305,8 @@ public class UserServiceImpl implements UserService {
 
     Program program = getProgram(sectionCode);
 
-    if(program == null) return null;
+    if (program == null)
+      return null;
 
     String year = yearSectionArr[0];
     int section = Integer.parseInt(yearSectionArr[1]);
@@ -314,9 +319,12 @@ public class UserServiceImpl implements UserService {
 
     String programAbb = sectionCode.substring(0, tgIndex).trim();
 
+    if (programAbb.endsWith("-")) {
+      programAbb = programAbb.substring(0, programAbb.length() - 1);
+    }
+
     return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
   }
-
 
   private String generatePassword(int length) {
     String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -334,5 +342,16 @@ public class UserServiceImpl implements UserService {
 
     return password.toString();
   }
-  //endregion
+
+  private void addStudentToScheduleIfNotPresent(
+      User user,
+      Schedule schedule)
+  {
+    ScheduleStudent scheduleStudent =
+        this.scheduleStudentRepository.findByStudentIdAndScheduleId(user.getId(), schedule.getId());
+    if(scheduleStudent == null) {
+      this.scheduleStudentService.addStudentToSchedule(schedule, user);
+    }
+  }
+  // endregion
 }

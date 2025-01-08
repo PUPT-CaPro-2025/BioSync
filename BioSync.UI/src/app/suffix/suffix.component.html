@@ -6,7 +6,6 @@
                     <span>List of Suffixes - ALL</span>
                     <div class="toolbar-button">
                         <button class="header-button" (click)="toggleAddSuffix()">Add New Suffix</button>
-                        <button class="header-button">Print Suffix Reports</button>
                     </div>
                 </mat-toolbar>
             </div>
@@ -15,27 +14,6 @@
                     <div class="search-container">
                         <mat-icon class="search-icon">search</mat-icon>
                         <input type="text" placeholder="SEARCH">
-                    </div>
-                    <div class="dropdown-container">
-                        <div class="dropdown-content">
-                            <div class="entry-container">
-                                <span>Show</span>
-                                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                    @for(entry of entries; track entry) {
-                                        <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                    }
-                                </select>
-                                <span>Entries</span>
-                            </div>
-                            <div class="sort-container">
-                                <select>
-                                    <option>Sort by</option>
-                                    @for(sort of sorting; track sort) {
-                                        <option [value]="sort">{{sort}}</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
                     </div>
                 </mat-toolbar>
             </div>
@@ -50,15 +28,15 @@
                         <div class="row-container text-custom-12">
                             @for (suffix of filteredSuffixes; track suffix ) {
                                 <div class="row">
-                                    <div class="cell">{{ suffix.suffix_name }}</div>
-                                    <div class="cell">{{ suffix.suffix_abbbreviation }}</div>
+                                    <div class="cell">{{ suffix.name }}</div>
+                                    <div class="cell">{{ suffix.abbreviation }}</div>
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(suffix.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === suffix.id) {
                                             <div class="action-container" [ngClass]="{
                                                 'bottom-action': filteredSuffixes.length >= 4 && (filteredSuffixes[filteredSuffixes.length - 1] === suffix || filteredSuffixes[filteredSuffixes.length - 2] === suffix)}">
                                                 <button class="action-button" (click)="toggleEditSuffix(suffix)">Edit</button>
-                                                <button class="action-button">Delete</button>
+                                                <button class="action-button" (click)="openDeleteDialog(suffix)">Delete</button>
                                             </div>
                                         }
                                     </div>
@@ -76,12 +54,25 @@
                           {{ getDisplayRange() }} of {{ totalItems }}
                         </div>
                         <div class="paginator-controls">
-                          <span>Page</span>
-                          <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                            @for (page of pages; track page) {
-                                <option [value]="page">{{ page }}</option>
-                            }
-                          </select>
+                          <div>
+                            <span>Show Entries</span>
+                            <select [(ngModel)]="itemsPerPage"
+                                (change)="onItemsPerPageChange()">
+                              @for (entry of entries; track entry) {
+                                <option [value]="entry" [selected]="entry === '10'">
+                                  {{ entry }}
+                                </option>
+                              }
+                            </select>
+                          </div>
+                          <div>
+                            <span>Page</span>
+                            <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                              @for (page of pages; track page) {
+                                  <option [value]="page">{{ page }}</option>
+                              }
+                            </select>
+                          </div>
                           <div class="paginator-button-container">
                             <button (click)="previousPage()"
                                     [disabled]="currentPage === 1"
@@ -107,12 +98,14 @@
             <div class="flex justify-center items-center h-[50vh]">
                 No Suffix Data Yet.
             </div>
-            }    
+            }
         } @else {
             <app-edit-suffix
+              [suffix]="suffixToEdit"
+              (updatedSuffix)="OnSuffixUpdate($event)"
               (backToEditSuffix)="handleBackToEditSuffix()"/>
-        }    
+        }
     } @else {
-        <app-add-suffix (backToSuffix)="handleBackToSuffix()"/>
+        <app-add-suffix (addedSuffix)="OnSuffixAdded($event)" (backToSuffix)="handleBackToSuffix()"/>
     }
 </div>

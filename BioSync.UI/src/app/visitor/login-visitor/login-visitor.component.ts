@@ -9,17 +9,19 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
 import {VisitorService} from "../../../services/visitor.service";
 import {Visitor} from "../../../model/visitor.model";
 import {Router} from "@angular/router";
+import {VisitPurposeService} from "../../../services/visit.purpose.service";
+import {VisitPurpose} from "../../../model/visit.purpose.model";
 
 @Component({
   selector: 'app-login-visitor',
   standalone: true,
-  imports: [MatIconModule, 
-    ReactiveFormsModule, 
-    MatSelectModule, 
+  imports: [MatIconModule,
+    ReactiveFormsModule,
+    MatSelectModule,
     MatInput,
     MatSelectModule
   ],
-  providers: [VisitorService],
+  providers: [VisitorService, VisitPurposeService],
   templateUrl: './login-visitor.component.html',
   styleUrl: './login-visitor.component.css'
 })
@@ -32,21 +34,19 @@ export class LoginVisitorComponent implements OnInit {
     'Aboitiz Laboratory',
   ];
 
-  visitPurposes: string[] =[
-    'Panelist',
-    'Organizer',
-    'Clearance'
-  ];
+  visitPurposes: VisitPurpose[] =[];
 
   constructor(
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
     private visitorService: VisitorService,
-    private router: Router
+    private router: Router,
+    private visitPurposeService: VisitPurposeService
   ) {}
 
   ngOnInit() {
     this.initForm();
+    this.getVisitPurposes();
   }
 
   onVisitPurposeChange(event: MatSelectChange): void {
@@ -69,6 +69,14 @@ export class LoginVisitorComponent implements OnInit {
       data: {
         title: 'Visitor Successfully Logged!',
         message: "Visitor has been successfully recorded in the system."
+      }
+    })
+  }
+
+  getVisitPurposes(){
+    this.visitPurposeService.getVisitPurposes().subscribe({
+      next: value => {
+        this.visitPurposes = value;
       }
     })
   }

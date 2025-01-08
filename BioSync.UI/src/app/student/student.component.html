@@ -16,47 +16,73 @@
                             Add Multiple Student
                         </button>
                     </mat-menu>
-                    <button (click)="generatePdf()">
-                        Print Student Report
-                    </button>
+                    <div class="toolbar-button select-none">
+                        <div class="header-button flex" (click)="toggleDropdown()">
+                            Print Student Report
+                        </div>
+                        @if (reportDropdown) {
+                            <div class="subject-print-content flex flex-col">
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generatePdf()"
+                                >
+                                    Print PDF
+                                </div>
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generateCSV()"
+                                >
+                                    Print CSV
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
             </mat-toolbar>
         </div>
         <div class="filter-container">
             <mat-toolbar class="filter-content">
+              <div class="flex w-full gap-2">
+                <div class="select-top-container w-full"> 
+                  <p>Program</p>
+                  <mat-select
+                      [(value)]="selectedProgram"
+                      id="program"
+                      class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                      (selectionChange)="onProgramChange()">
+                      <mat-option [value]="-1">
+                          All
+                      </mat-option>
+                    @for(program of programs; track program) {
+                      <mat-option [value]="program.id">
+                        {{program.programName}}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </div>    
+                <div class="select-top-container w-full"> 
+                  <p>Year and Section</p>
+                  <mat-select
+                      [(value)]="selectedYearAndSection"
+                      id="year"
+                      class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                      (selectionChange)="onSectionChange()">
+                      <mat-option [value]="-1">
+                          All
+                      </mat-option>
+                    @for(yearAndSection of sections; track yearAndSection) {
+                      <mat-option [value]="yearAndSection.id">
+                         {{ yearAndSection.year }} - {{ yearAndSection.section }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </div>                                     
+              </div>
                 <div class="search-container">
                     <mat-icon class="search-icon">search</mat-icon>
                     <input type="text" placeholder="SEARCH" 
                         [(ngModel)]="searchQuery" 
                         (input)="searchStudentList()">
-                </div>
-                <div class="dropdown-container">
-                    <div class="dropdown-content">
-                        <div class="sort-container">
-                          <div class="entry-container">
-                            <span>Sort: </span>
-                            <select [(ngModel)]="sortBy" (change)="sortStudents()">
-                              <option value="" selected>Default</option>
-                              @for(sort of sorting; track sort) {
-                                <option [value]="sort">{{sort}}</option>
-                              }
-                            </select>
-                          </div>
-                        </div>
-                        <div class="entry-container">
-                            <span>Show</span>
-                            <select [(ngModel)]="itemsPerPage" 
-                                (change)="onItemsPerPageChange()">
-                                @for(entry of entries; track entry) {
-                                    <option [value]="entry" 
-                                        [selected]="entry === '10'">
-                                        {{entry}}
-                                    </option>
-                                }
-                            </select>
-                            <span>Entries</span>
-                        </div>
-                    </div>
                 </div>
             </mat-toolbar>
         </div>
@@ -112,12 +138,25 @@
                   {{ getDisplayRange() }} of {{ totalItems }}
                 </div>
                 <div class="paginator-controls">
-                  <span>Page</span>
-                  <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                    @for (page of pages; track page) {
-                        <option [value]="page">{{ page }}</option>
-                    }
-                  </select>
+                  <div>
+                    <span>Show Entries</span>
+                    <select [(ngModel)]="itemsPerPage"
+                        (change)="onItemsPerPageChange()">
+                      @for (entry of entries; track entry) {
+                        <option [value]="entry" [selected]="entry === '10'">
+                          {{ entry }}
+                        </option>
+                      }
+                    </select>
+                  </div>
+                  <div>
+                    <span>Page</span>
+                    <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                      @for (page of pages; track page) {
+                          <option [value]="page">{{ page }}</option>
+                      }
+                    </select>
+                  </div>
                   <div class="paginator-button-container">
                     <button (click)="previousPage()"
                             [disabled]="currentPage === 1"

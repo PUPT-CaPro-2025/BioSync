@@ -493,16 +493,11 @@ export class AddScheduleComponent implements OnInit {
   }
 
   toggleDaySelection(day: string) {
-    const index = this.customRecurrence.days.indexOf(day);
-    if (index === -1) {
-      this.customRecurrence.days.push(day);
+    if (this.customRecurrence.days.includes(day)) {
+      this.customRecurrence.days = [];
     } else {
-      this.customRecurrence.days.splice(index, 1);
+      this.customRecurrence.days = [day];
     }
-
-    this.customRecurrence.days.sort(
-      (a, b) => this.weekDays.indexOf(a) - this.weekDays.indexOf(b),
-    );
   }
 
   getDayAbbreviation(day: string): string {

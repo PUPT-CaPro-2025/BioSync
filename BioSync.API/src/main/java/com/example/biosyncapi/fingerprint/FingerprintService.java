@@ -10,9 +10,7 @@ public interface FingerprintService {
     List<Fingerprint> getAllByUserId(Long userId);
     boolean hasFingerprintByUserId(Long userId);
     void processFingerprints(Long userId, List<MultipartFile> images);
-    void processFingerprintsToBucket(Long userId, List<MultipartFile> images) throws IOException;
-    Boolean verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile image) throws IOException;
-    User verifyProfessorFingerprintForAttendanceInBucket(Long professorId, MultipartFile image) throws IOException;
+    void updateFingerprints(Long userId, List<MultipartFile> images);
+    User verifyProfessorFingerprintForAttendance(Long professorId, MultipartFile image) throws IOException;
     User verifyStudentFingerprintForAttendance(Long scheduleId, MultipartFile image) throws IOException;
-    User verifyStudentFingerprintForAttendanceInBucket(Long scheduleId, MultipartFile image) throws IOException;
 }

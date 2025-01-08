@@ -19,6 +19,13 @@ export class SectionService {
     });
   }
 
+  getSectionByProgramId(programId: number) {
+    return this.http.get<Section[]>(`${this.url}/program/${programId}`, {
+      headers: this.headers,
+      withCredentials: true,
+    })
+  }
+
   addSection(section: Section) {
     return this.http.post<Section>(this.url, section, {
       headers: this.headers,

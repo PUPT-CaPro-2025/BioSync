@@ -1,5 +1,6 @@
 package com.example.biosyncapi.section;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,17 @@ public class SectionController {
     @GetMapping
     public List<Section> getAllSections() {
         return sectionService.getAllSections();
+    }
+
+    @GetMapping("program/{id}")
+    public ResponseEntity<List<Section>> getSectionsByProgramId(@PathVariable Long id) {
+        try {
+           List<Section> sections = sectionService.getSectionsByProgramId(id);
+
+           return ResponseEntity.ok(sections);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/{id}")

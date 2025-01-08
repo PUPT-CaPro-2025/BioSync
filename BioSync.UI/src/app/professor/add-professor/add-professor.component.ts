@@ -15,11 +15,12 @@ import {SdkService} from "../../../services/sdk.service";
 import {FingerprintService} from "../../../services/fingerprint.service";
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import {Mail} from "../../../model/mail.model";
 import {MailService} from "../../../services/mail.service";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
+import {Suffix} from "../../../model/suffix.model";
+import {SuffixService} from "../../../services/suffix.service";
 
 @Component({
   selector: 'app-add-professor',
@@ -39,7 +40,7 @@ import {
     MatIconModule,
     CommonModule
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
   templateUrl: './add-professor.component.html',
   styleUrls: ['./add-professor.component.css', '../../student/add-student/add-student.component.css'],
   encapsulation: ViewEncapsulation.None,
@@ -50,20 +51,7 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
   @ViewChild('videoElement') videoElementRef!: any;
   private stream: MediaStream | null = null;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd'
-  ];
-
+  allSuffix: Suffix[] = [];
   professorForm!: FormGroup;
   currentStepLabel: string = 'Set Up Information';
   imageForm!: FormGroup;
@@ -91,11 +79,12 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
     private fingerprintService: FingerprintService,
     private mailService: MailService,
     private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.initForm();
-
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -118,6 +107,14 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
         }
       }
     });
+  }
+
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   initForm(){
@@ -161,25 +158,12 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
         }
         this.displayMessage(true);
         this.professorAdded.emit(userCreated);
-        this.mailCredentials(professorToCreate, generatedPassword);
+        this.mailService.mailCredentials(professorToCreate, generatedPassword);
       },
       error: error => {
         this.displayMessage(false, error.error);
       }
     });
-  }
-
-  private mailCredentials(professorToCreate: User, generatedPassword: string) {
-    const mailContent: Mail = {
-      to: professorToCreate.email,
-      subject: `BioSync Account Credentials`,
-      text: `
-        Hello! Welcome to BioSync. Please save your account credentials below\n\n
-        Usercode: ${professorToCreate.usercode} \n
-        Password: ${generatedPassword}`
-    }
-
-    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(professor: User) {

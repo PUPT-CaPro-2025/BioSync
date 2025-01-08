@@ -6,11 +6,12 @@ import { ScheduleService } from '../../../services/schedule.service';
 import { AttendanceService } from '../../../services/attendance.service';
 import { Attendance } from '../../../model/attendance.model';
 import jsPDF from 'jspdf';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-view-attendance',
   standalone: true,
-  imports: [MatToolbar],
+  imports: [MatToolbar, MatIcon],
   providers: [ScheduleService, AttendanceService],
   templateUrl: './view-attendance.component.html',
   styleUrls: [
@@ -22,6 +23,7 @@ export class ViewAttendanceComponent implements OnInit {
   schedule!: Schedule;
   class: Attendance[] = [];
   headerImage!: string;
+  reportDropdown = false;
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
@@ -62,6 +64,10 @@ export class ViewAttendanceComponent implements OnInit {
 
   returnToSchoolYearView() {
     history.back();
+  }
+
+  toggleDropdown() {
+    this.reportDropdown = !this.reportDropdown;
   }
 
   generatePdf() {
@@ -170,6 +176,56 @@ export class ViewAttendanceComponent implements OnInit {
         this.schedule.scheduleDate
       }.pdf`,
     );
+  }
+
+  generateCSV() {
+    const headers = [
+      'Course',
+      'Date',
+      'Faculty',
+      'Start/End Time',
+      'Program & Year',
+      'Date/Time Printed',
+      'Student Name',
+      'Status',
+    ];
+
+    const course = this.schedule.subject?.description || '';
+    const date = this.schedule.scheduleDate || '';
+    const faculty =
+      `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` ||
+      '';
+    const startEndTime =
+      `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` ||
+      '';
+    const programYear = `${this.schedule.section?.program?.programAbbreviation || ''} ${this.schedule.section?.section || ''}`;
+    const currentDate = new Date().toLocaleString();
+
+    const rows = this.class.map((attendance) => [
+      course,
+      date,
+      faculty,
+      startEndTime,
+      programYear,
+      currentDate,
+      `${attendance.user.firstName} ${attendance.user.lastName}`,
+      attendance.status,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((value) => `"${value}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `attendance-${this.schedule.subject?.code}-${this.schedule.scheduleDate}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   loadImageToBase64(

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,10 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatButton} from "@angular/material/button";
 import {PromptCsvComponent} from "../prompt/prompt-csv/prompt-csv.component";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
 
 @Component({
   selector: 'app-student',
@@ -32,27 +36,25 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
     MatButton,
     MatMenuItem
   ],
-  providers: [UserService],
+  providers: [UserService, SectionService, ProgramService],
   templateUrl: './student.component.html',
-  styleUrls: ['./student.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./student.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class StudentComponent implements OnInit{
   queriedStudents: User[] = [];
   students: User[] = [];
+  studentContainer: User[] = [];
 
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Section', 'Program'
-  ];
+  programs: Program[] = [];
+  selectedProgram = -1;
 
-  yearSemesters: string[] = [
-    'School Year 2324 - First Semester', 'School Year 2324 - Second Semester', 'School Year 2324 - Summer'
-  ];
-
-  selectedYearSem = 'School Year 2324 - Summer';
+  sections: Section[] = [];
+  selectedYearAndSection = -1;
 
   totalItems!: number;
   itemsPerPage: number = 10;
@@ -62,17 +64,20 @@ export class StudentComponent implements OnInit{
   isEditStudent: boolean = false;
   studentToEdit!:User;
   headerImage!: string;
-  sortBy = '';
   searchQuery!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private userService: UserService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private sectionService: SectionService,
+    private programService: ProgramService,
   ) {}
 
   ngOnInit() {
     this.getStudents();
+    this. getAllPrograms();
 
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
@@ -83,6 +88,7 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        this.studentContainer = students;
         this.queriedStudents = [...this.students];
         this.totalItems = this.students.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -93,12 +99,11 @@ export class StudentComponent implements OnInit{
   }
 
   onStudentAdded(newStudent: User){
-    this.queriedStudents.push(newStudent);
-    this.updatePagination();
+    this.getStudents();
   }
 
   updatePagination(): void {
-    this.totalItems = this.students.length;
+    this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;
@@ -142,6 +147,23 @@ export class StudentComponent implements OnInit{
     })
   }
 
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections(programId: number) {
+    this.sectionService.getSectionByProgramId(programId).subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+      }
+    })
+  }
+
+
   get pages(): number[] {
     return Array(this.totalPages).fill(0).map((_, i) => i + 1);
   }
@@ -160,6 +182,35 @@ export class StudentComponent implements OnInit{
 
   onPageChange(): void {
     // Handle page change logic here
+  }
+
+  onProgramChange() {
+    if(this.selectedProgram == -1){
+      this.queriedStudents = this.students;
+      this.sections = [];
+    } else {
+      this.getSections(this.selectedProgram);
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.program.id === this.selectedProgram
+      )
+    }
+
+    this.selectedYearAndSection = -1;
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+
+  onSectionChange() {
+    if(this.selectedYearAndSection == -1){
+      this.queriedStudents = this.students;
+    } else {
+      this.queriedStudents = this.studentContainer.filter(
+          student => student.section?.id === this.selectedYearAndSection
+      )
+    }
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   onItemsPerPageChange(): void {
@@ -218,27 +269,19 @@ export class StudentComponent implements OnInit{
     this.isEditStudent = false;
   }
 
-  sortStudents() {
-    if(this.sortBy === 'Section') {
-      this.queriedStudents.sort((a, b) => {
-        return a.section?.id! - b.section?.id!
-      })
-    } else if (this.sortBy === 'Program'){
-      this.queriedStudents.sort((a, b) => {
-        return a.program?.id! - b.program?.id!
-      })
-    } else {
-      this.getStudents();
-    }
-  }
-
   toggleBulkAddStudent() {
-    this.dialog.open(PromptCsvComponent, {
+    const ref = this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
         scheduleId: null,
       }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getStudents()
+    }
     })
   }
 
@@ -274,7 +317,6 @@ export class StudentComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
 
     const imgWidth = 115;
     const imgHeight = 15;
@@ -294,7 +336,13 @@ export class StudentComponent implements OnInit{
     doc.text(currentDate, pageWidth / 2, 35);
 
     const columns = ['Student Code','Program', 'First Name', 'Middle Name', 'Last Name', ];
-    const rows = this.students.map(students =>
+    let studentsToPrint: User[];
+    if(this.selectedProgram == -1 && this.selectedYearAndSection == -1){
+      studentsToPrint = this.studentContainer;
+    } else {
+      studentsToPrint = this.queriedStudents;
+    }
+    const rows = studentsToPrint.map(students =>
       [
         students.usercode,
         students.program?.programAbbreviation,
@@ -325,6 +373,47 @@ export class StudentComponent implements OnInit{
     });
 
     doc.save('student-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Student Code', 'Program', 'First Name', 'Middle Name', 'Last Name'];
+
+    let studentsToPrint: User[];
+    if (this.selectedProgram == -1 && this.selectedYearAndSection == -1) {
+      studentsToPrint = this.studentContainer;
+    } else {
+      studentsToPrint = this.queriedStudents;
+    }
+
+    let csvContent = columns.join(',') + '\n';
+
+    studentsToPrint.forEach(student => {
+      const row = [
+        student.usercode,
+        student.program?.programAbbreviation || '',
+        student.firstName,
+        student.middleName,
+        student.lastName
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'student-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
+
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -31,15 +31,12 @@ import jsPDF from "jspdf";
   ],
   providers: [SectionService],
   templateUrl: './section.component.html',
-  styleUrls: ['./section.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./section.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class SectionComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
-  ];
-
-  sorting: string[] = [
-    'Alphabetical', 'Date'
   ];
 
   section: Section[] = [];
@@ -51,6 +48,7 @@ export class SectionComponent implements OnInit{
   isAddSection: boolean = false;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private dialog: MatDialog,
@@ -186,6 +184,10 @@ export class SectionComponent implements OnInit{
     this.isAddSection = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -207,10 +209,11 @@ export class SectionComponent implements OnInit{
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, pageWidth / 2, 35);
 
-    const columns = ['Program', 'Year', 'Section'];
+    const columns = ['Program', 'Program Code', 'Year', 'Section'];
     const rows = this.section.map(sec =>
       [
         sec.program.programName,
+        sec.program.programAbbreviation,
         sec.year,
         sec.section
       ]);
@@ -237,6 +240,37 @@ export class SectionComponent implements OnInit{
     });
 
     doc.save('section-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Program', 'Program Code', 'Year', 'Section'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    const rows = this.section.map(sec =>
+        [
+          sec.program.programName,
+          sec.program.programAbbreviation,
+          sec.year,
+          sec.section
+        ]
+    );
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'section-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

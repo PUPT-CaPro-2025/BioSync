@@ -20,6 +20,11 @@ import {CookieService} from "../../services/cookie.service";
 import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
+import { Semester } from "../../model/semester.model";
 
 @Component({
   selector: 'app-schedule',
@@ -34,6 +39,8 @@ import jsPDF from "jspdf";
   ],
   providers: [ScheduleService,
     SchoolYearService,
+    SectionService,
+    ProgramService,
     UserService,
     CookieService,
     CryptoService
@@ -47,18 +54,18 @@ export class ScheduleComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
+  semesters!: Semester[];
+  selectedSemester!: number;
 
-  semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
-  ];
-  selectedSemester = 1;
+  programs: Program[] = [];
+  selectedProgram!: number;
+  prevSelectedProgram: number | undefined;
+
+  sections: Section[] = [];
+  selectedYearAndSection = -1;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -84,6 +91,8 @@ export class ScheduleComponent implements OnInit {
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
+    private sectionService: SectionService,
+    private programService: ProgramService,
     private router: Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
@@ -102,7 +111,7 @@ export class ScheduleComponent implements OnInit {
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
-
+    this. getAllPrograms();
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
     });
@@ -117,6 +126,10 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
+        this.getSemester();
+        this.onFilterChange();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -144,6 +157,10 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSemester();
+        this.getSections();
+        this.onFilterChange();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
@@ -154,6 +171,39 @@ export class ScheduleComponent implements OnInit {
     if (this.schedules && this.schedules.length > 0) {
       const latestSchedule = this.schedules[this.schedules.length - 1];
       this.selectedAcademicYear = latestSchedule.schoolYear?.id;
+    }
+  }
+
+  setLatestProgram() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedProgram = latestSchedule.section?.program.id!;
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+  }
+
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
     }
   }
 
@@ -241,6 +291,22 @@ export class ScheduleComponent implements OnInit {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (academicYears: SchoolYear[]) => {
         this.academicYears = academicYears;
+      }
+    })
+  }
+
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
       }
     })
   }
@@ -388,13 +454,49 @@ export class ScheduleComponent implements OnInit {
   }
 
   onFilterChange() {
+    const isProgramChanged = this.prevSelectedProgram !== this.selectedProgram;
+
+    if(isProgramChanged) {
+      this.sections = [];
+      this.selectedYearAndSection = -1;
+      this.getSections();
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
         && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     )
+
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  onSectionChange(){
+    if(this.selectedYearAndSection == -1){
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+        this.schedules = this.scheduleContainer.filter(
+            schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+                && schedule.semester?.id === this.selectedSemester
+                && schedule.section?.program.id === this.selectedProgram
+                && schedule.section?.id === this.selectedYearAndSection
+        )
+    }
+
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   toggleViewSchedule(schedule: Schedule) {
@@ -414,7 +516,6 @@ export class ScheduleComponent implements OnInit {
   getStudentSchedules(sectionId: number) {
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules)
         this.schedules = schedules;
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
