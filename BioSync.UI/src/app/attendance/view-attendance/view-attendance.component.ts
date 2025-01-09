@@ -46,6 +46,17 @@ export class ViewAttendanceComponent implements OnInit {
     });
   }
 
+  getTime(isoString: string){
+    const date = new Date(isoString);
+
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+  }
+
   getScheduleDetails(scheduleId: number) {
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: (value) => {
@@ -148,8 +159,8 @@ export class ViewAttendanceComponent implements OnInit {
     const rows = this.class.map((attendance, index) => [
         index + 1,
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-        attendance.time_in || 'N/A',
-        attendance.time_out || 'N/A',
+        attendance.timeIn  ? this.getTime(attendance.timeIn) : 'N/A',
+        attendance.timeOut  ? this.getTime(attendance.timeOut) : 'N/A',
         attendance.status,
     ]);
 
@@ -191,8 +202,8 @@ export class ViewAttendanceComponent implements OnInit {
 
     const rows = this.class.map((attendance) => [
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-        attendance.time_in || 'N/A',
-        attendance.time_out || 'N/A',
+        attendance.timeIn ? this.getTime(attendance.timeIn) : 'N/A',
+        attendance.timeOut ? this.getTime(attendance.timeOut) : 'N/A',
         attendance.status,
     ]);
 
