@@ -5,7 +5,6 @@ import { CookieService } from './cookie.service';
 import { User } from '../model/user.model';
 import { Observable } from 'rxjs';
 import { CsvResponse } from '../model/csvResponse.model';
-import { Student } from '../model/student-model';
 import { ClassResponse } from '../model/class.model';
 
 @Injectable()
@@ -42,13 +41,6 @@ export class UserService {
 
   updateUser(user: User): Observable<User> {
     return this.http.put<User>(`${this.url}/users/edit-user`, user, {
-      headers: this.headers,
-      withCredentials: true,
-    });
-  }
-
-  editProfileImage(formData: FormData) {
-    return this.http.put(`${this.url}/users/edit-profile-image`, formData, {
       headers: this.headers,
       withCredentials: true,
     });

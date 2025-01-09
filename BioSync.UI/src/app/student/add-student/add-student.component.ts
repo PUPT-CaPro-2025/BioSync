@@ -20,7 +20,6 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import {MailService} from "../../../services/mail.service";
-import {Mail} from "../../../model/mail.model";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
@@ -67,10 +66,10 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -111,7 +110,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -121,7 +120,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -260,8 +259,8 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 

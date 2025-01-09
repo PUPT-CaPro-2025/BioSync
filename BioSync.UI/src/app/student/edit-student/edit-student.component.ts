@@ -86,10 +86,10 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -129,7 +129,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -139,7 +139,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -289,10 +289,9 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       this.selectedProfileImage,
       `user-${studentId}-img.png`
     );
-    this.userService.editProfileImage(formData).subscribe({
-      next: (value) => {
-        console.log(value);
-      },
+
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {},
       error: (err) => console.error(err),
     });
   }
@@ -410,8 +409,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 }
