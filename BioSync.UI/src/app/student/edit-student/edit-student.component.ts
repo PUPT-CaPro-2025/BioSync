@@ -289,10 +289,9 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       this.selectedProfileImage,
       `user-${studentId}-img.png`
     );
-    this.userService.editProfileImage(formData).subscribe({
-      next: (value) => {
-        console.log(value);
-      },
+
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {},
       error: (err) => console.error(err),
     });
   }
