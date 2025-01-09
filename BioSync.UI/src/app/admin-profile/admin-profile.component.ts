@@ -182,6 +182,15 @@ export class AdminProfileComponent implements OnInit {
       suffix: 'N/A',
       middleName: this.admin.middleName,
     });
+
+    this.fingerprintService
+        .getProfileImageUrl(this.admin.id)
+        .subscribe({
+          next: (value) => {
+            this.imageSrc = value.profileImageUrl;
+            console.log(this.imageSrc)
+          },
+        });
   }
 
   submit() {
@@ -249,23 +258,8 @@ export class AdminProfileComponent implements OnInit {
     );
 
     this.fingerprintService.updateFingerprint(professor.id, formData).subscribe({
-      next: (value) => {
-        console.log(value);
+      next: () => {
       },
-    });
-  }
-
-  displaySuccess() {
-    const dialogRef = this.dialog.open(PromptOkayComponent, {
-      width: '400px',
-      data: {
-        title: 'Admin Profile Successfully Updated!',
-        message: 'Admin Profile has been successfully updated.',
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      //return to what...
     });
   }
 
