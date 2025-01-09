@@ -6,6 +6,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class MailService {
     mailSender.send(message);
   }
 
+  @Async
   public void autoSendCredentials(HashMap<User, String> credentials) throws MessagingException {
     for (Map.Entry<User, String> entry : credentials.entrySet()) {
       User user = entry.getKey();
@@ -145,8 +147,8 @@ public class MailService {
                                                                               <p>Here are your account credentials:</p>
                                                                           </div>
                                                                           <div style='text-align: center; margin-top: 1rem;'>
-                                                                              <p><strong>Username:</strong>%s</p>
-                                                                              <p><strong>Password:</strong>%s</p>
+                                                                              <p><strong>Username: </strong>%s</p>
+                                                                              <p><strong>Password: </strong>%s</p>
                                                                           </div>
                                                                           <div style='text-align: center; margin-top: 2rem;'>
                                                                               <p>You may log in to your account at
