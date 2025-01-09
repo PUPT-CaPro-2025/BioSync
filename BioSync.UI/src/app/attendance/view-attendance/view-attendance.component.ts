@@ -144,10 +144,13 @@ export class ViewAttendanceComponent implements OnInit {
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, rightX, currentY, { align: 'right' });
 
-    const columns = ['Student Name', 'Status'];
-    const rows = this.class.map((attendance) => [
+    const columns = ['No.', 'Student Name', 'Time-In', 'Time-Out', 'Status'];
+    const rows = this.class.map((attendance, index) => [
+        index + 1,
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-      attendance.status,
+        attendance.time_in || 'N/A',
+        attendance.time_out || 'N/A',
+        attendance.status,
     ]);
 
     doc.autoTable({
@@ -180,36 +183,17 @@ export class ViewAttendanceComponent implements OnInit {
 
   generateCSV() {
     const headers = [
-      'Course',
-      'Date',
-      'Faculty',
-      'Start/End Time',
-      'Program & Year',
-      'Date/Time Printed',
       'Student Name',
+      'Time In',
+      'Time Out',
       'Status',
     ];
 
-    const course = this.schedule.subject?.description || '';
-    const date = this.schedule.scheduleDate || '';
-    const faculty =
-      `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` ||
-      '';
-    const startEndTime =
-      `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` ||
-      '';
-    const programYear = `${this.schedule.section?.program?.programAbbreviation || ''} ${this.schedule.section?.section || ''}`;
-    const currentDate = new Date().toLocaleString();
-
     const rows = this.class.map((attendance) => [
-      course,
-      date,
-      faculty,
-      startEndTime,
-      programYear,
-      currentDate,
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-      attendance.status,
+        attendance.time_in || 'N/A',
+        attendance.time_out || 'N/A',
+        attendance.status,
     ]);
 
     const csvContent = [

@@ -4,7 +4,8 @@ import {User} from "./user.model";
 export interface Attendance {
   id: number;
   schedule: Schedule;
-  timestamp: string;
+  time_in: string;
+  time_out: string;
   status: string;
   user: User;
 }
