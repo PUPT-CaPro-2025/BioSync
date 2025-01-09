@@ -166,6 +166,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
       suffix: this.professorToBeUpdated.suffix,
       email: this.professorToBeUpdated.email,
     });
+
+    this.fingerprintService
+        .getProfileImageUrl(this.professorToBeUpdated.id)
+        .subscribe({
+          next: (value) => {
+            this.imageSrc = value.profileImageUrl;
+          },
+        });
   }
 
   returnToProfessorView(): void {
