@@ -1,4 +1,5 @@
 <div class="background-container">
+  @if(!isViewStudentAttendance) {
     <div class="header">
       <mat-toolbar class="toolbar-container">
         <span>List of Violations</span>
@@ -125,7 +126,7 @@
                       }">
                       <button
                         class="action-button"
-                        (click)="toggleViewAttendance(schedule)">
+                        (click)="toggleViewAttendance()">
                         View
                       </button>
                     </div>
@@ -210,5 +211,8 @@
         No Schedules Yet.
       </div>
     }
+  } @else {
+    <app-view-student-attendance/>
+  }
 </div>
   

@@ -24,16 +24,16 @@ import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
 import { Subject } from '../../model/subject-model';
 import { SubjectService } from '../../services/subject.service';
+import { ViewStudentAttendanceComponent } from "./view-student-attendance/view-student-attendance.component";
 
 @Component({
   selector: 'app-violation',
   standalone: true,
   imports: [MatToolbarModule,
-      MatIconModule,
-      CommonModule,
-      FormsModule,
-      MatSelectModule,
-  ],
+    MatIconModule,
+    CommonModule,
+    FormsModule,
+    MatSelectModule, ViewStudentAttendanceComponent],
   providers: [ScheduleService,
     SchoolYearService,
     SectionService,
@@ -64,12 +64,6 @@ export class ViolationComponent implements OnInit {
   ];
   selectedSemester = 1;
 
-  programs: Program[] = [];
-  selectedProgram: number | undefined;
-
-  sections: Section[] = [];
-  selectedYearAndSection: string | undefined;
-
   professors: User[] =[];
   selectedProfessor: number | undefined;
 
@@ -83,15 +77,9 @@ export class ViolationComponent implements OnInit {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages!: number;
-  isOneAddSchedule: boolean = false;
-  isWeeklyAddSchedule: boolean = false;
-  isRequestOneSchedule: boolean = false;
-  isRequestWeeklySchedule: boolean = false;
-  isEditSchedule: boolean = false;
+  isViewStudentAttendance: boolean = false;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   selectedSchedule!: Schedule;
-  isDropdownOpenAddSchedule: boolean = false;
-  isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
   activeDropdownId: number | null = null;
@@ -393,9 +381,9 @@ export class ViolationComponent implements OnInit {
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  toggleViewAttendance(schedule: Schedule) {
+  toggleViewAttendance() {
     this.activeDropdownId = null;
-    this.router.navigate(["/view/schedule", schedule.id]).then();
+    this.isViewStudentAttendance = !this.isViewStudentAttendance;
   }
 
   getSectionId(userId: number) {
