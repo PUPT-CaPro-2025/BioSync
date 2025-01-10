@@ -384,6 +384,7 @@ export class ViolationComponent implements OnInit {
   toggleViewAttendance() {
     this.activeDropdownId = null;
     this.isViewStudentAttendance = !this.isViewStudentAttendance;
+    //this.router.navigate(['/view-student-attendance']).then();
   }
 
   getSectionId(userId: number) {
