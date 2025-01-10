@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -7,28 +7,30 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import { Visitpurpose } from '../../model/visit.purpose.model';
+import { VisitPurpose } from '../../model/visit.purpose.model';
 import { MatDialog } from '@angular/material/dialog';
-import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
-import jsPDF from "jspdf";
 import { AddVisitPurposeComponent } from './add-visit-purpose/add-visit-purpose.component';
 import { EditVisitPurposeComponent } from './edit-visit-purpose/edit-visit-purpose.component';
+import {VisitPurposeService} from "../../services/visit.purpose.service";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-visit-purpose',
   standalone: true,
-  imports: [ MatToolbarModule, 
+  imports: [ MatToolbarModule,
     MatFormFieldModule,
-    MatIconModule, 
-    MatInputModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    MatButtonModule, 
-    MatSelectModule, 
+    MatIconModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatSelectModule,
     CommonModule,
     AddVisitPurposeComponent,
     EditVisitPurposeComponent
   ],
+  providers: [VisitPurposeService],
   templateUrl: './visit-purpose.component.html',
   styleUrls: ['./visit-purpose.component.css', '../schedule/schedule.component.css']
 })
@@ -37,14 +39,7 @@ export class VisitPurposeComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Alphabetical', 'Date'
-  ];
-
-  visitPurposes: Visitpurpose[] = [
-    {id: 1, visitPurpose: 'Organized Laboratory'},
-    {id: 2, visitPurpose: 'Panelist'},
-  ];
+  visitPurposes: VisitPurpose[] = [];
 
   totalItems: number = this.visitPurposes.length; //temporary value
   itemsPerPage: number = 10;
@@ -52,22 +47,28 @@ export class VisitPurposeComponent implements OnInit {
   totalPages: number = Math.ceil(this.totalItems / this.itemsPerPage);
   isAddVisitPurpose: boolean = false;
   isEditVisitPurpose: boolean = false;
-  visitPurposeToEdit!: Visitpurpose;
+  visitPurposeToEdit!: VisitPurpose;
   currentVisitPurpose: number | undefined;
   headerImage!: string;
   activeDropdownId: number | null = null;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private visitPurposeService: VisitPurposeService) {}
 
   ngOnInit() {
-    this.totalItems = this.visitPurposes.length; //temporary
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); //temporary
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
-    });
+    this.getVisitPurposes();
   }
 
-  get filteredVisitPurposes(): Visitpurpose[] {
+  getVisitPurposes(){
+    this.visitPurposeService.getVisitPurposes().subscribe({
+      next: (purposes: VisitPurpose[]) => {
+        this.visitPurposes = purposes;
+        this.totalItems = this.visitPurposes.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+      }
+    })
+  }
+
+  get filteredVisitPurposes(): VisitPurpose[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
     return this.visitPurposes.slice(startIndex, endIndex);
@@ -133,7 +134,7 @@ export class VisitPurposeComponent implements OnInit {
     this.isAddVisitPurpose = false;
   }
 
-  toggleEdittVisitPurpose(visitPurpose: Visitpurpose): void {
+  toggleEditVisitPurpose(visitPurpose: VisitPurpose): void {
     this.activeDropdownId = null;
     this.isEditVisitPurpose = !this.isEditVisitPurpose;
     this.visitPurposeToEdit = visitPurpose;
@@ -143,18 +144,58 @@ export class VisitPurposeComponent implements OnInit {
     this.isEditVisitPurpose = false;
   }
 
-  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
-    img.src = url;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0);
-      const base64Image = canvas.toDataURL('image/png');
-      callback(base64Image);
-    };
+  openDeleteDialog(purpose: VisitPurpose){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '350px',
+      data: {
+        title: "Delete Suffix",
+        message: "Are you sure you want to delete suffix?"
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: result => {
+        if (!result) return
+
+        this.visitPurposeService.deletePurpose(purpose.id).subscribe({
+          next: () => {
+            this.visitPurposes = this.visitPurposes.filter(p => p.id !== purpose.id)
+            this.updatePagination();
+            this.openSuccessDialog();
+          }
+        })
+      }
+    })
   }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '350px',
+      data: {
+        title: "Purpose Deleted",
+        message: "Visit Purpose has been deleted."
+      }
+    })
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.visitPurposes.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
+  onPurposeAdded(purpose: VisitPurpose){
+    this.visitPurposes.push(purpose);
+    this.updatePagination();
+  }
+
+  onPurposeUpdate(purpose: VisitPurpose){
+    const index = this.visitPurposes.findIndex(p => p.id === purpose.id);
+
+    this.visitPurposes[index] = purpose;
+  }
+
+  protected readonly open = open;
 }

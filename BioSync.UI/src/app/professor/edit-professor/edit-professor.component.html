@@ -69,10 +69,11 @@
                             border-b-2 border-darkGray focus:border-brightRed
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 px-1" formControlName="suffix">
-                            @for(suffix of allSuffix; track suffix) {
-                                <mat-option [value]="suffix">{{suffix}}</mat-option>
-                            }
-                    </mat-select>
+                    <mat-option value="N/A">N/A</mat-option>
+                    @for(suffix of allSuffix; track suffix) {
+                      <mat-option [value]="suffix.abbreviation">{{suffix.abbreviation}}</mat-option>
+                    }
+                </mat-select>
             </div>
             <div class="group flex flex-col gap-1">
               <label for="email" class="text-custom-20

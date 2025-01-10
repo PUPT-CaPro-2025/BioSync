@@ -6,11 +6,12 @@ import { ScheduleService } from '../../../services/schedule.service';
 import { AttendanceService } from '../../../services/attendance.service';
 import { Attendance } from '../../../model/attendance.model';
 import jsPDF from 'jspdf';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-view-attendance',
   standalone: true,
-  imports: [MatToolbar],
+  imports: [MatToolbar, MatIcon],
   providers: [ScheduleService, AttendanceService],
   templateUrl: './view-attendance.component.html',
   styleUrls: [
@@ -22,6 +23,7 @@ export class ViewAttendanceComponent implements OnInit {
   schedule!: Schedule;
   class: Attendance[] = [];
   headerImage!: string;
+  reportDropdown = false;
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
@@ -44,6 +46,17 @@ export class ViewAttendanceComponent implements OnInit {
     });
   }
 
+  getTime(isoString: string){
+    const date = new Date(isoString);
+
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+
+  }
+
   getScheduleDetails(scheduleId: number) {
     this.scheduleService.getScheduleById(scheduleId).subscribe({
       next: (value) => {
@@ -62,6 +75,10 @@ export class ViewAttendanceComponent implements OnInit {
 
   returnToSchoolYearView() {
     history.back();
+  }
+
+  toggleDropdown() {
+    this.reportDropdown = !this.reportDropdown;
   }
 
   generatePdf() {
@@ -138,10 +155,13 @@ export class ViewAttendanceComponent implements OnInit {
     const currentDate = new Date().toLocaleString();
     doc.text(currentDate, rightX, currentY, { align: 'right' });
 
-    const columns = ['Student Name', 'Status'];
-    const rows = this.class.map((attendance) => [
+    const columns = ['No.', 'Student Name', 'Time-In', 'Time-Out', 'Status'];
+    const rows = this.class.map((attendance, index) => [
+        index + 1,
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-      attendance.status,
+        attendance.timeIn  ? this.getTime(attendance.timeIn) : 'N/A',
+        attendance.timeOut  ? this.getTime(attendance.timeOut) : 'N/A',
+        attendance.status,
     ]);
 
     doc.autoTable({
@@ -170,6 +190,37 @@ export class ViewAttendanceComponent implements OnInit {
         this.schedule.scheduleDate
       }.pdf`,
     );
+  }
+
+  generateCSV() {
+    const headers = [
+      'Student Name',
+      'Time In',
+      'Time Out',
+      'Status',
+    ];
+
+    const rows = this.class.map((attendance) => [
+      `${attendance.user.firstName} ${attendance.user.lastName}`,
+        attendance.timeIn ? this.getTime(attendance.timeIn) : 'N/A',
+        attendance.timeOut ? this.getTime(attendance.timeOut) : 'N/A',
+        attendance.status,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((value) => `"${value}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `attendance-${this.schedule.subject?.code}-${this.schedule.scheduleDate}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   loadImageToBase64(

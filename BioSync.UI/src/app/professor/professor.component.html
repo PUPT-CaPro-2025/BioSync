@@ -6,7 +6,27 @@
                     <span>List of Professors - ALL</span>
                     <div class="toolbar-button">
                         <button class="header-button" (click)="toggleAddProfessor()">Add New Professor</button>
-                        <button class="header-button" (click)="generatePdf()">Print Professor Report</button>
+                        <div class="toolbar-button select-none">
+                            <div class="header-button" (click)="toggleDropdown()">
+                                Print Professor Report
+                            </div>
+                            @if (reportDropdown) {
+                                <div class="subject-print-content flex flex-col">
+                                    <div
+                                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                            (click)="generatePdf()"
+                                    >
+                                        Print PDF
+                                    </div>
+                                    <div
+                                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                            (click)="generateCSV()"
+                                    >
+                                        Print CSV
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </mat-toolbar>
             </div>
@@ -25,7 +45,7 @@
                             <div class="cell">Faculty Code</div>
                             <div class="cell">First Name</div>
                             <div class="cell">Last Name</div>
-                            <div class="cell">Middle Initial</div>
+                            <div class="cell">Middle Name</div>
                             <div class="cell">Suffix</div>
                             <div class="cell">Action</div>
                         </div>
@@ -62,14 +82,6 @@
                         </div>
                         <div class="paginator-controls">
                           <div>
-                            <span>Sort By</span>
-                            <select>
-                              @for (sort of sorting; track sort) {
-                                <option [value]="sort">{{ sort }}</option>
-                              }
-                            </select>
-                          </div>
-                          <div>
                             <span>Show Entries</span>
                             <select [(ngModel)]="itemsPerPage"
                                 (change)="onItemsPerPageChange()">
@@ -79,7 +91,7 @@
                                 </option>
                               }
                             </select>
-                          </div>    
+                          </div>
                           <div>
                               <span>Page</span>
                               <select [(ngModel)]="currentPage" (change)="onPageChange()">
@@ -122,5 +134,5 @@
         }
     } @else {
         <app-add-professor (professorAdded)="onProfessorAdded($event)" (backToProfessor)="handleBackToProfessor()"></app-add-professor>
-    }    
+    }
 </div>

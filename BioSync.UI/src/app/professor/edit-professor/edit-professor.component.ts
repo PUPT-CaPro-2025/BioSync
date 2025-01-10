@@ -37,6 +37,8 @@ import { FingerprintService } from '../../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
+import {SuffixService} from "../../../services/suffix.service";
+import {Suffix} from "../../../model/suffix.model";
 
 @Component({
   selector: 'app-edit-professor',
@@ -57,7 +59,7 @@ import { FaceRecognitionService } from '../../../services/face.recognition.servi
     MatIconModule,
     CommonModule,
   ],
-  providers: [UserService, SdkService, FingerprintService],
+  providers: [UserService, SdkService, FingerprintService, SuffixService],
   templateUrl: './edit-professor.component.html',
   styleUrls: [
     './edit-professor.component.css',
@@ -70,21 +72,8 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
   @Output() editedProfessor = new EventEmitter<User>();
   @Input() professorToBeUpdated!: User;
   @ViewChild('videoElement') videoElementRef!: any;
-  //Temporary Suffixes
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
 
+  allSuffix: Suffix[] = [];
   professorForm!: FormGroup;
   currentStepLabel: string = 'Set Up Information';
   imageForm!: FormGroup;
@@ -110,11 +99,13 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.setFormValues();
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -158,6 +149,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     });
   }
 
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
+  }
+
   setFormValues() {
     this.professorForm.patchValue({
       usercode: this.professorToBeUpdated.usercode,
@@ -167,6 +166,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
       suffix: this.professorToBeUpdated.suffix,
       email: this.professorToBeUpdated.email,
     });
+
+    this.fingerprintService
+        .getProfileImageUrl(this.professorToBeUpdated.id)
+        .subscribe({
+          next: (value) => {
+            this.imageSrc = value.profileImageUrl;
+          },
+        });
   }
 
   returnToProfessorView(): void {
@@ -260,7 +267,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
       `right-thumb-${professor.lastName}.png`,
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
+    this.fingerprintService.updateFingerprint(professor.id, formData).subscribe({
       next: (value) => {
         console.log(value);
       },
@@ -324,7 +331,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
         this.videoElement.srcObject = stream;
         this.videoElement.play();
       })
-      .catch((err) => {
+      .catch(() => {
         // Handle error silently
       });
   }

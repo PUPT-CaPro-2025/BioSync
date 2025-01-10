@@ -133,20 +133,15 @@ export class DashboardStudentComponent implements OnInit{
   }
 
   getTime12HourFormat(time: string): string {
-    const date = new Date(`1970-01-01T${time}Z`);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return this.scheduleService.getTime12HourFormat(time);
   }
 
   getMonth(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { month: 'long' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getMonth(dateString);
   }
 
   getDay(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getDay(dateString);
   }
 
   get filteredUpcomingSchedules(): Schedule[] {

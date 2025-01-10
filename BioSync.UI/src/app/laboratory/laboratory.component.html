@@ -6,7 +6,27 @@
                         <span>List of Laboratories - ALL</span>
                         <div class="toolbar-button">
                             <button class="header-button" (click)="toggleAddLaboratory()">Add New Laboratory</button>
-                            <button class="header-button" (click)="generatePdf()">Print Laboratory Reports</button>
+                            <div class="toolbar-button select-none">
+                                <div class="header-button flex" (click)="toggleDropdown()">
+                                    Print Laboratory Report
+                                </div>
+                                @if (reportDropdown) {
+                                    <div class="subject-print-content flex flex-col">
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generatePdf()"
+                                        >
+                                            Print PDF
+                                        </div>
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generateCSV()"
+                                        >
+                                            Print CSV
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </mat-toolbar>
                 </div>
@@ -57,14 +77,6 @@
                               {{ getDisplayRange() }} of {{ totalItems }}
                             </div>
                             <div class="paginator-controls">
-                              <div>
-                                <span>Sort By</span>
-                                <select>
-                                  @for (sort of sorting; track sort) {
-                                    <option [value]="sort">{{ sort }}</option>
-                                  }
-                                </select>
-                              </div>
                               <div>
                                 <span>Show Entries</span>
                                 <select [(ngModel)]="itemsPerPage"
@@ -118,5 +130,5 @@
         }
     } @else {
         <app-add-laboratory (laboratoryAdded)="onLaboratoryAdded($event)" (backToLaboratory)="handleBackToLaboratory()"/>
-    }    
+    }
 </div>

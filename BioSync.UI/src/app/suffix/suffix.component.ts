@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -9,27 +9,28 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Suffix } from '../../model/suffix.model';
 import { MatDialog } from '@angular/material/dialog';
-import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
-import jsPDF from "jspdf";
 import { AddSuffixComponent } from './add-suffix/add-suffix.component';
 import { EditSuffixComponent } from './edit-suffix/edit-suffix.component';
+import {SuffixService} from "../../services/suffix.service";
+import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
+import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-suffix',
   standalone: true,
-  imports: [MatToolbarModule, 
-    MatFormFieldModule, 
-    MatIconModule, 
-    MatInputModule, 
-    FormsModule, 
-    ReactiveFormsModule, 
-    MatButtonModule, 
-    MatSelectModule, 
+  imports: [MatToolbarModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatSelectModule,
     CommonModule,
     AddSuffixComponent,
     EditSuffixComponent
   ],
-  providers: [],
+  providers: [SuffixService],
   templateUrl: './suffix.component.html',
   styleUrls: ['./suffix.component.css', '../schedule/schedule.component.css']
 })
@@ -38,14 +39,7 @@ export class SuffixComponent implements OnInit{
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Alphabetical', 'Date'
-  ];
-
-  suffixes: Suffix[] = [
-    {id: 1, suffix_name: 'Junior', suffix_abbbreviation: 'Jr'},
-    {id: 2, suffix_name: 'Senior', suffix_abbbreviation: 'Sr'}
-  ];
+  suffixes: Suffix[] = [];
 
   totalItems: number = this.suffixes.length; //temporary value
   itemsPerPage: number = 10;
@@ -54,18 +48,25 @@ export class SuffixComponent implements OnInit{
   isAddSuffix: boolean = false;
   isEditSuffix: boolean = false;
   suffixToEdit!: Suffix;
-  currentSuffix: number | undefined;
   headerImage!: string;
   activeDropdownId: number | null = null;
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private suffixService: SuffixService) {}
 
   ngOnInit() {
-    this.totalItems = this.suffixes.length; //temporary
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage); //temporary
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
-    });
+    this.getSuffixes();
+  }
+
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.suffixes = suffixes;
+
+        this.totalItems = this.suffixes.length;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+      },
+      error: () => this.suffixes = []
+    })
   }
 
   get filteredSuffixes(): Suffix[] {
@@ -144,18 +145,57 @@ export class SuffixComponent implements OnInit{
     this.isEditSuffix = false;
   }
 
-  loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous'; // To prevent CORS issues
-    img.src = url;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx?.drawImage(img, 0, 0);
-      const base64Image = canvas.toDataURL('image/png');
-      callback(base64Image);
-    };
+  openDeleteDialog(suffix: Suffix){
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '350px',
+      data: {
+        title: "Delete Suffix",
+        message: "Are you sure you want to delete suffix?"
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: result => {
+        if (!result) return
+
+        this.suffixService.deleteSuffix(suffix).subscribe({
+          next: () => {
+            this.suffixes = this.suffixes.filter(s => s.id !== suffix.id)
+            this.updatePagination();
+            this.openSuccessDialog();
+          }
+        })
+      }
+    })
   }
+
+  openSuccessDialog(){
+    this.dialog.open(PromptOkayComponent, {
+      width: '350px',
+      data: {
+        title: "Suffix Deleted",
+        message: "Suffix has been deleted."
+      }
+    })
+  }
+
+  OnSuffixAdded(suffix: Suffix){
+    this.suffixes.push(suffix);
+    this.updatePagination();
+  }
+
+  OnSuffixUpdate(suffix: Suffix) {
+    const index = this.suffixes.findIndex(s => s.id === suffix.id);
+
+    this.suffixes[index] = suffix;
+  }
+
+  updatePagination(): void {
+    this.totalItems = this.suffixes.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
+  }
+
 }

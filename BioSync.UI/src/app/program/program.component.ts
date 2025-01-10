@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, HostListener} from '@angular/core';
+import { Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -32,15 +32,12 @@ import jsPDF from "jspdf";
   ],
   providers: [ProgramService],
   templateUrl: './program.component.html',
-  styleUrls: ['./program.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./program.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class ProgramComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
-  ];
-
-  sorting: string[] = [
-    'Alphabetical', 'Date'
   ];
 
   programs: Program[] = [];
@@ -51,11 +48,10 @@ export class ProgramComponent implements OnInit{
   totalPages!: number;
   isAddProgram: boolean = false;
   isEditProgram: boolean = false;
-  isViewProgram: boolean = false;
   programToEdit!: Program;
-  currentProgram: number | undefined;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private programService: ProgramService,
@@ -209,6 +205,10 @@ export class ProgramComponent implements OnInit{
     this.isEditProgram = false;
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -260,6 +260,34 @@ export class ProgramComponent implements OnInit{
     });
 
     doc.save('program-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Program Code', 'Program Description'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    const rows = this.programs.map(program => [
+      program.programAbbreviation,
+      program.programName
+    ]);
+
+    rows.forEach(row => {
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'program-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

@@ -20,10 +20,11 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import {MailService} from "../../../services/mail.service";
-import {Mail} from "../../../model/mail.model";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
+import {Suffix} from "../../../model/suffix.model";
+import {SuffixService} from "../../../services/suffix.service";
 
 @Component({
   selector: 'app-add-student',
@@ -44,7 +45,7 @@ import {
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -54,19 +55,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   @Output() addedStudent = new EventEmitter<User>();
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+  allSuffix: Suffix[] = [];
 
   allPrograms: Program[] = [];
 
@@ -77,10 +66,10 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -99,13 +88,15 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private mailService: MailService,
-    private faceRecognitionService: FaceRecognitionService
+    private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.getAllPrograms();
     this.initForm();
     this.getAllSections();
+    this.getAllSuffix();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -119,7 +110,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -129,7 +120,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -178,6 +169,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         this.sections = sections;
       },
     });
+  }
+
+  getAllSuffix(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   returnToStudentView(): void {
@@ -260,8 +259,8 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 

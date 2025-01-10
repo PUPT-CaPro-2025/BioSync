@@ -92,19 +92,12 @@ public class AttendanceController {
   @PostMapping("/verify/start")
   public ResponseEntity<?> verifyProfessorFingerprintForAttendance(
       @RequestParam("userId") Long userId,
-      @RequestParam("fingerprint") MultipartFile fingerprint,
-      @RequestParam(value = "method", defaultValue = "toBucket") String method) throws IOException {
-    Boolean match;
+      @RequestParam("fingerprint") MultipartFile fingerprint) throws IOException {
 
-    if (method.equals("toBucket")) {
-      User user = fingerprintService.verifyProfessorFingerprintForAttendanceInBucket(userId, fingerprint);
-      match = user != null;
-    } else {
-      match = fingerprintService.verifyProfessorFingerprintForAttendance(userId, fingerprint);
-    }
+      User user = fingerprintService.verifyProfessorFingerprintForAttendance(userId, fingerprint);
 
-    if (match)
-      return ResponseEntity.ok("Fingerprint verified.");
+    if (user != null)
+      return ResponseEntity.status(200).body(user);
 
     return ResponseEntity.status(401).body("Fingerprint verification failed.");
   }
@@ -113,16 +106,9 @@ public class AttendanceController {
   public ResponseEntity<?> verifyStudentTimeInAttendance(
       @RequestParam("scheduleId") Long scheduleId,
       @RequestParam("fingerprint") MultipartFile fingerprint,
-      @RequestParam("status") String status,
-      @RequestParam(value = "method", defaultValue = "toBucket") String method) throws IOException {
+      @RequestParam("status") String status) throws IOException {
 
-    User student;
-
-    if (method.equals("toBucket")) {
-      student = fingerprintService.verifyStudentFingerprintForAttendanceInBucket(scheduleId, fingerprint);
-    } else {
-      student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
-    }
+    User student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
 
     if (student == null)
       return ResponseEntity.status(401).body("Fingerprint verification failed.");

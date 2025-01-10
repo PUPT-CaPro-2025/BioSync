@@ -6,6 +6,7 @@ import java.util.Optional;
 public interface SectionService {
     List<Section> getAllSections();
     Optional<Section> getSectionById(long id);
+    List<Section> getSectionsByProgramId(long programId);
     Section saveSection(Section section);
     Section updateSection(Section section);
     void deleteSection(long id);

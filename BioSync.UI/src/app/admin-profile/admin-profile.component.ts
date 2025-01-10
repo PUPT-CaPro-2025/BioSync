@@ -27,9 +27,7 @@ import { SdkService } from '../../services/sdk.service';
 import { FingerprintService } from '../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { Mail } from '../../model/mail.model';
 import { MailService } from '../../services/mail.service';
-import { FaceRecognitionService } from '../../services/face.recognition.service';
 import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
 
@@ -184,6 +182,15 @@ export class AdminProfileComponent implements OnInit {
       suffix: 'N/A',
       middleName: this.admin.middleName,
     });
+
+    this.fingerprintService
+        .getProfileImageUrl(this.admin.id)
+        .subscribe({
+          next: (value) => {
+            this.imageSrc = value.profileImageUrl;
+            console.log(this.imageSrc)
+          },
+        });
   }
 
   submit() {
@@ -250,24 +257,9 @@ export class AdminProfileComponent implements OnInit {
       `right-thumb-${professor.lastName}.png`,
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
-      next: (value) => {
-        console.log(value);
+    this.fingerprintService.updateFingerprint(professor.id, formData).subscribe({
+      next: () => {
       },
-    });
-  }
-
-  displaySuccess() {
-    const dialogRef = this.dialog.open(PromptOkayComponent, {
-      width: '400px',
-      data: {
-        title: 'Admin Profile Successfully Updated!',
-        message: 'Admin Profile has been successfully updated.',
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      //return to what...
     });
   }
 

@@ -41,6 +41,8 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MailService } from '../../../services/mail.service';
+import {SuffixService} from "../../../services/suffix.service";
+import {Suffix} from "../../../model/suffix.model";
 
 @Component({
   selector: 'app-edit-student',
@@ -61,7 +63,7 @@ import { MailService } from '../../../services/mail.service';
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './edit-student.component.html',
   styleUrls: [
     './edit-student.component.css',
@@ -75,33 +77,19 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   @Input() selectedStudent!: User;
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
-
+  allSuffix: Suffix[] = [];
   allPrograms: Program[] = [];
   sections: Section[] = [];
   filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
-  studentForm!: FormGroup;
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -118,7 +106,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
@@ -126,6 +115,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.getAllPrograms();
     this.setFormValues();
     this.getAllSections();
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -139,7 +129,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -149,7 +139,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -177,8 +167,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     });
   }
 
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
+  }
+
   setFormValues() {
-    console.log(this.selectedStudent.suffix)
     this.editStudentForm.patchValue({
       usercode: this.selectedStudent.usercode,
       firstName: this.selectedStudent.firstName,
@@ -291,10 +288,9 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       this.selectedProfileImage,
       `user-${studentId}-img.png`
     );
-    this.userService.editProfileImage(formData).subscribe({
-      next: (value) => {
-        console.log(value);
-      },
+
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {},
       error: (err) => console.error(err),
     });
   }
@@ -313,7 +309,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       `right-thumb-${student.lastName}.png`
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
+    this.fingerprintService.updateFingerprint(student.id ,formData).subscribe({
       next: (value) => {
         console.log(value);
       },
@@ -331,7 +327,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         this.videoElement.srcObject = stream;
         this.videoElement.play();
       })
-      .catch((err) => {
+      .catch(() => {
         // Handle error silently
       });
   }
@@ -412,8 +408,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 }

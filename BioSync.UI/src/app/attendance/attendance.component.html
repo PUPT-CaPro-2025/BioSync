@@ -2,9 +2,6 @@
   <div class="header">
     <mat-toolbar class="toolbar-container">
         <span>List of Attendance</span>
-      <div class="toolbar-button">
-        <button class="header-button" (click)="generatePdf()">Print Attendance Reports</button>
-      </div>
     </mat-toolbar>
   </div>
   <div class="filter-container">
@@ -32,11 +29,11 @@
                                       focus:outline-none transition-colors
                                       duration-300 w-full py-2 px-1" (selectionChange)="onFilterChange()">
             @for(semester of semesters; track $index) {
-              <mat-option [value]="$index + 1">{{semester}}</mat-option>
+              <mat-option [value]="semester.id">{{semester.name}}</mat-option>
             }
           </mat-select>
         </div>
-        <div class="select-top-container w-full"> 
+        <div class="select-top-container w-full">
           <p>Program</p>
           <mat-select
               [(value)]="selectedProgram"
@@ -49,17 +46,18 @@
               </mat-option>
             }
           </mat-select>
-        </div>    
-        <div class="select-top-container w-full"> 
+        </div>
+        <div class="select-top-container w-full">
           <p>Year and Section</p>
           <mat-select
               [(value)]="selectedYearAndSection"
               id="year"
               class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-              (selectionChange)="onFilterChange()">
-            @for(yearAndSection of sections; track yearAndSection) {
-              <mat-option [value]="yearAndSection.year + ' - ' + yearAndSection.section">
-                 {{ yearAndSection.year }} - {{ yearAndSection.section }}
+              (selectionChange)="onSectionChange()">
+              <mat-option [value]="-1">All</mat-option>
+            @for(section of sections; track section) {
+              <mat-option [value]="section.id">
+                 {{ section.year }} - {{ section.section }}
               </mat-option>
             }
           </mat-select>
@@ -131,14 +129,6 @@
         </div>
         <div class="paginator-controls">
           <div>
-            <span>Sort By</span>
-            <select>
-              @for (sort of sorting; track sort) {
-                <option [value]="sort">{{ sort }}</option>
-              }
-            </select>
-          </div>
-          <div>
             <span>Show Entries</span>
             <select [(ngModel)]="itemsPerPage"
                 (change)="onItemsPerPageChange()">
@@ -182,5 +172,5 @@
     <div class="flex justify-center items-center h-[50vh]">
       No Attendance Yet.
     </div>
-  }  
+  }
 </div>
