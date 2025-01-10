@@ -64,7 +64,7 @@
                 (selectionChange)="onFilterChange()">
               @for(subject of subjects; track subject) {
                 <mat-option [value]="subject.id">
-                   {{ subject.description }}
+                   {{subject.code}} - {{ subject.description }}
                 </mat-option>
               }
             </mat-select>
