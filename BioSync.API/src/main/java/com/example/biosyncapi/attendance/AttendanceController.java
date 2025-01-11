@@ -141,15 +141,18 @@ public class AttendanceController {
 
   @PostMapping("/student/time-in")
   public ResponseEntity<?> studentTimeIn(@RequestParam("scheduleId") Long scheduleId,
-      @RequestParam("studentId") Long studentId,
+      @RequestParam("usercode") String usercode,
       @RequestParam("attendanceStatus") String attendanceStatus) {
+    try {
+      User timedInStudent = this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
 
-    User timedInStudent = this.attendanceService.studentTimeIn(scheduleId, studentId, attendanceStatus);
+      if (timedInStudent == null)
+        return ResponseEntity.badRequest().body("User is null");
 
-    if (timedInStudent == null)
-      return ResponseEntity.badRequest().body("Request Invalid");
-
-    return ResponseEntity.ok().body(timedInStudent);
+      return ResponseEntity.ok().body(timedInStudent);
+    }catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
   }
 
   @PostMapping("/verify/stop")
