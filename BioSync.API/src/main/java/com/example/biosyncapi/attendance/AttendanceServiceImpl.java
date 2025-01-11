@@ -93,12 +93,16 @@ public class AttendanceServiceImpl implements AttendanceService {
   }
 
   @Override
-  public User studentTimeIn(Long scheduleId, Long studentId, String attendanceStatus) {
-    Optional<User> studentOpt = userRepository.findById(studentId);
+  public User studentTimeIn(Long scheduleId, String usercode,
+      String attendanceStatus) {
+    Optional<User> studentOpt = userRepository.findByUsercode(usercode);
     Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
 
-    if (studentOpt.isEmpty() || scheduleOpt.isEmpty())
+    if (studentOpt.isEmpty() || scheduleOpt.isEmpty()) {
       return null;
+    }
+
+    Long studentId = studentOpt.get().getId();
 
     ScheduleStudent scheduleStudentRecord = scheduleStudentRepository.findByStudentIdAndScheduleId(studentId,
         scheduleId);
@@ -106,7 +110,7 @@ public class AttendanceServiceImpl implements AttendanceService {
       return null;
 
     if (!attendanceRepository.findByScheduleIdAndUserId(scheduleId, studentId).isEmpty())
-      return null;
+      return studentOpt.get();
 
     Attendance attendance = new Attendance(attendanceStatus, studentOpt.get(), scheduleOpt.get(),
         ZonedDateTime.now(ZoneId.of("UTC+8")));
