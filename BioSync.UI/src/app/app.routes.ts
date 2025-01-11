@@ -48,6 +48,7 @@ import { SuffixComponent } from './suffix/suffix.component';
 import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
 import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 import { ManualAttendanceComponent } from './attendance/manual-attendance/manual-attendance.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
@@ -55,6 +56,7 @@ export const routes: Routes = [
     {path: "forgot-password", component: PasswordForgotComponent},
     {path: "reset-password", component: PasswordResetComponent},
     {path: "profile", component: AdminProfileComponent},
+    {path: "profile/user", component: UserProfileComponent},
     {path: "dashboard", component: DashboardComponent},
     {path: "schedule", component: ScheduleComponent},
     {path: "requests", component: RequestListScheduleComponent},
