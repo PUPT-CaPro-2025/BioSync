@@ -1,0 +1,211 @@
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { UserService } from '../../services/user.service';
+import { User } from '../../model/user.model';
+import { PromptOkayComponent } from '../prompt/prompt-okay/prompt-okay.component';
+import { MatDialog } from '@angular/material/dialog';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import {
+  MatStepperNext,
+  MatStepperPrevious,
+} from '@angular/material/stepper';
+import { SdkService } from '../../services/sdk.service';
+import { FingerprintService } from '../../services/fingerprint.service';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { MailService } from '../../services/mail.service';
+import { CookieService } from '../../services/cookie.service';
+import { CryptoService } from '../../services/crypto.service';
+
+@Component({
+  selector: 'app-user-profile',
+  standalone: true,
+  imports: [
+    MatToolbarModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatIconModule,
+    CommonModule,
+  ],
+  providers: [UserService, SdkService, FingerprintService, MailService],
+  templateUrl: './user-profile.component.html',
+  styleUrls: ['./user-profile.component.css', '../student/add-student/add-student.component.css'
+  ],
+  encapsulation: ViewEncapsulation.None,
+})
+export class UserProfileComponent implements OnInit {
+  //Temporary Suffixes
+  allSuffix: string[] = [
+    'N/A',
+    'Ph.D.',
+    'Ed.D.',
+    'D.Phil.',
+    'D.Sc.',
+    'M.D.',
+    'Sr.',
+    'Jr.',
+    '1st',
+    '2nd',
+    '3rd',
+  ];
+  user!: User;
+  currentStepLabel: string = 'User Information';
+  imageForm!: FormGroup;
+  selectedProfileImage!: Blob;
+  imageSrc: string | ArrayBuffer | null = null;
+  image!: string;
+  rightThumbFingerprintImageSrc!: Blob;
+  rightIndexFingerprintImageSrc!: Blob;
+  rightThumbState = 'Scan Left Index';
+  hasRightThumb = false;
+  isRightThumb = false;
+  rightIndexState = 'Scan Right Index';
+  isRightIndex = false;
+  imageButtonLabel = 'Skip';
+  editMode = false;
+  hasFingerprint: boolean = false;
+  userId!: number;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private userService: UserService,
+    private dialog: MatDialog,
+    private sdkService: SdkService,
+    private fingerprintService: FingerprintService,
+    private cookieService: CookieService,
+    private cryptoService: CryptoService,
+  ) {}
+
+  ngOnInit() {
+    this.getUserId();
+    this.initForm();
+    this.getuserInfo();
+  }
+
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+      this.cookieService.getCookie('user_id')!,
+    );
+    this.userId = +this.cryptoService.decrypt(encryptedUserId);
+  }
+
+  getuserInfo() {
+    this.userService.getUserById(this.userId).subscribe({
+      next: (user: User) => {
+        this.user = user;
+        this.fingerprintService.getProfileImageUrl(this.user.id).subscribe({
+          next: (imageLink) => {
+            this.image = imageLink.profileImageUrl;
+          },
+        });
+        console.log(this.user);
+        this.setFormValues();
+        this.fingerprintService.hasFingerprint(this.user.id).subscribe({
+          next: (hasFingerprint: boolean) => {
+            this.hasFingerprint = hasFingerprint;
+          },
+        });
+      },
+    });
+  }
+
+  initForm() {
+    this.imageForm = this.formBuilder.group({
+      profileImage: [null, Validators.required],
+    });
+  }
+
+  setFormValues() {
+    this.fingerprintService
+        .getProfileImageUrl(this.user.id)
+        .subscribe({
+          next: (value) => {
+            this.imageSrc = value.profileImageUrl;
+            console.log(this.imageSrc)
+          },
+        });
+  }
+
+  submit() {
+    this.userService.updateUser(this.user).subscribe({
+      next: (updatedUser: User) => {
+        if (!updatedUser.id) return;
+        if (this.selectedProfileImage) {
+          this.processProfileImage(updatedUser.id);
+        }
+        this.openSuccessDialog();
+      },
+    });
+    return;
+  }
+
+  openSuccessDialog() {
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'user Profile Picture Successfully Updated!',
+        message: 'user Profile Picture has been successfully updated.',
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.unsetEditMode();
+      },
+    });
+  }
+
+  processProfileImage(professorId: number) {
+    const formData = new FormData();
+    formData.append('userId', `${professorId}`);
+    formData.append(
+      'profileImage',
+      this.selectedProfileImage,
+      `user-${professorId}-img.png`,
+    );
+    this.userService.processProfileImage(formData).subscribe();
+  }
+
+  setEditMode() {
+    this.editMode = true;
+  }
+
+  unsetEditMode() {
+    this.editMode = false;
+  }
+
+  onFileChanges(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.selectedProfileImage = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+      this.imageButtonLabel = 'Next';
+    }
+  }
+
+  getRole(): string {
+    const encryptedRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(encryptedRole);
+  }
+}
