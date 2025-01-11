@@ -112,7 +112,7 @@
                           {{ loggedProfessor.lastName }}
                         </p>
                       </div>
-                    } @else if (isError) {
+                    } @else if (isError && !isBarcode) {
                       <div class="flex flex-col">
                         <p class="text-brightRed font-semibold text-custom-40">
                           In-charge Fingerprint Is Not Recognized.
@@ -121,6 +121,15 @@
                           Please try again.
                         </p>
                       </div>
+                    } @else if (isError && isBarcode) {
+                        <div class="flex flex-col">
+                            <p class="text-brightRed font-semibold text-custom-40">
+                                In-charge Usercode Is Not Recognized.
+                            </p>
+                            <p class="text-brightRed text-custom-20">
+                                Please try again.
+                            </p>
+                        </div>
                     }
                   </div>
                 </div>
@@ -219,7 +228,7 @@
                           {{ loggedStudent.section?.section }}
                         </p>
                       </div>
-                    } @else if (isError) {
+                    } @else if (isError && !isBarcode) {
                       <div class="flex flex-col">
                         <p class="text-brightRed font-semibold text-custom-40">
                           Student Fingerprint Is Not Recognized.
@@ -228,6 +237,15 @@
                           Please try again.
                         </p>
                       </div>
+                    } @else if (isError && isBarcode) {
+                        <div class="flex flex-col">
+                            <p class="text-brightRed font-semibold text-custom-40">
+                                Student Usercode Is Not Recognized.
+                            </p>
+                            <p class="text-brightRed text-custom-20">
+                                Please try again.
+                            </p>
+                        </div>
                     }
                   </div>
                 </div>
@@ -277,17 +295,6 @@
                 </div>
               </div>
             }
-            <div class="flex justify-center items-center">
-              @if (!isSuccess && !isError && hasProfessorVerified) {
-                <button
-                  mat-flat-button
-                  class="add-manual-student"
-                  (click)="goToManualAttendance()"
-                >
-                  Add Student Manually
-                </button>
-              }
-            </div>
           </div>
         </div>
       </div>
