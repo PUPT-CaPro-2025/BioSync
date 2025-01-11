@@ -7,16 +7,18 @@
   @if (!editMode) {
     <div class="h-[75vh] w-[94%] flex justify-center items-center rounded-xl bg-[#AB3130]">
       <div class="h-[50vh] w-[50%] flex justify-center items-center rounded-xl bg-[#FFFFFF] gap-8 p-6">
-        <div class="w-[90%] flex flex-col justify-start">
-            @if(image){
-                <img
-                        src="{{ image }}"
-                        alt="user profile image"
-                        class="object-cover w-full h-full"
-                />
-            } @else {
-                <mat-icon class="person">person</mat-icon>
-            }
+        <div class="w-[90%] flex flex-col justify-start items-center">
+          @if(image) {
+            <div class="aspect-square w-full overflow-hidden">
+              <img
+                src="{{ image }}"
+                alt="User Profile Image"
+                class="object-cover w-full h-full rounded-xl"
+              />
+            </div>
+          } @else {
+              <mat-icon class="person">person</mat-icon>
+          }
         </div>
         <div class="w-[90%] flex flex-col justify-start items-start bg-transparent text-left">
           <p class="text-lightGray">Admin</p>
