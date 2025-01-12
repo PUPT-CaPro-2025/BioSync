@@ -401,7 +401,10 @@ export class StartAttendanceComponent implements OnInit {
     }
 
     if (event.key === 'Enter') {
+      if(this.buffer === '') return;
+
       this.scannedCode = this.buffer;
+
       const cleanedCode = this.scannedCode.replace(/Shift/g, '');
 
       if (!this.hasProfessorVerified) {
