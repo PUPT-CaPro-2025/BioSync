@@ -15,11 +15,6 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../model/user.model';
 import { PromptOkayComponent } from '../prompt/prompt-okay/prompt-okay.component';
 import { MatDialog } from '@angular/material/dialog';
-import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import {
-  MatStepperNext,
-  MatStepperPrevious,
-} from '@angular/material/stepper';
 import { SdkService } from '../../services/sdk.service';
 import { FingerprintService } from '../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -49,33 +44,12 @@ import { CryptoService } from '../../services/crypto.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class UserProfileComponent implements OnInit {
-  //Temporary Suffixes
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+
   user!: User;
-  currentStepLabel: string = 'User Information';
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
   image!: string;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
-  hasRightThumb = false;
-  isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
-  isRightIndex = false;
   imageButtonLabel = 'Skip';
   editMode = false;
   hasFingerprint: boolean = false;
@@ -85,7 +59,6 @@ export class UserProfileComponent implements OnInit {
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dialog: MatDialog,
-    private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private cookieService: CookieService,
     private cryptoService: CryptoService,
@@ -178,7 +151,11 @@ export class UserProfileComponent implements OnInit {
       this.selectedProfileImage,
       `user-${professorId}-img.png`,
     );
-    this.userService.processProfileImage(formData).subscribe();
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {
+        this.getuserInfo();
+      }
+    });
   }
 
   setEditMode() {
