@@ -7,16 +7,18 @@
   @if (!editMode) {
     <div class="h-[75vh] w-[94%] flex justify-center items-center rounded-xl bg-[#AB3130]">
       <div class="h-[50vh] w-[50%] flex justify-center items-center rounded-xl bg-[#FFFFFF] gap-8 p-6">
-        <div class="w-[90%] flex flex-col justify-start">
-            @if(image){
-                <img
-                        src="{{ image }}"
-                        alt="user profile image"
-                        class="object-cover w-full h-full"
-                />
-            } @else {
-                <mat-icon class="person">person</mat-icon>
-            }
+        <div class="w-[90%] flex flex-col justify-start items-center">
+          @if(image) {
+            <div class="aspect-square w-full overflow-hidden">
+              <img
+                src="{{ image }}"
+                alt="User Profile Image"
+                class="object-cover w-full h-full rounded-xl"
+              />
+            </div>
+          } @else {
+              <mat-icon class="person">person</mat-icon>
+          }
         </div>
         <div class="w-[90%] flex flex-col justify-start items-start bg-transparent text-left">
           <p class="text-lightGray">Admin</p>
@@ -27,8 +29,6 @@
         </div>
       </div>
     </div>
-    
-    
   } @else {
     <mat-stepper
       [linear]="true"
@@ -106,8 +106,9 @@
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="suffix"
               >
-                @for (suffix of allSuffix; track suffix) {
-                  <mat-option [value]="suffix">{{ suffix }}</mat-option>
+                <mat-option value="N/A">N/A</mat-option>
+                @for(suffix of allSuffix; track suffix) {
+                  <mat-option [value]="suffix.abbreviation">{{suffix.abbreviation}}</mat-option>
                 }
               </mat-select>
             </div>
@@ -146,27 +147,15 @@
         [completed]="true"
       >
         <div class="flex justify-center align-middle mt-5">
-          <form
-            [formGroup]="imageForm"
-            class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle"
-          >
+          <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
             <div class="flex justify-center items-center">
-              <label for="fileInput" class="drop-area">
-                <input
-                  type="file"
-                  id="fileInput"
-                  formControlName="profileImage"
-                  (change)="onFileChanges($event)"
-                  accept="image/*"
-                  hidden
-                />
+              <label for="fileInput" class="drop-area" *ngIf="!isCameraOpen">
+                <input type="file" id="fileInput"
+                       formControlName="profileImage" (change)="onFileChanges($event)"
+                       accept="image/*" hidden/>
                 <div class="image-container">
-                  @if (imageSrc) {
-                    <img
-                      [src]="imageSrc"
-                      alt="Selected Image"
-                      class="displayed-image"
-                    />
+                  @if(imageSrc) {
+                    <img ngSrc="{{imageSrc}}" alt="Selected Image" class="displayed-image" fill>
                   }
                 </div>
                 <div class="upload-message">
@@ -174,17 +163,14 @@
                   <p>Click here to upload image</p>
                 </div>
               </label>
+              <video #videoElement class="video-container" *ngIf="isCameraOpen"></video>
             </div>
             <div class="mt-4 flex items-center justify-center">
-              <button
-                class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button"
-              >
-                Take Photo
-              </button>
+              <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button" (click)="isCameraOpen ? capturePhoto() : openCamera()">{{ captureButtonLabel }}</button>
             </div>
             <div class="mt-4 flex justify-between button-content">
               <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>{{ imageButtonLabel }}</button>
+              <button mat-button matStepperNext>{{  photoButtonLabel }}</button>
             </div>
           </form>
         </div>

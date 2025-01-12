@@ -20,7 +20,8 @@ public interface AttendanceService {
 
   Attendance updateAttendance(Attendance attendance);
 
-  User studentTimeIn(Long scheduleId, Long studentId, String attendanceStatus);
+  User studentTimeIn(Long scheduleId, String usercode,
+      String attendanceStatus);
 
   void setTimeOut(Schedule schedule);
 }

@@ -88,86 +88,120 @@ export class ViewAttendanceComponent implements OnInit {
     const imgWidth = 115;
     const imgHeight = 15;
     const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
-    const title = 'ATTENDANCE';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
     const leftX = 20;
     const rightX = pageWidth - 20;
-    let currentY = 40;
     const lineHeight = 6;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Course:', leftX, currentY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.schedule.subject?.description || '', leftX + 40, currentY);
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date:', rightX - 40, currentY, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    doc.text(this.schedule.scheduleDate || '', rightX, currentY, {
-      align: 'right',
-    });
-    currentY += lineHeight;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Faculty:', leftX, currentY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(
-      `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` ||
-        '',
-      leftX + 40,
-      currentY,
-    );
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Start/End Time:', rightX - 40, currentY, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    doc.text(
-      `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` ||
-        '',
-      rightX,
-      currentY,
-      {
-        align: 'right',
-      },
-    );
-    currentY += lineHeight;
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Program & Year:', leftX, currentY);
-    doc.setFont('helvetica', 'normal');
-    doc.text(
-      `${this.schedule.section?.program?.programAbbreviation || ''} ${
-        this.schedule.section?.section || ''
-      }`,
-      leftX + 40,
-      currentY,
-    );
-
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', rightX - 40, currentY, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, rightX, currentY, { align: 'right' });
 
     const columns = ['No.', 'Student Name', 'Time-In', 'Time-Out', 'Status'];
     const rows = this.class.map((attendance, index) => [
-        index + 1,
+      `${index + 1}`,
       `${attendance.user.firstName} ${attendance.user.lastName}`,
-        attendance.timeIn  ? this.getTime(attendance.timeIn) : 'N/A',
-        attendance.timeOut  ? this.getTime(attendance.timeOut) : 'N/A',
-        attendance.status,
+      attendance.timeIn ? this.getTime(attendance.timeIn) : 'N/A',
+      attendance.timeOut ? this.getTime(attendance.timeOut) : 'N/A',
+      attendance.status,
     ]);
+
+    // Calculate present and absent counts
+    const presentCount = this.class.filter(
+      (attendance) => attendance.status.toLowerCase() === 'present',
+    ).length;
+    const absentCount = this.class.filter(
+      (attendance) => attendance.status.toLowerCase() === 'absent',
+    ).length;
+
+    // Function to render header (will be called on each page)
+    const renderHeader = (currentPage: number, pageCount: number) => {
+      // Header image and title
+      doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('ATTENDANCE', pageWidth / 2, 30, { align: 'center' });
+
+      let currentY = 40;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Course:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.schedule.subject?.description || '', leftX + 40, currentY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date:', rightX - 40, currentY, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.schedule.scheduleDate || '', rightX, currentY, {
+        align: 'right',
+      });
+      currentY += lineHeight;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Faculty:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` || '',
+        leftX + 40,
+        currentY,
+      );
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Start/End Time:', rightX - 40, currentY, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` || '',
+        rightX,
+        currentY,
+        {
+          align: 'right',
+        },
+      );
+      currentY += lineHeight;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Program & Year:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `${this.schedule.section?.program?.programAbbreviation || ''} ${
+          this.schedule.section?.section || ''
+        }`,
+        leftX + 40,
+        currentY,
+      );
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date/Time Printed:', rightX - 40, currentY, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      const currentDate = new Date().toLocaleString();
+      doc.text(currentDate, rightX, currentY, { align: 'right' });
+
+      currentY += lineHeight;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Present:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${presentCount}`, leftX + 40, currentY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Absent:', rightX - 55, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`${absentCount}`, rightX, currentY, { align: 'right' });
+
+      // Add page counter at the bottom
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Page ${currentPage} of ${pageCount}`, pageWidth / 2, 200, {
+        align: 'center',
+      });
+    };
+
+    // Render table
+    const tableWidth = columns.length * 40; // Adjust column width here if needed
+    const tableMarginLeft = (pageWidth - tableWidth) / 2;
 
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: currentY + lineHeight + 5,
+      startY: 70,
       theme: 'grid',
       styles: {
         fontSize: 10,
@@ -183,8 +217,20 @@ export class ViewAttendanceComponent implements OnInit {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
       },
+      columnStyles: {
+        0: { cellWidth: 15 }, // No.
+        1: { cellWidth: 80, halign: 'left' }, // Student Name
+        2: { cellWidth: 40 }, // Time-In
+        3: { cellWidth: 40 }, // Time-Out
+        4: { cellWidth: 30 }, // Status
+      },
+      margin: { left: tableMarginLeft, top: 70 },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
+    // Save the PDF
     doc.save(
       `attendance-${this.schedule.subject?.code}-${
         this.schedule.scheduleDate

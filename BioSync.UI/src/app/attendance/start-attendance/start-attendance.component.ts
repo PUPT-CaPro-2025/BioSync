@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -61,6 +61,11 @@ export class StartAttendanceComponent implements OnInit {
   isAlreadyLogged: boolean = false;
   id!: number;
   loading = false;
+  private buffer: string = '';
+  private scanTimeout: any;
+  private readonly debounceTime = 50;
+  scannedCode: string = '';
+  isBarcode = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -329,5 +334,125 @@ export class StartAttendanceComponent implements OnInit {
     this.router.navigate(['/schedule']).then();
   }
 
+  sendAttendance(usercode: string){
+    this.loading = true;
+    const formData = new FormData();
+    formData.append('usercode', usercode);
+    formData.append('scheduleId', this.id.toString());
+
+    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
+        "actualTimeStart"));
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
+    const isStudentLate = timeDifferenceInMinutes > 30;
+    formData.append('attendanceStatus', isStudentLate ? "LATE" : "PRESENT");
+
+
+
+    this.attendanceService.logAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value;
+        let hasLogged = false;
+        console.log(this.studentsLogged)
+        console.log(this.loggedStudent);
+
+        this.studentsLogged.some((loggedStudent) => {
+          hasLogged = loggedStudent.id == this.loggedStudent!.id;
+        })
+
+        if(hasLogged){
+          this.reminder = 'Attendance has already been recorded';
+          this.isAlreadyLogged = true;
+        } else {
+          this.studentsLogged.push(this.loggedStudent);
+          this.reminder = 'Attendance Recorded';
+          this.isSuccess = true;
+          this.getUserProfileImage(value.id);
+        }
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Scan Student Fingerprint';
+          this.isSuccess = false;
+          this.isAlreadyLogged = false;
+        }, 3000);
+      },
+      error: () => {
+        this.isError = true;
+        this.isBarcode = true;
+        this.reminder = '';
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Scan Student Fingerprint';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      }
+    });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (this.scanTimeout) {
+      clearTimeout(this.scanTimeout);
+    }
+
+    if (event.key === 'Enter') {
+      if(this.buffer === '') return;
+
+      this.scannedCode = this.buffer;
+
+      const cleanedCode = this.scannedCode.replace(/Shift/g, '');
+
+      if (!this.hasProfessorVerified) {
+        this.verifyProfessorCode(cleanedCode);
+      } else {
+        this.sendAttendance(cleanedCode)
+      }
+      this.buffer = '';
+    } else if (!event.ctrlKey && !event.altKey && !event.metaKey) {
+      this.buffer += event.key;
+
+      this.scanTimeout = setTimeout(() => {
+        this.buffer = '';
+      }, this.debounceTime);
+    }
+  }
+
   protected readonly history = history;
+
+  private verifyProfessorCode(usercode: string) {
+    this.loading = true;
+    this.isBarcode = true;
+    const professor = this.selectedSchedule.professor!;
+
+    if(usercode === professor.usercode) {
+      this.loggedProfessor = professor;
+      this.getUserProfileImage(professor.id);
+      this.cookieService.setCookie(
+          'actualTimeStart',
+          Date.now().toString(),
+      );
+      this.reminder = 'Usercode Verified, Starting Attendance...';
+      this.isSuccess = true;
+      this.loading = false;
+      setTimeout(() => {
+        this.reminder = 'Scan Student Fingerprint';
+        this.hasProfessorVerified = true;
+        this.loggedProfessor = null;
+        this.profileImageUrl = '';
+        this.isSuccess = false;
+      }, 3000);
+    } else {
+      this.isError = true;
+      this.loading = false;
+      setTimeout(() => {
+        this.reminder = 'Scanning In-Charge Fingerprint...';
+        this.isError = false;
+      }, 3000);
+    }
+  }
 }

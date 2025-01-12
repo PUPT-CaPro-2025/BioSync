@@ -54,7 +54,7 @@ button.mat-stepper-previous {
 }
 
 .cancel-button {
-    padding: 8px 50px !important;
+    padding: 8px 60px !important;
     color: #7F7F7F !important;
     border: 2px solid #7F7F7F !important;
     border-radius: 20px !important;
@@ -64,7 +64,7 @@ button.mat-stepper-previous {
 button.mat-stepper-next {
     color: white !important;
     padding: 8px 60px !important;
-    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436) !important; 
+    background: linear-gradient(to right, #68191F,#AB3130) !important; 
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -72,13 +72,13 @@ button.mat-stepper-next {
 }
 
 button.mat-stepper-next:hover {
-    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
+    background: linear-gradient(to right, #360d10, #641c1c) !important;
 }
 
 .add-button {
     color: white !important;
     padding: 8px 60px !important;
-    background: linear-gradient(to right, #AB3130, #F9653F, #F5B436) !important; 
+    background: linear-gradient(to right, #68191F, #AB3130) !important; 
     border: none !important;
     border-radius: 20px !important;
     font-size: 16px !important;
@@ -86,7 +86,7 @@ button.mat-stepper-next:hover {
 }
 
 .add-button:hover {
-    background: linear-gradient(to right, #D33C33, #C54D31, #B75E2E) !important;
+    background: linear-gradient(to right, #360d10, #641c1c) !important;
 }
 
 .drop-area {

@@ -522,6 +522,10 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSemester();
+        this.getSections();
+        this.onFilterChange();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
