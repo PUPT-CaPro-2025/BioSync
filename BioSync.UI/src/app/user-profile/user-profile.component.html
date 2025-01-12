@@ -1,0 +1,97 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+      <span class="text-custom-32 text-brightRed">
+        @if(getRole() === "FACULTY") {
+            @if(!editMode) {
+                Faculty Information
+            } @else {
+                Faculty Picture
+            }
+        } @else if(getRole() === "STUDENT") {
+            @if(!editMode) {
+                Student Information
+            } @else {
+                Student Picture
+            }
+        }
+      </span>
+    </mat-toolbar>
+  </div>
+  <div class="flex justify-center items-center mt-8 w-full bg-transparent">
+    @if (!editMode) {
+      <div class="h-[75vh] w-[94%] flex justify-center items-center rounded-xl bg-[#AB3130]">
+        <div class="h-[50vh] w-[50%] flex justify-center items-center rounded-xl bg-[#FFFFFF] gap-8 p-6">
+            <div class="w-[90%] flex flex-col justify-start items-center">
+                @if(image) {
+                  <div class="aspect-square w-full overflow-hidden">
+                    <img
+                      src="{{ image }}"
+                      alt="User Profile Image"
+                      class="object-cover w-full h-full rounded-xl"
+                    />
+                  </div>
+                } @else {
+                    <mat-icon class="person">person</mat-icon>
+                }
+            </div>
+          <div class="w-[90%] flex flex-col justify-start items-start bg-transparent text-left gap-4">
+            <div class="flex flex-col">
+                <p class="text-lightGray">
+                    @if(getRole() === "FACULTY") {
+                        Faculty Name
+                    } @else if(getRole() === "STUDENT") {
+                        Student Name
+                    }
+                </p>
+                <p class="text-custom-20 text-brightRed">{{ user.firstName }} {{ user.lastName }}</p>
+                <p class="text-lightGray">
+                    @if(getRole() === "FACULTY") {
+                        Faculty Number
+                    } @else if(getRole() === "STUDENT") {
+                        Student Number
+                    }
+                </p>
+                <p class="text-custom-20 text-brightRed">{{user.usercode}}</p>
+                <p class="mt-2 text-lightGray">Email Addresss</p>
+                <p class="text-custom-20 text-brightRed">{{user.email}}</p>
+                <p class="mt-2 text-lightGray">Fingerprint</p>
+                <p class="font-semibold text-custom-16">{{ hasFingerprint ? "Registered" : "Unregistered" }}</p>
+            </div>
+            <button mat-button (click)="setEditMode()">Change Profile Picture</button>
+          </div>
+        </div>
+      </div>
+    } @else {
+        <div class="flex justify-center align-middle mt-5">
+            <form class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
+              <div class="flex justify-center items-center">
+                <label for="fileInput" class="drop-area" *ngIf="!isCameraOpen">
+                  <input type="file" id="fileInput"
+                         formControlName="profileImage" (change)="onFileChanges($event)"
+                         accept="image/*" hidden/>
+                  <div class="image-container">
+                    @if(imageSrc) {
+                      <img [src]="imageSrc" alt="Selected Image" class="displayed-image">
+                    }
+                  </div>
+                  <div class="upload-message">
+                    <mat-icon class="camera-icon">camera_alt</mat-icon>
+                    <p>Click here to upload image</p>
+                  </div>
+                </label>
+                <video #videoElement class="video-container" *ngIf="isCameraOpen"></video>
+              </div>
+              <div class="mt-4 flex items-center justify-center">
+                <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button" (click)="isCameraOpen ? capturePhoto() : openCamera()">{{ captureButtonLabel }}</button>
+              </div>
+              <div class="mt-4 flex justify-between gap-24">
+                <button mat-button class="cancel-button"
+                    (click)="unsetEditMode()">
+                    Cancel
+                </button>
+                <button class="add-button" (click)="submit()">Update</button>
+              </div>
+            </form>
+          </div>
+    }
+  </div>
