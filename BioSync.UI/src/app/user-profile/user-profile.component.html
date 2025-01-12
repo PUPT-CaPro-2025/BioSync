@@ -60,25 +60,18 @@
             <button mat-button (click)="setEditMode()">Change Profile Picture</button>
           </div>
         </div>
-      </div>    
+      </div>
     } @else {
         <div class="flex justify-center align-middle mt-5">
-            <form class="flex flex-col gap-4 justify-center align-middle">
+            <form class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
               <div class="flex justify-center items-center">
-                <label for="fileInput" class="drop-area">
-                  <input
-                    type="file"
-                    id="fileInput"
-                    formControlName="profileImage"
-                    (change)="onFileChanges($event)"
-                    accept="image/*"
-                    hidden/>
+                <label for="fileInput" class="drop-area" *ngIf="!isCameraOpen">
+                  <input type="file" id="fileInput"
+                         formControlName="profileImage" (change)="onFileChanges($event)"
+                         accept="image/*" hidden/>
                   <div class="image-container">
-                    @if (imageSrc) {
-                      <img
-                        [src]="imageSrc"
-                        alt="Selected Image"
-                        class="displayed-image"/>
+                    @if(imageSrc) {
+                      <img [src]="imageSrc" alt="Selected Image" class="displayed-image">
                     }
                   </div>
                   <div class="upload-message">
@@ -86,15 +79,13 @@
                     <p>Click here to upload image</p>
                   </div>
                 </label>
+                <video #videoElement class="video-container" *ngIf="isCameraOpen"></video>
               </div>
               <div class="mt-4 flex items-center justify-center">
-                <button
-                  class="bg-brightRed rounded-xl py-2 px-24 text-white font-custom-16">
-                  Take Photo
-                </button>
+                <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button" (click)="isCameraOpen ? capturePhoto() : openCamera()">{{ captureButtonLabel }}</button>
               </div>
               <div class="mt-4 flex justify-between gap-24">
-                <button mat-button class="cancel-button" 
+                <button mat-button class="cancel-button"
                     (click)="unsetEditMode()">
                     Cancel
                 </button>
@@ -104,4 +95,3 @@
           </div>
     }
   </div>
-  

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,7 +26,7 @@ import {
 import { SdkService } from '../../services/sdk.service';
 import { FingerprintService } from '../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { MailService } from '../../services/mail.service';
 import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
@@ -51,6 +51,7 @@ import {SuffixService} from "../../services/suffix.service";
     MatStepperPrevious,
     MatIconModule,
     CommonModule,
+    NgOptimizedImage,
   ],
   providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
   templateUrl: './admin-profile.component.html',
@@ -61,6 +62,7 @@ import {SuffixService} from "../../services/suffix.service";
   encapsulation: ViewEncapsulation.None,
 })
 export class AdminProfileComponent implements OnInit {
+  @ViewChild('videoElement') videoElementRef!: any;
   allSuffix: Suffix[] = [];
   admin!: User;
   adminForm!: FormGroup;
@@ -80,6 +82,11 @@ export class AdminProfileComponent implements OnInit {
   editMode = false;
   hasFingerprint: boolean = false;
   userId!: number;
+  photoButtonLabel = 'Skip';
+  videoElement!: HTMLVideoElement;
+  isCameraOpen = false;
+  captureButtonLabel = 'Take Photo';
+  private stream: MediaStream | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -306,4 +313,48 @@ export class AdminProfileComponent implements OnInit {
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
   }
+
+  capturePhoto() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.videoElement.videoWidth;
+    canvas.height = this.videoElement.videoHeight;
+    const context = canvas.getContext('2d');
+    context?.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      this.selectedProfileImage = blob!;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+        this.photoButtonLabel = 'Next';
+      };
+      reader.readAsDataURL(blob!);
+    });
+    this.closeCamera();
+  }
+
+  openCamera() {
+    this.isCameraOpen = true;
+    this.captureButtonLabel = 'Capture Photo';
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        this.stream = stream;
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
+      })
+      .catch(() => {
+        // Handle error silently
+      });
+  }
+
+  closeCamera() {
+    this.isCameraOpen = false;
+    this.captureButtonLabel = 'Retake Photo';
+    const stream = this.videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    this.videoElement.srcObject = null;
+  }
+
 }
