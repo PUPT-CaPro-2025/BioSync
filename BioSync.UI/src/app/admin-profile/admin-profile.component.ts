@@ -30,6 +30,8 @@ import { CommonModule } from '@angular/common';
 import { MailService } from '../../services/mail.service';
 import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
+import {Suffix} from "../../model/suffix.model";
+import {SuffixService} from "../../services/suffix.service";
 
 @Component({
   selector: 'app-admin-profile',
@@ -50,7 +52,7 @@ import { CryptoService } from '../../services/crypto.service';
     MatIconModule,
     CommonModule,
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
   templateUrl: './admin-profile.component.html',
   styleUrls: [
     './admin-profile.component.css',
@@ -59,20 +61,7 @@ import { CryptoService } from '../../services/crypto.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class AdminProfileComponent implements OnInit {
-  //Temporary Suffixes
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+  allSuffix: Suffix[] = [];
   admin!: User;
   adminForm!: FormGroup;
   currentStepLabel: string = 'Admin Information';
@@ -100,6 +89,7 @@ export class AdminProfileComponent implements OnInit {
     private fingerprintService: FingerprintService,
     private cookieService: CookieService,
     private cryptoService: CryptoService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
@@ -107,6 +97,7 @@ export class AdminProfileComponent implements OnInit {
     this.initForm();
     this.sdkService.loadSDK();
     this.getAdminInfo();
+    this.getSuffixes();
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
@@ -158,6 +149,14 @@ export class AdminProfileComponent implements OnInit {
         });
       },
     });
+  }
+
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: value => {
+        this.allSuffix = value;
+      }
+    })
   }
 
   initForm() {
@@ -227,6 +226,7 @@ export class AdminProfileComponent implements OnInit {
 
     ref.afterClosed().subscribe({
       next: () => {
+        this.getAdminInfo();
         this.unsetEditMode();
       },
     });
