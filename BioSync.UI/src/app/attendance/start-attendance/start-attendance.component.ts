@@ -401,8 +401,7 @@ export class StartAttendanceComponent implements OnInit {
     }
 
     if (event.key === 'Enter') {
-      //this.scannedCode = this.buffer;
-      this.scannedCode = 'PN:18046653';
+      this.scannedCode = this.buffer;
       const cleanedCode = this.scannedCode.replace(/Shift/g, '');
 
       if (!this.hasProfessorVerified) {
@@ -445,7 +444,6 @@ export class StartAttendanceComponent implements OnInit {
         this.isSuccess = false;
       }, 3000);
     } else {
-      console.log("movin round");
       this.isError = true;
       this.loading = false;
       setTimeout(() => {
