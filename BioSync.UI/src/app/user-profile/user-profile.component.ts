@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -43,7 +43,7 @@ import { CryptoService } from '../../services/crypto.service';
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoElementRef!: any;
   user!: User;
   imageForm!: FormGroup;
@@ -233,4 +233,11 @@ export class UserProfileComponent implements OnInit {
     tracks.forEach((track) => track.stop());
     this.videoElement.srcObject = null;
   }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
+  }
+
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -61,7 +61,7 @@ import {SuffixService} from "../../services/suffix.service";
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class AdminProfileComponent implements OnInit {
+export class AdminProfileComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement') videoElementRef!: any;
   allSuffix: Suffix[] = [];
   admin!: User;
@@ -355,6 +355,12 @@ export class AdminProfileComponent implements OnInit {
     const tracks = stream.getTracks();
     tracks.forEach((track) => track.stop());
     this.videoElement.srcObject = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
   }
 
 }
