@@ -5,6 +5,7 @@ import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.schedule.ScheduleRepository;
 import com.example.biosyncapi.fingerprint.FingerprintService;
 import com.example.biosyncapi.schedule.ScheduleService;
+import com.example.biosyncapi.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +26,17 @@ public class AttendanceController {
   private final ScheduleService scheduleService;
   private final AttendanceRepository attendanceRepository;
   private final ScheduleRepository scheduleRepository;
+  private final UserRepository userRepository;
 
   public AttendanceController(AttendanceService attendanceService, FingerprintService fingerprintService,
       ScheduleService scheduleService, AttendanceRepository attendanceRepository,
-      ScheduleRepository scheduleRepository) {
+      ScheduleRepository scheduleRepository, UserRepository userRepository) {
     this.attendanceService = attendanceService;
     this.fingerprintService = fingerprintService;
     this.scheduleService = scheduleService;
     this.attendanceRepository = attendanceRepository;
     this.scheduleRepository = scheduleRepository;
+    this.userRepository = userRepository;
   }
 
   @GetMapping()
@@ -144,12 +147,23 @@ public class AttendanceController {
       @RequestParam("usercode") String usercode,
       @RequestParam("attendanceStatus") String attendanceStatus) {
     try {
-      User timedInStudent = this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
+      Optional<User> student = this.userRepository.findByUsercode(usercode);
 
-      if (timedInStudent == null)
+      if (student.isEmpty()) {
         return ResponseEntity.badRequest().body("User is null");
+      }
 
-      return ResponseEntity.ok().body(timedInStudent);
+      List<Attendance> hasExistingAttendance =
+          attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+          student.get().getId());
+
+      boolean hasLogged = !hasExistingAttendance.isEmpty();
+      if (hasLogged)
+        return ResponseEntity.status(409).body(student.get().getId());
+
+      this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
+
+      return ResponseEntity.ok().body(student);
     }catch (Exception e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }

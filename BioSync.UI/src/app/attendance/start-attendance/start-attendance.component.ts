@@ -331,14 +331,6 @@ export class StartAttendanceComponent implements OnInit {
 
   sendAttendance(usercode: string){
     this.loading = true;
-    const hasLogged = this.studentsLogged.some(user => user.usercode == usercode);
-
-    if(hasLogged){
-      this.reminder = 'Attendance has already been recorded';
-      this.isAlreadyLogged = true;
-      return;
-    }
-
     const formData = new FormData();
     formData.append('usercode', usercode);
     formData.append('scheduleId', this.id.toString());
@@ -367,10 +359,18 @@ export class StartAttendanceComponent implements OnInit {
           this.isAlreadyLogged = false;
         }, 3000);
       },
-      error: () => {
-        this.isError = true;
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
         this.isBarcode = true;
-        this.reminder = '';
         this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
