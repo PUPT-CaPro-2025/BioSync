@@ -76,7 +76,7 @@
                             focus:outline-none transition-colors
                             duration-300 w-full py-2 md:py-2 px-1" formControlName="destination">
                             @for(lab of labs; track lab) {
-                                <mat-option [value]="lab">{{lab}}</mat-option>
+                                <mat-option [value]="lab.name">{{lab.name}}</mat-option>
                             }
                     </mat-select>
                 </div>
