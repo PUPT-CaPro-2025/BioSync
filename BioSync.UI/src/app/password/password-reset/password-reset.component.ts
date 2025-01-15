@@ -33,6 +33,12 @@ export class PasswordResetComponent implements OnInit {
   resetToken!: string;
   hasSubmitted = false;
   errorMessage: string | null = null;
+  passwordVisible = false;
+  passwordFieldType = 'password';
+  confirmPasswordVisible = false;
+  confirmPasswordFieldType = 'password';
+  passwordInput = false;
+  confirmPasswordInput = false;
 
   //update this when implementing Setup password depends on the function 
   setupPassword = false;
@@ -66,6 +72,27 @@ export class PasswordResetComponent implements OnInit {
         this.router.navigate(['/login']).then();
       }
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+    this.passwordFieldType = this.passwordVisible ? 'text' : 'password';
+  }
+
+  toggleConfirmPasswordVisibility(): void { 
+    this.confirmPasswordVisible = !this.confirmPasswordVisible;
+    this.confirmPasswordFieldType = this.confirmPasswordVisible ? 'text' : 'password';
+  }
+
+  onInput(field: string): void {
+    if (field === 'newPassword') {
+      const newPasswordValue = this.resetPasswordForm.get('newPassword')?.value;
+      this.passwordInput = !!newPasswordValue && newPasswordValue.length > 0;
+      this.setMessageToNull();
+    } else if (field === 'confirmPassword') {
+      const confirmPasswordValue = this.resetPasswordForm.get('confirmPassword')?.value;
+      this.confirmPasswordInput = !!confirmPasswordValue && confirmPasswordValue.length > 0;
+    }
   }
 
   submit() {
