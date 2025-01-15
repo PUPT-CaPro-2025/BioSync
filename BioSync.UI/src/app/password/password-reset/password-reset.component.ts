@@ -34,6 +34,9 @@ export class PasswordResetComponent implements OnInit {
   hasSubmitted = false;
   errorMessage: string | null = null;
 
+  //update this when implementing Setup password depends on the function 
+  setupPassword = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private activatedRoute: ActivatedRoute,
