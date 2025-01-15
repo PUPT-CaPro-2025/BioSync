@@ -14,10 +14,7 @@ export class LaboratoryService {
   constructor(private http: HttpClient, private cookieService: CookieService) { }
 
   getLaboratories() {
-    return this.http.get<Laboratory[]>(this.url, {
-      headers: this.headers,
-      withCredentials: true,
-    });
+    return this.http.get<Laboratory[]>(this.url);
   }
 
   updateLaboratory(laboratories: Laboratory){
