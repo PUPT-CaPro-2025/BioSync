@@ -25,6 +25,8 @@ import { CryptoService } from '../../services/crypto.service';
 export class UserLoginComponent implements OnInit {
   userLoginForm!: FormGroup;
   credentialsError = false;
+  passwordVisible = false;
+  passwordFieldType = 'password';
 
   constructor(
     private router: Router,
@@ -47,6 +49,11 @@ export class UserLoginComponent implements OnInit {
       usercode: ['', Validators.required],
       password: ['', Validators.required],
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+    this.passwordFieldType = this.passwordVisible ? 'text' : 'password';
   }
 
   submit(): void {
