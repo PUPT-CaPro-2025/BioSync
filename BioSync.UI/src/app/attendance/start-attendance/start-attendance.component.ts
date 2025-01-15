@@ -101,7 +101,11 @@ export class StartAttendanceComponent implements OnInit {
           if (!this.hasProfessorVerified) {
             this.submitProfessor();
           } else {
-            this.submitStudentTimeIn();
+            if(this.isTimeOut){
+              this.submitStudentTimeOut()
+            } else {
+              this.submitStudentTimeIn();
+            }
           }
         }
       },
@@ -201,12 +205,7 @@ export class StartAttendanceComponent implements OnInit {
 
   submitStudentTimeIn() {
     this.setLoadingStudent();
-
-    const formData = new FormData();
-
-    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
-    formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
+    const formData = this.setFormData();
 
     const actualTimeStart = parseInt(
       <string>this.cookieService.getCookie('actualTimeStart'),
@@ -255,6 +254,60 @@ export class StartAttendanceComponent implements OnInit {
 
     });
 
+  }
+
+  submitStudentTimeOut() {
+    this.setLoadingStudent();
+    const formData = this.setFormData();
+
+    this.fingerprintService.verifyStudentTimeOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value.student;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(this.loggedStudent.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+        }, 3000);
+      },
+      error: (error) => {
+        if (error.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == error.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      },
+
+    });
+
+  }
+
+  private setFormData() {
+    const formData = new FormData();
+
+    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
+    formData.append('scheduleId', `${this.selectedSchedule.id}`);
+    formData.append('fingerprint', this.fingerprintImageSrc,
+        'fingerprint.png');
+    return formData;
   }
 
   private setLoadingStudent(){

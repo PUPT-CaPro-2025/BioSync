@@ -137,6 +137,42 @@ public class AttendanceController {
         "attendance", recordedAttendance));
   }
 
+  @PostMapping("/student/check-out")
+  public ResponseEntity<?> verifyStudentTimeOutAttendance(
+      @RequestParam("scheduleId") Long scheduleId,
+      @RequestParam("fingerprint") MultipartFile fingerprint) throws IOException {
+
+    User student = fingerprintService
+        .verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
+
+    if (student == null)
+      return ResponseEntity.status(401).body("Fingerprint verification failed.");
+
+    Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
+    if (schedule.isEmpty())
+      return ResponseEntity.status(400).body("Schedule not found.");
+
+    List<Attendance> hasExistingAttendance = attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+        student.getId());
+    boolean notLogged = hasExistingAttendance.isEmpty();
+    if (notLogged) {
+      return ResponseEntity.status(400).body("No Time In Found");
+    }
+
+    Attendance attendance = hasExistingAttendance.get(0);
+
+    if(attendance.getTimeOut() != null){
+      return ResponseEntity.status(409).body(attendance.getId());
+    }
+
+    attendanceService.studentTimeOut(
+        schedule.get().getId(), student.getUsercode());
+
+    return ResponseEntity.ok().body(Map.of(
+        "message", "Fingerprint verified.",
+        "student", student));
+  }
+
   /*
    * A time in method that does not require a fingerprint
    *
