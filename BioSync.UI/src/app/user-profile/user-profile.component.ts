@@ -136,8 +136,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
-        title: 'user Profile Picture Successfully Updated!',
-        message: 'user Profile Picture has been successfully updated.',
+        title: 'Profile Picture Successfully Updated!',
+        message: 'Profile Picture has been successfully updated.',
       },
     });
 

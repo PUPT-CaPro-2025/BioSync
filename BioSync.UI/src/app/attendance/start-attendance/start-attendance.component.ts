@@ -325,11 +325,6 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  goToManualAttendance() {
-    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/manual/start/`, this.id]));
-    window.open(url, '_blank');
-  }
-
   handleBackEvent(){
     this.router.navigate(['/schedule']).then();
   }
@@ -347,28 +342,13 @@ export class StartAttendanceComponent implements OnInit {
     const isStudentLate = timeDifferenceInMinutes > 30;
     formData.append('attendanceStatus', isStudentLate ? "LATE" : "PRESENT");
 
-
-
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
         this.loggedStudent = value;
-        let hasLogged = false;
-        console.log(this.studentsLogged)
-        console.log(this.loggedStudent);
-
-        this.studentsLogged.some((loggedStudent) => {
-          hasLogged = loggedStudent.id == this.loggedStudent!.id;
-        })
-
-        if(hasLogged){
-          this.reminder = 'Attendance has already been recorded';
-          this.isAlreadyLogged = true;
-        } else {
-          this.studentsLogged.push(this.loggedStudent);
-          this.reminder = 'Attendance Recorded';
-          this.isSuccess = true;
-          this.getUserProfileImage(value.id);
-        }
+        this.studentsLogged.push(this.loggedStudent);
+        this.reminder = 'Attendance Recorded';
+        this.isSuccess = true;
+        this.getUserProfileImage(value.id);
         this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
@@ -379,10 +359,18 @@ export class StartAttendanceComponent implements OnInit {
           this.isAlreadyLogged = false;
         }, 3000);
       },
-      error: () => {
-        this.isError = true;
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
         this.isBarcode = true;
-        this.reminder = '';
         this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
