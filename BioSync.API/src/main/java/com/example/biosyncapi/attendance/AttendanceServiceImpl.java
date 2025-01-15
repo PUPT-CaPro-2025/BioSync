@@ -120,6 +120,29 @@ public class AttendanceServiceImpl implements AttendanceService {
   }
 
   @Override
+  public User studentTimeOut(Long scheduleId, String usercode) {
+    Optional<User> studentOpt = userRepository.findByUsercode(usercode);
+    Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
+
+    if (studentOpt.isEmpty() || scheduleOpt.isEmpty()) {
+      return null;
+    }
+
+    List<Attendance> attendance =
+        this.attendanceRepository.findByScheduleIdAndUserId(scheduleOpt.get().getId(), studentOpt.get().getId());
+
+    System.out.println(attendance.size());
+
+    Attendance attendance1 = attendance.get(0);
+
+    attendance1.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));
+
+    attendanceRepository.save(attendance1);
+
+    return studentOpt.get();
+  }
+
+  @Override
   public void setTimeOut(Schedule schedule) {
     List<ScheduleStudent> scheduleStudents = scheduleStudentRepository.findByScheduleId(schedule.getId());
     List<Attendance> existingAttendances = attendanceRepository.findByScheduleId(schedule.getId());

@@ -40,6 +40,13 @@ export class AttendanceService {
     })
   }
 
+  logOutAttendance(logRequest: FormData) {
+    return this.http.post<User>(`${this.url}/student/time-out`, logRequest, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getAttendanceByScheduleId(scheduleId: number) {
     return this.http.get<Attendance[]>(`${this.url}/schedule/${scheduleId}`, {
       headers: this.headers,

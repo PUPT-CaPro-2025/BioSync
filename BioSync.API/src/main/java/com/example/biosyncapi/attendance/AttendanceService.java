@@ -23,5 +23,7 @@ public interface AttendanceService {
   User studentTimeIn(Long scheduleId, String usercode,
       String attendanceStatus);
 
+  User studentTimeOut(Long scheduleId, String usercode);
+
   void setTimeOut(Schedule schedule);
 }

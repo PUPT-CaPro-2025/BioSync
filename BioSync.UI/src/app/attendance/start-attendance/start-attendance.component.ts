@@ -56,6 +56,7 @@ export class StartAttendanceComponent implements OnInit {
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
+  studentsLoggedOut: User [] = [];
   isError: boolean = false;
   isSuccess: boolean = false;
   isAlreadyLogged: boolean = false;
@@ -66,6 +67,7 @@ export class StartAttendanceComponent implements OnInit {
   private readonly debounceTime = 50;
   scannedCode: string = '';
   isBarcode = false;
+  isTimeOut = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -99,7 +101,7 @@ export class StartAttendanceComponent implements OnInit {
           if (!this.hasProfessorVerified) {
             this.submitProfessor();
           } else {
-            this.submitStudent();
+            this.submitStudentTimeIn();
           }
         }
       },
@@ -197,7 +199,7 @@ export class StartAttendanceComponent implements OnInit {
     this.isError = false;
   }
 
-  submitStudent() {
+  submitStudentTimeIn() {
     this.setLoadingStudent();
 
     const formData = new FormData();
@@ -274,7 +276,7 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  openConfirmationDialog(schedule: Schedule) {
+  openConfirmationDialogStop(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -289,6 +291,26 @@ export class StartAttendanceComponent implements OnInit {
       next: (result) => {
         if (!result) return;
         this.stopAttendance(schedule);
+      },
+    });
+  }
+
+  openConfirmationDialogTimeOut() {
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Start Individual Time Out',
+        message:
+            "Are you sure you want to start individual time out?",
+        action: 'Start',
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if (!result) return;
+        this.isTimeOut = true;
+        this.reminder = 'Time Out Student'
       },
     });
   }
@@ -329,7 +351,7 @@ export class StartAttendanceComponent implements OnInit {
     this.router.navigate(['/schedule']).then();
   }
 
-  sendAttendance(usercode: string){
+  sendBarcodeTimeIn(usercode: string){
     this.loading = true;
     const formData = new FormData();
     formData.append('usercode', usercode);
@@ -382,6 +404,53 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
+  sendBarcodeTimeOut(usercode: string){
+    this.loading = true;
+
+    const formData = new FormData();
+    formData.append('usercode', usercode);
+    formData.append('scheduleId', this.id.toString());
+
+    this.attendanceService.logOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(value.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+          this.isAlreadyLogged = false;
+        }, 3000);
+      },
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLoggedOut.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.isBarcode = true;
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      }
+    });
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (this.scanTimeout) {
@@ -398,7 +467,11 @@ export class StartAttendanceComponent implements OnInit {
       if (!this.hasProfessorVerified) {
         this.verifyProfessorCode(cleanedCode);
       } else {
-        this.sendAttendance(cleanedCode)
+        if(this.isTimeOut){
+          this.sendBarcodeTimeOut(cleanedCode)
+        } else {
+          this.sendBarcodeTimeIn(cleanedCode)
+        }
       }
       this.buffer = '';
     } else if (!event.ctrlKey && !event.altKey && !event.metaKey) {

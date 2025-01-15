@@ -40,10 +40,17 @@
           </div>
           @if (hasProfessorVerified) {
             <div class="flex-grow"></div>
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center flex-col gap-4">
+                @if(!isTimeOut){
+                    <button mat-flat-button
+                            (click)="openConfirmationDialogTimeOut()"
+                            class="stop-attendance">
+                        Start Time Out
+                    </button>
+                }
               <button
                 mat-flat-button
-                (click)="openConfirmationDialog(selectedSchedule)"
+                (click)="openConfirmationDialogStop(selectedSchedule)"
                 class="stop-attendance"
               >
                 Stop Attendance
@@ -70,6 +77,14 @@
               <p class="text-custom-16">Total of Students Logged</p>
             </div>
           </div>
+            @if(isTimeOut){
+                <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+                    <div class="flex flex-col">
+                        <p class="text-custom-40">{{ studentsLoggedOut.length }}</p>
+                        <p class="text-custom-16">Total of Students Timed Out</p>
+                    </div>
+                </div>
+            }
         </div>
         <div
           class="h-[75vh] w-full rounded-xl flex justify-center items center"

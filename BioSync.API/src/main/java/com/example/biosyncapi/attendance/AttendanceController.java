@@ -169,6 +169,36 @@ public class AttendanceController {
     }
   }
 
+  @PostMapping("/student/time-out")
+  public ResponseEntity<?> studentTimeOut(@RequestParam("scheduleId") Long scheduleId,
+      @RequestParam("usercode") String usercode) {
+    try {
+      Optional<User> student = this.userRepository.findByUsercode(usercode);
+
+      if (student.isEmpty()) {
+        return ResponseEntity.badRequest().body("User is null");
+      }
+
+      List<Attendance> hasExistingAttendance =
+          attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+              student.get().getId());
+
+      boolean notLogged = hasExistingAttendance.isEmpty();
+      if (notLogged)
+        return ResponseEntity.status(400).body(student.get().getId());
+
+      if(hasExistingAttendance.get(0).getTimeOut() != null){
+        return ResponseEntity.status(409).body(hasExistingAttendance.get(0).getId());
+      }
+
+      this.attendanceService.studentTimeOut(scheduleId, usercode);
+
+      return ResponseEntity.ok().body(student);
+    }catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
   @PostMapping("/verify/stop")
   public ResponseEntity<?> stopAttendance(@RequestParam("scheduleId") Long scheduleId) {
     Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
