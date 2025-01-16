@@ -8,10 +8,10 @@ export function programAbbreviationValidator(): ValidatorFn {
   };
 }
 
-export function lettersOnlyValidator(): ValidatorFn {
+export function lettersAndSpacesValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
-    const isValid = /^[A-Za-z]+$/.test(value); 
+    const isValid = /^[A-Za-z\s]+$/.test(value);
     return isValid ? null : { onlyLettersAllowed: true }; 
   };
 }
