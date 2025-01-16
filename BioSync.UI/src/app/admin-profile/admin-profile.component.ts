@@ -71,13 +71,14 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
   image!: string;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
+  disableReset = false;
   imageButtonLabel = 'Skip';
   editMode = false;
   hasFingerprint: boolean = false;
@@ -115,7 +116,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -124,7 +125,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
               'image/png',
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -168,6 +169,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.adminForm = this.formBuilder.group({
+      usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -182,6 +184,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   setFormValues() {
     this.adminForm.patchValue({
+      usercode: this.admin.usercode,
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
@@ -250,17 +253,27 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     this.userService.processProfileImage(formData).subscribe();
   }
 
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User) {
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`,
     );
 

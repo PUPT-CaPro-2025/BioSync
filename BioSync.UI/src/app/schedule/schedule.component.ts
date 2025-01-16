@@ -86,6 +86,7 @@ export class ScheduleComponent implements OnInit {
   userId!: number;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  student!: User;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -109,12 +110,21 @@ export class ScheduleComponent implements OnInit {
     } else {
       this.getUserId();
       this.getSectionId(this.userId);
+      this.getStudentDetails();
     }
     this.getAcademicYears();
     this. getAllPrograms();
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
     });
+  }
+
+  getStudentDetails(){
+    this.userService.getUserById(+this.userId).subscribe({
+      next: value => {
+        this.student = value;
+      }
+    })
   }
 
   getAllSchedules() {
@@ -181,7 +191,6 @@ export class ScheduleComponent implements OnInit {
       this.prevSelectedProgram = this.selectedProgram;
     }
   }
-
 
   getSemester() {
     this.semesters = [];
@@ -454,20 +463,28 @@ export class ScheduleComponent implements OnInit {
   }
 
   onFilterChange() {
-    const isProgramChanged = this.prevSelectedProgram !== this.selectedProgram;
 
-    if(isProgramChanged) {
-      this.sections = [];
-      this.selectedYearAndSection = -1;
-      this.getSections();
-      this.prevSelectedProgram = this.selectedProgram;
+    if(this.getRole() != "STUDENT"){
+      const isProgramChanged = this.prevSelectedProgram !== this.selectedProgram;
+
+      if(isProgramChanged) {
+        this.sections = [];
+        this.selectedYearAndSection = -1;
+        this.getSections();
+        this.prevSelectedProgram = this.selectedProgram;
+      }
+
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+      )
     }
-
-    this.schedules = this.scheduleContainer.filter(
-      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester
-        && schedule.section?.program.id === this.selectedProgram
-    )
 
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
@@ -508,13 +525,13 @@ export class ScheduleComponent implements OnInit {
     this.userService.getUserById(userId).subscribe({
       next: (user: User) => {
         if (!user.id) return;
-        this.getStudentSchedules(+user.section?.id!);
+        this.getStudentSchedules(+user.id!);
       }
     })
   }
 
-  getStudentSchedules(sectionId: number) {
-    this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
+  getStudentSchedules(userId: number) {
+    this.scheduleService.getStudentsSchedule(userId).subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;
@@ -522,10 +539,7 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
-        this.setLatestProgram();
         this.getSemester();
-        this.getSections();
-        this.onFilterChange();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
