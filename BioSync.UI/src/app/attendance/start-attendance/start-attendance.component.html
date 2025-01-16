@@ -41,7 +41,7 @@
           </div>
           @if (hasProfessorVerified) {
             <div class="flex-grow"></div>
-            <div class="flex justify-center items-center flex-col gap-4">
+            <div class="flex justify-center items-center flex-col gap-4 p-2 mt-4">
                 @if(!isTimeOut){
                     <button mat-flat-button
                             (click)="openConfirmationDialogTimeOut()"
@@ -52,7 +52,6 @@
               <button
                 mat-flat-button
                 (click)="openConfirmationDialogStop(selectedSchedule)"
-                class="stop-attendance"
               >
                 Stop Attendance
               </button>
