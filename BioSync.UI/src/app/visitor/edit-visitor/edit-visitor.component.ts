@@ -2,13 +2,22 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange } from '@angular/material/select';
 import {VisitorService} from "../../../services/visitor.service";
 import {Visitor} from "../../../model/visitor.model";
+import {VisitPurposeService} from "../../../services/visit.purpose.service";
+import {VisitPurpose} from "../../../model/visit.purpose.model";
+import {Laboratory} from "../../../model/laboratory.model";
+import {LaboratoryService} from "../../../services/laboratory.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import { letterOnlyValidator } from '../../../services/validators/customVisitorValidator';
 
 @Component({
   selector: 'app-edit-visitor',
@@ -20,7 +29,7 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
     ReactiveFormsModule,
     MatButtonModule,
     MatSelectModule],
-  providers: [VisitorService],
+  providers: [VisitorService, VisitPurposeService, LaboratoryService],
   templateUrl: './edit-visitor.component.html',
   styleUrl: './edit-visitor.component.css'
 })
@@ -29,19 +38,22 @@ export class EditVisitorComponent implements OnInit{
   @Output() editedVisitor: EventEmitter<Visitor> = new EventEmitter<Visitor>();
   @Input() visitor!: Visitor;
   visitorForm!: FormGroup;
+  showOtherDetails: boolean = false;
 
-  labs: string[] = [
-    'DOST Laboratory',
-    'Aboitiz Laboratory',
-  ];
+  labs: Laboratory[] = [];
+  visitPurposes: VisitPurpose[] =[];
 
   constructor(
     private formBuilder: FormBuilder,
     private visitorService: VisitorService,
     private dialog: MatDialog,
+    private visitPurposeService: VisitPurposeService,
+    private labService: LaboratoryService
   ) {}
 
   ngOnInit() {
+    this.getVisitPurposes();
+    this.getLaboratories();
     this.initEditForm();
     this.setFormValues();
   }
@@ -49,12 +61,48 @@ export class EditVisitorComponent implements OnInit{
   initEditForm(){
     this.visitorForm = this.formBuilder.group({
       id: ['', [Validators.required]],
-      name: ['', [Validators.required]],
-      purposeOfVisit: ['', Validators.required],
-      otherDetails: ['', [Validators.required]],
-      destination: ['', Validators.required],
+      name: ['', [Validators.required, letterOnlyValidator()]],
+      purposeOfVisit: ['', [Validators.required]],
+      otherDetails: ['',[Validators.maxLength(100), letterOnlyValidator()]],
+      destination: ['', [Validators.required]],
       visitDate: ['', [Validators.required]],
     });
+  }
+
+  onVisitPurposeChange(event: MatSelectChange): void {
+      this.showOtherDetails = event.value === 'Others';
+  }
+
+  getVisitPurposes(){
+    this.visitPurposeService.getVisitPurposes().subscribe({
+      next: value => {
+        this.visitPurposes = value;
+      }
+    })
+  }
+
+  private getLaboratories() {
+    this.labService.getLaboratories().subscribe({
+      next: value => {
+        this.labs = value;
+      }
+    })
+  }
+
+  get nameControl(): AbstractControl {
+    return this.visitorForm.get('name')!;
+  }
+
+  get purposeOfVisitControl(): AbstractControl {
+    return this.visitorForm.get('purposeOfVisit')!;
+  }
+
+  get otherDetailsControl(): AbstractControl {
+    return this.visitorForm.get('otherDetails')!;
+  }
+
+  get destinationControl(): AbstractControl {
+    return this.visitorForm.get('destination')!;
   }
 
   setFormValues(){
@@ -66,6 +114,10 @@ export class EditVisitorComponent implements OnInit{
       destination: this.visitor.destination,
       visitDate: this.visitor.visitDate,
     })
+
+    if(this.visitor.purposeOfVisit === 'Others') {
+      this.showOtherDetails = true;
+    }
   }
 
   returnToVisitorPage(): void {
