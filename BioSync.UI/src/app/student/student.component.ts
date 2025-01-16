@@ -187,46 +187,36 @@ export class StudentComponent implements OnInit{
     // Handle page change logic here
   }
 
-  onProgramChange() {
-    if(this.selectedProgram == -1){
-      this.queriedStudents = this.students;
-      this.sections = [];
-    } else {
+  updateQueriedStudents() {
+    this.queriedStudents = this.students;
+
+    // Filter by selected program
+    if (this.selectedProgram !== -1) {
       this.getSections(this.selectedProgram);
-      this.queriedStudents = this.studentContainer.filter(
+      this.queriedStudents = this.queriedStudents.filter(
           student => student.section?.program.id === this.selectedProgram
-      )
-    }
-
-    this.selectedYearAndSection = -1;
-    this.totalItems = this.queriedStudents.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-
-  onSectionChange() {
-    if(this.selectedYearAndSection == -1){
-      this.queriedStudents = this.students;
-    } else {
-      this.queriedStudents = this.studentContainer.filter(
-          student => student.section?.id === this.selectedYearAndSection
-      )
-    }
-    this.totalItems = this.queriedStudents.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-  OnBiometricsChange(){
-    if(this.selectedBiometrics == -1){
-      this.queriedStudents = this.students;
-    } else {
-      this.queriedStudents = this.studentContainer.filter(
-        student => student.biometrics === (this.selectedBiometrics > 0)
       );
     }
+
+    // Filter by selected section
+    if (this.selectedYearAndSection !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
+          student => student.section?.id === this.selectedYearAndSection
+      );
+    }
+
+    // Filter by biometrics status
+    if (this.selectedBiometrics !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
+          student => student.biometrics === (this.selectedBiometrics > 0)
+      );
+    }
+
+    // Update pagination data
     this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
+
 
   onItemsPerPageChange(): void {
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
