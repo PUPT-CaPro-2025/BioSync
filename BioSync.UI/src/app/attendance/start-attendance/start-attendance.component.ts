@@ -1,4 +1,11 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -41,6 +48,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   styleUrl: './start-attendance.component.css',
 })
 export class StartAttendanceComponent implements OnInit {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
@@ -56,6 +64,7 @@ export class StartAttendanceComponent implements OnInit {
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
+  studentsLoggedOut: User [] = [];
   isError: boolean = false;
   isSuccess: boolean = false;
   isAlreadyLogged: boolean = false;
@@ -66,6 +75,7 @@ export class StartAttendanceComponent implements OnInit {
   private readonly debounceTime = 50;
   scannedCode: string = '';
   isBarcode = false;
+  isTimeOut = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -76,6 +86,7 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -99,7 +110,11 @@ export class StartAttendanceComponent implements OnInit {
           if (!this.hasProfessorVerified) {
             this.submitProfessor();
           } else {
-            this.submitStudent();
+            if(this.isTimeOut){
+              this.submitStudentTimeOut()
+            } else {
+              this.submitStudentTimeIn();
+            }
           }
         }
       },
@@ -197,14 +212,9 @@ export class StartAttendanceComponent implements OnInit {
     this.isError = false;
   }
 
-  submitStudent() {
+  submitStudentTimeIn() {
     this.setLoadingStudent();
-
-    const formData = new FormData();
-
-    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
-    formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
+    const formData = this.setFormData();
 
     const actualTimeStart = parseInt(
       <string>this.cookieService.getCookie('actualTimeStart'),
@@ -219,6 +229,8 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
@@ -255,6 +267,60 @@ export class StartAttendanceComponent implements OnInit {
 
   }
 
+  submitStudentTimeOut() {
+    this.setLoadingStudent();
+    const formData = this.setFormData();
+
+    this.fingerprintService.verifyStudentTimeOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value.student;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(this.loggedStudent.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+        }, 3000);
+      },
+      error: (error) => {
+        if (error.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == error.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      },
+
+    });
+
+  }
+
+  private setFormData() {
+    const formData = new FormData();
+
+    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
+    formData.append('scheduleId', `${this.selectedSchedule.id}`);
+    formData.append('fingerprint', this.fingerprintImageSrc,
+        'fingerprint.png');
+    return formData;
+  }
+
   private setLoadingStudent(){
     this.loading = true;
     this.loggedStudent = null;
@@ -274,7 +340,7 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  openConfirmationDialog(schedule: Schedule) {
+  openConfirmationDialogStop(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -289,6 +355,26 @@ export class StartAttendanceComponent implements OnInit {
       next: (result) => {
         if (!result) return;
         this.stopAttendance(schedule);
+      },
+    });
+  }
+
+  openConfirmationDialogTimeOut() {
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Start Individual Time Out',
+        message:
+            "Are you sure you want to start individual time out?",
+        action: 'Start',
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if (!result) return;
+        this.isTimeOut = true;
+        this.reminder = 'Time Out Student'
       },
     });
   }
@@ -323,13 +409,19 @@ export class StartAttendanceComponent implements OnInit {
         this.studentsLogged = value;
       },
     });
+
+    this.attendanceService.getStudentsLoggedOut(scheduleId).subscribe({
+      next: (value) => {
+        this.studentsLoggedOut = value;
+      },
+    });
   }
 
   handleBackEvent(){
     this.router.navigate(['/schedule']).then();
   }
 
-  sendAttendance(usercode: string){
+  sendBarcodeTimeIn(usercode: string){
     this.loading = true;
     const formData = new FormData();
     formData.append('usercode', usercode);
@@ -346,6 +438,8 @@ export class StartAttendanceComponent implements OnInit {
       next: (value) => {
         this.loggedStudent = value;
         this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.id);
@@ -382,6 +476,53 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
+  sendBarcodeTimeOut(usercode: string){
+    this.loading = true;
+
+    const formData = new FormData();
+    formData.append('usercode', usercode);
+    formData.append('scheduleId', this.id.toString());
+
+    this.attendanceService.logOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(value.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+          this.isAlreadyLogged = false;
+        }, 3000);
+      },
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.isBarcode = true;
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      }
+    });
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     if (this.scanTimeout) {
@@ -398,7 +539,11 @@ export class StartAttendanceComponent implements OnInit {
       if (!this.hasProfessorVerified) {
         this.verifyProfessorCode(cleanedCode);
       } else {
-        this.sendAttendance(cleanedCode)
+        if(this.isTimeOut){
+          this.sendBarcodeTimeOut(cleanedCode)
+        } else {
+          this.sendBarcodeTimeIn(cleanedCode)
+        }
       }
       this.buffer = '';
     } else if (!event.ctrlKey && !event.altKey && !event.metaKey) {
@@ -442,5 +587,17 @@ export class StartAttendanceComponent implements OnInit {
         this.isError = false;
       }, 3000);
     }
+  }
+
+  isStudentLoggedOut(student: User): boolean {
+    return this.studentsLoggedOut.some(loggedOutStudent => loggedOutStudent.id === student.id) && this.isTimeOut;
+  }
+
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.scrollContainer) {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      }
+    }, 0);
   }
 }

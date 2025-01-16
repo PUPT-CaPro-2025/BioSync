@@ -26,13 +26,14 @@
               </p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 mt-12">
+          <div class="flex flex-col gap-2 mt-4">
             <p class="text-brightRed text-custom-24">Attendance List</p>
             <hr class="border-t border-1 border-brightRed" />
           </div>
-          <div class="mt-5 h-[55vh] overflow-y-auto row-container">
+          <div #scrollContainer class="mt-5 h-[55vh] overflow-y-auto row-container">
             @for (student of studentsLogged; track student) {
-              <p class="text-darkGray text-custom-16">
+              <p class="text-darkGray text-custom-16"
+                 [ngClass]="{'crossed-out': isStudentLoggedOut(student)}">
                 {{ studentsLogged.indexOf(student) + 1 }}.
                 {{ student.firstName }} {{ student.lastName }}
               </p>
@@ -40,10 +41,17 @@
           </div>
           @if (hasProfessorVerified) {
             <div class="flex-grow"></div>
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center flex-col gap-4 p-2 mt-4">
+                @if(!isTimeOut){
+                    <button mat-flat-button
+                            (click)="openConfirmationDialogTimeOut()"
+                            class="start-timeout-attendance">
+                        Start Time Out
+                    </button>
+                }
               <button
                 mat-flat-button
-                (click)="openConfirmationDialog(selectedSchedule)"
+                (click)="openConfirmationDialogStop(selectedSchedule)"
                 class="stop-attendance"
               >
                 Stop Attendance
@@ -70,6 +78,14 @@
               <p class="text-custom-16">Total of Students Logged</p>
             </div>
           </div>
+            @if(isTimeOut){
+                <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+                    <div class="flex flex-col">
+                        <p class="text-custom-40">{{ studentsLoggedOut.length }}</p>
+                        <p class="text-custom-16">Total of Students Timed Out</p>
+                    </div>
+                </div>
+            }
         </div>
         <div
           class="h-[75vh] w-full rounded-xl flex justify-center items center"

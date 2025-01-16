@@ -43,7 +43,7 @@
         <div class="filter-container">
             <mat-toolbar class="filter-content">
               <div class="flex w-full gap-2">
-                <div class="select-top-container w-full"> 
+                <div class="select-top-container w-full">
                   <p>Program</p>
                   <mat-select
                       [(value)]="selectedProgram"
@@ -59,8 +59,8 @@
                       </mat-option>
                     }
                   </mat-select>
-                </div>    
-                <div class="select-top-container w-full"> 
+                </div>
+                <div class="select-top-container w-full">
                   <p>Year and Section</p>
                   <mat-select
                       [(value)]="selectedYearAndSection"
@@ -76,12 +76,30 @@
                       </mat-option>
                     }
                   </mat-select>
-                </div>                                     
+                </div>
+                <div class="select-top-container w-full">
+                  <p>Biometrics</p>
+                  <mat-select
+                    [(value)]="selectedBiometrics"
+                    id="biometrics"
+                    class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                    (selectionChange)="OnBiometricsChange()">
+                    <mat-option [value]="-1">
+                      All
+                    </mat-option>
+                    <mat-option [value]="1">
+                      Registered
+                    </mat-option>
+                    <mat-option [value]="0">
+                      Not Registered
+                    </mat-option>
+                  </mat-select>
+                </div>
               </div>
                 <div class="search-container">
                     <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH" 
-                        [(ngModel)]="searchQuery" 
+                    <input type="text" placeholder="SEARCH"
+                        [(ngModel)]="searchQuery"
                         (input)="searchStudentList()">
                 </div>
             </mat-toolbar>
@@ -93,8 +111,8 @@
                     <div class="cell">Student Number</div>
                     <div class="cell">Student Name</div>
                     <div class="cell">Program</div>
-                    <div class="cell">Year</div>
-                    <div class="cell">Section</div>
+                    <div class="cell">Year & Section</div>
+                    <div class="cell">Biometrics</div>
                     <div class="cell">Action</div>
                 </div>
                 <div class="row-container text-custom-12">
@@ -103,21 +121,21 @@
                             <div class="cell">{{ student.usercode }}</div>
                             <div class="cell">{{ student.firstName }} {{ student.lastName }}</div>
                             <div class="cell">{{ student.program?.programAbbreviation }}</div>
-                            <div class="cell">{{ student.section?.year }}</div>
-                            <div class="cell">{{ student.section?.section }}</div>
+                            <div class="cell">{{ student.section?.year }} - {{ student.section?.section }}</div>
+                            <div class="cell">{{ student.biometrics ?  "Registered" : "Not Registered"}}</div>
                             <div class="cell">
-                                <button (click)="toggleDropdownAction(student.id)" 
+                                <button (click)="toggleDropdownAction(student.id)"
                                     class="dropdown-toggle">
                                     <mat-icon>more_horiz</mat-icon>
                                 </button>
                                 @if(activeDropdownId === student.id) {
                                     <div class="action-container" [ngClass]="{
                                         'bottom-action': filteredStudents.length >= 4 && (filteredStudents[filteredStudents.length - 1] === student || filteredStudents[filteredStudents.length - 2] === student)}">
-                                        <button class="action-button" 
+                                        <button class="action-button"
                                             (click)="toggleEditStudent(student)">
                                             Edit
                                         </button>
-                                        <button class="action-button" 
+                                        <button class="action-button"
                                             (click)="openConfirmationDialog(student)">
                                             Delete
                                         </button>
