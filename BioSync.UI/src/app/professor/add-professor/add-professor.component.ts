@@ -68,10 +68,10 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint';
   isRightIndex = false;
   imageButtonLabel = 'Skip';
   disableReset = false;
@@ -104,14 +104,14 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       }
@@ -206,8 +206,8 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 
