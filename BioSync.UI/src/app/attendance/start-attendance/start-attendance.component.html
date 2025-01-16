@@ -32,7 +32,8 @@
           </div>
           <div class="mt-5 h-[55vh] overflow-y-auto row-container">
             @for (student of studentsLogged; track student) {
-              <p class="text-darkGray text-custom-16">
+              <p class="text-darkGray text-custom-16"
+                 [ngClass]="{'crossed-out': isStudentLoggedOut(student)}">
                 {{ studentsLogged.indexOf(student) + 1 }}.
                 {{ student.firstName }} {{ student.lastName }}
               </p>

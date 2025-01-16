@@ -174,3 +174,7 @@
 .row-container::-webkit-scrollbar-thumb:hover {
     background-color: #b4342d;
 }
+
+.crossed-out {
+  text-decoration: line-through;
+}

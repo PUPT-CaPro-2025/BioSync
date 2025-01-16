@@ -575,4 +575,8 @@ export class StartAttendanceComponent implements OnInit {
       }, 3000);
     }
   }
+
+  isStudentLoggedOut(student: User): boolean {
+    return this.studentsLoggedOut.some(loggedOutStudent => loggedOutStudent.id === student.id) && this.isTimeOut;
+  }
 }
