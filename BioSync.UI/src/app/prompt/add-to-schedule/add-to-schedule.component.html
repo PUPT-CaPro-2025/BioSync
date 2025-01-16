@@ -9,7 +9,8 @@
                 matInput
                 [formControl]="myControl"
                 [matAutocomplete]="auto">
-            <mat-autocomplete requireSelection #auto="matAutocomplete"
+            <mat-autocomplete #auto="matAutocomplete"
+                              [displayWith]="displayFn"
                               (optionSelected)="onOptionSelected($event)">
                 @for (option of filteredOptions | async; track option) {
                     <mat-option [value]="option.usercode">
