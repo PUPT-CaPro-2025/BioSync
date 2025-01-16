@@ -43,20 +43,16 @@
                     <div class="subject-table">
                         <div class="attributes">
                             <div class="cell">Faculty Code</div>
-                            <div class="cell">First Name</div>
-                            <div class="cell">Last Name</div>
-                            <div class="cell">Middle Name</div>
-                            <div class="cell">Suffix</div>
+                            <div class="cell">Faculty Name</div>
+                            <div class="cell">Biometrics</div>
                             <div class="cell">Action</div>
                         </div>
                         <div class="row-container">
                             @for (professor of filteredProfessors; track professor) {
                                 <div class="row">
                                     <div class="cell">{{professor.usercode}}</div>
-                                    <div class="cell">{{professor.firstName}}</div>
-                                    <div class="cell">{{professor.lastName}}</div>
-                                    <div class="cell">{{professor.middleName}}</div>
-                                    <div class="cell">{{professor.suffix}}</div>
+                                    <div class="cell">{{professor.firstName}} {{professor.lastName}}</div>
+                                    <div class="cell">{{ professor.biometrics ? "Registered" : "Not Registered" }}</div>
                                     <div class="cell">
                                         <button (click)="toggleDropdownAction(professor.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                         @if(activeDropdownId === professor.id) {

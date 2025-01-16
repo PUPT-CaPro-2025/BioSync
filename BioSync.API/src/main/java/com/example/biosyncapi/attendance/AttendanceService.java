@@ -10,6 +10,8 @@ public interface AttendanceService {
 
   List<User> getStudentsLoggedByScheduleId(Long scheduleId);
 
+  List<User> getStudentsLoggedOutByScheduleId(Long scheduleId);
+
   Long getAttendanceCountByStudentId(Long studentId);
 
   Long getAbsentCountByStudentId(Long studentId);
@@ -22,6 +24,8 @@ public interface AttendanceService {
 
   User studentTimeIn(Long scheduleId, String usercode,
       String attendanceStatus);
+
+  User studentTimeOut(Long scheduleId, String usercode);
 
   void setTimeOut(Schedule schedule);
 }

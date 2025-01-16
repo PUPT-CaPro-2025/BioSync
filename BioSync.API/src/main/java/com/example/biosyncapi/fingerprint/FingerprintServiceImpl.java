@@ -62,6 +62,9 @@ public class FingerprintServiceImpl implements FingerprintService {
 
                 fingerprintRepository.save(fingerprint);
 
+                user.setBiometrics(true);
+                userRepository.save(user);
+
             }catch (IOException e) {
                 throw new RuntimeException("Failed to store fingerprint file", e);
             }
@@ -88,6 +91,9 @@ public class FingerprintServiceImpl implements FingerprintService {
                 fingerprint.setUser(user);
 
                 fingerprintRepository.save(fingerprint);
+
+                user.setBiometrics(true);
+                userRepository.save(user);
             }catch (Exception e) {
                 throw new RuntimeException("Failed to store fingerprint file", e);
             }
