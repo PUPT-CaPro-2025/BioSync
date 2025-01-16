@@ -81,7 +81,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   disableReset = false;
   imageButtonLabel = 'Skip';
   editMode = false;
-  hasFingerprint: boolean = false;
   userId!: number;
   photoButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
@@ -150,11 +149,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         });
         console.log(this.admin);
         this.setFormValues();
-        this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
-          next: (hasFingerprint: boolean) => {
-            this.hasFingerprint = hasFingerprint;
-          },
-        });
       },
     });
   }
