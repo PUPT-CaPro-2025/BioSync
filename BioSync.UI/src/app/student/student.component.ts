@@ -56,6 +56,8 @@ export class StudentComponent implements OnInit{
   sections: Section[] = [];
   selectedYearAndSection = -1;
 
+  selectedBiometrics = -1;
+
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -209,6 +211,18 @@ export class StudentComponent implements OnInit{
       this.queriedStudents = this.studentContainer.filter(
           student => student.section?.id === this.selectedYearAndSection
       )
+    }
+    this.totalItems = this.queriedStudents.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  OnBiometricsChange(){
+    if(this.selectedBiometrics == -1){
+      this.queriedStudents = this.students;
+    } else {
+      this.queriedStudents = this.studentContainer.filter(
+        student => student.biometrics === (this.selectedBiometrics > 0)
+      );
     }
     this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
