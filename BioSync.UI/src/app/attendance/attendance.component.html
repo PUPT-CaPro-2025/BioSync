@@ -91,7 +91,14 @@
                 <div class="flex flex-col">
                   <div class="flex gap-1 text-xs">
                   <span class="font-semibold">
-                      [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
+                      @if (schedule.recurrenceId) {
+                          [
+                            {{ getRecurrenceDays(schedule.recurrenceId) }}
+                            / {{ schedule.recurrence }} ]
+                      } @else {
+                          [ {{ getDayOfWeek(schedule.scheduleDate) }} /
+                                    {{ schedule.scheduleDate }} ]
+                      }
                   </span>
                   </div>
                   <div class="italic">

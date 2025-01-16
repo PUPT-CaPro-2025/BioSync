@@ -59,7 +59,7 @@ export class AttendanceComponent implements OnInit{
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
-
+  groupedSchedules: { [key: string]: Schedule[] } = {};
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -100,6 +100,8 @@ export class AttendanceComponent implements OnInit{
       next: (schedules) => {
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.getAllAttendance();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
@@ -357,4 +359,46 @@ export class AttendanceComponent implements OnInit{
     })
   }
 
+
+  filteredRepeatedSchedules(): void {
+    const filteredSchedules: Schedule[] = [];
+    const recurrenceIdStorage: string[] = [];
+    this.schedules.forEach(schedule => {
+      if (schedule.recurrenceId != null) {
+        if (!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+          recurrenceIdStorage.push(schedule.recurrenceId);
+          filteredSchedules.push(schedule);
+        }
+      } else {
+        filteredSchedules.push(schedule);
+      }
+    })
+
+    this.schedules = filteredSchedules;
+  }
+
+  groupSchedulesByRecurrenceId() {
+    this.groupedSchedules = this.schedules.reduce((acc, schedule) => {
+      if (schedule.recurrenceId) {
+        if (!acc[schedule.recurrenceId]) {
+          acc[schedule.recurrenceId] = [];
+        }
+        acc[schedule.recurrenceId].push(schedule);
+      }
+      return acc;
+    }, {} as { [key: string]: Schedule[] });
+  }
+
+  getRecurrenceDays(recId: string): string[] {
+    const schedules = this.groupedSchedules[recId];
+    if (schedules) {
+      const daysSet = new Set<string>();
+      schedules.forEach((schedule) => {
+        schedule.recurrenceDays!.forEach(
+            (day: String) => daysSet.add(day.toString()));
+      });
+      return Array.from(daysSet);
+    }
+    return [];
+  }
 }
