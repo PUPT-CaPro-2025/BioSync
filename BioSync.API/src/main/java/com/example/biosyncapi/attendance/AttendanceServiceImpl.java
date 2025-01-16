@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +51,20 @@ public class AttendanceServiceImpl implements AttendanceService {
   @Override
   public List<User> getStudentsLoggedByScheduleId(Long scheduleId) {
     return attendanceRepository.getStudentsByScheduleId(scheduleId);
+  }
+
+  @Override
+  public List<User> getStudentsLoggedOutByScheduleId(Long scheduleId) {
+    List<Attendance> attendanceList = attendanceRepository.findByScheduleId(scheduleId);
+    List<User> studentsLoggedOut = new ArrayList<>();
+
+    for (Attendance attendance : attendanceList) {
+      if (attendance.getTimeOut() != null) {
+        studentsLoggedOut.add(attendance.getUser());
+      }
+    }
+
+    return studentsLoggedOut;
   }
 
   @Override

@@ -92,6 +92,15 @@ public class AttendanceController {
     return ResponseEntity.ok(students);
   }
 
+  @GetMapping("students/{id}/out")
+  public ResponseEntity<List<User>> getTimedOutByStudentId(@PathVariable Long id) {
+    List<User> students = attendanceService.getStudentsLoggedOutByScheduleId(id);
+
+    if (students.isEmpty()) return ResponseEntity.notFound().build();
+
+    return ResponseEntity.ok(students);
+  }
+
   @PostMapping("/verify/start")
   public ResponseEntity<?> verifyProfessorFingerprintForAttendance(
       @RequestParam("userId") Long userId,

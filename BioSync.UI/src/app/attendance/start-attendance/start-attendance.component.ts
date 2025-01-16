@@ -398,6 +398,12 @@ export class StartAttendanceComponent implements OnInit {
         this.studentsLogged = value;
       },
     });
+
+    this.attendanceService.getStudentsLoggedOut(scheduleId).subscribe({
+      next: (value) => {
+        this.studentsLoggedOut = value;
+      },
+    });
   }
 
   handleBackEvent(){

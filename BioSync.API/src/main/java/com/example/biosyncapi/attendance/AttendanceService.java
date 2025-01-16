@@ -10,6 +10,8 @@ public interface AttendanceService {
 
   List<User> getStudentsLoggedByScheduleId(Long scheduleId);
 
+  List<User> getStudentsLoggedOutByScheduleId(Long scheduleId);
+
   Long getAttendanceCountByStudentId(Long studentId);
 
   Long getAbsentCountByStudentId(Long studentId);
