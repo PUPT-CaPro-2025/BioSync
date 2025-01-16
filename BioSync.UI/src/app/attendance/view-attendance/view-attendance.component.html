@@ -89,13 +89,24 @@
       <div class="cell">Status</div>
     </div>
     <div class="row-container text-custom-12">
-      @for (attendance of class; track attendance) {
-        <div class="row">
-          <div class="cell">{{ attendance.user.usercode }}</div>
-          <div class="cell">{{ attendance.user.lastName }}</div>
-          <div class="cell">{{ attendance.user.firstName }}</div>
-          <div class="cell">{{ attendance.status }}</div>
-        </div>
+      @if(getRole() === "STUDENT") {
+        @if(student){
+          <div class="row">
+            <div class="cell">{{ student.user.usercode }}</div>
+            <div class="cell">{{ student.user.lastName }}</div>
+            <div class="cell">{{ student.user.firstName }}</div>
+            <div class="cell">{{ student.status }}</div>
+          </div>
+        }
+      } @else {
+          @for (attendance of class; track attendance) {
+            <div class="row">
+              <div class="cell">{{ attendance.user.usercode }}</div>
+              <div class="cell">{{ attendance.user.lastName }}</div>
+              <div class="cell">{{ attendance.user.firstName }}</div>
+              <div class="cell">{{ attendance.status }}</div>
+            </div>
+          }
       }
     </div>
   </div>
