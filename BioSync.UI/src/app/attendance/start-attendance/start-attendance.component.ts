@@ -52,7 +52,7 @@ export class StartAttendanceComponent implements OnInit {
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
-  hasProfessorVerified = true;
+  hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
   reminder = 'Scanning In-Charge Fingerprint...';
