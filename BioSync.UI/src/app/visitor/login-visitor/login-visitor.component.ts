@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  FormBuilder, FormGroup, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from "@angular/forms";
 import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
@@ -13,6 +16,7 @@ import {VisitPurposeService} from "../../../services/visit.purpose.service";
 import {VisitPurpose} from "../../../model/visit.purpose.model";
 import {Laboratory} from "../../../model/laboratory.model";
 import {LaboratoryService} from "../../../services/laboratory.service";
+import { letterOnlyValidator } from '../../../services/validators/customVisitorValidator';
 
 @Component({
   selector: 'app-login-visitor',
@@ -55,9 +59,9 @@ export class LoginVisitorComponent implements OnInit {
 
   initForm(): void{
     this.visitorLogForm = this.formBuilder.group({
-        name: ['', [Validators.required]],
+        name: ['', [Validators.required, letterOnlyValidator()]],
         purposeOfVisit: ['', [Validators.required]],
-        otherDetails: [''],
+        otherDetails: ['',[Validators.maxLength(100), letterOnlyValidator()]],
         destination: ['', [Validators.required]],
       }
     )
@@ -81,6 +85,21 @@ export class LoginVisitorComponent implements OnInit {
     })
   }
 
+  get nameControl(): AbstractControl {
+    return this.visitorLogForm.get('name')!;
+  }
+
+  get purposeOfVisitControl(): AbstractControl {
+    return this.visitorLogForm.get('purposeOfVisit')!;
+  }
+
+  get otherDetailsControl(): AbstractControl {
+    return this.visitorLogForm.get('otherDetails')!;
+  }
+
+  get destinationControl(): AbstractControl {
+    return this.visitorLogForm.get('destination')!;
+  }
 
   submit(){
     if(!this.visitorLogForm.valid) return;
