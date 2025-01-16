@@ -146,8 +146,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     List<Attendance> attendance =
         this.attendanceRepository.findByScheduleIdAndUserId(scheduleOpt.get().getId(), studentOpt.get().getId());
 
-    System.out.println(attendance.size());
-
     Attendance attendance1 = attendance.get(0);
 
     attendance1.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));

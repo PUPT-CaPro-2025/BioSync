@@ -237,7 +237,7 @@ public class AttendanceController {
         return ResponseEntity.status(400).body(student.get().getId());
 
       if(hasExistingAttendance.get(0).getTimeOut() != null){
-        return ResponseEntity.status(409).body(hasExistingAttendance.get(0).getId());
+        return ResponseEntity.status(409).body(student.get().getId());
       }
 
       User user = this.attendanceService.studentTimeOut(scheduleId, usercode);
