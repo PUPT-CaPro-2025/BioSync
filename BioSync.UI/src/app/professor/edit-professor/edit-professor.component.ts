@@ -79,13 +79,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
+  disableReset = false;
   imageButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
@@ -118,7 +119,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -127,7 +128,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
               'image/png',
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -253,17 +254,27 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     });
   }
 
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User) {
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`,
     );
 

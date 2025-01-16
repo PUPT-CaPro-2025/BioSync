@@ -63,6 +63,13 @@ export class ScheduleService {
     })
   }
 
+  getStudentsSchedule(studentId: number){
+    return this.http.get<Schedule[]>(`${this.url}/role/student/${studentId}`, {
+      headers: this.headers,
+      withCredentials: true
+    })
+  }
+
   getSchedulesByRecurrenceId(recurrenceId: string | null) {
     return this.http.get<Schedule[]>(`${this.url}/recurrence/${recurrenceId}`, {
       headers: this.headers,

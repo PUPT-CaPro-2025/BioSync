@@ -7,6 +7,8 @@ import { AttendanceService } from '../../../services/attendance.service';
 import { Attendance } from '../../../model/attendance.model';
 import jsPDF from 'jspdf';
 import { MatIcon } from '@angular/material/icon';
+import { CryptoService } from '../../../services/crypto.service';
+import {CookieService} from '../../../services/cookie.service';
 
 @Component({
   selector: 'app-view-attendance',
@@ -22,15 +24,20 @@ import { MatIcon } from '@angular/material/icon';
 export class ViewAttendanceComponent implements OnInit {
   schedule!: Schedule;
   class: Attendance[] = [];
+  student!: Attendance;
+  userId!: number;
   headerImage!: string;
   reportDropdown = false;
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
     private attendanceService: AttendanceService,
+    private cryptoService: CryptoService,
+    private cookieService: CookieService 
   ) {}
 
   ngOnInit() {
+    this.getUserId();
     this.activatedRoute.paramMap.subscribe((params) => {
       const id = params.get('id');
       this.getScheduleDetails(+id!);
@@ -38,10 +45,27 @@ export class ViewAttendanceComponent implements OnInit {
     });
   }
 
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+      this.cookieService.getCookie('user_id')!,
+    );
+    this.userId = +this.cryptoService.decrypt(encryptedUserId);
+  }
+
   getAttendance(scheduleId: number) {
     this.attendanceService.getAttendanceByScheduleId(scheduleId).subscribe({
       next: (value) => {
         this.class = value;
+
+        if(this.getRole() === "STUDENT"){
+          const studentAttendance = this.class.find(
+            (attendance) => attendance.user.id === this.userId
+          );
+
+          if(studentAttendance){
+            this.student = studentAttendance;
+          }
+        }
       },
     });
   }
@@ -285,5 +309,10 @@ export class ViewAttendanceComponent implements OnInit {
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  getRole(): string {
+    const encryptedRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
+    return this.cryptoService.decrypt(encryptedRole);
   }
 }
