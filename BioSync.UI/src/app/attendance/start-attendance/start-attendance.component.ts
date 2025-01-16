@@ -484,7 +484,7 @@ export class StartAttendanceComponent implements OnInit {
       error: (err) => {
         if (err.status == 409) {
           this.reminder = 'Already timed out';
-          this.loggedStudent = this.studentsLoggedOut.find(
+          this.loggedStudent = this.studentsLogged.find(
               (student) => student.id == err.error,
           )!;
           this.isAlreadyLogged = true;

@@ -157,7 +157,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             .findFirst()
             .orElse(null);
 
-        if (existingAttendance != null) {
+        if (existingAttendance != null && existingAttendance.getTimeOut() == null) {
           existingAttendance.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));
           attendanceRepository.save(existingAttendance);
         }
