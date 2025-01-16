@@ -1,6 +1,7 @@
 package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
+import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentRepository;
 import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudentService;
 import com.example.biosyncapi.user.UserService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,15 +23,18 @@ public class ScheduleController {
   private final ScheduleService scheduleService;
   private final ScheduleStudentService scheduleStudentService;
   private final UserService userService;
+  private final ScheduleStudentRepository scheduleStudentRepository;
 
   public ScheduleController(
       ScheduleService scheduleService,
       ScheduleStudentService scheduleStudentService,
-      UserService userService)
+      UserService userService,
+      ScheduleStudentRepository scheduleStudentRepository)
   {
     this.scheduleService = scheduleService;
     this.scheduleStudentService = scheduleStudentService;
     this.userService = userService;
+    this.scheduleStudentRepository = scheduleStudentRepository;
   }
 
   @GetMapping
@@ -84,6 +89,22 @@ public class ScheduleController {
 
     if (schedules.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    return new ResponseEntity<>(schedules, HttpStatus.OK);
+  }
+
+  @GetMapping("/role/student/{id}")
+  public ResponseEntity<List<Schedule>> getStudentSchedule(@PathVariable Long id) {
+    List<ScheduleStudent> ssList = scheduleStudentRepository.findByStudentId(id);
+    List<Schedule> schedules = new ArrayList<>();
+
+    ssList.forEach(scheduleStudent -> {
+      schedules.add(scheduleStudent.getSchedule());
+    });
+
+    if(schedules.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     return new ResponseEntity<>(schedules, HttpStatus.OK);

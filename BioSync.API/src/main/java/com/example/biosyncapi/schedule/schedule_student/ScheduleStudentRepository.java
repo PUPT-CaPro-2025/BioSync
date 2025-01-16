@@ -15,6 +15,8 @@ public interface ScheduleStudentRepository
 
   List<ScheduleStudent> findByScheduleId(Long scheduleId);
 
+  List<ScheduleStudent> findByStudentId(Long id);
+
   ScheduleStudent findByStudentIdAndScheduleId(
       Long student_id,
       Long schedule_id);
