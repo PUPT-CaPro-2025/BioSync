@@ -46,6 +46,22 @@
             <ng-template matStepLabel>Setup Information</ng-template>
             <div class="group flex flex-col gap-1">
               <label
+                for="usercode"
+                class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
+              >
+                Admin Usercode
+              </label>
+              <input
+                matInput
+                id="usercode"
+                name="usercode"
+                placeholder="Enter administrator's Usercode"
+                class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                formControlName="usercode"
+              />
+            </div>
+            <div class="group flex flex-col gap-1">
+              <label
                 for="firstName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
               >
