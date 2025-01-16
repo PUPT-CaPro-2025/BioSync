@@ -93,8 +93,8 @@
                     <div class="cell">Student Number</div>
                     <div class="cell">Student Name</div>
                     <div class="cell">Program</div>
-                    <div class="cell">Year</div>
-                    <div class="cell">Section</div>
+                    <div class="cell">Year & Section</div>
+                    <div class="cell">Biometrics</div>
                     <div class="cell">Action</div>
                 </div>
                 <div class="row-container text-custom-12">
@@ -103,8 +103,8 @@
                             <div class="cell">{{ student.usercode }}</div>
                             <div class="cell">{{ student.firstName }} {{ student.lastName }}</div>
                             <div class="cell">{{ student.program?.programAbbreviation }}</div>
-                            <div class="cell">{{ student.section?.year }}</div>
-                            <div class="cell">{{ student.section?.section }}</div>
+                            <div class="cell">{{ student.section?.year }} - {{ student.section?.section }}</div>
+                            <div class="cell">{{ student.biometrics ?  "Registered" : "Not Registered"}}</div>
                             <div class="cell">
                                 <button (click)="toggleDropdownAction(student.id)" 
                                     class="dropdown-toggle">

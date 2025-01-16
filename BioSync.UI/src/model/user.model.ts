@@ -13,4 +13,5 @@ export interface User {
   program?: Program;
   section?: Section;
   email: string;
+  biometrics?: boolean
 }
