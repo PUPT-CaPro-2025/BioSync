@@ -206,9 +206,13 @@ public class AttendanceController {
       if (hasLogged)
         return ResponseEntity.status(409).body(student.get().getId());
 
-      this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
+      User user = this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
 
-      return ResponseEntity.ok().body(student);
+      if(user == null){
+        return ResponseEntity.badRequest().body("User is not found in schedule");
+      }
+
+      return ResponseEntity.ok().body(user);
     }catch (Exception e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
@@ -236,9 +240,13 @@ public class AttendanceController {
         return ResponseEntity.status(409).body(hasExistingAttendance.get(0).getId());
       }
 
-      this.attendanceService.studentTimeOut(scheduleId, usercode);
+      User user = this.attendanceService.studentTimeOut(scheduleId, usercode);
 
-      return ResponseEntity.ok().body(student);
+      if(user == null){
+        return ResponseEntity.badRequest().body("User is not found in schedule");
+      }
+
+      return ResponseEntity.ok().body(user);
     }catch (Exception e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
