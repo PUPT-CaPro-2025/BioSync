@@ -9,3 +9,13 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+input[id="password"] {
+    -webkit-appearance: none; 
+    -moz-appearance: none;  
+    appearance: none;      
+}
+
+input[id="password"]::-ms-reveal {
+    display: none;
+}
