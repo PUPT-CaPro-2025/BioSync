@@ -30,7 +30,7 @@
             <p class="text-brightRed text-custom-24">Attendance List</p>
             <hr class="border-t border-1 border-brightRed" />
           </div>
-          <div class="mt-5 h-[55vh] overflow-y-auto row-container">
+          <div #scrollContainer class="mt-5 h-[55vh] overflow-y-auto row-container">
             @for (student of studentsLogged; track student) {
               <p class="text-darkGray text-custom-16"
                  [ngClass]="{'crossed-out': isStudentLoggedOut(student)}">

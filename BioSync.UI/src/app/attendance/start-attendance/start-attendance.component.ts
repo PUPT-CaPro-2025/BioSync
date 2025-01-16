@@ -1,4 +1,4 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -40,7 +40,8 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
 })
-export class StartAttendanceComponent implements OnInit {
+export class StartAttendanceComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
@@ -110,6 +111,10 @@ export class StartAttendanceComponent implements OnInit {
         }
       },
     });
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
   }
 
   updateTimeAndDate(): void {
@@ -578,5 +583,11 @@ export class StartAttendanceComponent implements OnInit {
 
   isStudentLoggedOut(student: User): boolean {
     return this.studentsLoggedOut.some(loggedOutStudent => loggedOutStudent.id === student.id) && this.isTimeOut;
+  }
+
+  private scrollToBottom(): void {
+    if (this.scrollContainer) {
+      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+    }
   }
 }
