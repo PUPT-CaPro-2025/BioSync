@@ -2,13 +2,17 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { VisitPurpose } from '../../../model/visit.purpose.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import {VisitPurposeService} from "../../../services/visit.purpose.service";
+import { visitPurposeValidator } from '../../../services/validators/customVisitPurposeValidator';
 
 @Component({
   selector: 'app-edit-visit-purpose',
@@ -41,7 +45,7 @@ export class EditVisitPurposeComponent implements OnInit {
 
   initForm(){
     this.visitPurposeForm = this.formBuilder.group({
-      purposeOfVisit: ['', [Validators.required]],
+       purposeOfVisit: ['', [Validators.required, visitPurposeValidator()]],
     });
   }
 
@@ -53,6 +57,10 @@ export class EditVisitPurposeComponent implements OnInit {
 
   returnToVisitPurposeView(): void {
     this.backToEditVisitPurpose.emit();
+  }
+
+  get purposeOfVisitControl(): AbstractControl {
+      return this.visitPurposeForm.get('purposeOfVisit')!;
   }
 
   submit(){
