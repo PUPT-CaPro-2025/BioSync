@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -53,7 +52,7 @@ export class StartAttendanceComponent implements OnInit {
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
-  hasProfessorVerified = false;
+  hasProfessorVerified = true;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
   reminder = 'Scanning In-Charge Fingerprint...';

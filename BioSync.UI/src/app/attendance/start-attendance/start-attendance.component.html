@@ -26,7 +26,7 @@
               </p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 mt-12">
+          <div class="flex flex-col gap-2 mt-4">
             <p class="text-brightRed text-custom-24">Attendance List</p>
             <hr class="border-t border-1 border-brightRed" />
           </div>
@@ -45,13 +45,14 @@
                 @if(!isTimeOut){
                     <button mat-flat-button
                             (click)="openConfirmationDialogTimeOut()"
-                            class="stop-attendance">
+                            class="start-timeout-attendance">
                         Start Time Out
                     </button>
                 }
               <button
                 mat-flat-button
                 (click)="openConfirmationDialogStop(selectedSchedule)"
+                class="stop-attendance"
               >
                 Stop Attendance
               </button>
