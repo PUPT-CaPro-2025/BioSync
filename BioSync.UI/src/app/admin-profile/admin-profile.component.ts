@@ -168,6 +168,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.adminForm = this.formBuilder.group({
+      usercode: ['', [Validators.required]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
@@ -182,6 +183,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   setFormValues() {
     this.adminForm.patchValue({
+      usercode: this.admin.usercode,
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
