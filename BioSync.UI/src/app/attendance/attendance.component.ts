@@ -280,20 +280,27 @@ export class AttendanceComponent implements OnInit{
   }
 
   onFilterChange() {
-    const programChanged = this.prevSelectedProgram != this.selectedProgram;
+    if(this.getRole() != 'STUDENT') {
+      const programChanged = this.prevSelectedProgram != this.selectedProgram;
 
-    if(programChanged) {
-      this.sections = [];
-      this.selectedYearAndSection = -1;
-      this.getSections();
-      this.prevSelectedProgram = this.selectedProgram;
+      if (programChanged) {
+        this.sections = [];
+        this.selectedYearAndSection = -1;
+        this.getSections();
+        this.prevSelectedProgram = this.selectedProgram;
+      }
+
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else{
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+      )
     }
-
-    this.schedules = this.scheduleContainer.filter(
-      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester
-        && schedule.section?.program.id === this.selectedProgram
-    )
 
     this.sortSchedulesById(this.schedules);
     this.totalItems = this.schedules.length;
@@ -330,19 +337,20 @@ export class AttendanceComponent implements OnInit{
     this.userService.getUserById(userId).subscribe({
       next: (user: User) => {
         if(!user.id) return;
-        this.getStudentSchedules(+user.section?.id!);
+        this.getStudentSchedules(+user.id!);
       }
     })
   }
 
-  getStudentSchedules(sectionId: number){
-    this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
+  getStudentSchedules(studentId: number){
+    this.scheduleService.getStudentsSchedule(studentId).subscribe({
       next: (schedules: Schedule[]) => {
         console.log(schedules)
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }

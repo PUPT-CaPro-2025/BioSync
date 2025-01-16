@@ -3,9 +3,11 @@
     <span class="text-custom-32 text-brightRed">View Schedule Attendance</span>
     <div class="toolbar-button">
       <div class="flex flex-col items-center select-none">
-        <div class="header-button" (click)="toggleDropdown()">
-          Print Attendance Report
-        </div>
+          @if(getRole() != 'STUDENT'){
+              <div class="header-button" (click)="toggleDropdown()">
+                  Print Attendance Report
+              </div>
+          }
         @if (reportDropdown) {
           <div class="add-schedule-content flex flex-col">
             <div
@@ -77,7 +79,7 @@
 </div>
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
-    <span class="text-custom-32 text-brightRed">Students</span>
+    <span class="text-custom-32 text-brightRed">{{getRole() == 'STUDENT' ? 'Status' : 'Students'}}</span>
   </mat-toolbar>
 </div>
 <div class="table-container">
