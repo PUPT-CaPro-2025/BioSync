@@ -1,4 +1,12 @@
-import {AfterViewChecked, Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -40,7 +48,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
   templateUrl: './start-attendance.component.html',
   styleUrl: './start-attendance.component.css',
 })
-export class StartAttendanceComponent implements OnInit, AfterViewChecked {
+export class StartAttendanceComponent implements OnInit {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   currentTime!: string;
   currentDate!: string;
@@ -79,6 +87,7 @@ export class StartAttendanceComponent implements OnInit, AfterViewChecked {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -111,10 +120,6 @@ export class StartAttendanceComponent implements OnInit, AfterViewChecked {
         }
       },
     });
-  }
-
-  ngAfterViewChecked() {
-    this.scrollToBottom();
   }
 
   updateTimeAndDate(): void {
@@ -225,6 +230,8 @@ export class StartAttendanceComponent implements OnInit, AfterViewChecked {
       next: (value) => {
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
@@ -432,6 +439,8 @@ export class StartAttendanceComponent implements OnInit, AfterViewChecked {
       next: (value) => {
         this.loggedStudent = value;
         this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.id);
@@ -586,8 +595,10 @@ export class StartAttendanceComponent implements OnInit, AfterViewChecked {
   }
 
   private scrollToBottom(): void {
-    if (this.scrollContainer) {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    }
+    setTimeout(() => {
+      if (this.scrollContainer) {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      }
+    }, 0);
   }
 }
