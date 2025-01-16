@@ -49,6 +49,9 @@ import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
 import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 import { ManualAttendanceComponent } from './attendance/manual-attendance/manual-attendance.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import {
+    AttendanceListComponent
+} from "./attendance/attendance-list/attendance-list.component";
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
@@ -84,6 +87,7 @@ export const routes: Routes = [
     {path: "suffix", component: SuffixComponent},
     {path: "visit-purpose", component: VisitPurposeComponent},
     {path: 'schedule/start/:id', component: ScheduleListComponent},
+    {path: 'list/attendance/:id', component: AttendanceListComponent},
     {path: 'view/schedule/:id', component: ViewScheduleComponent},
     {path: '', redirectTo: '/login', pathMatch: 'full'},
     {path: '**', redirectTo: '/login'},

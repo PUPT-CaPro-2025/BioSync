@@ -138,6 +138,8 @@ export class AttendanceComponent implements OnInit{
       next: (schedules: Schedule[]) => {
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
         this.setLatestProgram();
@@ -304,6 +306,8 @@ export class AttendanceComponent implements OnInit{
       )
     }
 
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
     this.totalItems = this.schedules.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -325,6 +329,8 @@ export class AttendanceComponent implements OnInit{
       )
     }
 
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
     this.totalItems = this.schedules.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -332,7 +338,11 @@ export class AttendanceComponent implements OnInit{
 
   toggleViewAttendance(schedule: Schedule) {
     this.activeDropdownId = null;
-    this.router.navigate(["/view/attendance", schedule.id]).then();
+    if (schedule.recurrenceId) {
+      this.router.navigate(['/list/attendance', schedule.recurrenceId]).then();
+    } else {
+      this.router.navigate(['/view/attendance', schedule.id]).then();
+    }
   }
 
   getSectionId(userId: number) {
@@ -347,9 +357,10 @@ export class AttendanceComponent implements OnInit{
   getStudentSchedules(studentId: number){
     this.scheduleService.getStudentsSchedule(studentId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules)
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
         this.getSemester();
