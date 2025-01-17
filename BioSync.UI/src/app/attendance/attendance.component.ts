@@ -59,7 +59,7 @@ export class AttendanceComponent implements OnInit{
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
-
+  groupedSchedules: { [key: string]: Schedule[] } = {};
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -100,6 +100,8 @@ export class AttendanceComponent implements OnInit{
       next: (schedules) => {
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.getAllAttendance();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
@@ -136,6 +138,8 @@ export class AttendanceComponent implements OnInit{
       next: (schedules: Schedule[]) => {
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
         this.setLatestProgram();
@@ -302,6 +306,8 @@ export class AttendanceComponent implements OnInit{
       )
     }
 
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
     this.totalItems = this.schedules.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -323,6 +329,8 @@ export class AttendanceComponent implements OnInit{
       )
     }
 
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
     this.totalItems = this.schedules.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -330,7 +338,11 @@ export class AttendanceComponent implements OnInit{
 
   toggleViewAttendance(schedule: Schedule) {
     this.activeDropdownId = null;
-    this.router.navigate(["/view/attendance", schedule.id]).then();
+    if (schedule.recurrenceId) {
+      this.router.navigate(['/list/attendance', schedule.recurrenceId]).then();
+    } else {
+      this.router.navigate(['/view/attendance', schedule.id]).then();
+    }
   }
 
   getSectionId(userId: number) {
@@ -345,9 +357,10 @@ export class AttendanceComponent implements OnInit{
   getStudentSchedules(studentId: number){
     this.scheduleService.getStudentsSchedule(studentId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules)
         this.schedules = schedules.filter(schedule => schedule.hasFinished);
         this.scheduleContainer = schedules.filter(schedule => schedule.hasFinished);
+        this.groupSchedulesByRecurrenceId();
+        this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
         this.getSemester();
@@ -357,4 +370,46 @@ export class AttendanceComponent implements OnInit{
     })
   }
 
+
+  filteredRepeatedSchedules(): void {
+    const filteredSchedules: Schedule[] = [];
+    const recurrenceIdStorage: string[] = [];
+    this.schedules.forEach(schedule => {
+      if (schedule.recurrenceId != null) {
+        if (!recurrenceIdStorage.includes(schedule.recurrenceId)) {
+          recurrenceIdStorage.push(schedule.recurrenceId);
+          filteredSchedules.push(schedule);
+        }
+      } else {
+        filteredSchedules.push(schedule);
+      }
+    })
+
+    this.schedules = filteredSchedules;
+  }
+
+  groupSchedulesByRecurrenceId() {
+    this.groupedSchedules = this.schedules.reduce((acc, schedule) => {
+      if (schedule.recurrenceId) {
+        if (!acc[schedule.recurrenceId]) {
+          acc[schedule.recurrenceId] = [];
+        }
+        acc[schedule.recurrenceId].push(schedule);
+      }
+      return acc;
+    }, {} as { [key: string]: Schedule[] });
+  }
+
+  getRecurrenceDays(recId: string): string[] {
+    const schedules = this.groupedSchedules[recId];
+    if (schedules) {
+      const daysSet = new Set<string>();
+      schedules.forEach((schedule) => {
+        schedule.recurrenceDays!.forEach(
+            (day: String) => daysSet.add(day.toString()));
+      });
+      return Array.from(daysSet);
+    }
+    return [];
+  }
 }

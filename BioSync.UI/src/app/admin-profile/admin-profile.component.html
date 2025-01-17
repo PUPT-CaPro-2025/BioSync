@@ -24,7 +24,7 @@
           <p class="text-lightGray">Admin</p>
           <p class="text-custom-24 text-brightRed">{{ admin.firstName }} {{ admin.lastName }}</p>
           <p class="mt-2 text-lightGray">Fingerprint</p>
-          <p class="font-semibold">{{ hasFingerprint ? "Registered" : "Unregistered" }}</p>
+          <p class="font-semibold">{{ admin.biometrics ? "Registered" : "Unregistered" }}</p>
           <button mat-button (click)="setEditMode()">Edit</button>
         </div>
       </div>
