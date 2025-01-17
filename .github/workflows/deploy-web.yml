@@ -48,6 +48,16 @@ jobs:
         fi
       shell: /usr/bin/bash -e {0}
 
+    - name: Update Integration API in app.settings
+      run: |
+        sed -i -e "s~integrationUrl: '.*'~integrationUrl: '${{ secrets.INTEGRATION_API }}'~" environment/app.setting.ts
+      shell: /usr/bin/bash -e {0}
+
+    - name: Update Integration Key in app.settings
+      run: |
+        sed -i -e "s~INTEGRATION_SECRET_KEY: '.*'~INTEGRATION_SECRET_KEY: '${{ secrets.INTEGRATION_SECRET_KEY }}'~" environment/app.setting.ts
+      shell: /usr/bin/bash -e {0}
+
     - name: Update Build Number in app.settings
       run: |
         sed -i -e "s~buildNumber: '.*'~buildNumber: '0.0.${{ github.run_number }}'~" environment/app.setting.ts
