@@ -28,6 +28,9 @@ export class AttendanceListComponent implements OnInit{
     recurrenceId: string | null | undefined;
     today: number;
     headerImage!: string;
+    bagongPilipinas!: string;
+    stamp!: string;
+    schoolLogo!: string;
     reportDropdown = false;
     class: Attendance[] = [];
 
@@ -52,6 +55,18 @@ export class AttendanceListComponent implements OnInit{
         this.loadImageToBase64('../../assets/header.png', (base64Image) => {
             this.headerImage = base64Image;
         });
+
+        this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+            this.bagongPilipinas = base64Image;
+          });
+      
+          this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+            this.stamp = base64Image;
+          });
+      
+          this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+            this.schoolLogo = base64Image;
+          });
     }
 
     getSchedulesByRecurrenceId(recurrenceId: string) {
@@ -219,14 +234,10 @@ export class AttendanceListComponent implements OnInit{
     generatePdf(rows: any[], uniqueDates: string[]) {
         const doc = new jsPDF('landscape', 'mm', [215.9, 330.2]);
         const pageWidth = doc.internal.pageSize.getWidth();
-
-        const imgWidth = 115;
-        const imgHeight = 15;
-        const xOffset = (pageWidth - imgWidth) / 2;
-
-        const leftX = 20;
-        const rightX = pageWidth - 20;
-        const lineHeight = 6;
+        const leftX = 10;
+        const rightX = pageWidth - 10;
+        const lineHeight = 7;
+        let currentY = 60; // Start position for content
 
         // Headers
         const headerRow1 = ['No.', 'Date', ...uniqueDates, " ", " "];
@@ -236,12 +247,36 @@ export class AttendanceListComponent implements OnInit{
 
         // Function to render header (will be called on each page)
         const renderHeader = (currentPage: number, pageCount: number) => {
-            // Header image and title
-            doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+             //Add header image
+            const margin = 10;
+            const imgWidth = 20; 
+            const imgHeight = 20;
 
+            doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+            const textStartX = margin + imgWidth + 5;
+            const textStartY = 15;
+            doc.setFontSize(10);
+            doc.text('Republic of the Philippines', textStartX, textStartY);
+
+            doc.setFontSize(12);
+            doc.setFont('times', 'bold');
+            doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+            doc.setFontSize(10);
+            doc.setFont('times', 'normal');
+            doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+            doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+
+            //Title
             doc.setFontSize(20);
             doc.setFont('helvetica', 'bold');
-            doc.text('ATTENDANCE', pageWidth / 2, 30, { align: 'center' });
+            doc.text('ATTENDANCE', pageWidth / 2, 45, { align: 'center' });
 
             let currentY = 40;
 
@@ -298,12 +333,38 @@ export class AttendanceListComponent implements OnInit{
             const currentDate = new Date().toLocaleString();
             doc.text(currentDate, rightX, currentY, { align: 'right' });
 
+            // Add footer
+            const footerY = doc.internal.pageSize.height - 15;
+            const textLeftX = 10;  
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+            doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+
+            doc.setTextColor(0, 0, 0); 
+            doc.text('Website: ', textLeftX, footerY + 0.5);
+            doc.setTextColor(0, 0, 255); 
+            doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+            doc.setTextColor(0, 0, 0);
+            doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+            doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+            doc.setTextColor(0);
+
+            doc.setFont('times', 'normal');
+            doc.setFontSize(15);
+            doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+            const stampRightX = doc.internal.pageSize.width - 80;
+            const stampWidth = 65;
+            const stampHeight = 30; 
+            doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
         };
 
         doc.autoTable({
             head: [headerRow1, headerRow2],
             body: rows,
-            startY: 70,
+            startY: 75,
             theme: 'grid',
             styles: {
                 fontSize: 10,
@@ -324,7 +385,7 @@ export class AttendanceListComponent implements OnInit{
                 0: { cellWidth: 'auto' },
                 [headerRow2.length - 1]: { cellWidth: 'auto' },
             },
-            margin: { top: 65 },
+            margin: { top: 80, bottom: 40 },
             didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
                 // Render the header
                 renderHeader(data.pageNumber, doc.getNumberOfPages());
