@@ -126,12 +126,13 @@ export class DashboardAdminComponent implements OnInit {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
+    hiddenDays: [0],
     plugins: [dayGridPlugin, interactionPlugin],
     customButtons: {
-      printCalendarButton: {  // Define the custom button
+      printCalendarButton: {
         text: 'Export',
         click: () => {
-          this.printEvent();  // Call the addEvent function when clicked
+          this.printEvent();
         }
       }
     },

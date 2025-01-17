@@ -81,6 +81,13 @@ export class FingerprintService {
     });
   }
 
+  verifyStudentTimeOutAttendance(formData: FormData) {
+      return this.http.post<Timein>(`${this.url}/student/check-out`, formData, {
+          headers: this.headers,
+          withCredentials: true,
+      });
+  }
+
   stopAttendance(schedule: Schedule) {
     return this.http.post<string>(
       `${this.url}/verify/stop?scheduleId=${schedule.id}`,

@@ -7,28 +7,28 @@
   @if (!editMode) {
     <div class="h-[75vh] w-[94%] flex justify-center items-center rounded-xl bg-[#AB3130]">
       <div class="h-[50vh] w-[50%] flex justify-center items-center rounded-xl bg-[#FFFFFF] gap-8 p-6">
-        <div class="w-[90%] flex flex-col justify-start">
-            @if(image){
-                <img
-                        src="{{ image }}"
-                        alt="user profile image"
-                        class="object-cover w-full h-full"
-                />
-            } @else {
-                <mat-icon class="person">person</mat-icon>
-            }
+        <div class="w-[90%] flex flex-col justify-start items-center">
+          @if(image) {
+            <div class="aspect-square w-full overflow-hidden">
+              <img
+                src="{{ image }}"
+                alt="User Profile Image"
+                class="object-cover w-full h-full rounded-xl"
+              />
+            </div>
+          } @else {
+              <mat-icon class="person">person</mat-icon>
+          }
         </div>
         <div class="w-[90%] flex flex-col justify-start items-start bg-transparent text-left">
           <p class="text-lightGray">Admin</p>
           <p class="text-custom-24 text-brightRed">{{ admin.firstName }} {{ admin.lastName }}</p>
           <p class="mt-2 text-lightGray">Fingerprint</p>
-          <p class="font-semibold">{{ hasFingerprint ? "Registered" : "Unregistered" }}</p>
+          <p class="font-semibold">{{ admin.biometrics ? "Registered" : "Unregistered" }}</p>
           <button mat-button (click)="setEditMode()">Edit</button>
         </div>
       </div>
     </div>
-    
-    
   } @else {
     <mat-stepper
       [linear]="true"
@@ -44,7 +44,31 @@
             [formGroup]="adminForm"
           >
             <ng-template matStepLabel>Setup Information</ng-template>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
+              <label
+                for="usercode"
+                class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
+              >
+                Admin Usercode
+              </label>
+              <input
+                matInput
+                id="usercode"
+                name="usercode"
+                placeholder="Enter administrator's Usercode"
+                class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                formControlName="usercode"
+                [class.input-error]="userCodeControl.invalid && userCodeControl.touched"
+              >
+              @if(userCodeControl.touched && userCodeControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                  @if( userCodeControl.errors?.['required']) {
+                    Admin Usercode is required.
+                  }
+                </div>
+              }
+            </div>
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="firstName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -58,9 +82,19 @@
                 placeholder="Enter administrator's first name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="firstName"
-              />
+                [class.input-error]="firstNameControl.invalid && firstNameControl.touched"
+              >
+              @if(firstNameControl.touched && firstNameControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                  @if( firstNameControl.errors?.['required']) {
+                    First name is required.
+                  } @else if(firstNameControl.errors?.['invalidName']) {
+                    Only Letters are Allowed.
+                  }
+                </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="lastName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -74,9 +108,19 @@
                 placeholder="Enter administrator's last name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="lastName"
-              />
+                [class.input-error]="lastNameControl.invalid && lastNameControl.touched"
+              >
+              @if(lastNameControl.touched && lastNameControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if( lastNameControl.errors?.['required']) {
+                          Last name is required.
+                      } @else if(lastNameControl.errors?.['invalidName']) {
+                          Only letters are allowed.
+                      }
+                  </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="middleName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -90,9 +134,17 @@
                 placeholder="Enter  administrator's middle name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="middleName"
-              />
+                [class.input-error]="middleNameControl.invalid && middleNameControl.touched"
+              >
+              @if(middleNameControl.touched && middleNameControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if(middleNameControl.errors?.['invalidName']) {
+                          Only letters are allowed.
+                      }
+                  </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="suffix"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -105,13 +157,22 @@
                 placeholder="Choose a administrator's suffix"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="suffix"
+                [class.input-error]="suffixControl.invalid && suffixControl.touched"
               >
-                @for (suffix of allSuffix; track suffix) {
-                  <mat-option [value]="suffix">{{ suffix }}</mat-option>
+                <mat-option value="N/A">N/A</mat-option>
+                @for(suffix of allSuffix; track suffix) {
+                  <mat-option [value]="suffix.abbreviation">{{suffix.abbreviation}}</mat-option>
                 }
               </mat-select>
+              @if(suffixControl.touched && suffixControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                    @if(suffixControl.errors?.['required']) {
+                        Suffix is required.
+                    }
+                </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="email"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -125,9 +186,19 @@
                 placeholder="Enter administrator's email"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="email"
-              />
+                [class.input-error]="emailControl.invalid && emailControl.touched"
+              >
+              @if(emailControl.touched && emailControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if(emailControl.errors?.['required']) {
+                          Email is Required.
+                      } @else if (emailControl.errors?.['invalidEmail']) {
+                          Not an email format.
+                      }
+                  </div>
+              }
             </div>
-            <div class="flex justify-between mt-4 button-content">
+            <div class="flex justify-between mt-8 button-content">
               <button
                 mat-button
                 class="cancel-button"
@@ -146,27 +217,15 @@
         [completed]="true"
       >
         <div class="flex justify-center align-middle mt-5">
-          <form
-            [formGroup]="imageForm"
-            class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle"
-          >
+          <form [formGroup]="imageForm" class="w-[70%] flex flex-col gap-4 row-block justify-center align-middle">
             <div class="flex justify-center items-center">
-              <label for="fileInput" class="drop-area">
-                <input
-                  type="file"
-                  id="fileInput"
-                  formControlName="profileImage"
-                  (change)="onFileChanges($event)"
-                  accept="image/*"
-                  hidden
-                />
+              <label for="fileInput" class="drop-area" *ngIf="!isCameraOpen">
+                <input type="file" id="fileInput"
+                       formControlName="profileImage" (change)="onFileChanges($event)"
+                       accept="image/*" hidden/>
                 <div class="image-container">
-                  @if (imageSrc) {
-                    <img
-                      [src]="imageSrc"
-                      alt="Selected Image"
-                      class="displayed-image"
-                    />
+                  @if(imageSrc) {
+                    <img ngSrc="{{imageSrc}}" alt="Selected Image" class="displayed-image" fill>
                   }
                 </div>
                 <div class="upload-message">
@@ -174,17 +233,14 @@
                   <p>Click here to upload image</p>
                 </div>
               </label>
+              <video #videoElement class="video-container" *ngIf="isCameraOpen"></video>
             </div>
             <div class="mt-4 flex items-center justify-center">
-              <button
-                class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button"
-              >
-                Take Photo
-              </button>
+              <button class="bg-brightRed rounded-xl py-2 px-24 text-white starting-button" (click)="isCameraOpen ? capturePhoto() : openCamera()">{{ captureButtonLabel }}</button>
             </div>
             <div class="mt-4 flex justify-between button-content">
               <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>{{ imageButtonLabel }}</button>
+              <button mat-button matStepperNext>{{  photoButtonLabel }}</button>
             </div>
           </form>
         </div>
@@ -253,6 +309,9 @@
                     <p class="text-center">{{ rightIndexState }}</p>
                   </div>
                 }
+              </div>
+              <div>
+                <button mat-flat-button (click)="resetFingerprint()" [disabled]="disableReset">Reset Fingerprint</button>
               </div>
             </div>
             <div class="mt-4 flex justify-between button-content">

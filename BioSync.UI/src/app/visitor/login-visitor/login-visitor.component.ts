@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {
+  FormBuilder, FormGroup, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from "@angular/forms";
 import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
@@ -11,6 +14,9 @@ import {Visitor} from "../../../model/visitor.model";
 import {Router} from "@angular/router";
 import {VisitPurposeService} from "../../../services/visit.purpose.service";
 import {VisitPurpose} from "../../../model/visit.purpose.model";
+import {Laboratory} from "../../../model/laboratory.model";
+import {LaboratoryService} from "../../../services/laboratory.service";
+import { letterOnlyValidator } from '../../../services/validators/customVisitorValidator';
 
 @Component({
   selector: 'app-login-visitor',
@@ -21,7 +27,7 @@ import {VisitPurpose} from "../../../model/visit.purpose.model";
     MatInput,
     MatSelectModule
   ],
-  providers: [VisitorService, VisitPurposeService],
+  providers: [VisitorService, VisitPurposeService, LaboratoryService],
   templateUrl: './login-visitor.component.html',
   styleUrl: './login-visitor.component.css'
 })
@@ -29,11 +35,7 @@ export class LoginVisitorComponent implements OnInit {
   visitorLogForm!: FormGroup;
   showOtherDetails: boolean = false;
 
-  labs: string[] = [
-    'DOST Laboratory',
-    'Aboitiz Laboratory',
-  ];
-
+  labs: Laboratory[] = [];
   visitPurposes: VisitPurpose[] =[];
 
   constructor(
@@ -41,12 +43,14 @@ export class LoginVisitorComponent implements OnInit {
     private dialog: MatDialog,
     private visitorService: VisitorService,
     private router: Router,
-    private visitPurposeService: VisitPurposeService
+    private visitPurposeService: VisitPurposeService,
+    private labService: LaboratoryService
   ) {}
 
   ngOnInit() {
     this.initForm();
     this.getVisitPurposes();
+    this.getLaboratories();
   }
 
   onVisitPurposeChange(event: MatSelectChange): void {
@@ -55,9 +59,9 @@ export class LoginVisitorComponent implements OnInit {
 
   initForm(): void{
     this.visitorLogForm = this.formBuilder.group({
-        name: ['', [Validators.required]],
+        name: ['', [Validators.required, letterOnlyValidator()]],
         purposeOfVisit: ['', [Validators.required]],
-        otherDetails: [''],
+        otherDetails: ['',[Validators.maxLength(100), letterOnlyValidator()]],
         destination: ['', [Validators.required]],
       }
     )
@@ -81,6 +85,21 @@ export class LoginVisitorComponent implements OnInit {
     })
   }
 
+  get nameControl(): AbstractControl {
+    return this.visitorLogForm.get('name')!;
+  }
+
+  get purposeOfVisitControl(): AbstractControl {
+    return this.visitorLogForm.get('purposeOfVisit')!;
+  }
+
+  get otherDetailsControl(): AbstractControl {
+    return this.visitorLogForm.get('otherDetails')!;
+  }
+
+  get destinationControl(): AbstractControl {
+    return this.visitorLogForm.get('destination')!;
+  }
 
   submit(){
     if(!this.visitorLogForm.valid) return;
@@ -101,5 +120,13 @@ export class LoginVisitorComponent implements OnInit {
 
   navigateTo(route: string) {
     this.router.navigate([route]).then();
+  }
+
+  private getLaboratories() {
+    this.labService.getLaboratories().subscribe({
+      next: value => {
+        this.labs = value;
+      }
+    })
   }
 }

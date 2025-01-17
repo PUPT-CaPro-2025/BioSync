@@ -220,25 +220,36 @@
     }
 </mat-nav-list>
 <div class="absolute bottom-0 w-[100%] pb-4">
-    @if(getRole() === "ADMIN") {
-        <div class="flex flex-col">
+    <div class="flex flex-col">
+        @if(getRole() === "ADMIN") {
             <button class="flex flex-row items-center gap-[23px] ml-6 bg-none 
                 border-none cursor-pointer mb-6" 
                 (click)="navigateTo('/profile')">
-              <mat-icon>account_circle</mat-icon>
-              <p class="text-custom-16">PROFILE</p>
+                <mat-icon>account_circle</mat-icon>
+                <p class="text-custom-16">PROFILE</p>
             </button>
-        </div>
-    }
+        } @else {
+            <button class="flex flex-row items-center gap-[23px] ml-6 bg-none 
+                border-none cursor-pointer mb-6" 
+                (click)="navigateTo('/profile/user')">
+                <mat-icon>account_circle</mat-icon>
+                <p class="text-custom-16">PROFILE</p>
+            </button>   
+        }
+    </div>
     <div class="flex justify-center items-center">
         <img class="w-[90%]" src="../../assets/line.svg" alt="divider"/>
     </div>
-    <div class="flex flex-col">
-        <button class="flex flex-row items-center gap-[23px] ml-6 bg-none 
-            border-none cursor-pointer mt-2" 
-            (click)="openLogoutDialog()">
-          <mat-icon class="text-brightRed">logout</mat-icon>
-          <p class="text-custom-16 text-brightRed">LOGOUT</p>
+    <div class="flex flex-row justify-between items-center">
+        <button class="flex flex-row items-center gap-6 ml-6 bg-none
+      border-none cursor-pointer mt-2"
+                (click)="openLogoutDialog()">
+            <mat-icon class="text-brightRed">logout</mat-icon>
+            <p class="text-custom-16 text-brightRed">LOGOUT</p>
         </button>
+        <p class="text-gray-500 text-xs italic mr-6 self-end">
+            Build v{{ environment.buildNumber }}
+        </p>
     </div>
+
 </div>

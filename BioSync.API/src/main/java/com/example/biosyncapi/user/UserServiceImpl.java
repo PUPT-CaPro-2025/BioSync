@@ -15,6 +15,8 @@ import com.example.biosyncapi.user.profile_image.ProfileImage;
 import com.example.biosyncapi.fingerprint.FingerprintRepository;
 import com.example.biosyncapi.user.profile_image.ProfileImageRepository;
 import com.example.biosyncapi.authentication.token.TokenRepository;
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +25,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -236,8 +235,26 @@ public class UserServiceImpl implements UserService {
   @Override
   public HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception {
     HashMap<User, String> mailPassword = new HashMap<>();
+
+    File tempFile = File.createTempFile("converted_", ".csv");
+    tempFile.deleteOnExit();
+
+    String detectedEncoding = detectEncoding(file);
+
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), detectedEncoding));
+         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+                 new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      while ((line = reader.readLine()) != null) {
+        writer.write(line);
+        writer.newLine();
+      }
+    }
+
     try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+        new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
+
       String line;
       boolean isHeader = true;
       while ((line = reader.readLine()) != null) {
@@ -245,28 +262,62 @@ public class UserServiceImpl implements UserService {
           isHeader = false;
           continue;
         }
+
         String[] csvRow = line.split(",");
 
-        Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
+        try {
+          Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
-        if (user.isPresent()) {
-          schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
-          continue;
+          if (user.isPresent()) {
+            schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
+            continue;
+          }
+
+          String generatedPassword = generatePassword(8);
+          User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
+          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
+
+          mailPassword.put(createdUser, generatedPassword);
+        } catch (Exception e) {
+          System.out.println("Error: " + e.getMessage());
         }
-
-        String generatedPassword = generatePassword(8);
-        User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
-        schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
-
-        mailPassword.put(createdUser, generatedPassword);
       }
+    } finally {
+      tempFile.delete();
     }
 
     return mailPassword;
   }
 
+  private String detectEncoding(MultipartFile file) throws IOException {
+    byte[] bytes = file.getBytes();
+
+    if (bytes.length >= 3 &&
+            bytes[0] == (byte)0xEF &&
+            bytes[1] == (byte)0xBB &&
+            bytes[2] == (byte)0xBF) {
+      return "UTF-8";
+    }
+
+    if (bytes.length >= 2 &&
+            ((bytes[0] == (byte)0xFE && bytes[1] == (byte)0xFF) ||
+                    (bytes[0] == (byte)0xFF && bytes[1] == (byte)0xFE))) {
+      return "UTF-16";
+    }
+
+    CharsetDetector detector = new CharsetDetector();
+    detector.setText(bytes);
+    CharsetMatch match = detector.detect();
+
+    if (match != null && match.getConfidence() > 50) {
+      return match.getName();
+    }
+
+    return "Windows-1252";
+  }
+
   @Override
-  public User mapToUser(String[] csvRow, String password) {
+  public User mapToUser(String[] csvRow, String password) throws Exception {
     User user = new User();
     user.setUsercode(getValue(csvRow[0]));
     user.setLastName(getValue(csvRow[1]));
@@ -297,25 +348,41 @@ public class UserServiceImpl implements UserService {
     return value.substring(0, extraIndex);
   }
 
-  private Section getSection(String sectionCode) {
+  private Section getSection(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String yearSection = sectionCode.substring(tgIndex + 2).trim();
     String[] yearSectionArr = yearSection.split("-");
+    if (yearSectionArr.length < 2) {
+      throw new IllegalArgumentException();
+    }
 
     Program program = getProgram(sectionCode);
 
-    if (program == null)
-      return null;
+    if (program == null) { // Replaced with exception
+      throw new Exception();
+    }
 
     String year = yearSectionArr[0];
-    int section = Integer.parseInt(yearSectionArr[1]);
+    int section;
+    try {
+      section = Integer.parseInt(yearSectionArr[1]);
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException();
+    }
 
-    return this.sectionRepository.findByProgramAndYearAndSection(program, year, section);
+    return this.sectionRepository.findByProgramAndYearAndSection(program,
+        year, section);
   }
 
-  private Program getProgram(String sectionCode) {
+  private Program getProgram(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String programAbb = sectionCode.substring(0, tgIndex).trim();
 
@@ -323,7 +390,8 @@ public class UserServiceImpl implements UserService {
       programAbb = programAbb.substring(0, programAbb.length() - 1);
     }
 
-    return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
+    return this.programRepository.findByProgramAbbreviation(programAbb)
+        .orElseThrow(Exception::new);
   }
 
   private String generatePassword(int length) {

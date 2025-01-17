@@ -34,6 +34,8 @@ public class User implements UserDetails {
 
     private String suffix;
 
+    private Boolean biometrics;
+
     @Column(unique = true)
     private String email;
 
@@ -50,6 +52,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;
+
+    public User() {
+        this.biometrics = false;
+    }
 
     public Long getId() {
         return id;
@@ -73,6 +79,14 @@ public class User implements UserDetails {
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
+    }
+
+    public Boolean getBiometrics() {
+        return biometrics;
+    }
+
+    public void setBiometrics(Boolean biometrics) {
+        this.biometrics = biometrics;
     }
 
     public String getLastName() {

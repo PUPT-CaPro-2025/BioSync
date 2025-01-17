@@ -56,6 +56,8 @@ export class StudentComponent implements OnInit{
   sections: Section[] = [];
   selectedYearAndSection = -1;
 
+  selectedBiometrics = -1;
+
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -88,6 +90,7 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
+        console.log(this.students[0])
         this.studentContainer = students;
         this.queriedStudents = [...this.students];
         this.totalItems = this.students.length;
@@ -184,34 +187,36 @@ export class StudentComponent implements OnInit{
     // Handle page change logic here
   }
 
-  onProgramChange() {
-    if(this.selectedProgram == -1){
-      this.queriedStudents = this.students;
-      this.sections = [];
-    } else {
+  updateQueriedStudents() {
+    this.queriedStudents = this.students;
+
+    // Filter by selected program
+    if (this.selectedProgram !== -1) {
       this.getSections(this.selectedProgram);
-      this.queriedStudents = this.studentContainer.filter(
+      this.queriedStudents = this.queriedStudents.filter(
           student => student.section?.program.id === this.selectedProgram
-      )
+      );
     }
 
-    this.selectedYearAndSection = -1;
-    this.totalItems = this.queriedStudents.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-
-  onSectionChange() {
-    if(this.selectedYearAndSection == -1){
-      this.queriedStudents = this.students;
-    } else {
-      this.queriedStudents = this.studentContainer.filter(
+    // Filter by selected section
+    if (this.selectedYearAndSection !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
           student => student.section?.id === this.selectedYearAndSection
-      )
+      );
     }
+
+    // Filter by biometrics status
+    if (this.selectedBiometrics !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
+          student => student.biometrics === (this.selectedBiometrics > 0)
+      );
+    }
+
+    // Update pagination data
     this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
+
 
   onItemsPerPageChange(): void {
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);

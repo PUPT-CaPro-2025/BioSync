@@ -1,13 +1,10 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,10 +23,20 @@ import {
 import { SdkService } from '../../services/sdk.service';
 import { FingerprintService } from '../../services/fingerprint.service';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { MailService } from '../../services/mail.service';
 import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
+import {Suffix} from "../../model/suffix.model";
+import {SuffixService} from "../../services/suffix.service";
+import { 
+  adminNameValidator 
+} from '../../services/validators/customAdminValidator'; 
+import { 
+  customEmailValidator 
+} from '../../services/validators/customEmailValidator';
+import {LogoutService} from "../../services/auth/logout.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-admin-profile',
@@ -49,8 +56,9 @@ import { CryptoService } from '../../services/crypto.service';
     MatStepperPrevious,
     MatIconModule,
     CommonModule,
+    NgOptimizedImage,
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService, LogoutService],
   templateUrl: './admin-profile.component.html',
   styleUrls: [
     './admin-profile.component.css',
@@ -58,21 +66,9 @@ import { CryptoService } from '../../services/crypto.service';
   ],
   encapsulation: ViewEncapsulation.None,
 })
-export class AdminProfileComponent implements OnInit {
-  //Temporary Suffixes
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+export class AdminProfileComponent implements OnInit, OnDestroy {
+  @ViewChild('videoElement') videoElementRef!: any;
+  allSuffix: Suffix[] = [];
   admin!: User;
   adminForm!: FormGroup;
   currentStepLabel: string = 'Admin Information';
@@ -80,19 +76,26 @@ export class AdminProfileComponent implements OnInit {
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
   image!: string;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
+  disableReset = false;
   imageButtonLabel = 'Skip';
   editMode = false;
-  hasFingerprint: boolean = false;
   userId!: number;
+  photoButtonLabel = 'Skip';
+  videoElement!: HTMLVideoElement;
+  isCameraOpen = false;
+  captureButtonLabel = 'Take Photo';
+  adminUsercode!: string;
+  private stream: MediaStream | null = null;
 
   constructor(
+      private router: Router,
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dialog: MatDialog,
@@ -100,6 +103,8 @@ export class AdminProfileComponent implements OnInit {
     private fingerprintService: FingerprintService,
     private cookieService: CookieService,
     private cryptoService: CryptoService,
+    private suffixService: SuffixService,
+    private logoutService: LogoutService
   ) {}
 
   ngOnInit() {
@@ -107,6 +112,7 @@ export class AdminProfileComponent implements OnInit {
     this.initForm();
     this.sdkService.loadSDK();
     this.getAdminInfo();
+    this.getSuffixes();
     this.sdkService.getImageSrc().subscribe({
       next: (src) => {
         if (src) {
@@ -117,7 +123,7 @@ export class AdminProfileComponent implements OnInit {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -126,7 +132,7 @@ export class AdminProfileComponent implements OnInit {
               'image/png',
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -151,21 +157,25 @@ export class AdminProfileComponent implements OnInit {
         });
         console.log(this.admin);
         this.setFormValues();
-        this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
-          next: (hasFingerprint: boolean) => {
-            this.hasFingerprint = hasFingerprint;
-          },
-        });
       },
     });
   }
 
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: value => {
+        this.allSuffix = value;
+      }
+    })
+  }
+
   initForm() {
     this.adminForm = this.formBuilder.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      usercode: ['', [Validators.required]],
+      firstName: ['', [Validators.required, adminNameValidator()]],
+      lastName: ['', [Validators.required, adminNameValidator()]],
+      email: ['', [Validators.required, customEmailValidator()]],
+      middleName: ['', [adminNameValidator()]],
       suffix: ['', [Validators.required]],
     });
 
@@ -176,12 +186,15 @@ export class AdminProfileComponent implements OnInit {
 
   setFormValues() {
     this.adminForm.patchValue({
+      usercode: this.admin.usercode,
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
-      suffix: 'N/A',
+      suffix: this.admin.suffix,
       middleName: this.admin.middleName,
     });
+
+    this.adminUsercode = this.admin.usercode;
 
     this.fingerprintService
         .getProfileImageUrl(this.admin.id)
@@ -210,24 +223,33 @@ export class AdminProfileComponent implements OnInit {
         if (this.isRightIndex && this.isRightThumb) {
           this.registerFingerprintData(updatedUser);
         }
-        this.openSuccessDialog();
+        if(this.adminUsercode == updatedUser.usercode) {
+          this.openSuccessDialog(false);
+        } else {
+          this.openSuccessDialog(true);
+        }
       },
     });
     return;
   }
 
-  openSuccessDialog() {
+  openSuccessDialog(loggedOut: boolean) {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Admin Profile Successfully Updated!',
-        message: 'Admin Profile has been successfully updated.',
+        message: !loggedOut ? 'Admin Profile has been successfully updated.' : 'Usercode has been updated. You will be logged out.',
       },
     });
 
     ref.afterClosed().subscribe({
       next: () => {
-        this.unsetEditMode();
+        if(loggedOut){
+          this.logout();
+        } else {
+          this.getAdminInfo();
+          this.unsetEditMode();
+        }
       },
     });
   }
@@ -243,17 +265,27 @@ export class AdminProfileComponent implements OnInit {
     this.userService.processProfileImage(formData).subscribe();
   }
 
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User) {
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`,
     );
 
@@ -305,5 +337,93 @@ export class AdminProfileComponent implements OnInit {
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  capturePhoto() {
+    const canvas = document.createElement('canvas');
+    canvas.width = this.videoElement.videoWidth;
+    canvas.height = this.videoElement.videoHeight;
+    const context = canvas.getContext('2d');
+    context?.drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      this.selectedProfileImage = blob!;
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageSrc = reader.result;
+        this.photoButtonLabel = 'Next';
+      };
+      reader.readAsDataURL(blob!);
+    });
+    this.closeCamera();
+  }
+
+  openCamera() {
+    this.isCameraOpen = true;
+    this.captureButtonLabel = 'Capture Photo';
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        this.stream = stream;
+        this.videoElement = this.videoElementRef.nativeElement;
+        this.videoElement.srcObject = stream;
+        this.videoElement.play();
+      })
+      .catch(() => {
+        // Handle error silently
+      });
+  }
+
+  closeCamera() {
+    this.isCameraOpen = false;
+    this.captureButtonLabel = 'Retake Photo';
+    const stream = this.videoElement.srcObject as MediaStream;
+    const tracks = stream.getTracks();
+    tracks.forEach((track) => track.stop());
+    this.videoElement.srcObject = null;
+  }
+
+  ngOnDestroy(): void {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.adminForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.adminForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.adminForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.adminForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.adminForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.adminForm.get('email')!;
+  }
+
+  logout() {
+    this.logoutService.logout().subscribe({
+      next: () => {
+        this.cookieService.deleteCookie('authToken');
+        this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
+        localStorage.removeItem('activeButton');
+        this.router.navigate(['/login']).then();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 }

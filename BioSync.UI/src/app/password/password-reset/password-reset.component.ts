@@ -5,6 +5,7 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { MatInput } from '@angular/material/input';
+import { passwordValidator } from '../../../services/validators/customPasswordValidator';
 
 @Component({
   selector: 'app-password-reset',
@@ -33,6 +35,15 @@ export class PasswordResetComponent implements OnInit {
   resetToken!: string;
   hasSubmitted = false;
   errorMessage: string | null = null;
+  passwordVisible = false;
+  passwordFieldType = 'password';
+  confirmPasswordVisible = false;
+  confirmPasswordFieldType = 'password';
+  passwordInput = false;
+  confirmPasswordInput = false;
+
+  //update this when implementing Setup password depends on the function 
+  setupPassword = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -49,8 +60,8 @@ export class PasswordResetComponent implements OnInit {
 
   initForm() {
     this.resetPasswordForm = this.formBuilder.group({
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', [Validators.required, passwordValidator()]],
+      confirmPassword: ['', [Validators.required, passwordValidator()]],
     });
   }
 
@@ -63,6 +74,27 @@ export class PasswordResetComponent implements OnInit {
         this.router.navigate(['/login']).then();
       }
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+    this.passwordFieldType = this.passwordVisible ? 'text' : 'password';
+  }
+
+  toggleConfirmPasswordVisibility(): void { 
+    this.confirmPasswordVisible = !this.confirmPasswordVisible;
+    this.confirmPasswordFieldType = this.confirmPasswordVisible ? 'text' : 'password';
+  }
+
+  onInput(field: string): void {
+    if (field === 'newPassword') {
+      const newPasswordValue = this.resetPasswordForm.get('newPassword')?.value;
+      this.passwordInput = !!newPasswordValue && newPasswordValue.length > 0;
+      this.setMessageToNull();
+    } else if (field === 'confirmPassword') {
+      const confirmPasswordValue = this.resetPasswordForm.get('confirmPassword')?.value;
+      this.confirmPasswordInput = !!confirmPasswordValue && confirmPasswordValue.length > 0;
+    }
   }
 
   submit() {
@@ -122,5 +154,13 @@ export class PasswordResetComponent implements OnInit {
 
   get isFormValid() {
     return this.resetPasswordForm.valid;
+  }
+
+  get newPasswordControl(): AbstractControl {
+    return this.resetPasswordForm.get('newPassword')!;
+  }
+
+  get comfirmPasswordControl(): AbstractControl {
+    return this.resetPasswordForm.get('confirmPassword')!;
   }
 }

@@ -17,6 +17,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -39,6 +40,12 @@ import { CommonModule } from '@angular/common';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
 import {SuffixService} from "../../../services/suffix.service";
 import {Suffix} from "../../../model/suffix.model";
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
+import { 
+  facultyNameValidator, usercodeValidator 
+} from '../../../services/validators/customProfessorValidator';
 
 @Component({
   selector: 'app-edit-professor',
@@ -79,13 +86,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
+  disableReset = false;
   imageButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
@@ -118,7 +126,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -127,7 +135,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
               'image/png',
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -136,12 +144,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.professorForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, facultyNameValidator()]],
+      lastName: ['', [Validators.required, facultyNameValidator()]],
+      middleName: ['', [facultyNameValidator()]],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()
+      ]],
     });
 
     this.imageForm = this.formBuilder.group({
@@ -184,6 +194,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     const updatedValues = this.professorForm.value;
 
     this.professorToBeUpdated = {
+      ...this.professorToBeUpdated,
       ...updatedValues,
       id: this.professorToBeUpdated.id,
       password: this.professorToBeUpdated.password,
@@ -253,17 +264,27 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     });
   }
 
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User) {
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`,
     );
 
@@ -371,5 +392,29 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.professorForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.professorForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.professorForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.professorForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.professorForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.professorForm.get('email')!;
   }
 }

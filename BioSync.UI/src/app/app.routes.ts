@@ -50,6 +50,10 @@ import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 import { ManualAttendanceComponent } from './attendance/manual-attendance/manual-attendance.component';
 import { ViolationComponent } from './violation/violation.component';
 import { ViewStudentAttendanceComponent } from './violation/view-student-attendance/view-student-attendance.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import {
+    AttendanceListComponent
+} from "./attendance/attendance-list/attendance-list.component";
 
 export const routes: Routes = [
     {path: "login", component: UserLoginComponent},
@@ -57,6 +61,7 @@ export const routes: Routes = [
     {path: "forgot-password", component: PasswordForgotComponent},
     {path: "reset-password", component: PasswordResetComponent},
     {path: "profile", component: AdminProfileComponent},
+    {path: "profile/user", component: UserProfileComponent},
     {path: "dashboard", component: DashboardComponent},
     {path: "schedule", component: ScheduleComponent},
     {path: "requests", component: RequestListScheduleComponent},
@@ -86,6 +91,7 @@ export const routes: Routes = [
     {path: "suffix", component: SuffixComponent},
     {path: "visit-purpose", component: VisitPurposeComponent},
     {path: 'schedule/start/:id', component: ScheduleListComponent},
+    {path: 'list/attendance/:id', component: AttendanceListComponent},
     {path: 'view/schedule/:id', component: ViewScheduleComponent},
     {path: '', redirectTo: '/login', pathMatch: 'full'},
     {path: '**', redirectTo: '/login'},

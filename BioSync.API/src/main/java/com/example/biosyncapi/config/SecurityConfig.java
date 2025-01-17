@@ -67,6 +67,8 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "api/v1/password/**")
                                 .permitAll()
+                                .requestMatchers(HttpMethod.GET, "api/v1/laboratories")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated()
                 ).userDetailsService(userDetailsServiceImpl)

@@ -75,7 +75,9 @@ export class ScheduleComponent implements OnInit {
   currentPage: number = 1;
   totalPages!: number;
   isOneAddSchedule: boolean = false;
+  isOneEditSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
+  isWeeklyEditSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
   isRequestWeeklySchedule: boolean = false;
   isEditSchedule: boolean = false;
@@ -86,6 +88,8 @@ export class ScheduleComponent implements OnInit {
   userId!: number;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  student!: User;
+  reportDropdown = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -109,12 +113,21 @@ export class ScheduleComponent implements OnInit {
     } else {
       this.getUserId();
       this.getSectionId(this.userId);
+      this.getStudentDetails();
     }
     this.getAcademicYears();
     this. getAllPrograms();
     this.loadImageToBase64('../../assets/header.png', (base64Image) => {
       this.headerImage = base64Image;
     });
+  }
+
+  getStudentDetails(){
+    this.userService.getUserById(+this.userId).subscribe({
+      next: value => {
+        this.student = value;
+      }
+    })
   }
 
   getAllSchedules() {
@@ -181,7 +194,6 @@ export class ScheduleComponent implements OnInit {
       this.prevSelectedProgram = this.selectedProgram;
     }
   }
-
 
   getSemester() {
     this.semesters = [];
@@ -410,6 +422,8 @@ export class ScheduleComponent implements OnInit {
     this.activeDropdownId = null;
     this.isEditSchedule = !this.isEditSchedule;
     this.selectedSchedule = schedule;
+    this.isWeeklyEditSchedule = !!this.selectedSchedule.recurrenceId;
+    this.isOneEditSchedule = !this.selectedSchedule.recurrenceId;
   }
 
   handleEditBackToSchedule(): void {
@@ -454,20 +468,28 @@ export class ScheduleComponent implements OnInit {
   }
 
   onFilterChange() {
-    const isProgramChanged = this.prevSelectedProgram !== this.selectedProgram;
 
-    if(isProgramChanged) {
-      this.sections = [];
-      this.selectedYearAndSection = -1;
-      this.getSections();
-      this.prevSelectedProgram = this.selectedProgram;
+    if(this.getRole() != "STUDENT"){
+      const isProgramChanged = this.prevSelectedProgram !== this.selectedProgram;
+
+      if(isProgramChanged) {
+        this.sections = [];
+        this.selectedYearAndSection = -1;
+        this.getSections();
+        this.prevSelectedProgram = this.selectedProgram;
+      }
+
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+      )
     }
-
-    this.schedules = this.scheduleContainer.filter(
-      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-        && schedule.semester?.id === this.selectedSemester
-        && schedule.section?.program.id === this.selectedProgram
-    )
 
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
@@ -508,13 +530,13 @@ export class ScheduleComponent implements OnInit {
     this.userService.getUserById(userId).subscribe({
       next: (user: User) => {
         if (!user.id) return;
-        this.getStudentSchedules(+user.section?.id!);
+        this.getStudentSchedules(+user.id!);
       }
     })
   }
 
-  getStudentSchedules(sectionId: number) {
-    this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
+  getStudentSchedules(userId: number) {
+    this.scheduleService.getStudentsSchedule(userId).subscribe({
       next: (schedules: Schedule[]) => {
         this.schedules = schedules;
         this.scheduleContainer = schedules;
@@ -522,51 +544,104 @@ export class ScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
     })
   }
 
-  generatePdf() {
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
 
+  generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 45; // Start position for content
 
+    // Add header image
     const imgWidth = 115;
     const imgHeight = 15;
     const xOffset = (pageWidth - imgWidth) / 2;
     doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
 
+    // Add title
     const title = 'SCHEDULE LIST';
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, {align: 'center'});
+    doc.text(title, pageWidth / 2, 30, { align: 'center' });
 
+    // Add print date and time below the title, centered
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, {align: 'right'});
+    doc.text('Date/Time Printed:', pageWidth / 2 - 20, 35, { align: 'center' });
     doc.setFont('helvetica', 'normal');
     const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
+    doc.text(currentDate, pageWidth / 2 + 20, 35, { align: 'center' });
 
-    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class', 'Laboratory'];
-    const rows = this.schedules.map(schedule =>
-      [
-        schedule.subject?.code,
-        schedule.subject?.description,
-        schedule.recurrenceDays,
-        `${this.convertTimeFormat(
-          schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
-        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
-        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
-        schedule.laboratory?.name
-      ]);
+    // Add filter details
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('School Year:', leftX, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.getSchoolYearDescription(), leftX + 40, currentY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Semester:', rightX - 60, currentY, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.getSemesterDescription(), rightX, currentY, { align: 'right' });
+    currentY += lineHeight;
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Program:', leftX, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(this.getProgramDescription(), leftX + 40, currentY);
+
+    doc.setFont('helvetica', 'bold');
+    doc.text('Section:', rightX - 60, currentY, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.text(
+        this.selectedYearAndSection === -1 ? 'All' : this.getSectionDescription(),
+        rightX,
+        currentY,
+        { align: 'right' }
+    );
+    currentY += lineHeight * 2; // Add space before table
+
+    // Add table header and rows
+    const columns = [
+      'Subject Code',
+      'Subject Name',
+      'Schedule',
+      'Time',
+      'Faculty',
+      'Class',
+      'Laboratory',
+    ];
+    const rows = this.schedules.map((schedule) => [
+      schedule.subject?.code || '',
+      schedule.subject?.description || '',
+      schedule.recurrenceDays?.join(', ') || '',
+      `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(
+          schedule.endTime
+      )}`,
+      `${schedule.professor?.firstName || ''} ${
+          schedule.professor?.lastName || ''
+      }`,
+      `${schedule.section?.program.programAbbreviation || ''} ${
+          schedule.section?.year || ''
+      } - ${schedule.section?.section || ''}`,
+      schedule.laboratory?.name || '',
+    ]);
 
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: currentY,
       theme: 'grid',
       styles: {
         fontSize: 10,
@@ -581,11 +656,86 @@ export class ScheduleComponent implements OnInit {
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
     });
 
     doc.save('schedule-list.pdf');
   }
+
+  // Helper methods for filter descriptions
+  getSchoolYearDescription(): string {
+    const schoolYear = this.academicYears.find(year => year.id === this.selectedAcademicYear);
+    return schoolYear ? `${schoolYear.startYear}-${schoolYear.endYear}` : 'All';
+  }
+
+  getSemesterDescription(): string {
+    const semester = this.semesters.find(sem => sem.id === this.selectedSemester);
+    return semester ? semester.name : 'All';
+  }
+
+  getProgramDescription(): string {
+    const program = this.programs.find(prog => prog.id === this.selectedProgram);
+    return program ? program.programName : 'All';
+  }
+
+  getSectionDescription(): string {
+    const section = this.sections.find(sec => sec.id === this.selectedYearAndSection);
+    return section ? `${section.year}-${section.section}` : 'All';
+  }
+
+  generateCsv() {
+    const csvRows: string[] = [];
+
+    // Add header for filters
+    csvRows.push('Filters');
+    csvRows.push(`School Year,${this.getSchoolYearDescription()}`);
+    csvRows.push(`Semester,${this.getSemesterDescription()}`);
+    csvRows.push(`Program,${this.getProgramDescription()}`);
+    csvRows.push(`Section,${this.selectedYearAndSection === -1 ? 'All' : this.getSectionDescription()}`);
+    csvRows.push(''); // Empty row for spacing
+
+    // Add table header
+    const headers = [
+      'Subject Code',
+      'Subject Name',
+      'Schedule',
+      'Time',
+      'Faculty',
+      'Class',
+      'Laboratory',
+    ];
+    csvRows.push(headers.join(','));
+
+    // Add table rows
+    this.schedules.forEach(schedule => {
+      const row = [
+        schedule.subject?.code || '',
+        schedule.subject?.description || '',
+        schedule.recurrenceDays?.join(' | ') || '',
+        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${schedule.professor?.firstName || ''} ${schedule.professor?.lastName || ''}`,
+        `${schedule.section?.program.programAbbreviation || ''} ${schedule.section?.year || ''} - ${schedule.section?.section || ''}`,
+        schedule.laboratory?.name || '',
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    // Convert rows to CSV content
+    const csvContent = csvRows.join('\n');
+
+    // Create a blob and download it
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link to trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'schedule-list.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
     const img = new Image();
