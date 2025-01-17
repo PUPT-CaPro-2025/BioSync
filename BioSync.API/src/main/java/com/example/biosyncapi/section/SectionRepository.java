@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
     Section findByProgramAndYearAndSection(Program program, String year, int section);
-
     List<Section> findByProgramId(Long programId);
 }
