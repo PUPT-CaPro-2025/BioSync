@@ -1,7 +1,13 @@
 package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.laboratory.Laboratory;
+import com.example.biosyncapi.laboratory.LaboratoryRepository;
+import com.example.biosyncapi.program.Program;
+import com.example.biosyncapi.program.ProgramRepository;
 import com.example.biosyncapi.school_year.SchoolYear;
+import com.example.biosyncapi.school_year.SchoolYearRepository;
+import com.example.biosyncapi.section.Section;
+import com.example.biosyncapi.section.SectionRepository;
 import com.example.biosyncapi.subject.SubjectRepository;
 import com.example.biosyncapi.user.UserRepository;
 import com.example.biosyncapi.schedule.schedule_student.ScheduleStudent;
@@ -15,8 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
@@ -28,12 +37,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
     private final ScheduleStudentRepository scheduleStudentRepository;
+    private final ProgramRepository programRepository;
+    private final SectionRepository sectionRepository;
+    private final SchoolYearRepository schoolYearRepository;
+    private final LaboratoryRepository laboratoryRepository;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository, UserRepository userRepository, ScheduleStudentRepository scheduleStudentRepository) {
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, SubjectRepository subjectRepository, UserRepository userRepository, ScheduleStudentRepository scheduleStudentRepository, ProgramRepository programRepository, SectionRepository sectionRepository, SchoolYearRepository schoolYearRepository, LaboratoryRepository laboratoryRepository) {
         this.scheduleRepository = scheduleRepository;
         this.subjectRepository = subjectRepository;
         this.userRepository = userRepository;
         this.scheduleStudentRepository = scheduleStudentRepository;
+        this.programRepository = programRepository;
+        this.sectionRepository = sectionRepository;
+        this.schoolYearRepository = schoolYearRepository;
+        this.laboratoryRepository = laboratoryRepository;
     }
 
     @Override
@@ -334,4 +351,123 @@ public class ScheduleServiceImpl implements ScheduleService {
             scheduleRepository.deleteById(id);
         }
     }
+
+    @Override
+    public List<Schedule> syncSchedulesFromApi(Map<String, Object> jsonFromSite) {
+        Map<String, Object> apiData =
+            (Map<String, Object>) jsonFromSite.get("computer_laboratory_schedules");
+
+        List<Schedule> addedSchedules = new ArrayList<>();
+
+        int academicYearStart = (int) apiData.get("academic_year_start");
+        int academicYearEnd = (int) apiData.get("academic_year_end");
+        int semesterNumber =  (int) apiData.get("semester");
+
+        List<Map<String, Object>> rooms = (List<Map<String, Object>>) apiData.get("rooms");
+
+        for (Map<String, Object> room : rooms) {
+            String roomCode = (String) room.get("room_code");
+            List<Map<String, Object>> schedules = (List<Map<String, Object>>) room.get("schedules");
+
+            Laboratory laboratory = this.laboratoryRepository
+                    .findByRoomCode(extractRoomName(roomCode));
+
+            System.out.print("Labojhean: " + laboratory.toString());
+
+            for (Map<String, Object> scheduleData : schedules) {
+                Schedule schedule = new Schedule();
+
+                Map<String, Object> courseDetails = (Map<String, Object>) scheduleData.get("course_details");
+
+                //Map Subject
+                Subject subject;
+                String subjectCode = (String) courseDetails.get("course_code");
+                subject = this.subjectRepository.findByCode(subjectCode);
+                schedule.setSubject(subject);
+
+                System.out.print("Subjhean: " + subject.toString());
+
+                // Map professor
+                User professor;
+                String facultyCode = (String) scheduleData.get("faculty_code");
+                professor = this.userRepository.findByUsercode(facultyCode).get();
+                schedule.setProfessor(professor);
+
+                // Map program
+                Program program;
+                String abbreviation = (String) scheduleData.get("program_code");
+                program = this.programRepository.findByProgramAbbreviation(abbreviation).get();
+
+                System.out.println("MUSTAAARD");
+                //Map Section
+                Section section;
+
+                System.out.println(scheduleData.get("section_name").getClass().getName());
+                System.out.println(scheduleData.get("year_level").getClass().getName());
+                int sectionSelected = Integer.parseInt((String) scheduleData.get("section_name"));
+                String yearLevel =  scheduleData.get("year_level").toString();
+                section = this.sectionRepository.findByProgramAndYearAndSection(program, yearLevel, sectionSelected);
+                schedule.setSection(section);
+
+                // Map schedule time and date
+                schedule.setStartTime(Time.valueOf(LocalTime.parse((String) scheduleData.get("start_time"))));
+                schedule.setEndTime(Time.valueOf(LocalTime.parse((String) scheduleData.get("end_time"))));
+                schedule.setScheduleDate(calculateDate((String) scheduleData.get("day")));
+
+                // Map laboratory
+                schedule.setLaboratory(laboratory);
+
+                // Map school year
+                SchoolYear schoolYear;
+                schoolYear = this.schoolYearRepository.
+                        findByStartYearAndEndYear(academicYearStart, academicYearEnd);
+
+                schedule.setSchoolYear(schoolYear);
+
+                // Map semester
+                if(semesterNumber == 1){
+                    schedule.setSemester(schoolYear.getFirstSemester());
+                } else if (semesterNumber == 2){
+                    schedule.setSemester(schoolYear.getSecondSemester());
+                } else {
+                    schedule.setSemester(schoolYear.getSummerSemester());
+                }
+
+                // Map recurrence (weekly based on day)
+                schedule.setRecurrence(Recurrence.WEEKLY);
+                schedule.setRecurrenceDays(Collections.singletonList(mapDayToShortForm((String) scheduleData.get("day"))));
+
+                // Set remarks and status
+                schedule.setRemarks("Laboratory");
+                schedule.setStatus(Status.APPROVED);
+
+                // Call createSchedule
+                try {
+                    List<Schedule> created = createSchedule(schedule);
+                    addedSchedules.addAll(created);
+                } catch (ResponseStatusException e) {
+                    System.err.println("Conflict or error creating schedule: " + e.getMessage());
+                }
+            }
+        }
+        return addedSchedules;
+    }
+
+    // Utility to calculate date based on the day (assumes Monday of the current week)
+    private Date calculateDate(String day) {
+        LocalDate today = LocalDate.now();
+        DayOfWeek targetDay = DayOfWeek.valueOf(day.toUpperCase());
+        return Date.valueOf(today.with(TemporalAdjusters.nextOrSame(targetDay)));
+    }
+
+    // Utility to map day to short form (e.g., "Monday" -> "MON")
+    private String mapDayToShortForm(String day) {
+        return day.substring(0, 3).toUpperCase();
+    }
+
+    public String extractRoomName(String fullRoomCode) {
+        String[] parts = fullRoomCode.split(" - ");
+        return parts.length > 1 ? parts[1].trim() : fullRoomCode.trim();
+    }
+
 }

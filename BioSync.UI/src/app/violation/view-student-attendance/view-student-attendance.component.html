@@ -1,0 +1,81 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+      <span class="text-custom-32 text-brightRed mb-8">View Student's Attendance</span>     
+    </mat-toolbar>
+  </div>
+  <div class="flex justify-center items-center">
+    <div class="mt-2 w-[94%] bg-white py-4 px-4 rounded-2xl">
+      <div class="flex flex-col gap-6">
+        <div class="flex justify-start items-start row-content">
+          <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+            Student Number:
+          </p>
+          <p class="text-darkGray text-custom-16 w-[80%] data">
+            2024-2025-xxxxx-TG-0
+          </p>
+        </div>
+        <div class="flex justify-start items-start row-content">
+            <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+              Student Name:
+            </p>
+            <p class="text-darkGray text-custom-16 w-[80%] data">
+                Name
+            </p>
+          </div>
+        <div class="flex justify-start items-start row-content">
+          <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+            Program:
+          </p>
+          <p class="text-darkGray text-custom-16 w-[80%] data">
+            Program Description
+          </p>
+        </div>
+        <div class="flex justify-start items-start row-content">
+          <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+            Year and Section:
+          </p>
+          <p class="text-darkGray text-custom-16 w-[80%] data">
+            x - x
+          </p>
+        </div>
+        <div class="flex justify-start items-start row-content">
+            <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+                Subject:
+            </p>
+            <p class="text-darkGray text-custom-16 w-[80%] data">
+              Subject Description
+            </p>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+      <span class="text-custom-32 text-brightRed">Subject Attendance</span>
+    </mat-toolbar>
+  </div>
+  <div class="table-container">
+    <div class="subject-table">
+      <div class="attributes text-custom-16">
+        <div class="cell">Date</div>
+        <div class="cell">Status</div>
+      </div>
+      <div class="row-container text-custom-12">
+        @for (attendance of class; track attendance) {
+          <div class="row">
+            <div class="cell">Date of Class Schedule</div>
+            <div class="cell">Status of Student</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="flex justify-center items-center">
+    <div class="mb-10 flex justify-end w-[94%] button-content">
+      <button
+        class="text-custom-14 text-white py-2 px-19 bg-gradient-red rounded-full hover:bg-gradient-dark-red hover:text-f4White" >
+        Back
+      </button>
+    </div>
+  </div>
+  

@@ -2,11 +2,11 @@ package com.example.biosyncapi.schedule;
 
 import com.example.biosyncapi.laboratory.Laboratory;
 import com.example.biosyncapi.school_year.SchoolYear;
-import com.example.biosyncapi.semester.Semester;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +24,5 @@ public interface ScheduleService {
     Schedule updateSchedule(Schedule schedule);
     Schedule updatePartialSchedule(Long id, Status updates);
     void deleteSchedule(Long id);
+    List<Schedule> syncSchedulesFromApi(Map<String, Object> apiData);
 }

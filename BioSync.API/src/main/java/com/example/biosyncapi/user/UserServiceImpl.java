@@ -289,6 +289,64 @@ public class UserServiceImpl implements UserService {
     return mailPassword;
   }
 
+  @Override
+  public List<User> processCSVForEditing(MultipartFile file) throws Exception {
+    List<User> updatedUsers = new ArrayList<>();
+
+    File tempFile = File.createTempFile("converted_", ".csv");
+    tempFile.deleteOnExit();
+
+    String detectedEncoding = detectEncoding(file);
+
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(file.getInputStream(), detectedEncoding));
+         BufferedWriter writer = new BufferedWriter(
+                 new OutputStreamWriter(new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      while ((line = reader.readLine()) != null) {
+        writer.write(line);
+        writer.newLine();
+      }
+    }
+
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      boolean isHeader = true;
+      while ((line = reader.readLine()) != null) {
+        if (isHeader) {
+          isHeader = false;
+          continue;
+        }
+
+        String[] csvRow = line.split(",");
+
+        try {
+          Optional<User> userOptional = userRepository.findByUsercode(csvRow[0]);
+
+          if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            updateUserFromCSVRow(user, csvRow);
+
+            User updatedUser = updateUser(user);
+            updatedUsers.add(updatedUser);
+          } else {
+            System.out.println("User with usercode " + csvRow[0] + " not found.");
+          }
+        } catch (Exception e) {
+          System.out.println("Error while updating user: " + e.getMessage());
+        }
+      }
+    } finally {
+      tempFile.delete();
+    }
+
+    return updatedUsers;
+  }
+
   private String detectEncoding(MultipartFile file) throws IOException {
     byte[] bytes = file.getBytes();
 
@@ -420,6 +478,15 @@ public class UserServiceImpl implements UserService {
     if(scheduleStudent == null) {
       this.scheduleStudentService.addStudentToSchedule(schedule, user);
     }
+  }
+
+  private void updateUserFromCSVRow(User user, String[] csvRow) throws Exception {
+    user.setLastName(getValue(csvRow[1]));
+    user.setFirstName(getValue(csvRow[2]));
+    user.setMiddleName(getValue(csvRow[3]));
+    user.setSection(getSection(csvRow[5]));
+    user.setProgram(getProgram(csvRow[5]));
+    user.setEmail(getEmail(csvRow[6]));
   }
   // endregion
 }

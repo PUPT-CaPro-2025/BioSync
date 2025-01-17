@@ -1,0 +1,218 @@
+<div class="background-container">
+  @if(!isViewStudentAttendance) {
+    <div class="header">
+      <mat-toolbar class="toolbar-container">
+        <span>List of Violations</span>
+        <div class="toolbar-button">
+          <button class="header-button" (click)="generatePdf()">
+            Print Violation Report
+          </button>
+        </div>
+      </mat-toolbar>
+    </div>
+    <div class="filter-container">
+      <mat-toolbar class="filter-content">
+        <div class="flex w-full gap-2">
+          <div class="select-top-container w-full">
+            <p>Academic Year</p>
+            <mat-select
+              [(value)]="selectedAcademicYear"
+              id="academic_year"
+              class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+              (selectionChange)="onFilterChange()">
+              @for (academicYear of academicYears; track academicYear) {
+                <mat-option [value]="academicYear.id">
+                  AY {{ academicYear.startYear }} -
+                  {{ academicYear.endYear }}
+                </mat-option>
+              }
+            </mat-select>
+          </div>
+          <div class="select-top-container w-full">
+            <p>Semester</p>
+            <mat-select
+              [(value)]="selectedSemester"
+              id="semester"
+              class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+              (selectionChange)="onFilterChange()">
+              @for (semester of semesters; track $index) {
+                <mat-option [value]="$index + 1">{{
+                  semester
+                }}</mat-option>
+              }
+            </mat-select>
+          </div>
+          <div class="select-top-container w-full"> 
+            <p>Professor</p>
+            <mat-select
+                [(value)]="selectedProfessor"
+                id="professor"
+                class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                (selectionChange)="onFilterChange()">
+              @for(professor of professors; track professor) {
+                <mat-option [value]="professor.id">
+                   {{ professor.firstName }} {{ professor.lastName }}
+                </mat-option>
+              }
+            </mat-select>
+          </div>    
+          <div class="select-top-container w-full"> 
+            <p>Subject</p>
+            <mat-select
+                [(value)]="selectedSubject"
+                id="subject"
+                class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                (selectionChange)="onFilterChange()">
+              @for(subject of subjects; track subject) {
+                <mat-option [value]="subject.id">
+                   {{subject.code}} - {{ subject.description }}
+                </mat-option>
+              }
+            </mat-select>
+          </div>                                     
+        </div>
+        <div class="search-container mt-10">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="SEARCH">
+        </div>
+      </mat-toolbar>
+    </div>
+    @if (filteredSchedules.length > 0) {
+      <div class="table-container">
+        <div class="subject-table">
+          <div class="attributes text-custom-16">
+            <div class="cell">School Year</div>
+            <div class="cell">Student Name</div>
+            <div class="cell">Subject</div>
+            <div class="cell">Year</div>
+            <div class="cell">Section</div>
+            <div class="cell">Action</div>
+          </div>
+          <div class="row-container">
+            @for (schedule of filteredSchedules; track schedule) {
+              <div class="row text-custom-12">
+                <div class="cell">{{ schedule?.schoolYear?.startYear }}-{{ schedule?.schoolYear?.endYear }}</div>
+                <div class="cell">
+                  Student Name 
+                </div>
+                <div class="cell">
+                    {{ schedule?.subject?.description }}
+                </div>
+                <div class="cell">
+                    Year
+                </div>
+                <div class="cell">Section</div>
+                <div class="cell">
+                  <button
+                    (click)="toggleDropdownAction(schedule.id)"
+                    class="dropdown-toggle"
+                  >
+                    <mat-icon>more_horiz</mat-icon>
+                  </button>
+                  @if (activeDropdownId === schedule.id) {
+                    <div
+                      class="action-container"
+                      [ngClass]="{
+                        'bottom-action':
+                          filteredSchedules.length >= 4 &&
+                          (filteredSchedules[
+                            filteredSchedules.length - 1
+                          ] === schedule ||
+                            filteredSchedules[
+                              filteredSchedules.length - 2
+                            ] === schedule || filteredSchedules[
+                              filteredSchedules.length - 3
+                            ] === schedule),
+                      }">
+                      <button
+                        class="action-button"
+                        (click)="toggleViewAttendance()">
+                        View
+                      </button>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="line-container">
+        <img src="../../assets/black-line.svg" />
+      </div>
+      <div class="bottom-container">
+        <div class="paginator">
+          <div class="paginator-info">
+            {{ getDisplayRange() }} of {{ totalItems }}
+          </div>
+          <div class="paginator-controls">
+            <div>
+              <span>Sort By</span>
+              <select>
+                @for (sort of sorting; track sort) {
+                  <option [value]="sort">{{ sort }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <span>Show Entries</span>
+              <select [(ngModel)]="itemsPerPage"
+                  (change)="onItemsPerPageChange()">
+                @for (entry of entries; track entry) {
+                  <option [value]="entry" [selected]="entry === '10'">
+                    {{ entry }}
+                  </option>
+                }
+              </select>
+            </div>
+            <div>
+              <span>Page</span>
+              <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                @for (page of pages; track page) {
+                  <option [value]="page">{{ page }}</option>
+                }
+              </select>
+            </div>
+            <div class="paginator-button-container">
+              <button
+                (click)="previousPage()"
+                [disabled]="currentPage === 1"
+                [ngClass]="{ 'active-button': currentPage > 1 }"
+              >
+                <img
+                  src="../../assets/previous.svg"
+                  alt="Previous Icon"
+                  [ngClass]="{ 'active-icon': currentPage > 1 }"
+                />
+                Previous
+              </button>
+              <button
+                (click)="nextPage()"
+                [disabled]="currentPage === totalPages"
+                [ngClass]="{
+                  'active-button': currentPage < totalPages,
+                }"
+              >
+                Next
+                <img
+                  src="../../assets/next.svg"
+                  alt="Next Icon"
+                  [ngClass]="{
+                    'active-icon': currentPage < totalPages,
+                  }"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="flex justify-center items-center h-[50vh]">
+        No Schedules Yet.
+      </div>
+    }
+  } @else {
+    <app-view-student-attendance/>
+  }
+</div>
+  
