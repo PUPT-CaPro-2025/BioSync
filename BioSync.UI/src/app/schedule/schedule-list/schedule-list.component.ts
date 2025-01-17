@@ -47,28 +47,18 @@ export class ScheduleListComponent implements OnInit {
           new Date(schedule.scheduleDate).getTime() >= today && !schedule.hasFinished
         );
 
-        const finishedSchedules = schedules.filter(schedule =>
-          schedule.hasFinished && new Date(schedule.scheduleDate).getTime() >= today
-        );
-
         const pastSchedules = schedules.filter(schedule =>
           new Date(schedule.scheduleDate).getTime() < today && !schedule.hasFinished
         );
 
         futureSchedules.sort((a, b) => new Date(a.scheduleDate).getTime() - new Date(b.scheduleDate).getTime());
-        finishedSchedules.sort((a, b) => new Date(a.scheduleDate).getTime() - new Date(b.scheduleDate).getTime());
         pastSchedules.sort((a, b) => new Date(b.scheduleDate).getTime() - new Date(a.scheduleDate).getTime());
 
-        this.schedules = [...futureSchedules, ...finishedSchedules, ...pastSchedules];
+        this.schedules = [ ...pastSchedules, ...futureSchedules];
 
         this.schedule = this.schedules[0];
       }
     });
-  }
-
-  isScheduledForFutureOrToday(schedule: Schedule): boolean {
-    console.log(schedule.hasFinished);
-    return (new Date(schedule.scheduleDate).getTime() >= this.today) && !schedule.hasFinished;
   }
 
   getDayOfWeek(date: string | Date) {

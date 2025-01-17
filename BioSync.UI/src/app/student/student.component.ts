@@ -19,6 +19,7 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
+import {StudentEditCsvComponent} from "../prompt/student-edit-csv/student-edit-csv.component";
 
 @Component({
   selector: 'app-student',
@@ -65,7 +66,9 @@ export class StudentComponent implements OnInit{
   isAddStudent: boolean = false;
   isEditStudent: boolean = false;
   studentToEdit!:User;
-  headerImage!: string;
+  bagongPilipinas!: string; 
+  stamp!: string;
+  schoolLogo!: string;  
   searchQuery!: string;
   activeDropdownId: number | null = null;
   reportDropdown = false;
@@ -81,8 +84,16 @@ export class StudentComponent implements OnInit{
     this.getStudents();
     this. getAllPrograms();
 
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -187,46 +198,36 @@ export class StudentComponent implements OnInit{
     // Handle page change logic here
   }
 
-  onProgramChange() {
-    if(this.selectedProgram == -1){
-      this.queriedStudents = this.students;
-      this.sections = [];
-    } else {
+  updateQueriedStudents() {
+    this.queriedStudents = this.students;
+
+    // Filter by selected program
+    if (this.selectedProgram !== -1) {
       this.getSections(this.selectedProgram);
-      this.queriedStudents = this.studentContainer.filter(
+      this.queriedStudents = this.queriedStudents.filter(
           student => student.section?.program.id === this.selectedProgram
-      )
-    }
-
-    this.selectedYearAndSection = -1;
-    this.totalItems = this.queriedStudents.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-
-  onSectionChange() {
-    if(this.selectedYearAndSection == -1){
-      this.queriedStudents = this.students;
-    } else {
-      this.queriedStudents = this.studentContainer.filter(
-          student => student.section?.id === this.selectedYearAndSection
-      )
-    }
-    this.totalItems = this.queriedStudents.length;
-    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-  }
-
-  OnBiometricsChange(){
-    if(this.selectedBiometrics == -1){
-      this.queriedStudents = this.students;
-    } else {
-      this.queriedStudents = this.studentContainer.filter(
-        student => student.biometrics === (this.selectedBiometrics > 0)
       );
     }
+
+    // Filter by selected section
+    if (this.selectedYearAndSection !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
+          student => student.section?.id === this.selectedYearAndSection
+      );
+    }
+
+    // Filter by biometrics status
+    if (this.selectedBiometrics !== -1) {
+      this.queriedStudents = this.queriedStudents.filter(
+          student => student.biometrics === (this.selectedBiometrics > 0)
+      );
+    }
+
+    // Update pagination data
     this.totalItems = this.queriedStudents.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
+
 
   onItemsPerPageChange(): void {
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
@@ -332,24 +333,13 @@ export class StudentComponent implements OnInit{
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'STUDENT LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
+    //Header and Rows
     const columns = ['Student Code','Program', 'First Name', 'Middle Name', 'Last Name', ];
     let studentsToPrint: User[];
     if(this.selectedProgram == -1 && this.selectedYearAndSection == -1){
@@ -366,11 +356,79 @@ export class StudentComponent implements OnInit{
         students.lastName,
       ]);
 
+    const renderHeader = (currentPage: number, pageCount: number) => {
+      //Add header image
+     const margin = 10;
+     const imgWidth = 20; 
+     const imgHeight = 20;
+
+     doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+     const textStartX = margin + imgWidth + 5;
+     const textStartY = 15;
+     doc.setFontSize(10);
+     doc.text('Republic of the Philippines', textStartX, textStartY);
+
+     doc.setFontSize(12);
+     doc.setFont('times', 'bold');
+     doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+     doc.setFontSize(10);
+     doc.setFont('times', 'normal');
+     doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+     doc.setFontSize(11);
+     doc.setFont('times', 'bold');
+     doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+     doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+
+     const title = 'STUDENT LIST';
+     doc.setFontSize(20);
+     doc.setFont('helvetica', 'bold');
+     doc.text(title, pageWidth / 2, 45, { align: 'center' });
+ 
+     doc.setFontSize(10);
+     doc.setFont('helvetica', 'bold');
+     doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+     doc.setFont('helvetica', 'normal');
+     const currentDate = new Date().toLocaleString();
+     doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+
+      // Add footer
+     const footerY = doc.internal.pageSize.height - 15;
+     const textLeftX = 10;  
+
+     doc.setFont('helvetica', 'normal');
+     doc.setFontSize(8);
+     doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+     doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+
+     doc.setTextColor(0, 0, 0); 
+     doc.text('Website: ', textLeftX, footerY + 0.5);
+     doc.setTextColor(0, 0, 255); 
+     doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+     doc.setTextColor(0, 0, 0);
+     doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+     doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+     doc.setTextColor(0);
+
+     doc.setFont('times', 'normal');
+     doc.setFontSize(15);
+     doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+     const stampRightX = doc.internal.pageSize.width - 80;
+     const stampWidth = 65;
+     const stampHeight = 30; 
+     doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+    }
+
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 55,
       theme: 'grid',
+      margin: { top: 55, bottom: 40 },
       styles: {
         fontSize: 10,
         halign: 'center',
@@ -384,7 +442,10 @@ export class StudentComponent implements OnInit{
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
     doc.save('student-list.pdf');
@@ -444,5 +505,21 @@ export class StudentComponent implements OnInit{
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  openEditDialog() {
+    const ref = this.dialog.open(StudentEditCsvComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        scheduleId: null,
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getStudents()
+      }
+    })
   }
 }

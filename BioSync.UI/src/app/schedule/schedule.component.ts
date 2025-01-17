@@ -25,6 +25,7 @@ import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
 import { Semester } from "../../model/semester.model";
+import { belowStartTimeValidator } from '../../services/validators/customScheduleValidator';
 
 @Component({
   selector: 'app-schedule',
@@ -75,7 +76,9 @@ export class ScheduleComponent implements OnInit {
   currentPage: number = 1;
   totalPages!: number;
   isOneAddSchedule: boolean = false;
+  isOneEditSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
+  isWeeklyEditSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
   isRequestWeeklySchedule: boolean = false;
   isEditSchedule: boolean = false;
@@ -85,8 +88,12 @@ export class ScheduleComponent implements OnInit {
   isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
   headerImage!: string;
+  bagongPilipinas!: string; 
+  stamp!: string;
+  schoolLogo!: string;
   activeDropdownId: number | null = null;
   student!: User;
+  reportDropdown = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -114,8 +121,17 @@ export class ScheduleComponent implements OnInit {
     }
     this.getAcademicYears();
     this. getAllPrograms();
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -419,6 +435,8 @@ export class ScheduleComponent implements OnInit {
     this.activeDropdownId = null;
     this.isEditSchedule = !this.isEditSchedule;
     this.selectedSchedule = schedule;
+    this.isWeeklyEditSchedule = !!this.selectedSchedule.recurrenceId;
+    this.isOneEditSchedule = !this.selectedSchedule.recurrenceId;
   }
 
   handleEditBackToSchedule(): void {
@@ -546,50 +564,155 @@ export class ScheduleComponent implements OnInit {
     })
   }
 
-  generatePdf() {
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
 
+  generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+    // Add table header and rows
+    const columns = [
+      'Subject Code',
+      'Subject Name',
+      'Schedule',
+      'Time',
+      'Faculty',
+      'Class',
+      'Laboratory',
+    ];
+    const rows = this.schedules.map((schedule) => [
+      schedule.subject?.code || '',
+      schedule.subject?.description || '',
+      schedule.recurrenceDays?.join(', ') || schedule.scheduleDate,
+      `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(
+          schedule.endTime
+      )}`,
+      `${schedule.professor?.firstName || ''} ${
+          schedule.professor?.lastName || ''
+      }`,
+      `${schedule.section?.program.programAbbreviation || ''} ${
+          schedule.section?.year || ''
+      } - ${schedule.section?.section || ''}`,
+      schedule.laboratory?.name || '',
+    ]);
 
-    const title = 'SCHEDULE LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, {align: 'center'});
+    const renderHeader = (currentPage: number, pageCount: number) => {
+       //Add header image
+      const margin = 10;
+      const imgWidth = 20; 
+      const imgHeight = 20;
 
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, {align: 'right'});
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
+      doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
 
-    const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class', 'Laboratory'];
-    const rows = this.schedules.map(schedule =>
-      [
-        schedule.subject?.code,
-        schedule.subject?.description,
-        schedule.recurrenceDays,
-        `${this.convertTimeFormat(
-          schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
-        `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
-        `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
-        schedule.laboratory?.name
-      ]);
+      const textStartX = margin + imgWidth + 5;
+      const textStartY = 15;
+      doc.setFontSize(10);
+      doc.text('Republic of the Philippines', textStartX, textStartY);
 
+      doc.setFontSize(12);
+      doc.setFont('times', 'bold');
+      doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+      doc.setFontSize(10);
+      doc.setFont('times', 'normal');
+      doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+      doc.setFontSize(11);
+      doc.setFont('times', 'bold');
+      doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+      doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+
+      // Add title
+      const title = 'SCHEDULE LIST';
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
+      // Add print date and time below the title, centered
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      const currentDate = new Date().toLocaleString();
+      doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+
+      // Add filter details
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('School Year:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.getSchoolYearDescription(), leftX + 40, currentY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Semester:', rightX - 60, currentY, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.getSemesterDescription(), rightX, currentY, { align: 'right' });
+      currentY += lineHeight;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Program:', leftX, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(this.getProgramDescription(), leftX + 40, currentY);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Section:', rightX - 60, currentY, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+          this.selectedYearAndSection === -1 ? 'All' : this.getSectionDescription(),
+          rightX,
+          currentY,
+          { align: 'right' }
+      );
+
+        // Add footer
+      const footerY = doc.internal.pageSize.height - 15;
+      const textLeftX = 10;  
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+      doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+
+      doc.setTextColor(0, 0, 0); 
+      doc.text('Website: ', textLeftX, footerY + 0.5);
+      doc.setTextColor(0, 0, 255); 
+      doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+      doc.setTextColor(0, 0, 0);
+      doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+      doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+      doc.setTextColor(0);
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(15);
+      doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+      const stampRightX = doc.internal.pageSize.width - 80;
+      const stampWidth = 65;
+      const stampHeight = 30; 
+      doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+    }
+
+    const tableWidth = columns.length * 40; // Adjust column width here if needed
+    const tableMarginLeft = (pageWidth - tableWidth) / 2;
+
+    // Add table
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 75,
       theme: 'grid',
       styles: {
         fontSize: 10,
         halign: 'center',
       },
+      margin: { left: tableMarginLeft, top: 80, bottom: 40 },
       headStyles: {
         fillColor: [255, 255, 255],
         textColor: [0, 0, 0],
@@ -599,11 +722,89 @@ export class ScheduleComponent implements OnInit {
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
     doc.save('schedule-list.pdf');
   }
+
+  // Helper methods for filter descriptions
+  getSchoolYearDescription(): string {
+    const schoolYear = this.academicYears.find(year => year.id === this.selectedAcademicYear);
+    return schoolYear ? `${schoolYear.startYear}-${schoolYear.endYear}` : 'All';
+  }
+
+  getSemesterDescription(): string {
+    const semester = this.semesters.find(sem => sem.id === this.selectedSemester);
+    return semester ? semester.name : 'All';
+  }
+
+  getProgramDescription(): string {
+    const program = this.programs.find(prog => prog.id === this.selectedProgram);
+    return program ? program.programName : 'All';
+  }
+
+  getSectionDescription(): string {
+    const section = this.sections.find(sec => sec.id === this.selectedYearAndSection);
+    return section ? `${section.year}-${section.section}` : 'All';
+  }
+
+  generateCsv() {
+    const csvRows: string[] = [];
+
+    // Add header for filters
+    csvRows.push('Filters');
+    csvRows.push(`School Year,${this.getSchoolYearDescription()}`);
+    csvRows.push(`Semester,${this.getSemesterDescription()}`);
+    csvRows.push(`Program,${this.getProgramDescription()}`);
+    csvRows.push(`Section,${this.selectedYearAndSection === -1 ? 'All' : this.getSectionDescription()}`);
+    csvRows.push(''); // Empty row for spacing
+
+    // Add table header
+    const headers = [
+      'Subject Code',
+      'Subject Name',
+      'Schedule',
+      'Time',
+      'Faculty',
+      'Class',
+      'Laboratory',
+    ];
+    csvRows.push(headers.join(','));
+
+    // Add table rows
+    this.schedules.forEach(schedule => {
+      const row = [
+        schedule.subject?.code || '',
+        schedule.subject?.description || '',
+        schedule.recurrenceDays?.join(' | ') || '',
+        `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
+        `${schedule.professor?.firstName || ''} ${schedule.professor?.lastName || ''}`,
+        `${schedule.section?.program.programAbbreviation || ''} ${schedule.section?.year || ''} - ${schedule.section?.section || ''}`,
+        schedule.laboratory?.name || '',
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    // Convert rows to CSV content
+    const csvContent = csvRows.join('\n');
+
+    // Create a blob and download it
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a link to trigger download
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'schedule-list.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {
     const img = new Image();

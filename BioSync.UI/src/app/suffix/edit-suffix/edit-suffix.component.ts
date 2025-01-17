@@ -2,13 +2,19 @@ import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { Suffix } from '../../../model/suffix.model';
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import {SuffixService} from "../../../services/suffix.service";
+import { 
+  letterOnlyValidator, letterAndSpacesValidator 
+} from '../../../services/validators/customSuffixValidator';
 
 @Component({
   selector: 'app-edit-suffix',
@@ -41,8 +47,10 @@ export class EditSuffixComponent implements OnInit{
 
   initForm(){
     this.suffixForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
-      abbreviation: ['', [Validators.required]]
+      name: ['', [Validators.required, letterAndSpacesValidator()]],
+      abbreviation: ['', [
+        Validators.required, Validators.maxLength(8), letterOnlyValidator()
+      ]]
     });
   }
 
@@ -55,6 +63,14 @@ export class EditSuffixComponent implements OnInit{
 
   returnToSuffixView(): void {
     this.backToEditSuffix.emit();
+  }
+
+  get suffixNameControl(): AbstractControl {
+    return this.suffixForm.get('name')!;
+  }
+
+  get suffixAbbreviationControl(): AbstractControl {
+    return this.suffixForm.get('abbreviation')!;
   }
 
   submit(){

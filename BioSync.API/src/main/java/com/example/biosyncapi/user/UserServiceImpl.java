@@ -253,6 +253,64 @@ public class UserServiceImpl implements UserService {
     }
 
     try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      boolean isHeader = true;
+      while ((line = reader.readLine()) != null) {
+        if (isHeader) {
+          isHeader = false;
+          continue;
+        }
+
+        String[] csvRow = line.split(",");
+
+        try {
+          Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
+
+          if (user.isPresent()) {
+            schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
+            continue;
+          }
+
+          String generatedPassword = generatePassword(8);
+          User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
+          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
+
+          mailPassword.put(createdUser, generatedPassword);
+        } catch (Exception e) {
+          System.out.println("Error: " + e.getMessage());
+        }
+      }
+    } finally {
+      tempFile.delete();
+    }
+
+    return mailPassword;
+  }
+
+  @Override
+  public List<User> processCSVForEditing(MultipartFile file) throws Exception {
+    List<User> updatedUsers = new ArrayList<>();
+
+    File tempFile = File.createTempFile("converted_", ".csv");
+    tempFile.deleteOnExit();
+
+    String detectedEncoding = detectEncoding(file);
+
+    try (BufferedReader reader = new BufferedReader(
+            new InputStreamReader(file.getInputStream(), detectedEncoding));
+         BufferedWriter writer = new BufferedWriter(
+                 new OutputStreamWriter(new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      while ((line = reader.readLine()) != null) {
+        writer.write(line);
+        writer.newLine();
+      }
+    }
+
+    try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
 
       String line;
@@ -262,26 +320,31 @@ public class UserServiceImpl implements UserService {
           isHeader = false;
           continue;
         }
+
         String[] csvRow = line.split(",");
 
-        Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
+        try {
+          Optional<User> userOptional = userRepository.findByUsercode(csvRow[0]);
 
-        if (user.isPresent()) {
-          schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
-          continue;
+          if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            updateUserFromCSVRow(user, csvRow);
+
+            User updatedUser = updateUser(user);
+            updatedUsers.add(updatedUser);
+          } else {
+            System.out.println("User with usercode " + csvRow[0] + " not found.");
+          }
+        } catch (Exception e) {
+          System.out.println("Error while updating user: " + e.getMessage());
         }
-
-        String generatedPassword = generatePassword(8);
-        User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
-        schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
-
-        mailPassword.put(createdUser, generatedPassword);
       }
     } finally {
       tempFile.delete();
     }
 
-    return mailPassword;
+    return updatedUsers;
   }
 
   private String detectEncoding(MultipartFile file) throws IOException {
@@ -312,7 +375,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User mapToUser(String[] csvRow, String password) {
+  public User mapToUser(String[] csvRow, String password) throws Exception {
     User user = new User();
     user.setUsercode(getValue(csvRow[0]));
     user.setLastName(getValue(csvRow[1]));
@@ -343,25 +406,41 @@ public class UserServiceImpl implements UserService {
     return value.substring(0, extraIndex);
   }
 
-  private Section getSection(String sectionCode) {
+  private Section getSection(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String yearSection = sectionCode.substring(tgIndex + 2).trim();
     String[] yearSectionArr = yearSection.split("-");
+    if (yearSectionArr.length < 2) {
+      throw new IllegalArgumentException();
+    }
 
     Program program = getProgram(sectionCode);
 
-    if (program == null)
-      return null;
+    if (program == null) { // Replaced with exception
+      throw new Exception();
+    }
 
     String year = yearSectionArr[0];
-    int section = Integer.parseInt(yearSectionArr[1]);
+    int section;
+    try {
+      section = Integer.parseInt(yearSectionArr[1]);
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException();
+    }
 
-    return this.sectionRepository.findByProgramAndYearAndSection(program, year, section);
+    return this.sectionRepository.findByProgramAndYearAndSection(program,
+        year, section);
   }
 
-  private Program getProgram(String sectionCode) {
+  private Program getProgram(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String programAbb = sectionCode.substring(0, tgIndex).trim();
 
@@ -369,7 +448,8 @@ public class UserServiceImpl implements UserService {
       programAbb = programAbb.substring(0, programAbb.length() - 1);
     }
 
-    return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
+    return this.programRepository.findByProgramAbbreviation(programAbb)
+        .orElseThrow(Exception::new);
   }
 
   private String generatePassword(int length) {
@@ -398,6 +478,15 @@ public class UserServiceImpl implements UserService {
     if(scheduleStudent == null) {
       this.scheduleStudentService.addStudentToSchedule(schedule, user);
     }
+  }
+
+  private void updateUserFromCSVRow(User user, String[] csvRow) throws Exception {
+    user.setLastName(getValue(csvRow[1]));
+    user.setFirstName(getValue(csvRow[2]));
+    user.setMiddleName(getValue(csvRow[3]));
+    user.setSection(getSection(csvRow[5]));
+    user.setProgram(getProgram(csvRow[5]));
+    user.setEmail(getEmail(csvRow[6]));
   }
   // endregion
 }

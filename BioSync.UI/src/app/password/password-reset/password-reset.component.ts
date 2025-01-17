@@ -5,6 +5,7 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { MatInput } from '@angular/material/input';
+import { passwordValidator } from '../../../services/validators/customPasswordValidator';
 
 @Component({
   selector: 'app-password-reset',
@@ -58,8 +60,8 @@ export class PasswordResetComponent implements OnInit {
 
   initForm() {
     this.resetPasswordForm = this.formBuilder.group({
-      newPassword: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+      newPassword: ['', [Validators.required, passwordValidator()]],
+      confirmPassword: ['', [Validators.required, passwordValidator()]],
     });
   }
 
@@ -152,5 +154,13 @@ export class PasswordResetComponent implements OnInit {
 
   get isFormValid() {
     return this.resetPasswordForm.valid;
+  }
+
+  get newPasswordControl(): AbstractControl {
+    return this.resetPasswordForm.get('newPassword')!;
+  }
+
+  get comfirmPasswordControl(): AbstractControl {
+    return this.resetPasswordForm.get('confirmPassword')!;
   }
 }

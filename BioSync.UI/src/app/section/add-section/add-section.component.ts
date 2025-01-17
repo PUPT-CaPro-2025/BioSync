@@ -2,7 +2,10 @@ import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import { ProgramService } from '../../../services/program.service';
@@ -40,7 +43,7 @@ export class AddSectionComponent implements OnInit {
   ];
 
   sections: string[] =[
-    '1', '2', '3', '4', '5'
+    '1', '2', '3'
   ];
 
   programs: Program[] = [];
@@ -71,6 +74,18 @@ export class AddSectionComponent implements OnInit {
         this.programs = programs;
       }
     })
+  }
+
+  get programControl(): AbstractControl {
+    return this.sectionForm.get('program')!;
+  }
+
+  get yearControl(): AbstractControl {
+    return this.sectionForm.get('year')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.sectionForm.get('section')!;
   }
 
   returnToSectionView(): void {

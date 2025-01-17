@@ -9,7 +9,35 @@
   align-items: center;
 }
 
+
+.fc-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+  overflow-y: scroll;
+}
+
+.fc-scroller::-webkit-scrollbar {
+  width: 2px;
+}
+
+.fc-scroller::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+.fc-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
 .fc .fc-printCalendarButton-button {
+  background-color: #AB3130;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.fc-button.fc-SyncSchedules-button {
   background-color: #AB3130;
   color: white;
   border: none;
@@ -28,11 +56,11 @@
     justify-content: space-between;
     width: 96%;
   }
-  
+
   .example-full-width {
   width: 100%;
   }
-  
+
   .form-button button{
     font-size: 14px;
     padding: 12px 60px;
@@ -42,11 +70,11 @@
     border-radius: 40px;
     cursor: pointer;
   }
-  
+
   .form-button button:hover {
     background-color: #800c10;
   }
-  
+
   .calendar-container {
       background-color: white;
       padding: 10px;
@@ -55,50 +83,50 @@
       border-radius: 20px;
       padding: 20px;
   }
-    
-  .fc,  
-  .fc .fc-view, 
+
+  .fc,
+  .fc .fc-view,
   .fc .fc-view * {
       border: none !important;
       outline: none !important;
   }
-  
+
   .fc-toolbar-title {
-    color: #AB3130 !important;    
+    color: #AB3130 !important;
     font-size: 24px !important;
-    font: medium !important; 
+    font: medium !important;
   }
-  
+
   .fc-button.fc-today-button {
     background-color: #AB3130 !important;
     color: white !important;
   }
-  
+
   .fc-button.fc-today-button:hover {
     background-color: #942f2a !important;
   }
-  
+
   .fc-prev-button,
   .fc-next-button {
     background-color: transparent !important;
     border: none !important;
     color: #AB3130 !important;
-    box-shadow: none !important; 
+    box-shadow: none !important;
     font-size: larger !important;
   }
-  
+
   .fc-prev-button:hover,
   .fc-next-button:hover {
     color: #942f2a !important;
   }
-  
+
   .fc-col-header-cell {
     position: relative;
     padding: 10px !important;
     z-index: 1;
     background-color: transparent !important;
   }
-  
+
   .fc-col-header-cell::before {
     content: '';
     position: absolute;
@@ -110,18 +138,18 @@
     pointer-events: none;
     box-sizing: border-box;
   }
-  
+
   .fc-day-today {
     position: relative;
     z-index: 1;
     background-color: transparent !important;
   }
-  
+
   .fc-day-today .fc-daygrid-day-number {
     position: relative;
-    z-index: 1; 
+    z-index: 1;
   }
-  
+
   .fc-day-today::before {
     content: '';
     position: absolute;
@@ -140,50 +168,50 @@
       font-size: 14px;
     }
   }
-  
+
   @media (min-width: 1000px) and (max-width: 1325px) {
     .classes-header {
       font-size: 20px;
     }
-  
+
     .row-classes {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-  
+
     .month-day {
       margin-left: 0;
     }
-  
+
     .subject-name {
       font-size: 12px;
     }
-  
+
     .lab-room {
       font-size: 12px;
     }
-  
+
     .time {
       font-size: 12px;
     }
-  
+
     .calendar-container {
       height: max-content;
     }
-  
+
     .group-total {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
       justify-content: center;
     }
-  
+
     .data-row {
       width: 225px;
     }
   }
-  
+
   @media (max-width: 999px) {
     .group-total {
       display: flex;
@@ -191,33 +219,33 @@
       gap: 20px;
       justify-content: center;
     }
-  
+
     .data-row {
       width: 225px;
     }
-  
+
     .classes-header {
       font-size: 20px;
     }
-  
+
     .fc-toolbar-title {
       font-size: 20px !important;
     }
-  
+
     .calendar-upcoming-class {
       flex-direction: column;
       gap: 20px;
     }
-  
+
     .calendar-container {
       width: 100%;
     }
-  
+
     .upcoming-class {
       width: 100%;
     }
   }
-  
+
   @media (max-width: 400px) {
     .fc-toolbar-chunk {
       flex: 1;
@@ -225,16 +253,15 @@
       justify-content: space-between;
       align-items: center;
     }
-  
+
     .fc-toolbar-title {
       text-align: center;
       width: 100%;
     }
-  
+
     .fc .fc-toolbar {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
     }
   }
-  

@@ -21,6 +21,8 @@ import {Semester} from "../../../model/semester.model";
 import {SchoolYear} from "../../../model/school.year.model";
 import {Laboratory} from "../../../model/laboratory.model";
 import {LaboratoryService} from "../../../services/laboratory.service";
+import {PromptSyncComponent} from "../../prompt/prompt-sync/prompt-sync.component";
+import {IntegrationService} from "../../../services/integration.service";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -31,6 +33,7 @@ import {LaboratoryService} from "../../../services/laboratory.service";
     SubjectService,
     UserService,
     LaboratoryService,
+    IntegrationService
   ],
   templateUrl: './dashboard-admin.component.html',
   styleUrl: './dashboard-admin.component.css',
@@ -54,7 +57,8 @@ export class DashboardAdminComponent implements OnInit {
     private userService: UserService,
     private subjectService: SubjectService,
     private dialog: MatDialog,
-    private laboratoryService: LaboratoryService
+    private laboratoryService: LaboratoryService,
+    private integrationService: IntegrationService
   ) {
   }
 
@@ -126,22 +130,29 @@ export class DashboardAdminComponent implements OnInit {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
+    hiddenDays: [0],
     plugins: [dayGridPlugin, interactionPlugin],
     customButtons: {
-      printCalendarButton: {  // Define the custom button
+      printCalendarButton: {
         text: 'Export',
         click: () => {
-          this.printEvent();  // Call the addEvent function when clicked
+          this.printEvent();
+        }
+      },
+      SyncSchedules: {
+        text: 'Sync',
+        click: () => {
+          this.syncSchedules();
         }
       }
     },
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'printCalendarButton'
+      right: 'SyncSchedules printCalendarButton'
     },
     dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
-    eventClick: (info) => this.handleEventClick(info),
+    eventClick: (info : EventClickArg) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = '#AB3130';
@@ -176,6 +187,38 @@ export class DashboardAdminComponent implements OnInit {
       data: {
         title: "Events",
         schedules: schedule,
+      }
+    })
+  }
+
+  private syncSchedules() {
+    const ref = this.dialog.open(PromptSyncComponent, {
+      width: '250px',
+      disableClose: true,
+    })
+
+    setTimeout(() => {
+      this.integrationService.getSchedulesToSync().subscribe({
+        next: value => {
+          this.createScheduleIntegration(value);
+          ref.close()
+        }
+      })
+    }, 1500)
+
+  }
+
+  private createScheduleIntegration(computer_laboratory_schedules: any) {
+    this.integrationService.syncSchedules(computer_laboratory_schedules).subscribe({
+      next: () => {
+        this.loadSchedules();
+        this.loadUpcomingSchedules();
+        this.loadDashboardNumbers();
+      },
+      error: () => {
+        this.loadSchedules();
+        this.loadUpcomingSchedules();
+        this.loadDashboardNumbers();
       }
     })
   }

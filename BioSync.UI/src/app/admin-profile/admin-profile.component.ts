@@ -3,11 +3,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +29,14 @@ import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
 import {Suffix} from "../../model/suffix.model";
 import {SuffixService} from "../../services/suffix.service";
+import { 
+  adminNameValidator 
+} from '../../services/validators/customAdminValidator'; 
+import { 
+  customEmailValidator 
+} from '../../services/validators/customEmailValidator';
+import {LogoutService} from "../../services/auth/logout.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-admin-profile',
@@ -53,7 +58,7 @@ import {SuffixService} from "../../services/suffix.service";
     CommonModule,
     NgOptimizedImage,
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService, LogoutService],
   templateUrl: './admin-profile.component.html',
   styleUrls: [
     './admin-profile.component.css',
@@ -81,15 +86,16 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   disableReset = false;
   imageButtonLabel = 'Skip';
   editMode = false;
-  hasFingerprint: boolean = false;
   userId!: number;
   photoButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
+  adminUsercode!: string;
   private stream: MediaStream | null = null;
 
   constructor(
+      private router: Router,
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dialog: MatDialog,
@@ -97,7 +103,8 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     private fingerprintService: FingerprintService,
     private cookieService: CookieService,
     private cryptoService: CryptoService,
-    private suffixService: SuffixService
+    private suffixService: SuffixService,
+    private logoutService: LogoutService
   ) {}
 
   ngOnInit() {
@@ -150,11 +157,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         });
         console.log(this.admin);
         this.setFormValues();
-        this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
-          next: (hasFingerprint: boolean) => {
-            this.hasFingerprint = hasFingerprint;
-          },
-        });
       },
     });
   }
@@ -170,10 +172,10 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   initForm() {
     this.adminForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      firstName: ['', [Validators.required, adminNameValidator()]],
+      lastName: ['', [Validators.required, adminNameValidator()]],
+      email: ['', [Validators.required, customEmailValidator()]],
+      middleName: ['', [adminNameValidator()]],
       suffix: ['', [Validators.required]],
     });
 
@@ -188,9 +190,11 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
-      suffix: 'N/A',
+      suffix: this.admin.suffix,
       middleName: this.admin.middleName,
     });
+
+    this.adminUsercode = this.admin.usercode;
 
     this.fingerprintService
         .getProfileImageUrl(this.admin.id)
@@ -219,25 +223,33 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         if (this.isRightIndex && this.isRightThumb) {
           this.registerFingerprintData(updatedUser);
         }
-        this.openSuccessDialog();
+        if(this.adminUsercode == updatedUser.usercode) {
+          this.openSuccessDialog(false);
+        } else {
+          this.openSuccessDialog(true);
+        }
       },
     });
     return;
   }
 
-  openSuccessDialog() {
+  openSuccessDialog(loggedOut: boolean) {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Admin Profile Successfully Updated!',
-        message: 'Admin Profile has been successfully updated.',
+        message: !loggedOut ? 'Admin Profile has been successfully updated.' : 'Usercode has been updated. You will be logged out.',
       },
     });
 
     ref.afterClosed().subscribe({
       next: () => {
-        this.getAdminInfo();
-        this.unsetEditMode();
+        if(loggedOut){
+          this.logout();
+        } else {
+          this.getAdminInfo();
+          this.unsetEditMode();
+        }
       },
     });
   }
@@ -376,4 +388,42 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+  get userCodeControl(): AbstractControl {
+    return this.adminForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.adminForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.adminForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.adminForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.adminForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.adminForm.get('email')!;
+  }
+
+  logout() {
+    this.logoutService.logout().subscribe({
+      next: () => {
+        this.cookieService.deleteCookie('authToken');
+        this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
+        localStorage.removeItem('activeButton');
+        this.router.navigate(['/login']).then();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
 }

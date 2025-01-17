@@ -6,7 +6,7 @@
 <div class="flex justify-center items-center">
     <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="suffixForm">
         <div class="w-[55%] flex flex-col gap-4 row-block">
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="name" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -18,9 +18,19 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="name">
+                    formControlName="name"
+                    [class.input-error]="suffixNameControl.invalid && suffixNameControl.touched">
+                @if(suffixNameControl.touched && suffixNameControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( suffixNameControl.errors?.['required']) {
+                            Suffix name is required.
+                        } @else if(suffixNameControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        }
+                    </div>
+                }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
                 <label for="abbreviation" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
@@ -32,7 +42,19 @@
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="abbreviation">
+                    formControlName="abbreviation"
+                    [class.input-error]="suffixAbbreviationControl.invalid && suffixAbbreviationControl.touched">
+                @if(suffixAbbreviationControl.touched && suffixAbbreviationControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( suffixAbbreviationControl.errors?.['required']) {
+                            Laboratory Abbreviation is required.
+                        } @else if(suffixAbbreviationControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        } @else if (suffixAbbreviationControl.errors?.['maxlength']) {
+                            Abrreviation too long.
+                        }
+                    </div>
+                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">

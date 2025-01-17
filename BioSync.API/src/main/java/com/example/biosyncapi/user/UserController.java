@@ -145,6 +145,25 @@ public class UserController {
     return this.userService.updateUser(user);
   }
 
+  @PutMapping("/edit/bulk/students")
+  public ResponseEntity<Map<String, Object>> updateStudents(
+          @RequestParam("file") MultipartFile file)
+  {
+    try {
+      List<User> updatedUsers = this.userService.processCSVForEditing(file);
+
+      return ResponseEntity.ok().body(Map.ofEntries(
+              Map.entry("success", true),
+              Map.entry("students", updatedUsers)
+      ));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(Map.ofEntries(
+              Map.entry("success", false),
+              Map.entry("error", e.getMessage())
+      ));
+    }
+  }
+
   @PutMapping("/edit-profile-image")
   public ResponseEntity<?> updateUserProfileImage(
       @RequestParam("userId") Long userId,

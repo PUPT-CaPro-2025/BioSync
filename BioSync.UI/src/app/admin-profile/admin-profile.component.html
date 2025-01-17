@@ -24,7 +24,7 @@
           <p class="text-lightGray">Admin</p>
           <p class="text-custom-24 text-brightRed">{{ admin.firstName }} {{ admin.lastName }}</p>
           <p class="mt-2 text-lightGray">Fingerprint</p>
-          <p class="font-semibold">{{ hasFingerprint ? "Registered" : "Unregistered" }}</p>
+          <p class="font-semibold">{{ admin.biometrics ? "Registered" : "Unregistered" }}</p>
           <button mat-button (click)="setEditMode()">Edit</button>
         </div>
       </div>
@@ -44,7 +44,7 @@
             [formGroup]="adminForm"
           >
             <ng-template matStepLabel>Setup Information</ng-template>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="usercode"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -58,9 +58,17 @@
                 placeholder="Enter administrator's Usercode"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="usercode"
-              />
+                [class.input-error]="userCodeControl.invalid && userCodeControl.touched"
+              >
+              @if(userCodeControl.touched && userCodeControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                  @if( userCodeControl.errors?.['required']) {
+                    Admin Usercode is required.
+                  }
+                </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="firstName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -74,9 +82,19 @@
                 placeholder="Enter administrator's first name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="firstName"
-              />
+                [class.input-error]="firstNameControl.invalid && firstNameControl.touched"
+              >
+              @if(firstNameControl.touched && firstNameControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                  @if( firstNameControl.errors?.['required']) {
+                    First name is required.
+                  } @else if(firstNameControl.errors?.['invalidName']) {
+                    Only Letters are Allowed.
+                  }
+                </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="lastName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -90,9 +108,19 @@
                 placeholder="Enter administrator's last name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="lastName"
-              />
+                [class.input-error]="lastNameControl.invalid && lastNameControl.touched"
+              >
+              @if(lastNameControl.touched && lastNameControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if( lastNameControl.errors?.['required']) {
+                          Last name is required.
+                      } @else if(lastNameControl.errors?.['invalidName']) {
+                          Only letters are allowed.
+                      }
+                  </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="middleName"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -106,9 +134,17 @@
                 placeholder="Enter  administrator's middle name"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="middleName"
-              />
+                [class.input-error]="middleNameControl.invalid && middleNameControl.touched"
+              >
+              @if(middleNameControl.touched && middleNameControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if(middleNameControl.errors?.['invalidName']) {
+                          Only letters are allowed.
+                      }
+                  </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="suffix"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -121,14 +157,22 @@
                 placeholder="Choose a administrator's suffix"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="suffix"
+                [class.input-error]="suffixControl.invalid && suffixControl.touched"
               >
                 <mat-option value="N/A">N/A</mat-option>
                 @for(suffix of allSuffix; track suffix) {
                   <mat-option [value]="suffix.abbreviation">{{suffix.abbreviation}}</mat-option>
                 }
               </mat-select>
+              @if(suffixControl.touched && suffixControl.invalid) {
+                <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                    @if(suffixControl.errors?.['required']) {
+                        Suffix is required.
+                    }
+                </div>
+              }
             </div>
-            <div class="group flex flex-col gap-1">
+            <div class="group flex flex-col gap-1 relative">
               <label
                 for="email"
                 class="text-custom-20 text-darkGray transition-colors duration-300 group-focus-within:text-brightRed"
@@ -142,9 +186,19 @@
                 placeholder="Enter administrator's email"
                 class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
                 formControlName="email"
-              />
+                [class.input-error]="emailControl.invalid && emailControl.touched"
+              >
+              @if(emailControl.touched && emailControl.invalid) {
+                  <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                      @if(emailControl.errors?.['required']) {
+                          Email is Required.
+                      } @else if (emailControl.errors?.['invalidEmail']) {
+                          Not an email format.
+                      }
+                  </div>
+              }
             </div>
-            <div class="flex justify-between mt-4 button-content">
+            <div class="flex justify-between mt-8 button-content">
               <button
                 mat-button
                 class="cancel-button"

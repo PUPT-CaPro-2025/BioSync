@@ -33,6 +33,8 @@ public interface UserService {
 
   HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception;
 
-  User mapToUser(String[] csvRow, String password);
+  List<User> processCSVForEditing(MultipartFile file) throws Exception;
+
+  User mapToUser(String[] csvRow, String password) throws Exception;
 
 }

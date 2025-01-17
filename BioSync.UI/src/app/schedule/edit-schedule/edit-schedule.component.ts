@@ -3,7 +3,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule, DatePipe, formatDate} from '@angular/common';
 import {Schedule} from "../../../model/schedule.model";
 import {Section} from "../../../model/section.model";
 import {Laboratory} from "../../../model/laboratory.model";
@@ -38,7 +38,7 @@ import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.componen
   styleUrl: './edit-schedule.component.css'
 })
 export class EditScheduleComponent implements OnInit{
-  @Input() isOneSchedule = true;
+  @Input() isOneSchedule!: boolean;
   @Input() isWeeklySchedule!: boolean;
 
   @Output() editBackToSchedule = new EventEmitter<void>();
@@ -62,9 +62,7 @@ export class EditScheduleComponent implements OnInit{
 
   selectedRecurrence = 'none';
   previousRecurrence = 'none';
-  currentDayOfWeek = this.getDayOfWeek(new Date());
   currentDate = this.getFormattedDate(new Date());
-  currentWeekOfMonth = this.getWeekOfMonth(new Date());
   isCustomRecurrenceVisible = false;
 
   customRecurrence = {
@@ -78,11 +76,7 @@ export class EditScheduleComponent implements OnInit{
 
   customOption: { value: string, display: string } | null = null;
 
-  todayDay: number = new Date().getDate();
-  weekAndDay: string = `${this.currentWeekOfMonth} ${this.currentDayOfWeek}`;
-
   constructor(
-    private cdr: ChangeDetectorRef,
     private formBuilder: FormBuilder,
     private sectionService: SectionService,
     private datePipe: DatePipe,
@@ -103,6 +97,7 @@ export class EditScheduleComponent implements OnInit{
     this.getSchoolYear();
     this.initSemester();
     this.setFormValues();
+    console.log(this.scheduleToEdit)
   }
 
   initForm(): void{
@@ -134,6 +129,13 @@ export class EditScheduleComponent implements OnInit{
       remarks: this.scheduleToEdit.remarks,
       recurrence: this.scheduleToEdit.recurrence
     })
+
+    if(!this.isWeeklySchedule) return;
+
+    this.customRecurrence.days = [
+      this.getCorrespondingDay(this.scheduleToEdit.recurrenceDays![0].toString()) || ''
+    ];
+
   }
 
   submit(){
@@ -161,6 +163,15 @@ export class EditScheduleComponent implements OnInit{
     const startTime = this.editScheduleForm.get('startTime')?.value;
     const endTime = this.editScheduleForm.get('endTime')?.value;
 
+    let newDate;
+
+    if(this.isWeeklySchedule && (this.scheduleToEdit.recurrenceDays != this.customRecurrence.days)){
+      newDate = this.getAdjustedScheduleDate(
+          this.scheduleToEdit.scheduleDate,
+          this.getCorrespondingDay(this.customRecurrence.days[0])!
+      );
+    }
+
     newSchedule = {
       ...this.scheduleToEdit,
       ...newSchedule,
@@ -169,6 +180,14 @@ export class EditScheduleComponent implements OnInit{
       endTime: `${endTime}:00`,
       id: this.scheduleToEdit.id,
       recurrenceId: this.scheduleToEdit.recurrenceId,
+      recurrenceDays: [this.getCorrespondingDay(this.customRecurrence.days[0])],
+    }
+
+    if(this.isWeeklySchedule) {
+      newSchedule = {
+        ...newSchedule,
+        scheduleDate: newDate,
+      }
     }
 
     this.updateSchedule(newSchedule);
@@ -217,6 +236,23 @@ export class EditScheduleComponent implements OnInit{
     }
   }
 
+  getAdjustedScheduleDate(dateString: string, targetDay: string): string {
+    const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const date = new Date(dateString);
+    const currentDayIndex = date.getDay();
+    const targetDayIndex = daysOfWeek.indexOf(targetDay);
+
+    if (targetDayIndex === -1) {
+      throw new Error('Invalid target day');
+    }
+
+    const dayDifference = (targetDayIndex - currentDayIndex + 7) % 7;
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(date.getDate() - currentDayIndex + targetDayIndex);
+
+    return formatDate(adjustedDate, 'yyyy-MM-dd', 'en-US');
+  }
+
   onSchoolYearChange(event: MatSelectChange){
     const selectedId = Number(event.value)
     this.selectedSY = this.schoolYear.find(s => s.id === selectedId);
@@ -229,17 +265,22 @@ export class EditScheduleComponent implements OnInit{
     this.semesters.push(<Semester>this.selectedSY?.summerSemester);
   }
 
-  getFullWeekDayName(abbreviation: string): string {
-    const weekDaysMap: { [key: string]: string } = {
-      'SU': 'Sunday',
-      'M': 'Monday',
-      'T': 'Tuesday',
-      'W': 'Wednesday',
-      'TH': 'Thursday',
-      'F': 'Friday',
-      'S': 'Saturday'
+  getCorrespondingDay(input: string): string | undefined {
+    const dayMapping: { [key: string]: string } = {
+      MON: 'M',
+      TUE: 'T',
+      WED: 'W',
+      THU: 'TH',
+      FRI: 'F',
+      SAT: 'S',
+      SUN: 'SU',
     };
-    return weekDaysMap[abbreviation] || abbreviation;
+
+    const reverseMapping = Object.fromEntries(
+        Object.entries(dayMapping).map(([key, value]) => [value, key])
+    );
+
+    return dayMapping[input] || reverseMapping[input];
   }
 
   getCurrentDate () {
@@ -250,14 +291,14 @@ export class EditScheduleComponent implements OnInit{
     this.today = `${year}-${month}-${day}`;
   }
 
-  onDateChange(event: MatDatepickerInputEvent<Date>): void {
-    const selectedDate = event.value;
-    const formattedDayOfWeek = this.getDayOfWeek(selectedDate!);
+  onDateChange(event: any): void {
+    const selectedDate = new Date(event.value);
+    const formattedDayOfWeek = this.getDayOfWeek(selectedDate);
     const formattedDate = this.datePipe.transform(selectedDate, 'MM/dd/yy')!;
     this.selectedDayOfWeek = formattedDayOfWeek;
     this.formattedDateString = `${formattedDayOfWeek}, ${formattedDate}`;
     this.editScheduleForm.patchValue({
-      scheduleDate: this.datePipe.transform(selectedDate, 'yyyy-MM-dd') // raw value for form control
+      scheduleDate: this.datePipe.transform(selectedDate, 'yyyy-MM-dd'), // raw value for form control
     });
   }
 
@@ -299,27 +340,16 @@ export class EditScheduleComponent implements OnInit{
     return date.toLocaleDateString('en-US', options);
   }
 
-  getWeekOfMonth(date: Date): string {
-    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    const weekNumber = Math.ceil((date.getDate() + startOfMonth.getDay()) / 7);
-    const weekNames = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
-    return weekNames[Math.min(weekNumber - 1, weekNames.length - 1)] || 'Unknown';
-  }
-
   cancelOrEditSchedule(): void {
     this.editBackToSchedule.emit();
   }
 
   toggleDaySelection(day: string) {
-    const index = this.customRecurrence.days.indexOf(day);
-    if (index === -1) {
-      this.customRecurrence.days.push(day);
+    if (this.customRecurrence.days.includes(day)) {
+      this.customRecurrence.days = [];
     } else {
-      this.customRecurrence.days.splice(index, 1);
+      this.customRecurrence.days = [day];
     }
-
-    this.customRecurrence.days.sort((a, b) =>
-      this.weekDays.indexOf(a) - this.weekDays.indexOf(b));
   }
 
   updateSchedule(schedule: Schedule) {
@@ -328,6 +358,25 @@ export class EditScheduleComponent implements OnInit{
         if(updatedSchedule.id !== this.scheduleToEdit.id) return;
         this.editedSchedule.emit(updatedSchedule);
         this.openSuccessDialog();
+      },
+      error: () => {
+        this.openErrorDialog();
+      }
+    })
+  }
+
+  openErrorDialog(){
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Something went wrong',
+        message: 'Please try again later.'
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.cancelOrEditSchedule();
       }
     })
   }

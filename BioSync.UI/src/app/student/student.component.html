@@ -16,6 +16,14 @@
                             Add Multiple Student
                         </button>
                     </mat-menu>
+                    <button mat-button [matMenuTriggerFor]="yes">
+                      Update Student
+                    </button>
+                    <mat-menu #yes="matMenu">
+                      <button mat-menu-item (click)="openEditDialog()">
+                        CSV - Multiple
+                      </button>
+                    </mat-menu>
                     <div class="toolbar-button select-none">
                         <div class="header-button flex" (click)="toggleDropdown()">
                             Print Student Report
@@ -49,7 +57,7 @@
                       [(value)]="selectedProgram"
                       id="program"
                       class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                      (selectionChange)="onProgramChange()">
+                      (selectionChange)="updateQueriedStudents()">
                       <mat-option [value]="-1">
                           All
                       </mat-option>
@@ -66,7 +74,7 @@
                       [(value)]="selectedYearAndSection"
                       id="year"
                       class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                      (selectionChange)="onSectionChange()">
+                      (selectionChange)="updateQueriedStudents()">
                       <mat-option [value]="-1">
                           All
                       </mat-option>
@@ -83,7 +91,7 @@
                     [(value)]="selectedBiometrics"
                     id="biometrics"
                     class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                    (selectionChange)="OnBiometricsChange()">
+                    (selectionChange)="updateQueriedStudents()">
                     <mat-option [value]="-1">
                       All
                     </mat-option>
