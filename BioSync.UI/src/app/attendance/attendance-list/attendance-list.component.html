@@ -5,6 +5,31 @@
         {{ schedule.section?.program?.programAbbreviation }}
         {{ schedule.section?.year }}
     </span>
+        <div class="toolbar-button">
+            <div class="flex flex-col items-center select-none">
+                @if(getRole() != 'STUDENT'){
+                    <div class="header-button" (click)="toggleDropdown()">
+                        Print Attendance Report
+                    </div>
+                }
+                @if (reportDropdown) {
+                    <div class="add-schedule-content flex flex-col">
+                        <div
+                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                (click)="populateRows('pdf')"
+                        >
+                            Print PDF
+                        </div>
+                        <div
+                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                (click)="populateRows('csv')"
+                        >
+                            Print CSV
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </mat-toolbar>
 </div>
 @if(schedules.length > 0) {

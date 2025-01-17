@@ -37,6 +37,16 @@
     position: relative;
 }
 
+.header-button {
+    font-size: 12px;
+    padding: 4px 40px;
+    background-color: #AB3130;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
 .print-schedule, .add-schedule-button {
     font-size: 12px;
     padding: 4px 40px;
