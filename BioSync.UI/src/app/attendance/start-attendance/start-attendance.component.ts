@@ -460,6 +460,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
+        this.isError = false;
         this.loggedStudent = value;
         this.studentsLogged.push(this.loggedStudent);
         this.cdr.detectChanges();
@@ -509,6 +510,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.attendanceService.logOutAttendance(formData).subscribe({
       next: (value) => {
+        this.isError = false;
         this.loggedStudent = value;
         this.studentsLoggedOut.push(this.loggedStudent);
         this.reminder = 'Timed Out, Good Bye!';
@@ -636,27 +638,7 @@ export class StartAttendanceComponent implements OnInit {
   handleBeforeUnload(event: BeforeUnloadEvent): void {
     if (!this.isCustomDialogOpen) {
       event.preventDefault();
-      this.openCustomDialog();
     }
-  }
-
-  openCustomDialog(): void {
-    this.isCustomDialogOpen = true; 
-    const ref = this.dialog.open(PromptContinueComponent, {
-      width: '350px',
-      data: {
-        title: 'Confirm Reload',
-        message: 'Are you sure you want to refresh?'
-      }
-    });
-
-    ref.afterClosed().subscribe((confirmed) => {
-      this.isCustomDialogOpen = false;
-
-      if (confirmed) {
-        window.location.reload();
-      }
-    });
   }
 
   openContinueDialog(){
@@ -667,11 +649,11 @@ export class StartAttendanceComponent implements OnInit {
           message: "Are you sure you want to go back?",
         }
       })
-  
+
       ref.afterClosed().subscribe({
         next: result => {
           if (!result) return
-  
+
           this.router.navigate(['/schedule']).then();
         }
       })
