@@ -7,8 +7,6 @@ import { MatIcon } from '@angular/material/icon';
 import { UserService } from '../../../services/user.service';
 import {
   MatButton,
-  MatFabButton,
-  MatIconButton,
   MatMiniFabButton,
 } from '@angular/material/button';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
