@@ -16,6 +16,7 @@ import { User } from '../../../model/user.model';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confirm.component';
+import { PromptContinueComponent } from '../../prompt/prompt-continue/prompt-continue.component';
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -78,6 +79,7 @@ export class StartAttendanceComponent implements OnInit {
   isBarcode = false;
   isTimeOut = false;
   adminDetails!: User;
+  isCustomDialogOpen = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -458,6 +460,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
+        this.isError = false;
         this.loggedStudent = value;
         this.studentsLogged.push(this.loggedStudent);
         this.cdr.detectChanges();
@@ -507,6 +510,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.attendanceService.logOutAttendance(formData).subscribe({
       next: (value) => {
+        this.isError = false;
         this.loggedStudent = value;
         this.studentsLoggedOut.push(this.loggedStudent);
         this.reminder = 'Timed Out, Good Bye!';
@@ -628,5 +632,30 @@ export class StartAttendanceComponent implements OnInit {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       }
     }, 0);
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent): void {
+    if (!this.isCustomDialogOpen) {
+      event.preventDefault();
+    }
+  }
+
+  openContinueDialog(){
+      const ref = this.dialog.open(PromptContinueComponent, {
+        width: '350px',
+        data: {
+          title: "Go back to Schedule List",
+          message: "Are you sure you want to go back?",
+        }
+      })
+
+      ref.afterClosed().subscribe({
+        next: result => {
+          if (!result) return
+
+          this.router.navigate(['/schedule']).then();
+        }
+      })
   }
 }
