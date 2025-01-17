@@ -79,6 +79,7 @@ export class StartAttendanceComponent implements OnInit {
   isBarcode = false;
   isTimeOut = false;
   adminDetails!: User;
+  isCustomDialogOpen = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -629,6 +630,33 @@ export class StartAttendanceComponent implements OnInit {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       }
     }, 0);
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent): void {
+    if (!this.isCustomDialogOpen) {
+      event.preventDefault();
+      this.openCustomDialog();
+    }
+  }
+
+  openCustomDialog(): void {
+    this.isCustomDialogOpen = true; 
+    const ref = this.dialog.open(PromptContinueComponent, {
+      width: '350px',
+      data: {
+        title: 'Confirm Reload',
+        message: 'Are you sure you want to refresh?'
+      }
+    });
+
+    ref.afterClosed().subscribe((confirmed) => {
+      this.isCustomDialogOpen = false;
+
+      if (confirmed) {
+        window.location.reload();
+      }
+    });
   }
 
   openContinueDialog(){
