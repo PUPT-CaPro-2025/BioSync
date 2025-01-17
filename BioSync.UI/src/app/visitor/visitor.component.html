@@ -50,9 +50,13 @@
                             <div class="row">
                                 <div class="cell">{{visitor.name}}</div>
                                 <div class="cell">
-                                    {{visitor.purposeOfVisit}}
+                                    @if(visitor.purposeOfVisit === 'Others') {
+                                        {{visitor.otherDetails}}
+                                    } @else {
+                                        {{visitor.purposeOfVisit}}
+                                    }
                                 </div>
-                                <div class="cell">
+                                <div class="cell">                                  
                                     {{getDate(visitor.visitDate)}}
                                 </div>
                                 <div class="cell">

@@ -75,9 +75,27 @@
                       }
                     </div>
                   }
-                  <button class="header-button" (click)="generatePdf()">
-                    Print Schedule Reports
-                  </button>
+                    <div class="toolbar-button select-none">
+                      <button class="header-button" (click)="toggleDropdown()">
+                        Print Schedule Reports
+                      </button>
+                        @if (reportDropdown) {
+                            <div class="add-schedule-content flex flex-col">
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generatePdf()"
+                                >
+                                    Print PDF
+                                </div>
+                                <div
+                                        class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                        (click)="generateCsv()"
+                                >
+                                    Print CSV
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
               </mat-toolbar>
             </div>
@@ -114,35 +132,37 @@
                       }
                     </mat-select>
                   </div>
-                  <div class="select-top-container w-full">
-                    <p>Program</p>
-                    <mat-select
-                        [(value)]="selectedProgram"
-                        id="program"
-                        class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                        (selectionChange)="onFilterChange()">
-                      @for(program of programs; track program) {
-                        <mat-option [value]="program.id">
-                          {{program.programName}}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </div>
-                  <div class="select-top-container w-full">
-                    <p>Year and Section</p>
-                    <mat-select
-                        [(value)]="selectedYearAndSection"
-                        id="year"
-                        class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
-                        (selectionChange)="onSectionChange()">
-                        <mat-option [value]="-1">All</mat-option>
-                      @for(section of sections; track section) {
-                        <mat-option [value]="section.id">
-                           {{ section.year }} - {{ section.section }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </div>
+                    @if(getRole() != "STUDENT"){
+                        <div class="select-top-container w-full">
+                            <p>Program</p>
+                            <mat-select
+                                    [(value)]="selectedProgram"
+                                    id="program"
+                                    class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                                    (selectionChange)="onFilterChange()">
+                                @for(program of programs; track program) {
+                                    <mat-option [value]="program.id">
+                                        {{program.programName}}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </div>
+                        <div class="select-top-container w-full">
+                            <p>Year and Section</p>
+                            <mat-select
+                                    [(value)]="selectedYearAndSection"
+                                    id="year"
+                                    class="bg-transparent border-b-2 border-darkGray focus:border-brightRed focus:outline-none transition-colors duration-300 w-full py-2 px-1"
+                                    (selectionChange)="onSectionChange()">
+                                <mat-option [value]="-1">All</mat-option>
+                                @for(section of sections; track section) {
+                                    <mat-option [value]="section.id">
+                                        {{ section.year }} - {{ section.section }}
+                                    </mat-option>
+                                }
+                            </mat-select>
+                        </div>
+                    }
                 </div>
                 <div class="search-container mt-10">
                   <mat-icon class="search-icon">search</mat-icon>
@@ -349,6 +369,8 @@
         <app-edit-schedule
           [scheduleToEdit]="selectedSchedule"
           (editedSchedule)="onScheduleUpdate($event)"
+          [isWeeklySchedule]="isWeeklyEditSchedule"
+          [isOneSchedule]="isOneEditSchedule"
           (editBackToSchedule)="handleEditBackToSchedule()"
         />
       }

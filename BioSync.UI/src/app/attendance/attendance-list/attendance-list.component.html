@@ -1,0 +1,90 @@
+<div class="header">
+    <mat-toolbar class="toolbar-container">
+    <span>List of Attendance -
+        {{ schedule.subject?.name }} -
+        {{ schedule.section?.program?.programAbbreviation }}
+        {{ schedule.section?.year }}
+    </span>
+        <div class="toolbar-button">
+            <div class="flex flex-col items-center select-none">
+                @if(getRole() != 'STUDENT'){
+                    <div class="header-button" (click)="toggleDropdown()">
+                        Print Attendance Report
+                    </div>
+                }
+                @if (reportDropdown) {
+                    <div class="add-schedule-content flex flex-col">
+                        <div
+                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                (click)="populateRows('pdf')"
+                        >
+                            Print PDF
+                        </div>
+                        <div
+                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                (click)="populateRows('csv')"
+                        >
+                            Print CSV
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </mat-toolbar>
+</div>
+@if(schedules.length > 0) {
+    <div class="table-container">
+        <div class="subject-table">
+            <div class="attributes text-custom-16">
+                <div class="cell">Subject Code</div>
+                <div class="cell">Subject Name</div>
+                <div class="cell">Schedule</div>
+                <div class="cell">Time</div>
+                <div class="cell">Laboratory</div>
+                <div class="cell">Action</div>
+            </div>
+            <div class="row-container text-custom-12">
+                @for (schedule of schedules; track schedule) {
+                    <div class="row">
+                        <div class="cell">{{ schedule?.subject?.code }}</div>
+                        <div class="cell">{{ schedule?.subject?.description }}</div>
+                        <div class="cell">
+                            <div class="flex flex-col">
+                                <div class="flex gap-1 text-xs">
+                  <span class="font-semibold">
+                    [ {{getDayOfWeek(schedule.scheduleDate)}} / {{schedule.scheduleDate}} ]
+                  </span>
+                                </div>
+                                <div class="italic">
+                                    Faculty: {{schedule.professor?.firstName}} {{schedule.professor?.lastName}}
+                                    <p>
+                                        Class:
+                                        {{schedule.section?.program?.programAbbreviation}}
+                                        {{schedule.section?.year}}-{{schedule.section?.section}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cell">{{convertTimeFormat(schedule.startTime)}} -
+                            {{convertTimeFormat(schedule.endTime)}}</div>
+                        <div class="cell">{{schedule.laboratory?.name}}</div>
+                        <div class="cell">
+                            <div class="action-container">
+                                <button class="edit-button" (click)="toggleStartSchedule(schedule)">
+                                    <mat-icon>visibility</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+} @else {
+    <div class="flex justify-center items-center h-[50vh]">
+        No Schedules Yet.
+    </div>
+}
+<div class="line-container">
+    <img src="../../assets/black-line.svg">
+</div>

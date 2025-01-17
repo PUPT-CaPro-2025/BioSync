@@ -12,11 +12,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -43,6 +40,12 @@ import { CommonModule } from '@angular/common';
 import { MailService } from '../../../services/mail.service';
 import {SuffixService} from "../../../services/suffix.service";
 import {Suffix} from "../../../model/suffix.model";
+import { 
+  usercodeValidator, studentNameValidator 
+} from '../../../services/validators/customStudentValidator'; 
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-edit-student',
@@ -148,14 +151,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.editStudentForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, studentNameValidator()]],
+      lastName: ['', [Validators.required, studentNameValidator()]],
+      middleName: ['', [studentNameValidator()]],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()]],
       program: ['', [Validators.required]],
-      section: [0, [Validators.required]],
+      section: ['', Validators.required],
     });
   }
 
@@ -411,5 +415,37 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.rightThumbState = 'Scan Fingerprint';
     this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
+  }
+  
+  get userCodeControl(): AbstractControl {
+    return this.editStudentForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.editStudentForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.editStudentForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.editStudentForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.editStudentForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.editStudentForm.get('email')!;
+  }
+
+  get programControl(): AbstractControl {
+    return this.editStudentForm.get('program')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.editStudentForm.get('section')!;
   }
 }

@@ -229,7 +229,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found for update");
             }
 
-            // Convert java.util.Date to LocalDate
             LocalDate oldDate = convertToLocalDate(existingSchedule.getScheduleDate());
             LocalDate newDate = convertToLocalDate(schedule.getScheduleDate());
             long gapInDays = ChronoUnit.DAYS.between(oldDate, newDate);
@@ -256,8 +255,36 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             return schedule;
         }
-        return scheduleRepository.save(schedule);
+
+        Schedule existingSchedule = scheduleRepository.findById(schedule.getId())
+            .orElseThrow();
+
+        if (schedule.getScheduleStudents() != null) {
+            List<ScheduleStudent> existingStudents = existingSchedule.getScheduleStudents();
+
+            existingStudents.clear();
+
+            schedule.getScheduleStudents().forEach(newStudent -> {
+                newStudent.setSchedule(existingSchedule);
+                existingStudents.add(newStudent);
+            });
+        }
+
+        existingSchedule.setStartTime(schedule.getStartTime());
+        existingSchedule.setEndTime(schedule.getEndTime());
+        existingSchedule.setSubject(schedule.getSubject());
+        existingSchedule.setSection(schedule.getSection());
+        existingSchedule.setLaboratory(schedule.getLaboratory());
+        existingSchedule.setProfessor(schedule.getProfessor());
+        existingSchedule.setSemester(schedule.getSemester());
+        existingSchedule.setRemarks(schedule.getRemarks());
+        existingSchedule.setScheduleDate(schedule.getScheduleDate());
+        existingSchedule.setRecurrenceDays(schedule.getRecurrenceDays());
+
+        return scheduleRepository.save(existingSchedule);
     }
+
+
 
     public Schedule updatePartialSchedule(Long id, Status updates) {
         Schedule existingSchedule = scheduleRepository.findById(id)

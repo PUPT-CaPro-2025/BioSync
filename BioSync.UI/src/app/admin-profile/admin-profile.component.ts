@@ -3,11 +3,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +29,12 @@ import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
 import {Suffix} from "../../model/suffix.model";
 import {SuffixService} from "../../services/suffix.service";
+import { 
+  adminNameValidator 
+} from '../../services/validators/customAdminValidator'; 
+import { 
+  customEmailValidator 
+} from '../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-admin-profile',
@@ -71,16 +74,16 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   imageSrc: string | ArrayBuffer | null = null;
   image!: string;
-  rightThumbFingerprintImageSrc!: Blob;
-  rightIndexFingerprintImageSrc!: Blob;
-  rightThumbState = 'Scan Left Index';
+  rightThumbFingerprintImageSrc: Blob | null = null;
+  rightIndexFingerprintImageSrc: Blob | null = null;
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
+  disableReset = false;
   imageButtonLabel = 'Skip';
   editMode = false;
-  hasFingerprint: boolean = false;
   userId!: number;
   photoButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
@@ -115,7 +118,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
             );
             this.isRightThumb = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
             }, 2000);
           } else {
@@ -124,7 +127,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
               'image/png',
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -149,11 +152,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         });
         console.log(this.admin);
         this.setFormValues();
-        this.fingerprintService.hasFingerprint(this.admin.id).subscribe({
-          next: (hasFingerprint: boolean) => {
-            this.hasFingerprint = hasFingerprint;
-          },
-        });
       },
     });
   }
@@ -168,10 +166,11 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.adminForm = this.formBuilder.group({
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      usercode: ['', [Validators.required]],
+      firstName: ['', [Validators.required, adminNameValidator()]],
+      lastName: ['', [Validators.required, adminNameValidator()]],
+      email: ['', [Validators.required, customEmailValidator()]],
+      middleName: ['', [adminNameValidator()]],
       suffix: ['', [Validators.required]],
     });
 
@@ -182,10 +181,11 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   setFormValues() {
     this.adminForm.patchValue({
+      usercode: this.admin.usercode,
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
-      suffix: 'N/A',
+      suffix: this.admin.suffix,
       middleName: this.admin.middleName,
     });
 
@@ -250,17 +250,27 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     this.userService.processProfileImage(formData).subscribe();
   }
 
+  resetFingerprint() {
+    this.isRightThumb = false;
+    this.isRightIndex = false;
+    this.rightIndexFingerprintImageSrc = null;
+    this.rightThumbFingerprintImageSrc = null;
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
+    this.hasRightThumb = false;
+  }
+
   registerFingerprintData(professor: User) {
     const formData = new FormData();
     formData.append('userId', `${professor.id}`);
     formData.append(
       'fingerprint',
-      this.rightIndexFingerprintImageSrc,
+      this.rightIndexFingerprintImageSrc!,
       `right-index-${professor.lastName}.png`,
     );
     formData.append(
       'fingerprint',
-      this.rightThumbFingerprintImageSrc,
+      this.rightThumbFingerprintImageSrc!,
       `right-thumb-${professor.lastName}.png`,
     );
 
@@ -363,4 +373,27 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+  get userCodeControl(): AbstractControl {
+    return this.adminForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.adminForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.adminForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.adminForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.adminForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.adminForm.get('email')!;
+  }
 }
