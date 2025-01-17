@@ -432,8 +432,8 @@ export class RequestListScheduleComponent implements OnInit {
     const rows = this.schedules.map(schedule =>
       [
         schedule.subject?.code,
-        schedule.subject?.name,
-        schedule.recurrenceDays,
+        schedule.subject?.description,
+        schedule.recurrenceDays?.join(', ') || schedule.scheduleDate,
         `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
         `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
         `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
