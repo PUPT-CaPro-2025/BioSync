@@ -75,7 +75,9 @@ export class ScheduleComponent implements OnInit {
   currentPage: number = 1;
   totalPages!: number;
   isOneAddSchedule: boolean = false;
+  isOneEditSchedule: boolean = false;
   isWeeklyAddSchedule: boolean = false;
+  isWeeklyEditSchedule: boolean = false;
   isRequestOneSchedule: boolean = false;
   isRequestWeeklySchedule: boolean = false;
   isEditSchedule: boolean = false;
@@ -420,6 +422,8 @@ export class ScheduleComponent implements OnInit {
     this.activeDropdownId = null;
     this.isEditSchedule = !this.isEditSchedule;
     this.selectedSchedule = schedule;
+    this.isWeeklyEditSchedule = !!this.selectedSchedule.recurrenceId;
+    this.isOneEditSchedule = !this.selectedSchedule.recurrenceId;
   }
 
   handleEditBackToSchedule(): void {

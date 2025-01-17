@@ -369,6 +369,8 @@
         <app-edit-schedule
           [scheduleToEdit]="selectedSchedule"
           (editedSchedule)="onScheduleUpdate($event)"
+          [isWeeklySchedule]="isWeeklyEditSchedule"
+          [isOneSchedule]="isOneEditSchedule"
           (editBackToSchedule)="handleEditBackToSchedule()"
         />
       }
