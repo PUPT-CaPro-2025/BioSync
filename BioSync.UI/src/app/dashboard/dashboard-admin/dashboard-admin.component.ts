@@ -142,7 +142,7 @@ export class DashboardAdminComponent implements OnInit {
       right: 'printCalendarButton'
     },
     dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
-    eventClick: (info) => this.handleEventClick(info),
+    eventClick: (info : EventClickArg) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = '#AB3130';
