@@ -39,11 +39,11 @@ export class AddSectionComponent implements OnInit {
   @Output() sectionAdded = new EventEmitter<Section>();
 
   years: string[] = [
-    '1', '2', '3', '4', '5', 'Ladderized'
+    '1', '2', '3', '4', '5'
   ];
 
   sections: string[] =[
-    '1', '2', '3'
+    '1', '2', '3', 'L'
   ];
 
   programs: Program[] = [];
