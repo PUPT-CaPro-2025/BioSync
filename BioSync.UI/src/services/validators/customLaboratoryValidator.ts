@@ -11,7 +11,7 @@ export function laboratoryNameValidator(): ValidatorFn {
 export function roomCodeValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
-    const isValid = /^[a-zA-Z0-9\-]*$/.test(value);
+    const isValid = /^[a-zA-Z0-9 \-]*$/.test(value);
     return isValid ? null : { invalidRoomCode: true };
   };
 }
