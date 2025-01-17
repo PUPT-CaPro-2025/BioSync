@@ -22,6 +22,9 @@ import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
 import {Semester} from "../../model/semester.model";
+import {AddScheduleService} from "../../services/add-schedule.service";
+import {MatTooltip} from "@angular/material/tooltip";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-request-list-schedule',
@@ -30,7 +33,7 @@ import {Semester} from "../../model/semester.model";
     MatIconModule,
     CommonModule,
     FormsModule,
-    MatSelectModule,
+    MatSelectModule, MatTooltip, MatButton,
   ],
   providers: [ScheduleService,
     SchoolYearService,
@@ -38,7 +41,8 @@ import {Semester} from "../../model/semester.model";
     SectionService,
     UserService,
     CookieService,
-    CryptoService
+    CryptoService,
+    AddScheduleService
   ],
   templateUrl: './request-list-schedule.component.html',
   styleUrls: ['./request-list-schedule.component.css', '../schedule/schedule.component.css']
@@ -70,6 +74,7 @@ export class RequestListScheduleComponent implements OnInit {
   userId!: number;
   headerImage!: string;
   activeDropdownId: number | null = null;
+  hasConflict = false;
 
   constructor(
     private scheduleService: ScheduleService,
@@ -80,7 +85,8 @@ export class RequestListScheduleComponent implements OnInit {
     private router : Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
-    private userService: UserService
+    private userService: UserService,
+    private addScheduleService: AddScheduleService
     ) {}
 
   ngOnInit() {
@@ -296,7 +302,24 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   toggleDropdownAction(scheduleId: number): void {
-    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+    const sched: Schedule = this.schedules.find(
+      (schedule) => schedule.id === scheduleId
+    )!;
+
+    console.log(sched);
+
+    this.addScheduleService.detectConflict(sched).subscribe({
+      next: (value) => {
+        this.hasConflict = value && value.length > 0;
+      },
+      error: (err) => {
+        console.error('Error detecting conflict:', err);
+        this.hasConflict = false;
+      },
+    });
+
+    this.activeDropdownId =
+      this.activeDropdownId === scheduleId ? null : scheduleId;
   }
 
   @HostListener('document:click', ['$event'])

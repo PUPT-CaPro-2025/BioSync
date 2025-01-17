@@ -123,10 +123,13 @@
                 @if(activeDropdownId === schedule.id) {
                     <div class="action-container" [ngClass]="{
                       'bottom-action': filteredSchedules.length >= 4 && (filteredSchedules[filteredSchedules.length - 1] === schedule || filteredSchedules[filteredSchedules.length - 2] === schedule)}">
-                        <button class="action-button"
-                            (click)="toggleAcceptSchedule(schedule)">
-                            Accept
-                        </button>
+                      <button
+                        class="action-button"
+                        [disabled]="hasConflict"
+                        (click)="toggleAcceptSchedule(schedule)"
+                      >
+                        {{ hasConflict ? 'Conflict Detected' : 'Accept'  }}
+                      </button>
                         <button class="action-button"
                             (click)="toggleRejectSchedule(schedule)">
                             Reject
