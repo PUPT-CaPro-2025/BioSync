@@ -224,6 +224,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     );
 
     const studentToUpdate = {
+      ...this.selectedStudent,
       ...updatedValues,
       program: selectedProgram,
       section: selectedSection,
