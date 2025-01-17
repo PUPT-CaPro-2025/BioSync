@@ -35,6 +35,8 @@ import {
 import { 
   customEmailValidator 
 } from '../../services/validators/customEmailValidator';
+import {LogoutService} from "../../services/auth/logout.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-admin-profile',
@@ -56,7 +58,7 @@ import {
     CommonModule,
     NgOptimizedImage,
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService, LogoutService],
   templateUrl: './admin-profile.component.html',
   styleUrls: [
     './admin-profile.component.css',
@@ -89,9 +91,11 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   videoElement!: HTMLVideoElement;
   isCameraOpen = false;
   captureButtonLabel = 'Take Photo';
+  adminUsercode!: string;
   private stream: MediaStream | null = null;
 
   constructor(
+      private router: Router,
     private formBuilder: FormBuilder,
     private userService: UserService,
     private dialog: MatDialog,
@@ -99,7 +103,8 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     private fingerprintService: FingerprintService,
     private cookieService: CookieService,
     private cryptoService: CryptoService,
-    private suffixService: SuffixService
+    private suffixService: SuffixService,
+    private logoutService: LogoutService
   ) {}
 
   ngOnInit() {
@@ -189,6 +194,8 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       middleName: this.admin.middleName,
     });
 
+    this.adminUsercode = this.admin.usercode;
+
     this.fingerprintService
         .getProfileImageUrl(this.admin.id)
         .subscribe({
@@ -216,25 +223,33 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         if (this.isRightIndex && this.isRightThumb) {
           this.registerFingerprintData(updatedUser);
         }
-        this.openSuccessDialog();
+        if(this.adminUsercode == updatedUser.usercode) {
+          this.openSuccessDialog(false);
+        } else {
+          this.openSuccessDialog(true);
+        }
       },
     });
     return;
   }
 
-  openSuccessDialog() {
+  openSuccessDialog(loggedOut: boolean) {
     const ref = this.dialog.open(PromptOkayComponent, {
       width: '400px',
       data: {
         title: 'Admin Profile Successfully Updated!',
-        message: 'Admin Profile has been successfully updated.',
+        message: !loggedOut ? 'Admin Profile has been successfully updated.' : 'Usercode has been updated. You will be logged out.',
       },
     });
 
     ref.afterClosed().subscribe({
       next: () => {
-        this.getAdminInfo();
-        this.unsetEditMode();
+        if(loggedOut){
+          this.logout();
+        } else {
+          this.getAdminInfo();
+          this.unsetEditMode();
+        }
       },
     });
   }
@@ -395,5 +410,20 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
 
   get emailControl(): AbstractControl {
     return this.adminForm.get('email')!;
+  }
+
+  logout() {
+    this.logoutService.logout().subscribe({
+      next: () => {
+        this.cookieService.deleteCookie('authToken');
+        this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
+        localStorage.removeItem('activeButton');
+        this.router.navigate(['/login']).then();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 }
