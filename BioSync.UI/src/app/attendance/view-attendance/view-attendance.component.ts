@@ -26,8 +26,12 @@ export class ViewAttendanceComponent implements OnInit {
   class: Attendance[] = [];
   student!: Attendance;
   userId!: number;
+  bagongPilipinas!: string;
+  stamp!: string; 
+  schoolLogo!: string;  
   headerImage!: string;
   reportDropdown = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private scheduleService: ScheduleService,
@@ -42,6 +46,17 @@ export class ViewAttendanceComponent implements OnInit {
       const id = params.get('id');
       this.getScheduleDetails(+id!);
       this.getAttendance(+id!);
+    });
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -108,15 +123,12 @@ export class ViewAttendanceComponent implements OnInit {
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-
-    const leftX = 20;
-    const rightX = pageWidth - 20;
-    const lineHeight = 6;
-
+    //Header and Rows
     const columns = ['No.', 'Student Name', 'Time-In', 'Time-Out', 'Status'];
     const rows = this.class.map((attendance, index) => [
       `${index + 1}`,
@@ -136,86 +148,137 @@ export class ViewAttendanceComponent implements OnInit {
 
     // Function to render header (will be called on each page)
     const renderHeader = (currentPage: number, pageCount: number) => {
-      // Header image and title
-      doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
+       //Add header image
+       const margin = 10;
+       const imgWidth = 20; 
+       const imgHeight = 20;
+ 
+       doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+ 
+       const textStartX = margin + imgWidth + 5;
+       const textStartY = 15;
+       doc.setFontSize(10);
+       doc.text('Republic of the Philippines', textStartX, textStartY);
+ 
+       doc.setFontSize(12);
+       doc.setFont('times', 'bold');
+       doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+ 
+       doc.setFontSize(10);
+       doc.setFont('times', 'normal');
+       doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+ 
+       doc.setFontSize(11);
+       doc.setFont('times', 'bold');
+       doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+ 
+       doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+ 
+        // Add Title
+       doc.setFontSize(20);
+       doc.setFont('helvetica', 'bold');
+       doc.text('ATTENDANCE', pageWidth / 2, 30, { align: 'center' });
 
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('ATTENDANCE', pageWidth / 2, 30, { align: 'center' });
+       let currentY = 40;
 
-      let currentY = 40;
+       doc.setFontSize(10);
+       doc.setFont('helvetica', 'bold');
+       doc.text('Course:', leftX, currentY);
+       doc.setFont('helvetica', 'normal');
+       doc.text(this.schedule.subject?.description || '', leftX + 40, currentY);
 
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Course:', leftX, currentY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.schedule.subject?.description || '', leftX + 40, currentY);
+       doc.setFont('helvetica', 'bold');
+       doc.text('Date:', rightX - 40, currentY, { align: 'right' });
+       doc.setFont('helvetica', 'normal');
+       doc.text(this.schedule.scheduleDate || '', rightX, currentY, {
+         align: 'right',
+       });
+       currentY += lineHeight;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Date:', rightX - 40, currentY, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.schedule.scheduleDate || '', rightX, currentY, {
-        align: 'right',
-      });
-      currentY += lineHeight;
+       doc.setFont('helvetica', 'bold');
+       doc.text('Faculty:', leftX, currentY);
+       doc.setFont('helvetica', 'normal');
+       doc.text(
+         `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` || '',
+         leftX + 40,
+         currentY,
+       );
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Faculty:', leftX, currentY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(
-        `${this.schedule.professor?.firstName} ${this.schedule.professor?.lastName}` || '',
-        leftX + 40,
-        currentY,
-      );
+       doc.setFont('helvetica', 'bold');
+       doc.text('Start/End Time:', rightX - 40, currentY, { align: 'right' });
+       doc.setFont('helvetica', 'normal');
+       doc.text(
+         `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` || '',
+         rightX,
+         currentY,
+         {
+           align: 'right',
+         },
+       );
+       currentY += lineHeight;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Start/End Time:', rightX - 40, currentY, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      doc.text(
-        `${this.convertTo12HourFormat(this.schedule.startTime)} - ${this.convertTo12HourFormat(this.schedule.endTime)}` || '',
-        rightX,
-        currentY,
-        {
-          align: 'right',
-        },
-      );
-      currentY += lineHeight;
+       doc.setFont('helvetica', 'bold');
+       doc.text('Program & Year:', leftX, currentY);
+       doc.setFont('helvetica', 'normal');
+       doc.text(
+         `${this.schedule.section?.program?.programAbbreviation || ''} ${
+           this.schedule.section?.section || ''
+         }`,
+         leftX + 40,
+         currentY,
+       );
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Program & Year:', leftX, currentY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(
-        `${this.schedule.section?.program?.programAbbreviation || ''} ${
-          this.schedule.section?.section || ''
-        }`,
-        leftX + 40,
-        currentY,
-      );
+       doc.setFont('helvetica', 'bold');
+       doc.text('Date/Time Printed:', rightX - 40, currentY, { align: 'right' });
+       doc.setFont('helvetica', 'normal');
+       const currentDate = new Date().toLocaleString();
+       doc.text(currentDate, rightX, currentY, { align: 'right' });
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Date/Time Printed:', rightX - 40, currentY, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      const currentDate = new Date().toLocaleString();
-      doc.text(currentDate, rightX, currentY, { align: 'right' });
+       currentY += lineHeight;
 
-      currentY += lineHeight;
+       doc.setFont('helvetica', 'bold');
+       doc.text('Present:', leftX, currentY);
+       doc.setFont('helvetica', 'normal');
+       doc.text(`${presentCount}`, leftX + 40, currentY);
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Present:', leftX, currentY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${presentCount}`, leftX + 40, currentY);
+       doc.setFont('helvetica', 'bold');
+       doc.text('Absent:', rightX - 55, currentY);
+       doc.setFont('helvetica', 'normal');
+       doc.text(`${absentCount}`, rightX, currentY, { align: 'right' });
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Absent:', rightX - 55, currentY);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${absentCount}`, rightX, currentY, { align: 'right' });
-
-      // Add page counter at the bottom
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`Page ${currentPage} of ${pageCount}`, pageWidth / 2, 200, {
-        align: 'center',
-      });
+       // Add page counter at the bottom
+       doc.setFontSize(10);
+       doc.setFont('helvetica', 'normal');
+       doc.text(`Page ${currentPage} of ${pageCount}`, pageWidth / 2, 200, {
+         align: 'center',
+       });
+ 
+         // Add footer
+       const footerY = doc.internal.pageSize.height - 15;
+       const textLeftX = 10;  
+ 
+       doc.setFont('helvetica', 'normal');
+       doc.setFontSize(8);
+       doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+       doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+ 
+       doc.setTextColor(0, 0, 0); 
+       doc.text('Website: ', textLeftX, footerY + 0.5);
+       doc.setTextColor(0, 0, 255); 
+       doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+       doc.setTextColor(0, 0, 0);
+       doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+       doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+       doc.setTextColor(0);
+ 
+       doc.setFont('times', 'normal');
+       doc.setFontSize(15);
+       doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+ 
+       const stampRightX = doc.internal.pageSize.width - 80;
+       const stampWidth = 65;
+       const stampHeight = 30; 
+       doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
     };
 
     // Render table
@@ -225,7 +288,7 @@ export class ViewAttendanceComponent implements OnInit {
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 70,
+      startY: 75,
       theme: 'grid',
       styles: {
         fontSize: 10,
@@ -248,7 +311,7 @@ export class ViewAttendanceComponent implements OnInit {
         3: { cellWidth: 40 }, // Time-Out
         4: { cellWidth: 30 }, // Status
       },
-      margin: { left: tableMarginLeft, top: 70 },
+      margin: { left: tableMarginLeft, top: 80, bottom: 40 },
       didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
         renderHeader(data.pageNumber, data.pageCount);
       },

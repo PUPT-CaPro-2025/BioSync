@@ -72,7 +72,9 @@ export class RequestListScheduleComponent implements OnInit {
   totalPages!: number;
   groupedSchedules: { [key: string]: Schedule[] } = {};
   userId!: number;
-  headerImage!: string;
+  bagongPilipinas!: string;
+  stamp!: string;
+  schoolLogo!: string;  
   activeDropdownId: number | null = null;
   hasConflict = false;
 
@@ -103,8 +105,16 @@ export class RequestListScheduleComponent implements OnInit {
     this. getAllPrograms();
     this.getSections();
 
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -433,45 +443,99 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   generatePdf() {
-
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'SCHEDULE LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
+    //Header and Rows
     const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
     const rows = this.schedules.map(schedule =>
       [
         schedule.subject?.code,
-        schedule.subject?.name,
-        schedule.recurrenceDays,
+        schedule.subject?.description,
+        schedule.recurrenceDays?.join(', ') || schedule.scheduleDate,
         `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
         `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
         `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
         schedule.laboratory?.name
       ]);
 
+    const renderHeader = (currentPage: number, pageCount: number) => {
+       //Add header image
+      const margin = 10;
+      const imgWidth = 20; 
+      const imgHeight = 20;
+ 
+      doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+      const textStartX = margin + imgWidth + 5;
+      const textStartY = 15;
+      doc.setFontSize(10);
+      doc.text('Republic of the Philippines', textStartX, textStartY);
+
+      doc.setFontSize(12);
+      doc.setFont('times', 'bold');
+      doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+      doc.setFontSize(10);
+      doc.setFont('times', 'normal');
+      doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+      doc.setFontSize(11);
+      doc.setFont('times', 'bold');
+      doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+      doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+    
+      const title = 'SCHEDULE LIST';
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      const currentDate = new Date().toLocaleString();
+      doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+      
+        // Add footer
+      const footerY = doc.internal.pageSize.height - 15;
+      const textLeftX = 10;  
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+      doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5) ;
+
+      doc.setTextColor(0, 0, 0); 
+      doc.text('Website: ', textLeftX, footerY + 0.5);
+      doc.setTextColor(0, 0, 255); 
+      doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+      doc.setTextColor(0, 0, 0);
+      doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+      doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+      doc.setTextColor(0);
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(15);
+      doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+      const stampRightX = doc.internal.pageSize.width - 80;
+      const stampWidth = 65;
+      const stampHeight = 30; 
+      doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+    }
+
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 55,
       theme: 'grid',
+      margin: { top: 55, bottom: 40 },
       styles: {
         fontSize: 10,
         halign: 'center',
@@ -485,7 +549,10 @@ export class RequestListScheduleComponent implements OnInit {
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
     doc.save('schedule-list.pdf');
