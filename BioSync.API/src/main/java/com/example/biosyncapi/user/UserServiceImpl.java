@@ -253,7 +253,7 @@ public class UserServiceImpl implements UserService {
     }
 
     try (BufferedReader reader = new BufferedReader(
-            new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
+        new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
 
       String line;
       boolean isHeader = true;
@@ -262,20 +262,25 @@ public class UserServiceImpl implements UserService {
           isHeader = false;
           continue;
         }
+
         String[] csvRow = line.split(",");
 
-        Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
+        try {
+          Optional<User> user = this.userRepository.findByUsercode(csvRow[0]);
 
-        if (user.isPresent()) {
-          schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
-          continue;
+          if (user.isPresent()) {
+            schedule.ifPresent(sch -> addStudentToScheduleIfNotPresent(user.get(), sch));
+            continue;
+          }
+
+          String generatedPassword = generatePassword(8);
+          User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
+          schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
+
+          mailPassword.put(createdUser, generatedPassword);
+        } catch (Exception e) {
+          System.out.println("Error: " + e.getMessage());
         }
-
-        String generatedPassword = generatePassword(8);
-        User createdUser = this.authenticationService.register(mapToUser(csvRow, generatedPassword));
-        schedule.ifPresent(value -> this.scheduleStudentService.addStudentToSchedule(value, createdUser));
-
-        mailPassword.put(createdUser, generatedPassword);
       }
     } finally {
       tempFile.delete();
@@ -312,7 +317,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User mapToUser(String[] csvRow, String password) {
+  public User mapToUser(String[] csvRow, String password) throws Exception {
     User user = new User();
     user.setUsercode(getValue(csvRow[0]));
     user.setLastName(getValue(csvRow[1]));
@@ -343,25 +348,41 @@ public class UserServiceImpl implements UserService {
     return value.substring(0, extraIndex);
   }
 
-  private Section getSection(String sectionCode) {
+  private Section getSection(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String yearSection = sectionCode.substring(tgIndex + 2).trim();
     String[] yearSectionArr = yearSection.split("-");
+    if (yearSectionArr.length < 2) {
+      throw new IllegalArgumentException();
+    }
 
     Program program = getProgram(sectionCode);
 
-    if (program == null)
-      return null;
+    if (program == null) { // Replaced with exception
+      throw new Exception();
+    }
 
     String year = yearSectionArr[0];
-    int section = Integer.parseInt(yearSectionArr[1]);
+    int section;
+    try {
+      section = Integer.parseInt(yearSectionArr[1]);
+    } catch (NumberFormatException ex) {
+      throw new IllegalArgumentException();
+    }
 
-    return this.sectionRepository.findByProgramAndYearAndSection(program, year, section);
+    return this.sectionRepository.findByProgramAndYearAndSection(program,
+        year, section);
   }
 
-  private Program getProgram(String sectionCode) {
+  private Program getProgram(String sectionCode) throws Exception {
     int tgIndex = sectionCode.indexOf("TG");
+    if (tgIndex == -1) {
+      throw new IllegalArgumentException();
+    }
 
     String programAbb = sectionCode.substring(0, tgIndex).trim();
 
@@ -369,7 +390,8 @@ public class UserServiceImpl implements UserService {
       programAbb = programAbb.substring(0, programAbb.length() - 1);
     }
 
-    return this.programRepository.findByProgramAbbreviation(programAbb).orElse(null);
+    return this.programRepository.findByProgramAbbreviation(programAbb)
+        .orElseThrow(Exception::new);
   }
 
   private String generatePassword(int length) {
