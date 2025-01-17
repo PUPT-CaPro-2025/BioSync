@@ -57,10 +57,8 @@ export class AttendanceListComponent implements OnInit{
     getSchedulesByRecurrenceId(recurrenceId: string) {
         this.scheduleService.getSchedulesByRecurrenceId(recurrenceId).subscribe({
             next: (schedules: Schedule[]) => {
-                const today = this.today;
-
                 const finishedSchedules = schedules.filter(schedule =>
-                    schedule.hasFinished && new Date(schedule.scheduleDate).getTime() >= today
+                    schedule.hasFinished
                 );
 
                 finishedSchedules.sort((a, b) => new Date(a.scheduleDate).getTime() - new Date(b.scheduleDate).getTime());
@@ -69,14 +67,8 @@ export class AttendanceListComponent implements OnInit{
 
                 this.schedule = schedules[0];
 
-                console.log(this.schedules);
-
                 this.schedules.forEach(schedule => {
-                    console.log(schedule.id)
-                    this.getAttendance(schedule.id) // gets the class[] which
-                    // contains the time in and time out of students per schedule
-
-                    console.log(this.class)
+                    this.getAttendance(schedule.id)
                 })
             }
         });
