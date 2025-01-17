@@ -83,9 +83,10 @@
       <div class="cell">Student Number</div>
       <div class="cell">Student Name</div>
       <div class="cell">Assigned PC</div>
-        @if(getRole() != 'STUDENT'){
-            <div class="cell">Actions</div>
-        }
+      @if(getRole() !== "STUDENT") {
+        <div class="cell">Actions</div>
+
+      }
     </div>
     <div class="row-container text-custom-12">
       @for (student of class; track student) {
@@ -97,29 +98,29 @@
           <div class="cell">
             {{ student.computerNumber ? student.computerNumber : "Unassigned" }}
           </div>
-            @if(getRole() != 'STUDENT'){
-                <div class="cell">
-                    <button
-                            (click)="toggleDropdownAction(student.id)"
-                            class="dropdown-toggle"
-                    >
-                        <mat-icon>more_horiz</mat-icon>
-                    </button>
-                    @if (activeDropdownId === student.id) {
-                        <div class="action-container">
-                            <button
-                                    class="action-button"
-                                    (click)="toggleAssignedComputer(student)"
-                            >
-                                Assign PC
-                            </button>
-                            <button class="action-button" (click)="removeStudent(student)">
-                                Remove
-                            </button>
-                        </div>
-                    }
+          @if(getRole() !== "STUDENT") {
+            <div class="cell">
+              <button
+                (click)="toggleDropdownAction(student.id)"
+                class="dropdown-toggle"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+              @if (activeDropdownId === student.id) {
+                <div class="action-container">
+                  <button
+                    class="action-button"
+                    (click)="toggleAssignedComputer(student)"
+                  >
+                    Assign PC
+                  </button>
+                  <button class="action-button" (click)="removeStudent(student)">
+                    Remove
+                  </button>
                 </div>
-            }
+              }
+            </div>
+          }
         </div>
       }
     </div>

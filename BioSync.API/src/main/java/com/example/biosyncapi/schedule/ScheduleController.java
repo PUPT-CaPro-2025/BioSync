@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v1/schedules")
@@ -114,6 +111,21 @@ public class ScheduleController {
   public Optional<Schedule> getScheduleById(@PathVariable Long id) {
     return scheduleService.getScheduleById(id);
   }
+
+
+  @PostMapping("/sync")
+  public ResponseEntity<?> syncSchedules(@RequestBody Map<String, Object> schedule) {
+    try {
+      List<Schedule> addedSchedules =
+       this.scheduleService.syncSchedulesFromApi(schedule);
+
+      return ResponseEntity.status(HttpStatus.CREATED).body(addedSchedules);
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(e.getMessage());
+    }
+  }
+
 
   @PostMapping("/create")
   public ResponseEntity<List<Schedule>> createSchedule(@RequestBody Schedule schedule) {

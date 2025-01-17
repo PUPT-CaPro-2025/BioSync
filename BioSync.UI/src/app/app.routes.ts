@@ -48,6 +48,8 @@ import { SuffixComponent } from './suffix/suffix.component';
 import { VisitPurposeComponent } from './visit-purpose/visit-purpose.component';
 import { AdminProfileComponent } from './admin-profile/admin-profile.component';
 import { ManualAttendanceComponent } from './attendance/manual-attendance/manual-attendance.component';
+import { ViolationComponent } from './violation/violation.component';
+import { ViewStudentAttendanceComponent } from './violation/view-student-attendance/view-student-attendance.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import {
     AttendanceListComponent
@@ -69,6 +71,8 @@ export const routes: Routes = [
     {path: "professor", component: ProfessorComponent},
     {path: "student", component: StudentComponent},
     {path: "attendance", component: AttendanceComponent},
+    {path: "violation", component: ViolationComponent},
+    {path: "violation/view/student", component: ViewStudentAttendanceComponent},
     {path: "attendance/:id/select-type", component: AttendanceTypeComponent},
     {
         path: "attendance/fingerprint/start/:id",

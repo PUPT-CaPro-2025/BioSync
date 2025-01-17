@@ -32,6 +32,13 @@ export class UserService {
     });
   }
 
+  processBulkStudentUpdate(formData: FormData) {
+    return this.http.put(`${this.url}/users/edit/bulk/students`, formData, {
+      headers: this.headers,
+      withCredentials: true,
+    });
+  }
+
   processProfileImage(formData: FormData) {
     return this.http.post<User>(`${this.url}/users/profile-image`, formData, {
       headers: this.headers,

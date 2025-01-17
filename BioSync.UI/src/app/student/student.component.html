@@ -16,6 +16,14 @@
                             Add Multiple Student
                         </button>
                     </mat-menu>
+                    <button mat-button [matMenuTriggerFor]="yes">
+                      Update Student
+                    </button>
+                    <mat-menu #yes="matMenu">
+                      <button mat-menu-item (click)="openEditDialog()">
+                        CSV - Multiple
+                      </button>
+                    </mat-menu>
                     <div class="toolbar-button select-none">
                         <div class="header-button flex" (click)="toggleDropdown()">
                             Print Student Report
