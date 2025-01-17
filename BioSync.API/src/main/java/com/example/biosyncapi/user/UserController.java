@@ -154,7 +154,7 @@ public class UserController {
 
       return ResponseEntity.ok().body(Map.ofEntries(
               Map.entry("success", true),
-              Map.entry("count", updatedUsers)
+              Map.entry("students", updatedUsers)
       ));
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(Map.ofEntries(
