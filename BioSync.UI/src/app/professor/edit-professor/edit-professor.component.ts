@@ -194,6 +194,7 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
     const updatedValues = this.professorForm.value;
 
     this.professorToBeUpdated = {
+      ...this.professorToBeUpdated,
       ...updatedValues,
       id: this.professorToBeUpdated.id,
       password: this.professorToBeUpdated.password,
