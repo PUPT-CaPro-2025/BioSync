@@ -19,6 +19,7 @@ import { Program } from '../../model/program.model';
 import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
+import {StudentEditCsvComponent} from "../prompt/student-edit-csv/student-edit-csv.component";
 
 @Component({
   selector: 'app-student',
@@ -434,5 +435,21 @@ export class StudentComponent implements OnInit{
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  openEditDialog() {
+    const ref = this.dialog.open(StudentEditCsvComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        scheduleId: null,
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getStudents()
+      }
+    })
   }
 }
