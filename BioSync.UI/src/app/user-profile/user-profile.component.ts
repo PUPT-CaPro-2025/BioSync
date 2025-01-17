@@ -52,7 +52,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   image!: string;
   imageButtonLabel = 'Skip';
   editMode = false;
-  hasFingerprint: boolean = false;
   userId!: number;
   photoButtonLabel = 'Skip';
   videoElement!: HTMLVideoElement;
@@ -93,11 +92,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         });
         console.log(this.user);
         this.setFormValues();
-        this.fingerprintService.hasFingerprint(this.user.id).subscribe({
-          next: (hasFingerprint: boolean) => {
-            this.hasFingerprint = hasFingerprint;
-          },
-        });
       },
     });
   }
