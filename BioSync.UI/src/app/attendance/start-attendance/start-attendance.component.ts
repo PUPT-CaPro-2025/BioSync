@@ -24,6 +24,7 @@ import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {CryptoService} from "../../../services/crypto.service";
 
 @Component({
   selector: 'app-start-attendance',
@@ -76,6 +77,7 @@ export class StartAttendanceComponent implements OnInit {
   scannedCode: string = '';
   isBarcode = false;
   isTimeOut = false;
+  adminDetails!: User;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -86,11 +88,14 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private cryptoService: CryptoService,
+    private userService: UserService,
   ) {}
 
   async ngOnInit() {
     this.updateTimeAndDate();
+    this.getAdminDetails();
     setInterval(() => this.updateTimeAndDate(), 1000);
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
@@ -340,6 +345,23 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+        this.cookieService.getCookie('user_id')!,
+    );
+    return +this.cryptoService.decrypt(encryptedUserId);
+  }
+
+  getAdminDetails(){
+    const adminId = this.getUserId();
+
+    this.userService.getUserById(adminId).subscribe({
+      next: (user: User) => {
+        this.adminDetails = user;
+      }
+    })
+  }
+
   openConfirmationDialogStop(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
@@ -562,9 +584,16 @@ export class StartAttendanceComponent implements OnInit {
     this.isBarcode = true;
     const professor = this.selectedSchedule.professor!;
 
-    if(usercode === professor.usercode) {
-      this.loggedProfessor = professor;
-      this.getUserProfileImage(professor.id);
+    if(usercode === professor.usercode || usercode === this.adminDetails.usercode) {
+
+      if(usercode === professor.usercode) {
+        this.loggedProfessor = professor;
+        this.getUserProfileImage(professor.id);
+      } else {
+        this.loggedProfessor = this.adminDetails;
+        this.getUserProfileImage(this.adminDetails.id);
+      }
+
       this.cookieService.setCookie(
           'actualTimeStart',
           Date.now().toString(),
