@@ -8,11 +8,11 @@ export function passwordValidator(): ValidatorFn {
       return { minLength: true };
     }
 
-    if (value && !/[A-Z]/.test(value)) {
+    if (value && !/[A-ZÑ]/.test(value)) {
       return { noUppercase: true };
     }
 
-    if (value && !/[a-z]/.test(value)) {
+    if (value && !/[a-zñ]/.test(value)) {
       return { noLowercase: true };
     }
 
