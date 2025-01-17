@@ -2,7 +2,10 @@ import {Component, EventEmitter, OnInit, Output, ViewEncapsulation, ViewChild, O
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {ProgramService} from "../../../services/program.service";
@@ -25,6 +28,12 @@ import {
 } from "../../../services/face.recognition.service";
 import {Suffix} from "../../../model/suffix.model";
 import {SuffixService} from "../../../services/suffix.service";
+import { 
+  usercodeValidator, studentNameValidator 
+} from '../../../services/validators/customStudentValidator'; 
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-add-student',
@@ -129,12 +138,13 @@ export class AddStudentComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.studentForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, studentNameValidator()]],
+      lastName: ['', [Validators.required, studentNameValidator()]],
+      middleName: ['', [studentNameValidator()]],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()]],
       program: ['', [Validators.required]],
       section: ['', Validators.required],
     });
@@ -387,5 +397,37 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         this.currentStepLabel = 'Unknown Step';
         break;
     }
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.studentForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.studentForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.studentForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.studentForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.studentForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.studentForm.get('email')!;
+  }
+
+  get programControl(): AbstractControl {
+    return this.studentForm.get('program')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.studentForm.get('section')!;
   }
 }

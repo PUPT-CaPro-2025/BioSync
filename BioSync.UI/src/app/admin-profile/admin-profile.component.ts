@@ -3,11 +3,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -32,6 +29,12 @@ import { CookieService } from '../../services/cookie.service';
 import { CryptoService } from '../../services/crypto.service';
 import {Suffix} from "../../model/suffix.model";
 import {SuffixService} from "../../services/suffix.service";
+import { 
+  adminNameValidator 
+} from '../../services/validators/customAdminValidator'; 
+import { 
+  customEmailValidator 
+} from '../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-admin-profile',
@@ -164,10 +167,10 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
   initForm() {
     this.adminForm = this.formBuilder.group({
       usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      firstName: ['', [Validators.required, adminNameValidator()]],
+      lastName: ['', [Validators.required, adminNameValidator()]],
+      email: ['', [Validators.required, customEmailValidator()]],
+      middleName: ['', [adminNameValidator()]],
       suffix: ['', [Validators.required]],
     });
 
@@ -182,7 +185,7 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
       firstName: this.admin.firstName,
       lastName: this.admin.lastName,
       email: this.admin.email,
-      suffix: 'N/A',
+      suffix: this.admin.suffix,
       middleName: this.admin.middleName,
     });
 
@@ -370,4 +373,27 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+  get userCodeControl(): AbstractControl {
+    return this.adminForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.adminForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.adminForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.adminForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.adminForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.adminForm.get('email')!;
+  }
 }

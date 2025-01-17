@@ -17,6 +17,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
@@ -39,6 +40,12 @@ import { CommonModule } from '@angular/common';
 import { FaceRecognitionService } from '../../../services/face.recognition.service';
 import {SuffixService} from "../../../services/suffix.service";
 import {Suffix} from "../../../model/suffix.model";
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
+import { 
+  facultyNameValidator, usercodeValidator 
+} from '../../../services/validators/customProfessorValidator';
 
 @Component({
   selector: 'app-edit-professor',
@@ -137,12 +144,14 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.professorForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, facultyNameValidator()]],
+      lastName: ['', [Validators.required, facultyNameValidator()]],
+      middleName: ['', [facultyNameValidator()]],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()
+      ]],
     });
 
     this.imageForm = this.formBuilder.group({
@@ -382,5 +391,29 @@ export class EditProfessorComponent implements OnInit, OnDestroy {
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.professorForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.professorForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.professorForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.professorForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.professorForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.professorForm.get('email')!;
   }
 }
