@@ -16,6 +16,7 @@ import { User } from '../../../model/user.model';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confirm.component';
+import { PromptContinueComponent } from '../../prompt/prompt-continue/prompt-continue.component';
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -628,5 +629,23 @@ export class StartAttendanceComponent implements OnInit {
         this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
       }
     }, 0);
+  }
+
+  openContinueDialog(){
+      const ref = this.dialog.open(PromptContinueComponent, {
+        width: '350px',
+        data: {
+          title: "Go back to Schedule List",
+          message: "Are you sure you want to go back?",
+        }
+      })
+  
+      ref.afterClosed().subscribe({
+        next: result => {
+          if (!result) return
+  
+          this.router.navigate(['/schedule']).then();
+        }
+      })
   }
 }
