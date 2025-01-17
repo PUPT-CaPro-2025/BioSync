@@ -50,7 +50,7 @@ jobs:
 
     - name: Update Build Number in app.settings
       run: |
-        sed -i -e "s~buildNumber: '.*'~buildNumber: '${{ github.run_number }}'~" environment/app.setting.ts
+        sed -i -e "s~buildNumber: '.*'~buildNumber: '0.0.${{ github.run_number }}'~" environment/app.setting.ts
       shell: /usr/bin/bash -e {0}
 
     - name: Build Angular Project
