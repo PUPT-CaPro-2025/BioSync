@@ -70,14 +70,14 @@ public class ScheduleController {
   @GetMapping("students/details/{id}")
   public ResponseEntity<List<ScheduleStudent>> getSchedulesStudentByScheduleId
       (@PathVariable Long id) {
-    List<ScheduleStudent> scheduleStudent =
-        scheduleStudentService.getAllByScheduleId(id);
+    try{
+      List<ScheduleStudent> scheduleStudent =
+          scheduleStudentService.getAllByScheduleId(id);
 
-    if (scheduleStudent == null || scheduleStudent.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return ResponseEntity.status(HttpStatus.CREATED).body(scheduleStudent);
+    } catch (Exception e){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
     }
-
-    return ResponseEntity.status(HttpStatus.CREATED).body(scheduleStudent);
   }
 
   @GetMapping("/recurrence/{id}")
