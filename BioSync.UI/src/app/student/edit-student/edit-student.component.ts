@@ -240,7 +240,9 @@ export class EditStudentComponent implements OnInit, OnDestroy {
           this.processProfileImage(updatedUser.id);
         }
         if (this.isRightIndex && this.isRightThumb) {
-          this.registerFingerprintData(updatedUser);
+          if(this.registerFingerprintData(updatedUser)){
+            updatedUser.biometrics = true;
+          }
         }
         this.editedStudent.emit(updatedUser);
         this.openSuccessDialog();
@@ -301,6 +303,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   }
 
   registerFingerprintData(student: User) {
+    let flag = false;
     const formData = new FormData();
     formData.append('userId', `${student.id}`);
     formData.append(
@@ -315,10 +318,12 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     );
 
     this.fingerprintService.updateFingerprint(student.id ,formData).subscribe({
-      next: (value) => {
-        console.log(value);
+      next: () => {
+        flag = true;
       },
     });
+
+    return flag;
   }
 
   openCamera() {
