@@ -26,7 +26,7 @@ import {PromptScheduleComponent} from "../../prompt/prompt-schedule/prompt-sched
     AttendanceService
   ],
   templateUrl: './dashboard-student.component.html',
-  styleUrl: './dashboard-student.component.css',
+  styleUrls: ['./dashboard-student.component.css', '../dashboard-admin/dashboard-admin.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardStudentComponent implements OnInit{
