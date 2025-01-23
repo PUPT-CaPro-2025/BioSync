@@ -9,6 +9,48 @@
   align-items: center;
 }
 
+input[name="laboratory1"], input[name="laboratory2"], input[name="laboratory3"] {
+  appearance: none; 
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  position: relative;
+  background-color: white; 
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+input[name="laboratory1"]:checked,
+input[name="laboratory2"]:checked,
+input[name="laboratory3"]:checked {
+  background-color: white;
+  border-color: transparent;
+}
+
+input[name="laboratory1"]:checked::before,
+input[name="laboratory2"]:checked::before,
+input[name="laboratory3"]:checked::before {
+  content: "✔"; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 20px;
+  color: white;
+  transform: translate(-50%, -50%);
+}
+
+input[name="laboratory1"]:checked {
+  background-color: #ED5564; 
+}
+
+input[name="laboratory2"]:checked {
+  background-color: #AC92ED; 
+}
+
+input[name="laboratory3"]:checked {
+  background-color: #4FC0E8;
+}
+
 
 .fc-scroller {
   scrollbar-width: thin;

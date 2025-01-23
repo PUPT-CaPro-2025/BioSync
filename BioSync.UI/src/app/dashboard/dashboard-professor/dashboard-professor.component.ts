@@ -27,7 +27,7 @@ import {forkJoin} from "rxjs";
     UserService,
   ],
   templateUrl: './dashboard-professor.component.html',
-  styleUrl: './dashboard-professor.component.css',
+  styleUrls: ['./dashboard-professor.component.css', '../dashboard-admin/dashboard-admin.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
 export class DashboardProfessorComponent implements OnInit{
