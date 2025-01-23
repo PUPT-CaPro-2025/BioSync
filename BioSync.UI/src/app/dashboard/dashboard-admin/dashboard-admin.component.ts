@@ -133,12 +133,6 @@ export class DashboardAdminComponent implements OnInit {
     hiddenDays: [0],
     plugins: [dayGridPlugin, interactionPlugin],
     customButtons: {
-      printCalendarButton: {
-        text: 'Export',
-        click: () => {
-          this.printEvent();
-        }
-      },
       SyncSchedules: {
         text: 'Sync',
         click: () => {
@@ -147,9 +141,9 @@ export class DashboardAdminComponent implements OnInit {
       }
     },
     headerToolbar: {
-      left: 'prev,next today',
+      left: 'prev,next',
       center: 'title',
-      right: 'SyncSchedules printCalendarButton'
+      right: 'SyncSchedules today'
     },
     dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
     eventClick: (info : EventClickArg) => this.handleEventClick(info),
