@@ -83,9 +83,10 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<Schedule> findConflictingSchedules(Date scheduleDate,
-        Time startTime, Time endTime, Laboratory laboratory, SchoolYear schoolYear) {
+        Time startTime, Time endTime, Laboratory laboratory,
+        SchoolYear schoolYear, Semester semester) {
         return scheduleRepository.findConflictingSchedules(scheduleDate,
-            startTime, endTime, laboratory, schoolYear);
+            startTime, endTime, laboratory, schoolYear, semester);
     }
 
     @Override
@@ -109,7 +110,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                         schedule.getStartTime(),
                         schedule.getEndTime(),
                         schedule.getLaboratory(),
-                        schedule.getSchoolYear()
+                        schedule.getSchoolYear(),
+                        schedule.getSemester()
                 );
 
         if(!conflictingSchedule.isEmpty()) {

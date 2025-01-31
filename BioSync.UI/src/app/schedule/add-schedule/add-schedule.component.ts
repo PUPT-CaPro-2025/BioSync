@@ -607,6 +607,7 @@ export class AddScheduleComponent implements OnInit {
       formValues.startTime &&
       formValues.endTime &&
       formValues.schoolYear &&
+      formValues.semester &&
       formValues.laboratory
     );
   }
@@ -616,7 +617,7 @@ export class AddScheduleComponent implements OnInit {
     formValues.section = null;
     formValues.professor = null;
     formValues.remarks = null;
-    formValues.semester = null;
+    formValues.semester = this.semesters.find(semester => semester.id === this.scheduleForm.get('semester')?.value);
     formValues.schoolYear = this.selectedSY;
     formValues.startTime = `${formValues.startTime}:00`;
     formValues.endTime = `${formValues.endTime}:00`;
