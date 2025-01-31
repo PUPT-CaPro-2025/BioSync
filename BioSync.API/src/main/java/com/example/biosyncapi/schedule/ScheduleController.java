@@ -146,7 +146,7 @@ public class ScheduleController {
     List<Schedule> conflictingSchedules = scheduleService
         .findConflictingSchedules(schedule.getScheduleDate(),
             schedule.getStartTime(), schedule.getEndTime(),
-            schedule.getLaboratory(), schedule.getSchoolYear());
+            schedule.getLaboratory(), schedule.getSchoolYear(), schedule.getSemester());
 
     return new ResponseEntity<>(conflictingSchedules, HttpStatus.OK);
   }
