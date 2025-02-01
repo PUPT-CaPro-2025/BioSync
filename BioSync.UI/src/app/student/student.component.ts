@@ -101,7 +101,6 @@ export class StudentComponent implements OnInit{
     this.userService.getUsersByRole("STUDENT").subscribe({
       next: students => {
         this.students = students;
-        console.log(this.students[0])
         this.studentContainer = students;
         this.queriedStudents = [...this.students];
         this.totalItems = this.students.length;

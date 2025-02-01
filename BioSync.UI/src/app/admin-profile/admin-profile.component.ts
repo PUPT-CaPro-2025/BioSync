@@ -155,7 +155,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
             this.image = imageLink.profileImageUrl;
           },
         });
-        console.log(this.admin);
         this.setFormValues();
       },
     });
@@ -201,7 +200,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (value) => {
             this.imageSrc = value.profileImageUrl;
-            console.log(this.imageSrc)
           },
         });
   }
@@ -420,9 +418,6 @@ export class AdminProfileComponent implements OnInit, OnDestroy {
         this.cookieService.deleteCookie('user_id');
         localStorage.removeItem('activeButton');
         this.router.navigate(['/login']).then();
-      },
-      error: (err) => {
-        console.log(err);
       },
     });
   }

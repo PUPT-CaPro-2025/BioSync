@@ -216,8 +216,6 @@ export class DashboardProfessorComponent implements OnInit{
     })
 
     this.schedules = filteredSchedules;
-
-    console.log(this.schedules)
   }
 
   private getUniqueSections() {

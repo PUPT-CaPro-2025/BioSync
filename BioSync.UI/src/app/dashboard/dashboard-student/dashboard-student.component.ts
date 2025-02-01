@@ -191,8 +191,6 @@ export class DashboardStudentComponent implements OnInit{
     const eventDate = new Intl.DateTimeFormat('en-GB').format(event.start!);
     const [month, day, year] = eventDate.split('/');
     const scheduleDate = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')}`;
-    const laboratory = event.extendedProps['laboratory'];
-    console.log(laboratory)
 
     const scheduledEvent = this.schedules.find(
       schedule => schedule.scheduleDate === scheduleDate && schedule.startTime === startTime
