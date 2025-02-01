@@ -148,11 +148,7 @@ export class AttendanceListComponent implements OnInit{
 
 
     getAttendance(scheduleId: number) {
-        this.attendanceService.getAttendanceByScheduleId(scheduleId).subscribe({
-            next: (value) => {
-                console.log(value[1])
-            },
-        });
+        this.attendanceService.getAttendanceByScheduleId(scheduleId).subscribe();
     }
 
     populateRows(printType: string) {

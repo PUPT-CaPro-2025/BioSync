@@ -25,7 +25,6 @@ import { ProgramService } from '../../services/program.service';
 import { Section } from '../../model/section.model';
 import { SectionService } from '../../services/section.service';
 import { Semester } from "../../model/semester.model";
-import { belowStartTimeValidator } from '../../services/validators/customScheduleValidator';
 
 @Component({
   selector: 'app-schedule',
@@ -329,6 +328,7 @@ export class ScheduleComponent implements OnInit {
   }
 
   getSections() {
+    if(this.selectedProgram == undefined) return
     this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;

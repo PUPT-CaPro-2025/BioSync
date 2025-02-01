@@ -199,8 +199,7 @@ export class StartAttendanceComponent implements OnInit {
             this.isSuccess = false;
           }, 3000);
         },
-        error: (err) => {
-          console.log(err);
+        error: () => {
           this.isError = true;
           this.loading = false;
           setTimeout(() => {
@@ -342,7 +341,6 @@ export class StartAttendanceComponent implements OnInit {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
-        console.log(this.profileImageUrl);
       },
     });
   }

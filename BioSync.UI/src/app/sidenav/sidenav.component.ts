@@ -200,8 +200,12 @@ export class SidenavComponent implements OnInit {
         localStorage.removeItem('activeButton');
         this.router.navigate(['/login']).then();
       },
-      error: (err) => {
-        console.log(err);
+      error: () => {
+        this.cookieService.deleteCookie('authToken');
+        this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
+        localStorage.removeItem('activeButton');
+        this.router.navigate(['/login']).then();
       },
     });
   }

@@ -218,6 +218,7 @@ export class AttendanceComponent implements OnInit{
   }
 
   getSections() {
+    if(this.selectedProgram == undefined) return
     this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
       next: (sections: Section[]) => {
         this.sections = sections;
