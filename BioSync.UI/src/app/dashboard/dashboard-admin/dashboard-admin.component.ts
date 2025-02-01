@@ -23,6 +23,9 @@ import {Laboratory} from "../../../model/laboratory.model";
 import {LaboratoryService} from "../../../services/laboratory.service";
 import {PromptSyncComponent} from "../../prompt/prompt-sync/prompt-sync.component";
 import {IntegrationService} from "../../../services/integration.service";
+import {
+  CalendarExportComponent
+} from "../../prompt/calendar-export/calendar-export.component";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -51,6 +54,8 @@ export class DashboardAdminComponent implements OnInit {
   currentSemester!: Semester;
   currentSchoolYear!: SchoolYear;
   labs: Laboratory[] = [];
+  schoolLogo!: string;
+  bioSyncLogo!: string;
 
   constructor(
     private scheduleService : ScheduleService,
@@ -69,6 +74,15 @@ export class DashboardAdminComponent implements OnInit {
     this.loadUpcomingSchedules();
     this.loadDashboardNumbers();
     this.getLaboratories();
+
+    this.loadImageToBase64('../../assets/BioSync Logo - with text' +
+        ' orange.svg', (base64Image) => {
+      this.bioSyncLogo = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
+    });
   }
 
   loadSchedules(): void {
@@ -173,7 +187,14 @@ export class DashboardAdminComponent implements OnInit {
   };
 
   printEvent(): void {
-    this.generatePDF()
+    this.dialog.open(CalendarExportComponent, {
+      width: '400px',
+      data: {
+        generateFirstSemester: () => this.generatePDF(1),
+        generateSecondSemester: () =>  this.generatePDF(2),
+        generateSummerSemester: () => this.generatePDF(3)
+      }
+    })
   }
 
   openDateSchedule(arg: DateClickArg) {
@@ -289,18 +310,24 @@ export class DashboardAdminComponent implements OnInit {
     });
   }
 
-  generatePDF() {
+  generatePDF(semesterNumber: number): void  {
     // Create a new PDF document in landscape mode
-    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const doc = new jsPDF('landscape', 'mm', 'a3');
     const pageWidth = doc.internal.pageSize.getWidth();
-
 
     // Loop through each laboratory in `this.upcomingSchedules`
     this.labs.forEach((lab, index) => {
       // Initialize selected data for each laboratory
       this.selectedLaboratory = lab;
-      this.currentSemester = this.upcomingSchedules[1].semester!;
       this.currentSchoolYear = this.upcomingSchedules[1].schoolYear!;
+
+      if(semesterNumber == 1){
+        this.currentSemester = this.currentSchoolYear.firstSemester;
+      } else if(semesterNumber == 2){
+        this.currentSemester = this.currentSchoolYear.secondSemester;
+      } else {
+        this.currentSemester = this.currentSchoolYear.summerSemester;
+      }
 
       // Add a new page for each laboratory (skip adding a new page for the first lab)
       if (index > 0) {
@@ -317,14 +344,33 @@ export class DashboardAdminComponent implements OnInit {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(40, 40, 40);
-      doc.text(this.currentSemester.name, 14, 28);
+      doc.text(`${this.currentSemester.name} • SY ${this.currentSchoolYear.startYear} - ${this.currentSchoolYear.endYear}`
+          , 14, 28);
 
-      doc.setFontSize(16);
-      doc.text(
-          `${this.currentSchoolYear.startYear} - ${this.currentSchoolYear.endYear}`,
-          pageWidth - 60,
-          20,
-          { align: 'right' }
+      const imageWidth = 20;
+      const imageHeight = 20;
+
+      const rightMargin = 14;
+      const xPos = pageWidth - imageWidth - rightMargin;
+      const uniLogoXPos = pageWidth - imageWidth - (rightMargin + 20);
+      const yPos = 10;
+
+      doc.addImage(
+          this.bioSyncLogo,
+          'PNG',
+          xPos,
+          yPos,
+          imageWidth,
+          imageHeight
+      );
+
+      doc.addImage(
+          this.schoolLogo,
+          'PNG',
+          uniLogoXPos,
+          yPos + 1,
+          imageWidth - 3,
+          imageHeight - 3
       );
 
       // Draw Room Assignment Header Box
@@ -484,5 +530,24 @@ export class DashboardAdminComponent implements OnInit {
     const period = hours >= 12 ? 'pm' : 'am';
     const formattedHours = hours % 12 || 12;
     return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  }
+
+
+  loadImageToBase64(
+      url: string,
+      callback: (base64Image: string) => void,
+  ): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 }
