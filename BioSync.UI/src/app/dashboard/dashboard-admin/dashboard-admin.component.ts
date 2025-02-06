@@ -475,9 +475,9 @@ export class DashboardAdminComponent implements OnInit {
     });
 
     // download the PDF
-    const semesterName = this.currentSemester.name;
-
-    doc.save(`${semesterName} Calendar.pdf`)
+    const semesterName = this.currentSemester.name.replace(" ", "-");
+    const schoolYear = `${this.currentSchoolYear.startYear}-${this.currentSchoolYear.endYear}`;
+    doc.save(`${semesterName}-Calendar-SY-${schoolYear}.pdf`)
   }
 
   scheduleFitsInSlot(startTime: string, endTime: string, timeSlot: string): boolean {
