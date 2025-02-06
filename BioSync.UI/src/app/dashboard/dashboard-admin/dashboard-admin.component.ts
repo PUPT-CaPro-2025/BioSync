@@ -474,14 +474,10 @@ export class DashboardAdminComponent implements OnInit {
       });
     });
 
-    // Generate and open the PDF
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const newWindow = window.open(pdfUrl, '_blank');
+    // download the PDF
+    const semesterName = this.currentSemester.name;
 
-    if (newWindow) {
-      newWindow.onload = () => URL.revokeObjectURL(pdfUrl);
-    }
+    doc.save(`${semesterName} Calendar.pdf`)
   }
 
   scheduleFitsInSlot(startTime: string, endTime: string, timeSlot: string): boolean {
