@@ -17,7 +17,11 @@ export function requestInterceptorFactory(
         catchError((error: HttpErrorResponse) => {
             // custom status for expired tokens
             // since we use 401 for attendance verification
-          if (error.status === 419) {
+
+          let isDialogOpen = false;
+
+          if (error.status === 419 && !isDialogOpen) {
+              isDialogOpen = true;
               const ref = dialog.open(PromptOkayComponent, {
                   width: '500px',
                   data: {
@@ -32,7 +36,9 @@ export function requestInterceptorFactory(
                   cookieService.deleteCookie('role');
                   cookieService.deleteCookie('user_id');
                   localStorage.removeItem('activeButton');
-                  router.navigate(['/login']).then();
+                  router.navigate(['/login']).then(() => {
+                      isDialogOpen = false;
+                  });
               })
           }
           return throwError(() => error);
