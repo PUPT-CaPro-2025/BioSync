@@ -170,7 +170,7 @@ export class AttendanceListComponent implements OnInit{
 
 
                 allAttendance.forEach(record => {
-                    const userFullName = `${record.user.firstName} ${record.user.lastName}`;
+                    const userFullName = `${record.user.lastName}, ${record.user.firstName}`.toUpperCase();
 
                     if (!attendanceByStudent.has(userFullName)) {
                         // Initialize an empty array for the student
@@ -181,6 +181,7 @@ export class AttendanceListComponent implements OnInit{
                     attendanceByStudent.get(userFullName)[record.schedule.scheduleDate] = {
                         timeIn: this.formatTime(record.timeIn)  || '-',
                         timeOut: this.formatTime(record.timeOut) || '-',
+                        status: record.status
                     };
                 });
 
@@ -188,8 +189,8 @@ export class AttendanceListComponent implements OnInit{
                 const rows = Array.from(attendanceByStudent.entries()).map(([name, dates], index) => {
                     const row = [index + 1, name];
 
-                    let presentCount = 0;
                     let absentCount = 0;
+                    let lateCount = 0;
 
                     uniqueDates.forEach(date => {
                         if (dates[date]) {
@@ -197,7 +198,9 @@ export class AttendanceListComponent implements OnInit{
                             const timeOut = dates[date].timeOut;
 
                             if (timeIn !== '-' && timeOut !== '-') {
-                                presentCount++;
+                                if(dates[date].status === 'LATE'){
+                                    lateCount++;
+                                }
                             } else {
                                 absentCount++;
                             }
@@ -209,7 +212,7 @@ export class AttendanceListComponent implements OnInit{
                         }
                     });
 
-                    row.push(presentCount);
+                    row.push(lateCount);
                     row.push(absentCount);
 
                     return row;
@@ -239,7 +242,7 @@ export class AttendanceListComponent implements OnInit{
         const headerRow1 = ['No.', 'Date', ...uniqueDates, " ", " "];
         const headerRow2 = [' ', 'Name', ...uniqueDates.flatMap(() => ['Time' +
         ' In' +
-        ' - Time Out']), 'Present', "Absent"];
+        ' - Time Out']), 'Late', "Absent"];
 
         // Function to render header (will be called on each page)
         const renderHeader = (currentPage: number, pageCount: number) => {
@@ -360,10 +363,10 @@ export class AttendanceListComponent implements OnInit{
         doc.autoTable({
             head: [headerRow1, headerRow2],
             body: rows,
-            startY: 75,
+            startY: 60,
             theme: 'grid',
             styles: {
-                fontSize: 10,
+                fontSize: 9,
                 halign: 'center',
                 cellWidth: 'wrap',
             },
@@ -381,7 +384,7 @@ export class AttendanceListComponent implements OnInit{
                 0: { cellWidth: 'auto' },
                 [headerRow2.length - 1]: { cellWidth: 'auto' },
             },
-            margin: { top: 80, bottom: 40 },
+            margin: { top: 60, bottom: 30 },
             didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
                 // Render the header
                 renderHeader(data.pageNumber, doc.getNumberOfPages());
