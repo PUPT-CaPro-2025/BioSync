@@ -194,7 +194,7 @@ export class ScheduleComponent implements OnInit {
 
   setLatestSchoolYear() {
     if (this.schedules && this.schedules.length > 0) {
-      const latestSchedule = this.schedules[this.schedules.length - 1];
+      const latestSchedule = this.schedules[0];
       this.selectedAcademicYear = latestSchedule.schoolYear?.id;
     }
   }
@@ -212,7 +212,7 @@ export class ScheduleComponent implements OnInit {
 
     if (!this.schedules || this.schedules.length === 0) return;
 
-    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchedule = this.schedules[0];
     const lastSchoolYear = lastSchedule.schoolYear;
     if (!lastSchoolYear) return;
 
