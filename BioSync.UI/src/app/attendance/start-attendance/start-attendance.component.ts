@@ -169,7 +169,6 @@ export class StartAttendanceComponent implements OnInit {
     return this.sdkService.base64ToBlob(base64, contentType);
   }
 
-
   submitProfessor() {
     this.setLoadingProf();
     const formData = new FormData();
@@ -233,6 +232,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
+        this.setActualTimeStart();
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
         this.cdr.detectChanges();
@@ -271,6 +271,15 @@ export class StartAttendanceComponent implements OnInit {
 
     });
 
+  }
+
+  private setActualTimeStart() {
+    if (this.studentsLogged.length < 1) {
+      this.cookieService.setCookie(
+          'actualTimeStart',
+          Date.now().toString(),
+      );
+    }
   }
 
   submitStudentTimeOut() {
@@ -458,6 +467,7 @@ export class StartAttendanceComponent implements OnInit {
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
+        this.setActualTimeStart();
         this.isError = false;
         this.loggedStudent = value;
         this.studentsLogged.push(this.loggedStudent);
