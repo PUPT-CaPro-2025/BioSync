@@ -320,7 +320,7 @@ export class AttendanceListComponent implements OnInit{
             doc.setFont('helvetica', 'normal');
             doc.text(
                 `${this.schedule.section?.program?.programAbbreviation || ''} ${
-                    this.schedule.section?.section || ''
+                    this.schedule.section?.year || ''
                 }`,
                 leftX + 40,
                 currentY,
