@@ -228,7 +228,7 @@ export class ViewAttendanceComponent implements OnInit {
             doc.text('Program & Year:', leftX, currentY);
             doc.setFont('helvetica', 'normal');
             doc.text(
-                `${this.schedule.section?.program?.programAbbreviation || ''} ${this.schedule.section?.section || ''}`,
+                `${this.schedule.section?.program?.programAbbreviation || ''} ${this.schedule.section?.year || ''}`,
                 leftX + 35,
                 currentY,
             );
