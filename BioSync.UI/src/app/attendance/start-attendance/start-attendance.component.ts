@@ -183,10 +183,6 @@ export class StartAttendanceComponent implements OnInit {
           if (value)
             this.loggedProfessor = value;
             this.getUserProfileImage(value.id);
-            this.cookieService.setCookie(
-              'actualTimeStart',
-              Date.now().toString(),
-            );
           this.reminder = 'Fingerprint verified, Starting Attendance...';
           this.isSuccess = true;
           this.loading = false;
@@ -221,14 +217,8 @@ export class StartAttendanceComponent implements OnInit {
     this.setLoadingStudent();
     const formData = this.setFormData();
 
-    const actualTimeStart = parseInt(
-      <string>this.cookieService.getCookie('actualTimeStart'),
-    );
-    const currentTime = Date.now();
-    const timeDifferenceInMinutes =
-      (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('status', isStudentLate ? 'LATE' : 'PRESENT');
+    formData.append('status',
+        this.isStudentLate() ? 'LATE' : 'PRESENT');
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
@@ -280,6 +270,21 @@ export class StartAttendanceComponent implements OnInit {
           Date.now().toString(),
       );
     }
+  }
+
+  private getActualTimeStart() {
+      return this.cookieService.getCookie(
+          'actualTimeStart'
+      )!;
+  }
+
+  private isStudentLate() {
+    if(this.studentsLogged.length < 1) return false;
+
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes =
+        (currentTime - +this.getActualTimeStart()) / (1000 * 60);
+    return timeDifferenceInMinutes > 30;
   }
 
   submitStudentTimeOut() {
@@ -448,22 +453,14 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  handleBackEvent(){
-    this.router.navigate(['/schedule']).then();
-  }
-
   sendBarcodeTimeIn(usercode: string){
     this.loading = true;
     const formData = new FormData();
     formData.append('usercode', usercode);
     formData.append('scheduleId', this.id.toString());
 
-    const actualTimeStart = parseInt(<string>this.cookieService.getCookie(
-        "actualTimeStart"));
-    const currentTime = Date.now();
-    const timeDifferenceInMinutes = (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('attendanceStatus', isStudentLate ? "LATE" : "PRESENT");
+    formData.append('attendanceStatus',
+        this.isStudentLate() ? "LATE" : "PRESENT");
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
@@ -606,10 +603,6 @@ export class StartAttendanceComponent implements OnInit {
         this.getUserProfileImage(this.adminDetails.id);
       }
 
-      this.cookieService.setCookie(
-          'actualTimeStart',
-          Date.now().toString(),
-      );
       this.reminder = 'Usercode Verified, Starting Attendance...';
       this.isSuccess = true;
       this.loading = false;
