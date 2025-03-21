@@ -467,7 +467,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return day.substring(0, 3).toUpperCase();
     }
 
-    public String extractRoomName(String fullRoomCode) {
+    private String extractRoomName(String fullRoomCode) {
         String[] parts = fullRoomCode.split(" - ");
         return parts.length > 1 ? parts[1].trim() : fullRoomCode.trim();
     }
