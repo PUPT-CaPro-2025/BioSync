@@ -11,7 +11,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     private final ProgramRepository programRepository;
 
-    private ProgramServiceImpl(ProgramRepository programRepository) {
+    public ProgramServiceImpl(ProgramRepository programRepository) {
         this.programRepository = programRepository;
     }
 
