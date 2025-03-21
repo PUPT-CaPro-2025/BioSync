@@ -18,24 +18,33 @@ jobs:
 
       - name: Update application.properties
         run: |
-          # Set environment variables based on the branch
-          DB_URL=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_URL || secrets.DATABASE_URL_TEST }}
-          DB_PASSWORD=${{ github.ref == 'refs/heads/main' && secrets.DATABASE_PASSWORD || secrets.DATABASE_PASSWORD_TEST }}
-          ALLOWED_ORIGIN=${{ github.ref == 'refs/heads/main' && secrets.ALLOWED_ORIGIN || secrets.ALLOWED_ORIGIN_TEST }}
+          BRANCH="${GITHUB_REF##*/}"
+          
+          if [ "$BRANCH" = "main" ]; then
+            DB_URL="${{ secrets.DATABASE_URL }}"
+            DB_PASSWORD="${{ secrets.DATABASE_PASSWORD }}"
+            ALLOWED_ORIGIN="${{ secrets.ALLOWED_ORIGIN }}"
+          elif [ "$BRANCH" = "staging" ]; then
+            DB_URL="${{ secrets.DATABASE_URL_TEST }}"
+            DB_PASSWORD="${{ secrets.DATABASE_PASSWORD_TEST }}"
+            ALLOWED_ORIGIN="${{ secrets.ALLOWED_ORIGIN_TEST }}"
+          else
+            echo "Unsupported branch: $BRANCH. Skipping configuration."
+            exit 1
+          fi
 
-          # Update application.properties using sed
           sed -i -e "s|spring.datasource.url=.*|spring.datasource.url=${DB_URL}|" \
-                 -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
-                 -e "s|spring.datasource.password=.*|spring.datasource.password=${DB_PASSWORD}|" \
-                 -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
-                 -e "s|cors.allowed.origins=.*|cors.allowed.origins=${ALLOWED_ORIGIN}|" \
-                 -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
-                 -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
-                 -e "s|aws.access.key=.*|aws.access.key=${{ secrets.AWS_ACCESS_KEY }}|" \
-                 -e "s|aws.secret.access.key=.*|aws.secret.access.key=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" \
-                 -e "s|aws.s3.region=.*|aws.s3.region=${{ secrets.AWS_REGION }}|" \
-                 -e "s|aws.s3.bucket.name=.*|aws.s3.bucket.name=${{ secrets.AWS_BUCKET_NAME }}|" \
-                 ./BioSync.API/src/main/resources/application.properties
+                -e "s|spring.datasource.username=.*|spring.datasource.username=${{ secrets.DATABASE_USERNAME }}|" \
+                -e "s|spring.datasource.password=.*|spring.datasource.password=${DB_PASSWORD}|" \
+                -e "s|app.secret.key=.*|app.secret.key=${{ secrets.AUTH_KEY }}|" \
+                -e "s|cors.allowed.origins=.*|cors.allowed.origins=${ALLOWED_ORIGIN}|" \
+                -e "s|spring.mail.username=.*|spring.mail.username=${{ secrets.MAIL_USERNAME }}|" \
+                -e "s|spring.mail.password=.*|spring.mail.password=${{ secrets.MAIL_PASSWORD }}|" \
+                -e "s|aws.access.key=.*|aws.access.key=${{ secrets.AWS_ACCESS_KEY }}|" \
+                -e "s|aws.secret.access.key=.*|aws.secret.access.key=${{ secrets.AWS_SECRET_ACCESS_KEY }}|" \
+                -e "s|aws.s3.region=.*|aws.s3.region=${{ secrets.AWS_REGION }}|" \
+                -e "s|aws.s3.bucket.name=.*|aws.s3.bucket.name=${{ secrets.AWS_BUCKET_NAME }}|" \
+                ./BioSync.API/src/main/resources/application.properties
         shell: /usr/bin/bash -e {0}
 
       - name: Run Unit Test
@@ -63,13 +72,24 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup SSH
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets[github.ref == 'refs/heads/main' && 'EC2_PRIVATE_KEY' || 'EC2_PRIVATE_KEY_TEST'] }}
+          ssh-private-key: ${{ github.ref == 'refs/heads/main' && secrets.EC2_PRIVATE_KEY || secrets.EC2_PRIVATE_KEY_TEST }}
 
       - name: Deploy to EC2 Instance
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
         run: |
-          EC2_HOST=${{ secrets[github.ref == 'refs/heads/main' && 'EC2_HOST' || 'EC2_HOST_TEST'] }}
+          BRANCH="${GITHUB_REF##*/}"
+          
+          if [ "$BRANCH" = "main" ]; then
+            EC2_HOST="${{ secrets.EC2_HOST }}"
+          elif [ "$BRANCH" = "staging" ]; then
+            EC2_HOST="${{ secrets.EC2_HOST_TEST }}"
+          else
+            echo "Deployment skipped for branch: $BRANCH"
+            exit 1
+          fi
 
           ssh -o StrictHostKeyChecking=no $EC2_HOST << 'EOF'
             docker pull jheankhendrick/bio-sync-api:latest
