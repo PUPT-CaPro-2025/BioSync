@@ -38,6 +38,10 @@ jobs:
                  ./BioSync.API/src/main/resources/application.properties
         shell: /usr/bin/bash -e {0}
 
+      - name: Run Unit Test
+        run: mvn test
+        working-directory: ./BioSync.API
+
       - name: Build Project
         run: mvn clean install -DskipTests
         working-directory: ./BioSync.API
