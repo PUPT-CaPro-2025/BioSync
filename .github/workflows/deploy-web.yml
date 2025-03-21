@@ -70,16 +70,15 @@ jobs:
       run: ls -al dist/bio-sync.ui
 
     - name: Transfer Build Folder to EC2 Instance
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging'
       uses: easingthemes/ssh-deploy@v2.1.4
       env:
         SSH_PRIVATE_KEY: ${{ 
           github.ref == 'refs/heads/main' && secrets.EC2_PRIVATE_KEY ||
-          github.ref == 'refs/heads/staging' && secrets.EC2_PRIVATE_KEY_TEST ||
-          secrets.EC2_PRIVATE_KEY }}
+          github.ref == 'refs/heads/staging' && secrets.EC2_PRIVATE_KEY_TEST }}
         REMOTE_HOST: ${{
           github.ref == 'refs/heads/main' && secrets.AWS_DEPLOY_HOST ||
-          github.ref == 'refs/heads/staging' && secrets.AWS_DEPLOY_HOST_TEST ||
-          secrets.AWS_DEPLOY_HOST }}
+          github.ref == 'refs/heads/staging' && secrets.AWS_DEPLOY_HOST_TEST }}
         REMOTE_USER: ${{ secrets.AWS_DEPLOY_USER }}
         REMOTE_PORT: ${{ secrets.AWS_DEPLOY_PORT }}
         SOURCE: "dist/bio-sync.ui/"
