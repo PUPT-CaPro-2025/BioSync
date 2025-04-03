@@ -9,6 +9,8 @@ import {VisitorService} from "../../services/visitor.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.component";
 import jsPDF from "jspdf";
+import {MatButton} from "@angular/material/button";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-visitor',
@@ -18,11 +20,11 @@ import jsPDF from "jspdf";
     CommonModule,
     FormsModule,
     MatIconModule,
-    EditVisitorComponent],
+    EditVisitorComponent, MatButton, MatMenu, MatMenuItem, MatMenuTrigger],
   providers: [VisitorService],
   templateUrl: './visitor.component.html',
   styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css',
-    '../subject/subject.component.css']
+    '../subject/subject.component.css', '../student/student.component.css']
 })
 export class VisitorComponent implements OnInit{
   visitors: Visitor[] = [];
@@ -206,6 +208,14 @@ export class VisitorComponent implements OnInit{
     this.isEditVisitor = !this.isEditVisitor;
     this.visitorToEdit = visitor;
     this.activeDropdownId = null;
+  }
+
+  toggleSingleLogVisitor(){
+
+  }
+
+  toggleMultipleVisitors(){
+
   }
 
   handleBackToEditVisitor(): void {
