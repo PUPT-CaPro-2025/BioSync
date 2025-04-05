@@ -11,16 +11,24 @@ import {PromptConfirmComponent} from "../prompt/prompt-confirm/prompt-confirm.co
 import jsPDF from "jspdf";
 import {MatButton} from "@angular/material/button";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import { AddVisitorComponent } from './add-visitor/add-visitor.component';
+import { PromptCsvComponent } from '../prompt/prompt-csv/prompt-csv.component';
 
 @Component({
   selector: 'app-visitor',
   standalone: true,
-  imports: [MatToolbarModule,
+  imports: [
+    MatToolbarModule,
     MatIconModule,
     CommonModule,
     FormsModule,
     MatIconModule,
-    EditVisitorComponent, MatButton, MatMenu, MatMenuItem, MatMenuTrigger],
+    EditVisitorComponent, 
+    AddVisitorComponent,
+    MatButton, 
+    MatMenu, 
+    MatMenuItem, 
+    MatMenuTrigger],
   providers: [VisitorService],
   templateUrl: './visitor.component.html',
   styleUrls: ['./visitor.component.css', '../schedule/schedule.component.css',
@@ -41,6 +49,7 @@ export class VisitorComponent implements OnInit{
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages!: number;
+  isAddVisitor: boolean = false;
   isEditVisitor: boolean = false;
   visitorToEdit!: Visitor;
   bagongPilipinas!: string;
@@ -211,11 +220,27 @@ export class VisitorComponent implements OnInit{
   }
 
   toggleSingleLogVisitor(){
-
+    this.isAddVisitor = !this.isAddVisitor;
   }
 
-  toggleMultipleVisitors(){
+  handleBackToVisitor(): void {
+    this.isAddVisitor = false;
+  }
 
+  toggleMultipleVisitors() {
+    const ref = this.dialog.open(PromptCsvComponent, {
+      width: '450px',
+      height: '210px',
+      data: {
+        scheduleId: null,
+      }
+    })
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        
+      }
+    })
   }
 
   handleBackToEditVisitor(): void {
