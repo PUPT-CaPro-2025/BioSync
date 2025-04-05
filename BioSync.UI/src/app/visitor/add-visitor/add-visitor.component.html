@@ -1,0 +1,123 @@
+<div class="flex justify-center items-center">
+    <mat-toolbar class="toolbar-container">
+        <span class="text-custom-32 text-brightRed">Add New Visitor</span>
+    </mat-toolbar>
+</div>
+<div class="flex justify-center items-center">
+    <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="visitorForm">
+        <div class="w-[55%] flex flex-col gap-4 row-block">
+            <div class="group flex flex-col gap-1 relative">
+                <label for="visitor-name" class="text-custom-16 md:text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Visitor's Name
+                </label>
+                <input matInput id="visitor_name" name="visitor-name"
+                    placeholder="Enter Visitor's Name" class="bg-transparent
+                    border-b-2 border-darkGray focus:border-brightRed
+                    focus:outline-none transition-colors
+                    duration-300 w-full py-2 md:py-2 px-1"
+                    formControlName="name"
+                    [class.input-error]="nameControl.invalid && nameControl.touched">
+                @if(nameControl.touched && nameControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( nameControl.errors?.['required']) {
+                            Visitor name is required.
+                        } @else if(nameControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        }
+                    </div>
+                }
+            </div>
+            <div class="group flex flex-col gap-1 relative">
+                <label for="visit-purpose" class="text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Purpose of Visit
+                </label>
+                <mat-select id="visit_purpose" name="visit-purpose" placeholder="Select your Purpose of Visit"
+                        class="bg-transparent border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 px-1" formControlName="purposeOfVisit"
+                        (selectionChange)="onVisitPurposeChange($event)"
+                        [class.input-error]="purposeOfVisitControl.invalid && purposeOfVisitControl.touched">
+                        @for(visitPurpose of visitPurposes; track visitPurpose) {
+                            <mat-option [value]="visitPurpose.purposeOfVisit">{{visitPurpose.purposeOfVisit}}</mat-option>
+                        }
+                        <mat-option value="Others">Others</mat-option>
+                </mat-select>
+                @if(purposeOfVisitControl.touched && purposeOfVisitControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( purposeOfVisitControl.errors?.['required']) {
+                            Purpose of visit is required.
+                        }
+                    </div>
+                }
+            </div>
+            @if(showOtherDetails) {
+                <div class="group flex flex-col gap-1 relative">
+                    <label for="other-details" class="text-custom-16 md:text-custom-20
+                        text-darkGray transition-colors duration-300
+                        group-focus-within:text-brightRed">
+                        Other Details
+                    </label>
+                    <input matInput id="other_details" name="other-details"
+                        placeholder="Any additional details for visit" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 md:py-2 px-1"
+                        formControlName="otherDetails"
+                        [class.input-error]="otherDetailsControl.invalid && otherDetailsControl.touched">
+                    @if(otherDetailsControl.touched && otherDetailsControl.invalid) {
+                        <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                            @if(otherDetailsControl.errors?.['invalidName']) {
+                                Only letters are allowed.
+                            } @else if (otherDetailsControl.errors?.['maxlength']) {
+                                Purpose of visit is too long.
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            <div class="group flex flex-col gap-1 relative">
+                <label for="destination" class="text-custom-16 md:text-custom-20
+                    text-darkGray transition-colors duration-300
+                    group-focus-within:text-brightRed">
+                    Destination
+                </label>
+                <mat-select id="destination" name="destination"
+                        placeholder="Select your Destination" class="bg-transparent
+                        border-b-2 border-darkGray focus:border-brightRed
+                        focus:outline-none transition-colors
+                        duration-300 w-full py-2 md:py-2 px-1" formControlName="destination"
+                        [class.input-error]="destinationControl.invalid && destinationControl.touched">
+                        @for(lab of labs; track lab) {
+                            <mat-option [value]="lab.name">{{lab.name}}</mat-option>
+                        }
+                </mat-select>
+                @if(destinationControl.touched && destinationControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( destinationControl.errors?.['required']) {
+                            Destination is required.
+                        }
+                    </div>
+                }
+            </div>
+            <div class="flex flex-col justify-end gap-4 mt-10">
+                <div class="flex gap-[40px] justify-end button-content">
+                    <button class="text-custom-14 text-lightGray py-2
+                        px-20 border-2 rounded-full border-lightGray back-button"
+                        (click)="returnToVisitorView()">
+                        Back
+                    </button>
+                    <button class="text-custom-14 text-white py-2 px-19
+                        bg-gradient-red rounded-full
+                        hover:bg-gradient-dark-red hover:text-f4White add-button"
+                        (click)="submit()">
+                        Add Visitor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
