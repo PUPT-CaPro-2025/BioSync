@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output, ViewEncapsulation, ViewChild, OnDestroy} from '@angular/core';
+import {Component, EventEmitter, Output, ViewEncapsulation} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import {
   FormBuilder, FormGroup, ReactiveFormsModule, 
@@ -8,15 +8,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSelectChange } from '@angular/material/select';
 import {MatInput} from "@angular/material/input";
 import {MatDialog} from "@angular/material/dialog";
-import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
 import {VisitorService} from "../../../services/visitor.service";
-import {Visitor} from "../../../model/visitor.model";
 import {VisitPurposeService} from "../../../services/visit.purpose.service";
 import {VisitPurpose} from "../../../model/visit.purpose.model";
 import {Laboratory} from "../../../model/laboratory.model";
 import {LaboratoryService} from "../../../services/laboratory.service";
 import { letterOnlyValidator } from '../../../services/validators/customVisitorValidator';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import {Visitor} from "../../../model/visitor.model";
+import {
+  PromptOkayComponent
+} from "../../prompt/prompt-okay/prompt-okay.component";
+import {finalize} from "rxjs";
 
 @Component({
   selector: 'app-add-visitor',
@@ -37,6 +40,7 @@ export class AddVisitorComponent {
   visitorForm!: FormGroup;
   showOtherDetails: boolean = false;
   @Output() backToVisitor = new EventEmitter<void>();
+  @Output() addedVisitor = new EventEmitter<Visitor>();
   
   labs: Laboratory[] = [];
   visitPurposes: VisitPurpose[] =[];
@@ -97,7 +101,33 @@ export class AddVisitorComponent {
   }
   
   submit(){
-    console.log(this.visitorForm.value);
+    if(!this.visitorForm.valid) return;
+
+    const createdVisitor = this.visitorForm.value;
+
+    this.visitorService.logVisitor(createdVisitor).subscribe({
+      next: (loggedVisitor: Visitor) => {
+        if(loggedVisitor.id){
+          this.displaySuccess();
+          this.addedVisitor.emit(loggedVisitor);
+        }
+      },
+      error: err => console.error(err)
+    })
+  }
+
+  displaySuccess() {
+    const ref = this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Visitor Successfully Logged!',
+        message: "Visitor has been successfully recorded in the system."
+      }
+    })
+
+    ref.afterClosed()
+        .pipe(finalize(() => this.returnToVisitorView()))
+        .subscribe();
   }
   
   private getLaboratories() {

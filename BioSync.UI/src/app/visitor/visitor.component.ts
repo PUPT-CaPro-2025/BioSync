@@ -253,6 +253,10 @@ export class VisitorComponent implements OnInit{
     this.reportDropdown = !this.reportDropdown;
   }
 
+  onVisitorAdded(newVisitor: Visitor){
+    this.visitors.push(newVisitor);
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();

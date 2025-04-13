@@ -177,6 +177,8 @@
                     (backToEditVisitor)="handleBackToEditVisitor()"/>
         }
     } @else {
-        <app-add-visitor (backToVisitor)="handleBackToVisitor()"></app-add-visitor>
+        <app-add-visitor
+                (addedVisitor)="onVisitorAdded($event)"
+                (backToVisitor)="handleBackToVisitor()"></app-add-visitor>
     }
 </div>
