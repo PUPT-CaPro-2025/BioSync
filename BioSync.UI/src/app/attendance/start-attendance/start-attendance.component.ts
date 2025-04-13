@@ -192,7 +192,7 @@ export class StartAttendanceComponent implements OnInit {
           setTimeout(() => {
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
-            //this.loggedProfessor = null;
+            this.loggedProfessor = null;
             this.profileImageUrl = '';
             this.isSuccess = false;
           }, 3000);
@@ -210,7 +210,7 @@ export class StartAttendanceComponent implements OnInit {
 
   private setLoadingProf(){
     this.loading = true;
-    //this.loggedProfessor = null;
+    this.loggedProfessor = null;
     this.profileImageUrl = '';
     this.isSuccess = false;
     this.isError = false;
@@ -632,7 +632,7 @@ export class StartAttendanceComponent implements OnInit {
       setTimeout(() => {
         this.reminder = 'Scan Student Fingerprint';
         this.hasProfessorVerified = true;
-        //this.loggedProfessor = null;
+        this.loggedProfessor = null;
         this.profileImageUrl = '';
         this.isSuccess = false;
       }, 3000);
