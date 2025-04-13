@@ -1,9 +1,12 @@
 package com.example.biosyncapi.visitor;
 
+import com.example.biosyncapi.user.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -32,6 +35,24 @@ public class VisitorController {
     @PostMapping
     public Visitor createVisitor(@RequestBody Visitor visitor) {
         return visitorService.createVisitor(visitor);
+    }
+
+    @PostMapping("/bulk-add")
+    public ResponseEntity<Map<String, Object>> updateStudents(
+        @RequestParam("file") MultipartFile file)
+    {
+        try {
+            int visitorsLogged = this.visitorService.addBulkVisitorsCSV(file);
+
+            return ResponseEntity.ok().body(Map.ofEntries(
+                Map.entry("success", true),
+                Map.entry("count", visitorsLogged)
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.ofEntries(
+                Map.entry("success", false),
+                Map.entry("error", e.getMessage())));
+        }
     }
 
     @PutMapping

@@ -23,14 +23,14 @@
   </mat-dialog-actions>
 }
 @else {
-  <h2 mat-dialog-title>Students Added</h2>
+  <h2 mat-dialog-title>{{ userTypeToAdd }} Added</h2>
     @if(data.scheduleId){
         <mat-dialog-content class="mat-typography">
-            <p>Student/s has been added successfully</p>
+            <p>{{ userTypeToAdd }} has been added successfully</p>
         </mat-dialog-content>
     } @else {
         <mat-dialog-content class="mat-typography">
-            <p>{{count}} Student/s has been added successfully</p>
+            <p>{{count}} {{ userTypeToAdd }} has been added successfully</p>
         </mat-dialog-content>
     }
   <mat-dialog-actions align="end">

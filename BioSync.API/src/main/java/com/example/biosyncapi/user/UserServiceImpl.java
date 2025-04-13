@@ -241,16 +241,7 @@ public class UserServiceImpl implements UserService {
 
     String detectedEncoding = detectEncoding(file);
 
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), detectedEncoding));
-         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-                 new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
-
-      String line;
-      while ((line = reader.readLine()) != null) {
-        writer.write(line);
-        writer.newLine();
-      }
-    }
+    encodeToUtf8TempFile(file, detectedEncoding, tempFile);
 
     try (BufferedReader reader = new BufferedReader(
         new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
@@ -298,17 +289,7 @@ public class UserServiceImpl implements UserService {
 
     String detectedEncoding = detectEncoding(file);
 
-    try (BufferedReader reader = new BufferedReader(
-            new InputStreamReader(file.getInputStream(), detectedEncoding));
-         BufferedWriter writer = new BufferedWriter(
-                 new OutputStreamWriter(new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
-
-      String line;
-      while ((line = reader.readLine()) != null) {
-        writer.write(line);
-        writer.newLine();
-      }
-    }
+    encodeToUtf8TempFile(file, detectedEncoding, tempFile);
 
     try (BufferedReader reader = new BufferedReader(
             new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8))) {
@@ -347,7 +328,27 @@ public class UserServiceImpl implements UserService {
     return updatedUsers;
   }
 
-  private String detectEncoding(MultipartFile file) throws IOException {
+  @Override
+  public void encodeToUtf8TempFile(
+      MultipartFile file,
+      String detectedEncoding,
+      File tempFile) throws IOException
+  {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+        file.getInputStream(), detectedEncoding));
+         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+             new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
+
+      String line;
+      while ((line = reader.readLine()) != null) {
+        writer.write(line);
+        writer.newLine();
+      }
+    }
+  }
+
+  @Override
+  public String detectEncoding(MultipartFile file) throws IOException {
     byte[] bytes = file.getBytes();
 
     if (bytes.length >= 3 &&

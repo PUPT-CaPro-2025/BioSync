@@ -240,7 +240,7 @@ export class VisitorComponent implements OnInit{
 
     ref.afterClosed().subscribe({
       next: () => {
-        
+        this.initializeVisitors();
       }
     })
   }

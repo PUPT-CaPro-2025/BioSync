@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatIcon} from "@angular/material/icon";
 import {UserService} from "../../../services/user.service";
+import {VisitorService} from "../../../services/visitor.service";
 
 @Component({
   selector: 'app-prompt-csv',
@@ -36,6 +37,7 @@ import {UserService} from "../../../services/user.service";
 export class PromptCsvComponent implements OnInit {
   templateLink!:string;
   csvFile!: File;
+  userTypeToAdd!: string;
   submitted = false;
   success = false;
   error = false;
@@ -45,12 +47,17 @@ export class PromptCsvComponent implements OnInit {
     public dialogRef: MatDialogRef<PromptCsvComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { scheduleId : number, heading : string, subheading: string },
     private userService: UserService,
+    private visitorService: VisitorService,
   ) {}
 
   ngOnInit() {
-    this.templateLink = this.data.heading.includes("Visitors")
-        ? environment.visitorTemplateLink
-        : environment.templateLink;
+    if(this.data.heading.includes("Visitors")) {
+      this.templateLink = environment.visitorTemplateLink;
+      this.userTypeToAdd = "Visitors"
+    } else {
+      this.templateLink = environment.templateLink;
+      this.userTypeToAdd = "Students"
+    }
   }
 
   handleFileInput(event: any) {
@@ -70,16 +77,28 @@ export class PromptCsvComponent implements OnInit {
       console.log(`${key}: ${value}`);
     });
 
+    if(this.data.subheading.toLowerCase().includes("visitors")){
+      this.visitorService.addBulkVisitors(formData).subscribe({
+        next: (value: any) => {
+          if(value.success){
+            this.success = true;
+            this.count = value.count;
+          }
+        },
+        error: () => this.error = true
+      });
+      return;
+    }
+
     this.userService.createBulkUserOrSchedule(formData).subscribe({
       next: (value) => {
-        console.log(value)
         if(value.success){
           this.success = true;
           this.count = value.count;
         }
       },
       error: () => this.error = true
-    })
+    });
   }
 
 

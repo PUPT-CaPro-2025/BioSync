@@ -23,13 +23,7 @@ public class Visitor {
 
     private ZonedDateTime visitDate;
 
-    @PrePersist
-    protected void onCreate() {
-        visitDate = ZonedDateTime.now(ZoneId.of("UTC+8"));
-    }
-
-    public Visitor() {
-    }
+    public Visitor() {}
 
     public Visitor(Long id, String name, String purposeOfVisit, String otherDetails, String destination, ZonedDateTime visitDate) {
         this.id = id;
