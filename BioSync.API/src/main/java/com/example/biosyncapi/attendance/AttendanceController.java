@@ -5,6 +5,7 @@ import com.example.biosyncapi.user.User;
 import com.example.biosyncapi.schedule.ScheduleRepository;
 import com.example.biosyncapi.fingerprint.FingerprintService;
 import com.example.biosyncapi.schedule.ScheduleService;
+import com.example.biosyncapi.user.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +26,17 @@ public class AttendanceController {
   private final ScheduleService scheduleService;
   private final AttendanceRepository attendanceRepository;
   private final ScheduleRepository scheduleRepository;
+  private final UserRepository userRepository;
 
   public AttendanceController(AttendanceService attendanceService, FingerprintService fingerprintService,
       ScheduleService scheduleService, AttendanceRepository attendanceRepository,
-      ScheduleRepository scheduleRepository) {
+      ScheduleRepository scheduleRepository, UserRepository userRepository) {
     this.attendanceService = attendanceService;
     this.fingerprintService = fingerprintService;
     this.scheduleService = scheduleService;
     this.attendanceRepository = attendanceRepository;
     this.scheduleRepository = scheduleRepository;
+    this.userRepository = userRepository;
   }
 
   @GetMapping()
@@ -89,22 +92,24 @@ public class AttendanceController {
     return ResponseEntity.ok(students);
   }
 
+  @GetMapping("students/{id}/out")
+  public ResponseEntity<List<User>> getTimedOutByStudentId(@PathVariable Long id) {
+    List<User> students = attendanceService.getStudentsLoggedOutByScheduleId(id);
+
+    if (students.isEmpty()) return ResponseEntity.notFound().build();
+
+    return ResponseEntity.ok(students);
+  }
+
   @PostMapping("/verify/start")
   public ResponseEntity<?> verifyProfessorFingerprintForAttendance(
       @RequestParam("userId") Long userId,
-      @RequestParam("fingerprint") MultipartFile fingerprint,
-      @RequestParam(value = "method", defaultValue = "toBucket") String method) throws IOException {
-    Boolean match;
+      @RequestParam("fingerprint") MultipartFile fingerprint) throws IOException {
 
-    if (method.equals("toBucket")) {
-      User user = fingerprintService.verifyProfessorFingerprintForAttendanceInBucket(userId, fingerprint);
-      match = user != null;
-    } else {
-      match = fingerprintService.verifyProfessorFingerprintForAttendance(userId, fingerprint);
-    }
+      User user = fingerprintService.verifyProfessorFingerprintForAttendance(userId, fingerprint);
 
-    if (match)
-      return ResponseEntity.ok("Fingerprint verified.");
+    if (user != null)
+      return ResponseEntity.status(200).body(user);
 
     return ResponseEntity.status(401).body("Fingerprint verification failed.");
   }
@@ -113,16 +118,9 @@ public class AttendanceController {
   public ResponseEntity<?> verifyStudentTimeInAttendance(
       @RequestParam("scheduleId") Long scheduleId,
       @RequestParam("fingerprint") MultipartFile fingerprint,
-      @RequestParam("status") String status,
-      @RequestParam(value = "method", defaultValue = "toBucket") String method) throws IOException {
+      @RequestParam("status") String status) throws IOException {
 
-    User student;
-
-    if (method.equals("toBucket")) {
-      student = fingerprintService.verifyStudentFingerprintForAttendanceInBucket(scheduleId, fingerprint);
-    } else {
-      student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
-    }
+    User student = fingerprintService.verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
 
     if (student == null)
       return ResponseEntity.status(401).body("Fingerprint verification failed.");
@@ -148,6 +146,42 @@ public class AttendanceController {
         "attendance", recordedAttendance));
   }
 
+  @PostMapping("/student/check-out")
+  public ResponseEntity<?> verifyStudentTimeOutAttendance(
+      @RequestParam("scheduleId") Long scheduleId,
+      @RequestParam("fingerprint") MultipartFile fingerprint) throws IOException {
+
+    User student = fingerprintService
+        .verifyStudentFingerprintForAttendance(scheduleId, fingerprint);
+
+    if (student == null)
+      return ResponseEntity.status(401).body("Fingerprint verification failed.");
+
+    Optional<Schedule> schedule = scheduleService.getScheduleById(scheduleId);
+    if (schedule.isEmpty())
+      return ResponseEntity.status(400).body("Schedule not found.");
+
+    List<Attendance> hasExistingAttendance = attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+        student.getId());
+    boolean notLogged = hasExistingAttendance.isEmpty();
+    if (notLogged) {
+      return ResponseEntity.status(400).body("No Time In Found");
+    }
+
+    Attendance attendance = hasExistingAttendance.get(0);
+
+    if(attendance.getTimeOut() != null){
+      return ResponseEntity.status(409).body(attendance.getId());
+    }
+
+    attendanceService.studentTimeOut(
+        schedule.get().getId(), student.getUsercode());
+
+    return ResponseEntity.ok().body(Map.of(
+        "message", "Fingerprint verified.",
+        "student", student));
+  }
+
   /*
    * A time in method that does not require a fingerprint
    *
@@ -155,15 +189,67 @@ public class AttendanceController {
 
   @PostMapping("/student/time-in")
   public ResponseEntity<?> studentTimeIn(@RequestParam("scheduleId") Long scheduleId,
-      @RequestParam("studentId") Long studentId,
+      @RequestParam("usercode") String usercode,
       @RequestParam("attendanceStatus") String attendanceStatus) {
+    try {
+      Optional<User> student = this.userRepository.findByUsercode(usercode);
 
-    User timedInStudent = this.attendanceService.studentTimeIn(scheduleId, studentId, attendanceStatus);
+      if (student.isEmpty()) {
+        return ResponseEntity.badRequest().body("User is null");
+      }
 
-    if (timedInStudent == null)
-      return ResponseEntity.badRequest().body("Request Invalid");
+      List<Attendance> hasExistingAttendance =
+          attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+          student.get().getId());
 
-    return ResponseEntity.ok().body(timedInStudent);
+      boolean hasLogged = !hasExistingAttendance.isEmpty();
+      if (hasLogged)
+        return ResponseEntity.status(409).body(student.get().getId());
+
+      User user = this.attendanceService.studentTimeIn(scheduleId, usercode, attendanceStatus);
+
+      if(user == null){
+        return ResponseEntity.badRequest().body("User is not found in schedule");
+      }
+
+      return ResponseEntity.ok().body(user);
+    }catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
+  @PostMapping("/student/time-out")
+  public ResponseEntity<?> studentTimeOut(@RequestParam("scheduleId") Long scheduleId,
+      @RequestParam("usercode") String usercode) {
+    try {
+      Optional<User> student = this.userRepository.findByUsercode(usercode);
+
+      if (student.isEmpty()) {
+        return ResponseEntity.badRequest().body("User is null");
+      }
+
+      List<Attendance> hasExistingAttendance =
+          attendanceRepository.findByScheduleIdAndUserId(scheduleId,
+              student.get().getId());
+
+      boolean notLogged = hasExistingAttendance.isEmpty();
+      if (notLogged)
+        return ResponseEntity.status(400).body(student.get().getId());
+
+      if(hasExistingAttendance.get(0).getTimeOut() != null){
+        return ResponseEntity.status(409).body(student.get().getId());
+      }
+
+      User user = this.attendanceService.studentTimeOut(scheduleId, usercode);
+
+      if(user == null){
+        return ResponseEntity.badRequest().body("User is not found in schedule");
+      }
+
+      return ResponseEntity.ok().body(user);
+    }catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
   }
 
   @PostMapping("/verify/stop")

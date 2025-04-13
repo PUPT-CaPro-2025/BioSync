@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,12 +35,36 @@ public class AttendanceServiceImpl implements AttendanceService {
 
   @Override
   public List<Attendance> getAttendanceByScheduleId(Long scheduleId) {
-    return attendanceRepository.findByScheduleId(scheduleId);
+    List<Attendance> attendances = attendanceRepository.findByScheduleId(scheduleId);
+
+    attendances.sort((a1, a2) -> {
+      String lastName1 = a1.getUser().getLastName();
+      String lastName2 = a2.getUser().getLastName();
+      if (lastName1 == null) lastName1 = "";
+      if (lastName2 == null) lastName2 = "";
+      return lastName1.compareToIgnoreCase(lastName2);
+    });
+
+    return attendances;
   }
 
   @Override
   public List<User> getStudentsLoggedByScheduleId(Long scheduleId) {
     return attendanceRepository.getStudentsByScheduleId(scheduleId);
+  }
+
+  @Override
+  public List<User> getStudentsLoggedOutByScheduleId(Long scheduleId) {
+    List<Attendance> attendanceList = attendanceRepository.findByScheduleId(scheduleId);
+    List<User> studentsLoggedOut = new ArrayList<>();
+
+    for (Attendance attendance : attendanceList) {
+      if (attendance.getTimeOut() != null) {
+        studentsLoggedOut.add(attendance.getUser());
+      }
+    }
+
+    return studentsLoggedOut;
   }
 
   @Override
@@ -83,12 +108,16 @@ public class AttendanceServiceImpl implements AttendanceService {
   }
 
   @Override
-  public User studentTimeIn(Long scheduleId, Long studentId, String attendanceStatus) {
-    Optional<User> studentOpt = userRepository.findById(studentId);
+  public User studentTimeIn(Long scheduleId, String usercode,
+      String attendanceStatus) {
+    Optional<User> studentOpt = userRepository.findByUsercode(usercode);
     Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
 
-    if (studentOpt.isEmpty() || scheduleOpt.isEmpty())
+    if (studentOpt.isEmpty() || scheduleOpt.isEmpty()) {
       return null;
+    }
+
+    Long studentId = studentOpt.get().getId();
 
     ScheduleStudent scheduleStudentRecord = scheduleStudentRepository.findByStudentIdAndScheduleId(studentId,
         scheduleId);
@@ -96,11 +125,32 @@ public class AttendanceServiceImpl implements AttendanceService {
       return null;
 
     if (!attendanceRepository.findByScheduleIdAndUserId(scheduleId, studentId).isEmpty())
-      return null;
+      return studentOpt.get();
 
     Attendance attendance = new Attendance(attendanceStatus, studentOpt.get(), scheduleOpt.get(),
         ZonedDateTime.now(ZoneId.of("UTC+8")));
     attendanceRepository.save(attendance);
+
+    return studentOpt.get();
+  }
+
+  @Override
+  public User studentTimeOut(Long scheduleId, String usercode) {
+    Optional<User> studentOpt = userRepository.findByUsercode(usercode);
+    Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
+
+    if (studentOpt.isEmpty() || scheduleOpt.isEmpty()) {
+      return null;
+    }
+
+    List<Attendance> attendance =
+        this.attendanceRepository.findByScheduleIdAndUserId(scheduleOpt.get().getId(), studentOpt.get().getId());
+
+    Attendance attendance1 = attendance.get(0);
+
+    attendance1.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));
+
+    attendanceRepository.save(attendance1);
 
     return studentOpt.get();
   }
@@ -120,7 +170,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             .findFirst()
             .orElse(null);
 
-        if (existingAttendance != null) {
+        if (existingAttendance != null && existingAttendance.getTimeOut() == null) {
           existingAttendance.setTimeOut(ZonedDateTime.now(ZoneId.of("UTC+8")));
           attendanceRepository.save(existingAttendance);
         }

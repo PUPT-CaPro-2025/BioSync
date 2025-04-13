@@ -7,8 +7,6 @@ import { MatIcon } from '@angular/material/icon';
 import { UserService } from '../../../services/user.service';
 import {
   MatButton,
-  MatFabButton,
-  MatIconButton,
   MatMiniFabButton,
 } from '@angular/material/button';
 import { MatMenu, MatMenuItem, MatMenuTrigger } from '@angular/material/menu';
@@ -125,11 +123,19 @@ export class ViewScheduleComponent implements OnInit {
   }
 
   toggleBulkAddStudent() {
-    this.dialog.open(PromptCsvComponent, {
+    const ref = this.dialog.open(PromptCsvComponent, {
       width: '450px',
       height: '210px',
       data: {
+        heading: "Add Multiple Students",
+        subheading: "adding multiple students",
         scheduleId: this.schedule.id,
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: () => {
+        this.getUsersByScheduleId(this.schedule.id!);
       },
     });
   }

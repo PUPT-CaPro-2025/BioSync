@@ -4,6 +4,7 @@ import {environment} from "../../environment/app.setting";
 import {CookieService} from "./cookie.service";
 import {Visitor} from "../model/visitor.model";
 import {Observable} from "rxjs";
+import {CsvResponse} from "../model/csvResponse.model";
 
 @Injectable({
   providedIn: 'root'
@@ -42,5 +43,12 @@ export class VisitorService {
       headers: this.headers,
       withCredentials: true
     })
+  }
+
+  addBulkVisitors(formData: FormData) {
+    return this.http.post<CsvResponse>(`${this.url}/bulk-add`, formData, {
+      headers: this.headers,
+      withCredentials: true,
+    });
   }
 }

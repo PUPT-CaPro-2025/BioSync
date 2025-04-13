@@ -2,7 +2,7 @@
   <button
     mat-button
     class="text-2xl flex items-center m-5"
-    (click)="handleBackEvent()"
+    (click)="openContinueDialog()"
   >
     <mat-icon class="mr-2">arrow_back</mat-icon>
     Back
@@ -26,13 +26,14 @@
               </p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 mt-12">
+          <div class="flex flex-col gap-2 mt-4">
             <p class="text-brightRed text-custom-24">Attendance List</p>
             <hr class="border-t border-1 border-brightRed" />
           </div>
-          <div class="mt-5 h-[55vh] overflow-y-auto row-container">
+          <div #scrollContainer class="mt-5 h-[55vh] overflow-y-auto row-container">
             @for (student of studentsLogged; track student) {
-              <p class="text-darkGray text-custom-16">
+              <p class="text-darkGray text-custom-16"
+                 [ngClass]="{'crossed-out': isStudentLoggedOut(student)}">
                 {{ studentsLogged.indexOf(student) + 1 }}.
                 {{ student.firstName }} {{ student.lastName }}
               </p>
@@ -40,10 +41,24 @@
           </div>
           @if (hasProfessorVerified) {
             <div class="flex-grow"></div>
-            <div class="flex justify-center items-center">
+            <div class="flex justify-center items-center flex-col gap-4 p-2 mt-4">
+                <button
+                        mat-flat-button
+                        (click)="openLogAttendanceDialog(selectedSchedule)"
+                        class="stop-attendance"
+                >
+                    Log Attendance
+                </button>
+                @if(!isTimeOut){
+                    <button mat-flat-button
+                            (click)="openConfirmationDialogTimeOut()"
+                            class="stop-attendance">
+                        Start Time Out
+                    </button>
+                }
               <button
                 mat-flat-button
-                (click)="openConfirmationDialog(selectedSchedule)"
+                (click)="openConfirmationDialogStop(selectedSchedule)"
                 class="stop-attendance"
               >
                 Stop Attendance
@@ -70,6 +85,14 @@
               <p class="text-custom-16">Total of Students Logged</p>
             </div>
           </div>
+            @if(isTimeOut){
+                <div class="flex justify-between w-[15vw] p-4 items-center rounded-2xl bg-brightRed text-white">
+                    <div class="flex flex-col">
+                        <p class="text-custom-40">{{ studentsLoggedOut.length }}</p>
+                        <p class="text-custom-16">Total of Students Timed Out</p>
+                    </div>
+                </div>
+            }
         </div>
         <div
           class="h-[75vh] w-full rounded-xl flex justify-center items center"
@@ -96,17 +119,23 @@
               >
                 <div class="flex justify-center">
                   <div class="flex gap-6 flex-col w-[30vh] justify-center">
+                    @if(loading) {
+                      <div class="flex justify-center items-center content-center flex-col h-full gap-4">
+                        <mat-spinner></mat-spinner>
+                        <p class="italic accent-gray-600">Verifying...</p>
+                      </div>
+                    }
                     @if (loggedProfessor) {
                       <div class="flex flex-col">
                         <p class="text-lightGray text-custom-24">
                           In-Charge Name
                         </p>
                         <p class="text-brightRed text-custom-32 font-weight400">
-                          {{ selectedSchedule.professor?.firstName }}
-                          {{ selectedSchedule.professor?.lastName }}
+                          {{ loggedProfessor.firstName }}
+                          {{ loggedProfessor.lastName }}
                         </p>
                       </div>
-                    } @else if (isError) {
+                    } @else if (isError && !isBarcode) {
                       <div class="flex flex-col">
                         <p class="text-brightRed font-semibold text-custom-40">
                           In-charge Fingerprint Is Not Recognized.
@@ -115,6 +144,15 @@
                           Please try again.
                         </p>
                       </div>
+                    } @else if (isError && isBarcode) {
+                        <div class="flex flex-col">
+                            <p class="text-brightRed font-semibold text-custom-40">
+                                In-charge Usercode Is Not Recognized.
+                            </p>
+                            <p class="text-brightRed text-custom-20">
+                                Please try again.
+                            </p>
+                        </div>
                     }
                   </div>
                 </div>
@@ -154,7 +192,7 @@
               <p
                 class="text-custom-40 font-medium"
                 [ngClass]="{
-                  'text-[#F2F2F2]': isSuccess || isAlreadyLogged,
+                  'text-[#F2F2F2]': isSuccess,
                   'text-[#AB3130]': !isSuccess && !isError,
                 }"
               >
@@ -171,6 +209,12 @@
               >
                 <div class="flex justify-center">
                   <div class="flex gap-6 flex-col w-[20vw] justify-center">
+                    @if(loading) {
+                      <div class="flex justify-center items-center content-center flex-col h-full gap-4">
+                        <mat-spinner></mat-spinner>
+                        <p class="italic accent-gray-600">Verifying...</p>
+                      </div>
+                    }
                     @if (loggedStudent) {
                       <div class="flex flex-col">
                         <p class="text-lightGray text-custom-24">
@@ -207,7 +251,7 @@
                           {{ loggedStudent.section?.section }}
                         </p>
                       </div>
-                    } @else if (isError) {
+                    } @else if (isError && !isBarcode) {
                       <div class="flex flex-col">
                         <p class="text-brightRed font-semibold text-custom-40">
                           Student Fingerprint Is Not Recognized.
@@ -216,6 +260,15 @@
                           Please try again.
                         </p>
                       </div>
+                    } @else if (isError && isBarcode) {
+                        <div class="flex flex-col">
+                            <p class="text-brightRed font-semibold text-custom-40">
+                                Student Usercode Is Not Recognized.
+                            </p>
+                            <p class="text-brightRed text-custom-20">
+                                Please try again.
+                            </p>
+                        </div>
                     }
                   </div>
                 </div>
@@ -265,17 +318,6 @@
                 </div>
               </div>
             }
-            <div class="flex justify-center items-center">
-              @if (!isSuccess && !isError && hasProfessorVerified) {
-                <button
-                  mat-flat-button
-                  class="add-manual-student"
-                  (click)="goToManualAttendance()"
-                >
-                  Add Student Manually
-                </button>
-              }
-            </div>
           </div>
         </div>
       </div>

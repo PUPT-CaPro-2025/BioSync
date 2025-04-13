@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions } from '@fullcalendar/core';
+import {CalendarOptions, EventClickArg} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import {Schedule} from "../../../model/schedule.model";
@@ -11,6 +11,9 @@ import {CryptoService} from "../../../services/crypto.service";
 import {CookieService} from "../../../services/cookie.service";
 import {User} from "../../../model/user.model";
 import {AttendanceService} from "../../../services/attendance.service";
+import {PromptEventsComponent} from "../../prompt/prompt-events/prompt-events.component";
+import {MatDialog} from "@angular/material/dialog";
+import {PromptScheduleComponent} from "../../prompt/prompt-schedule/prompt-schedule.component";
 
 @Component({
   selector: 'app-dashboard-student',
@@ -34,12 +37,15 @@ export class DashboardStudentComponent implements OnInit{
   upcomingSchedules: Schedule[] = [];
   userId!: string | number;
   sectionId!: number;
+  schedules: Schedule[] = [];
 
   //region CALENDAR OPTIONS
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
+    hiddenDays: [0],
     plugins: [dayGridPlugin, interactionPlugin],
-    dateClick: (arg: DateClickArg) => this.handleDateClick(arg),
+    dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
+    eventClick: (info : EventClickArg) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = '#AB3130';
@@ -65,7 +71,8 @@ export class DashboardStudentComponent implements OnInit{
     private userService: UserService,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
-    private attendanceService: AttendanceService
+    private attendanceService: AttendanceService,
+    private dialog : MatDialog
   ) {}
 
   ngOnInit() {
@@ -93,7 +100,7 @@ export class DashboardStudentComponent implements OnInit{
   getStudentSchedules(){
     this.scheduleService.getAllSchedulesBySectionId(this.sectionId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules)
+        this.schedules = schedules;
         this.calendarOptions.events = this.transformToCalendarEvents(schedules);
         this.countUniqueSubjects(schedules);
       }
@@ -126,35 +133,27 @@ export class DashboardStudentComponent implements OnInit{
 
   transformToCalendarEvents(schedules: Schedule[]): { title: string, start: string, end?: string }[] {
     return schedules.map(schedule => ({
-      title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.section})`,
+      title: `${schedule.subject?.code} - (${schedule.section?.program.programAbbreviation} - ${schedule.section?.year})`,
       start: `${schedule.scheduleDate}T${schedule.startTime}`,
-      end: `${schedule.scheduleDate}T${schedule.endTime}`
+      end: `${schedule.scheduleDate}T${schedule.endTime}`,
+      laboratory: `${schedule.laboratory?.id}`
     }));
   }
 
   getTime12HourFormat(time: string): string {
-    const date = new Date(`1970-01-01T${time}Z`);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    return this.scheduleService.getTime12HourFormat(time);
   }
 
   getMonth(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { month: 'long' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getMonth(dateString);
   }
 
   getDay(dateString: string): string {
-    const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
+    return this.scheduleService.getDay(dateString);
   }
 
   get filteredUpcomingSchedules(): Schedule[] {
     return this.upcomingSchedules.slice();
-  }
-
-  handleDateClick(arg: DateClickArg) {
-    alert('date click! ' + arg.dateStr);
   }
 
   loadDashboardNumbers(){
@@ -169,6 +168,40 @@ export class DashboardStudentComponent implements OnInit{
         this.totalAbsences = value;
       }
     });
+  }
+
+  openDateSchedule(arg: DateClickArg) {
+    const date = arg.dateStr;
+
+    const schedule = this.schedules.filter(
+      schedule => schedule.scheduleDate === date);
+
+    this.dialog.open(PromptEventsComponent, {
+      width: '400px',
+      data: {
+        title: "Events",
+        schedules: schedule,
+      }
+    })
+  }
+
+  handleEventClick(info: EventClickArg): void {
+    const event = info.event;
+    const startTime = new Date(event.start!).toLocaleTimeString('en-GB', { hour12: false });
+    const eventDate = new Intl.DateTimeFormat('en-GB').format(event.start!);
+    const [month, day, year] = eventDate.split('/');
+    const scheduleDate = `${year}-${day.padStart(2, '0')}-${month.padStart(2, '0')}`;
+
+    const scheduledEvent = this.schedules.find(
+      schedule => schedule.scheduleDate === scheduleDate && schedule.startTime === startTime
+    );
+
+    this.dialog.open(PromptScheduleComponent, {
+      width: '400px',
+      data: {
+        schedule: scheduledEvent,
+      }
+    })
   }
 
 }

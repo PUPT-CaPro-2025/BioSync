@@ -54,14 +54,18 @@
 .dropdown-icon {
     position: absolute;
     right: 240px;
-    top: 50%; 
+    top: 50%;
     transform: translateY(-50%);
+}
+
+.dropdown-toggle {
+   color: #AB3130;
 }
 
 .add-schedule-content {
     position: absolute;
-    top: 100%; 
-    left: 0%; 
+    top: 100%;
+    left: 0%;
     width: 210px;
     background-color: #FFFFFF;
     border-radius: 10px;
@@ -86,20 +90,26 @@
     width: 96%;
 }
 
-.select-semester-container {
+.select-top-container {
     position: relative;
     display: flex;
-    align-items: center;
-    width: 22%;
+    flex-direction: column;
+    align-items: left;
+    width: 20%;
 }
 
-.select-semester-container mat-select {
+.select-top-container p {
+    font-size: 14px;
+    color: #AB3130;
+}
+
+.select-top-container mat-select {
     color: #7F7F7F;
     font-size: 12px;
     cursor: pointer;
 }
 
-.select-semester-container mat-select::before {
+.select-top-container mat-select::before {
     border-bottom-color: #7F7F7F !important;
 }
 
@@ -118,17 +128,10 @@
 .search-container input {
     font-size: 12px;
     padding: 4px 80px 4px 40px;
-    width: 100%;
+    width: 300px;
     box-sizing: border-box;
     border-radius: 8px;
     border: 1px solid #F2E8E9;
-}
-
-.dropdown-content {
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    align-items: center;
 }
 
 .entry-container {
@@ -172,11 +175,11 @@
 }
 
 .attributes {
-    font-weight: bold;
+    font-weight: 500;
     font-size: 12px;
-    color: #AB3130;
-    padding: 12px;
-    background-color: #FFFFFF;
+    color: #FFFFFF;
+    padding: 16px;
+    background: linear-gradient(to right, #68191F, #AB3130);
     border-radius: 18px;
     display: flex;
 }
@@ -192,7 +195,7 @@
 .row {
     font-size: 12px;
     display: flex;
-    align-items: center; 
+    align-items: center;
     padding: 12px;
     background-color: #FFFFFF;
     border-radius: 18px;
@@ -214,8 +217,8 @@
 .action-container {
     padding-top: 10px;
     border-top: 3px solid #AB3130;
-    border-bottom-left-radius: 10px; 
-    border-bottom-right-radius: 10px; 
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     position: absolute;
     background-color: white;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -229,8 +232,7 @@
 
 .action-container.bottom-action {
     top: unset;
-    bottom: 70%; 
-    border-bottom-left-radius: unset; 
+    border-bottom-left-radius: unset;
     border-bottom-right-radius: unset;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -281,20 +283,23 @@
 .paginator-controls {
     display: flex;
     align-items: center;
+    gap: 20px;
 }
 
 .paginator-controls span {
-    color: #393939;
+    color: #7F7F7F;
     font-size: 12px;
+    font-weight: 500;
 }
 
 .paginator-controls select {
-    color: #393939;
-    border: 1px solid #393939;
+    color: #7F7F7F;
+    border: none;
     border-radius: 4px;
     padding: 5px 10px;
     font-size: 12px;
-    background-color: #f9f9f9;
+    font-weight: 600;
+    background-color: #FFFFFF;
     cursor: pointer;
     margin: 0 10px;
 }
@@ -328,7 +333,7 @@
 }
 
 .paginator-button-container img.active-icon {
-    filter: invert(41%) sepia(68%) saturate(6900%) 
+    filter: invert(41%) sepia(68%) saturate(6900%)
     hue-rotate(336deg) brightness(100%) contrast(101%);
 }
 

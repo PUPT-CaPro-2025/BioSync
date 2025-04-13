@@ -4,6 +4,8 @@ import { environment } from '../../environment/app.setting';
 import { CookieService } from './cookie.service';
 import { Timein } from '../model/timein.model';
 import { Schedule } from '../model/schedule.model';
+import {Observable} from "rxjs";
+import {User} from "../model/user.model";
 
 @Injectable({
   providedIn: 'root',
@@ -43,6 +45,18 @@ export class FingerprintService {
     );
   }
 
+  updateFingerprint(userid: number, formData: FormData) {
+    return this.http.put(
+      `${environment.apiUrl}/api/v1/fingerprints/update/${userid}`,
+      formData,
+      {
+        headers: this.headers,
+        withCredentials: true,
+        responseType: 'text' as 'json',
+      },
+    );
+  }
+
   getProfileImageUrl(userId: number) {
     return this.http.get<{ profileImageUrl: string }>(
       `${environment.apiUrl}/api/v1/users/profile-image/${userId}`,
@@ -53,11 +67,10 @@ export class FingerprintService {
     );
   }
 
-  verifyProfessorFingerprintForAttendance(formData: FormData) {
-    return this.http.post<string>(`${this.url}/verify/start`, formData, {
+  verifyProfessorFingerprintForAttendance(formData: FormData) : Observable<User> {
+    return this.http.post<User>(`${this.url}/verify/start`, formData, {
       headers: this.headers,
       withCredentials: true,
-      responseType: 'text' as 'json',
     });
   }
 
@@ -66,6 +79,13 @@ export class FingerprintService {
       headers: this.headers,
       withCredentials: true,
     });
+  }
+
+  verifyStudentTimeOutAttendance(formData: FormData) {
+      return this.http.post<Timein>(`${this.url}/student/check-out`, formData, {
+          headers: this.headers,
+          withCredentials: true,
+      });
   }
 
   stopAttendance(schedule: Schedule) {

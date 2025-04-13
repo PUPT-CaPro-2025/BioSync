@@ -5,7 +5,6 @@ import { CookieService } from './cookie.service';
 import { User } from '../model/user.model';
 import { Observable } from 'rxjs';
 import { CsvResponse } from '../model/csvResponse.model';
-import { Student } from '../model/student-model';
 import { ClassResponse } from '../model/class.model';
 
 @Injectable()
@@ -33,6 +32,13 @@ export class UserService {
     });
   }
 
+  processBulkStudentUpdate(formData: FormData) {
+    return this.http.put(`${this.url}/users/edit/bulk/students`, formData, {
+      headers: this.headers,
+      withCredentials: true,
+    });
+  }
+
   processProfileImage(formData: FormData) {
     return this.http.post<User>(`${this.url}/users/profile-image`, formData, {
       headers: this.headers,
@@ -42,13 +48,6 @@ export class UserService {
 
   updateUser(user: User): Observable<User> {
     return this.http.put<User>(`${this.url}/users/edit-user`, user, {
-      headers: this.headers,
-      withCredentials: true,
-    });
-  }
-
-  editProfileImage(formData: FormData) {
-    return this.http.put(`${this.url}/users/edit-profile-image`, formData, {
       headers: this.headers,
       withCredentials: true,
     });
@@ -100,7 +99,7 @@ export class UserService {
     });
   }
 
-  getAllStudentsFilteredByScheduleId(scheduleId: number): Observable<User[]> {
+  getStudentsNotInSchedule(scheduleId: number): Observable<User[]> {
     return this.http.get<User[]>(`${this.url}/users/students/${scheduleId}`, {
       headers: this.headers,
       withCredentials: true,

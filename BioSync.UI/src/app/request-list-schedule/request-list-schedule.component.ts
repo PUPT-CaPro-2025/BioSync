@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Schedule } from '../../model/schedule.model';
@@ -17,6 +17,15 @@ import {User} from "../../model/user.model";
 import {UserService} from "../../services/user.service";
 import jsPDF from "jspdf";
 import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
+import {Semester} from "../../model/semester.model";
+import {AddScheduleService} from "../../services/add-schedule.service";
+import {MatTooltip} from "@angular/material/tooltip";
+import {MatButton} from "@angular/material/button";
+
 @Component({
   selector: 'app-request-list-schedule',
   standalone: true,
@@ -24,13 +33,16 @@ import {PromptOkayComponent} from "../prompt/prompt-okay/prompt-okay.component";
     MatIconModule,
     CommonModule,
     FormsModule,
-    MatSelectModule,
+    MatSelectModule, MatTooltip, MatButton,
   ],
   providers: [ScheduleService,
     SchoolYearService,
+    ProgramService,
+    SectionService,
     UserService,
     CookieService,
-    CryptoService
+    CryptoService,
+    AddScheduleService
   ],
   templateUrl: './request-list-schedule.component.html',
   styleUrls: ['./request-list-schedule.component.css', '../schedule/schedule.component.css']
@@ -40,18 +52,16 @@ export class RequestListScheduleComponent implements OnInit {
     '10', '20', '30', '40', '50'
   ];
 
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
-
-
-  semesters: string[] = [
-    'First Semester', 'Second Semester', 'Summer Semester',
-  ];
+  semesters: Semester[] = [];
   selectedSemester = 1;
+  programs: Program[] = [];
+  selectedProgram!: number;
+  prevSelectedProgram = -1;
+
+  sections: Section[] = [];
+  selectedYearAndSection = -1;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -60,27 +70,25 @@ export class RequestListScheduleComponent implements OnInit {
   itemsPerPage: number = 10;
   currentPage: number = 1;
   totalPages!: number;
-  isOneAddSchedule: boolean = false;
-  isWeeklyAddSchedule: boolean = false;
-  isRequestOneSchedule: boolean = false;
-  isRequestWeeklySchedule: boolean = false;
-  isEditSchedule: boolean = false;
   groupedSchedules: { [key: string]: Schedule[] } = {};
-  selectedSchedule!: Schedule;
-  isDropdownOpenAddSchedule: boolean = false;
-  isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
-  headerImage!: string;
+  bagongPilipinas!: string;
+  stamp!: string;
+  schoolLogo!: string;  
   activeDropdownId: number | null = null;
+  hasConflict = false;
 
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
+    private sectionService: SectionService,
+    private programService: ProgramService,
     private router : Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
-    private userService: UserService
+    private userService: UserService,
+    private addScheduleService: AddScheduleService
     ) {}
 
   ngOnInit() {
@@ -94,9 +102,19 @@ export class RequestListScheduleComponent implements OnInit {
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
+    this. getAllPrograms();
+    this.getSections();
 
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -109,6 +127,9 @@ export class RequestListScheduleComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -134,7 +155,10 @@ export class RequestListScheduleComponent implements OnInit {
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
+        this.getSemester();
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       }
@@ -148,8 +172,39 @@ export class RequestListScheduleComponent implements OnInit {
     }
   }
 
+  setLatestProgram() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedProgram = latestSchedule.section?.program.id!;
+    }
+  }
+
   sortSchedulesById(schedules: Schedule[]): Schedule[] {
     return schedules.sort((a, b) => b.id - a.id);
+  }
+
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
   }
 
   getRecurrenceDays(recId: string): string[] {
@@ -182,14 +237,6 @@ export class RequestListScheduleComponent implements OnInit {
     }
   }
 
-  onScheduleUpdate(updatedSchedule: Schedule) {
-    const index = this.schedules.findIndex(schedule =>
-      schedule.id === updatedSchedule.id);
-
-    this.schedules[index] = updatedSchedule;
-    this.getAllSchedules();
-  }
-
   convertTimeFormat(time: string): string {
     return this.scheduleService.convertTimeFormat(time);
   }
@@ -198,22 +245,27 @@ export class RequestListScheduleComponent implements OnInit {
     return this.scheduleService.getDayOfWeek(date);
   }
 
-  deleteSchedule(scheduleToDelete: Schedule){
-    this.scheduleService.deleteSchedule(scheduleToDelete)
-      .subscribe({
-        next: () => {
-          this.schedules = this.schedules.filter(
-            schedule => schedule.id !== scheduleToDelete.id
-          );
-          this.updatePagination();
-        }
-      })
-  }
-
   getAcademicYears() {
     this.schoolYearService.getSchoolYears().subscribe({
       next: (academicYears: SchoolYear[]) => {
         this.academicYears = academicYears;
+      }
+    })
+  }
+
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    if(this.selectedProgram === undefined) return
+    this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
       }
     })
   }
@@ -261,7 +313,24 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   toggleDropdownAction(scheduleId: number): void {
-    this.activeDropdownId = this.activeDropdownId === scheduleId ? null : scheduleId;
+    const sched: Schedule = this.schedules.find(
+      (schedule) => schedule.id === scheduleId
+    )!;
+
+    console.log(sched);
+
+    this.addScheduleService.detectConflict(sched).subscribe({
+      next: (value) => {
+        this.hasConflict = value && value.length > 0;
+      },
+      error: (err) => {
+        console.error('Error detecting conflict:', err);
+        this.hasConflict = false;
+      },
+    });
+
+    this.activeDropdownId =
+      this.activeDropdownId === scheduleId ? null : scheduleId;
   }
 
   @HostListener('document:click', ['$event'])
@@ -274,50 +343,6 @@ export class RequestListScheduleComponent implements OnInit {
     if (!isDropdownClicked && !isToggleButtonClicked) {
       this.activeDropdownId = null;
     }
-  }
-
-  toggleOneAddSchedule(): void {
-    this.isDropdownOpenAddSchedule = false;
-    this.isOneAddSchedule = !this.isOneAddSchedule;
-  }
-
-  toggleWeeklyAddSchedule(): void {
-    this.isDropdownOpenAddSchedule = false;
-    this.isWeeklyAddSchedule = !this.isWeeklyAddSchedule;
-  }
-
-  toggleRequestOneSchedule(): void {
-    this.isDropdownOpenRequestSchedule = false;
-    this.isRequestOneSchedule = !this.isRequestOneSchedule;
-  }
-
-  toggleRequestWeeklySchedule(): void {
-    this.isDropdownOpenRequestSchedule = false;
-    this.isRequestWeeklySchedule = !this.isRequestWeeklySchedule;
-  }
-
-  handleBackToSchedule(): void {
-    this.isOneAddSchedule = false;
-    this.isWeeklyAddSchedule = false;
-    this.isRequestOneSchedule = false;
-    this.isRequestWeeklySchedule = false;
-  }
-
-  toggleStartSchedule(schedule: Schedule) {
-    if(schedule.recurrenceId) {
-      this.router.navigate(['/schedule/start', schedule.recurrenceId]).then();
-    } else {
-      this.router.navigate(['/attendance/start/', schedule.id]).then();
-    }
-  }
-
-  toggleEditSchedule(schedule: Schedule): void {
-    this.isEditSchedule = !this.isEditSchedule;
-    this.selectedSchedule = schedule;
-  }
-
-  handleEditBackToSchedule(): void {
-    this.isEditSchedule = false;
   }
 
   filteredRepeatedSchedules(): void {
@@ -349,26 +374,50 @@ export class RequestListScheduleComponent implements OnInit {
     }, {} as { [key: string]: Schedule[] });
   }
 
-  onAddScheduleClick() {
-    this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-  }
-
-  onRequestScheduleClick() {
-    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
-  }
-
   onFilterChange() {
+    const hasProgramChanged = this.prevSelectedProgram != this.selectedProgram;
+
+    if(hasProgramChanged) {
+      this.sections = [];
+      this.selectedYearAndSection = -1;
+      this.getSections();
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+
     this.schedules = this.scheduleContainer.filter(
       schedule => schedule.schoolYear?.id === this.selectedAcademicYear
-      && schedule.semester?.id === this.selectedSemester
+        && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     )
+
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
-  toggleViewSchedule(schedule: Schedule) {
-    this.router.navigate(["/view/schedule", schedule.id]).then();
+  onSectionChange(){
+    if(this.selectedYearAndSection == -1){
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+              && schedule.section?.id === this.selectedYearAndSection
+      )
+    }
+
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 
   getSectionId(userId: number) {
@@ -395,45 +444,99 @@ export class RequestListScheduleComponent implements OnInit {
   }
 
   generatePdf() {
-
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'SCHEDULE LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
+    //Header and Rows
     const columns = ['Subject Code', 'Subject Name', 'Schedule', 'Time', 'Faculty', 'Class' ,'Laboratory'];
     const rows = this.schedules.map(schedule =>
       [
         schedule.subject?.code,
-        schedule.subject?.name,
-        schedule.recurrenceDays,
+        schedule.subject?.description,
+        schedule.recurrenceDays?.join(', ') || schedule.scheduleDate,
         `${this.convertTimeFormat(schedule.startTime)} - ${this.convertTimeFormat(schedule.endTime)}`,
         `${schedule.professor?.firstName} ${schedule.professor?.lastName}`,
         `${schedule.section?.program.programAbbreviation} ${schedule.section?.year} - ${schedule.section?.section}`,
         schedule.laboratory?.name
       ]);
 
+    const renderHeader = (currentPage: number, pageCount: number) => {
+       //Add header image
+      const margin = 10;
+      const imgWidth = 20; 
+      const imgHeight = 20;
+ 
+      doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+      const textStartX = margin + imgWidth + 5;
+      const textStartY = 15;
+      doc.setFontSize(10);
+      doc.text('Republic of the Philippines', textStartX, textStartY);
+
+      doc.setFontSize(12);
+      doc.setFont('times', 'bold');
+      doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+      doc.setFontSize(10);
+      doc.setFont('times', 'normal');
+      doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+      doc.setFontSize(11);
+      doc.setFont('times', 'bold');
+      doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+      doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+    
+      const title = 'SCHEDULE LIST';
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      const currentDate = new Date().toLocaleString();
+      doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+      
+        // Add footer
+      const footerY = doc.internal.pageSize.height - 15;
+      const textLeftX = 10;  
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+      doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5) ;
+
+      doc.setTextColor(0, 0, 0); 
+      doc.text('Website: ', textLeftX, footerY + 0.5);
+      doc.setTextColor(0, 0, 255); 
+      doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+      doc.setTextColor(0, 0, 0);
+      doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+      doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+      doc.setTextColor(0);
+
+      doc.setFont('times', 'normal');
+      doc.setFontSize(15);
+      doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+      const stampRightX = doc.internal.pageSize.width - 80;
+      const stampWidth = 65;
+      const stampHeight = 30; 
+      doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+    }
+
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 55,
       theme: 'grid',
+      margin: { top: 55, bottom: 40 },
       styles: {
         fontSize: 10,
         halign: 'center',
@@ -447,7 +550,10 @@ export class RequestListScheduleComponent implements OnInit {
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
     doc.save('schedule-list.pdf');

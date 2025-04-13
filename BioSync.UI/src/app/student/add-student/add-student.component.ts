@@ -2,7 +2,10 @@ import {Component, EventEmitter, OnInit, Output, ViewEncapsulation, ViewChild, O
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {ProgramService} from "../../../services/program.service";
@@ -20,10 +23,17 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import {MailService} from "../../../services/mail.service";
-import {Mail} from "../../../model/mail.model";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
+import {Suffix} from "../../../model/suffix.model";
+import {SuffixService} from "../../../services/suffix.service";
+import { 
+  usercodeValidator, studentNameValidator 
+} from '../../../services/validators/customStudentValidator'; 
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-add-student',
@@ -44,7 +54,7 @@ import {
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './add-student.component.html',
   styleUrl: './add-student.component.css',
   encapsulation: ViewEncapsulation.None,
@@ -54,19 +64,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   @Output() addedStudent = new EventEmitter<User>();
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
+  allSuffix: Suffix[] = [];
 
   allPrograms: Program[] = [];
 
@@ -77,10 +75,10 @@ export class AddStudentComponent implements OnInit, OnDestroy {
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -99,13 +97,15 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     private sdkService: SdkService,
     private fingerprintService: FingerprintService,
     private mailService: MailService,
-    private faceRecognitionService: FaceRecognitionService
+    private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.getAllPrograms();
     this.initForm();
     this.getAllSections();
+    this.getAllSuffix();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -119,7 +119,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -129,7 +129,7 @@ export class AddStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -138,12 +138,13 @@ export class AddStudentComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.studentForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, studentNameValidator()]],
+      lastName: ['', [Validators.required, studentNameValidator()]],
+      middleName: ['', [studentNameValidator()]],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()]],
       program: ['', [Validators.required]],
       section: ['', Validators.required],
     });
@@ -178,6 +179,14 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         this.sections = sections;
       },
     });
+  }
+
+  getAllSuffix(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
   }
 
   returnToStudentView(): void {
@@ -217,25 +226,12 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         }
         this.openMessageDialog(true);
         this.addedStudent.emit(student);
-        this.sendCredentials(studentToAdd, generatedPassword);
+        this.mailService.mailCredentials(studentToAdd, generatedPassword);
       },
       error: (error) => {
         this.openMessageDialog(false, error.error);
       },
     });
-  }
-
-  private sendCredentials(studentToAdd: User, generatedPassword: string) {
-    const mailContent: Mail = {
-      to: studentToAdd.email,
-      subject: `BioSync Account Credentials`,
-      text: `
-        Hello! Welcome to BioSync. Please save your account credentials below\n\n
-        Usercode: ${studentToAdd.usercode} \n
-        Password: ${generatedPassword}`,
-    };
-
-    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(student: User) {
@@ -273,8 +269,8 @@ export class AddStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 
@@ -401,5 +397,37 @@ export class AddStudentComponent implements OnInit, OnDestroy {
         this.currentStepLabel = 'Unknown Step';
         break;
     }
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.studentForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.studentForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.studentForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.studentForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.studentForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.studentForm.get('email')!;
+  }
+
+  get programControl(): AbstractControl {
+    return this.studentForm.get('program')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.studentForm.get('section')!;
   }
 }

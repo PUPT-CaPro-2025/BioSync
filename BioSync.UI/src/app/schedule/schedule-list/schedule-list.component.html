@@ -1,7 +1,7 @@
 <div class="header">
   <mat-toolbar class="toolbar-container">
     <span>List of Schedules -
-      {{ schedule.subject?.name }} -
+      {{ schedule.subject?.description }} -
       {{ schedule.section?.program?.programAbbreviation }}
       {{ schedule.section?.year }}
     </span>
@@ -45,15 +45,9 @@
             <div class="cell">{{schedule.laboratory?.name}}</div>
             <div class="cell">
               <div class="action-container">
-                @if(isScheduledForFutureOrToday(schedule)) {
                   <button class="edit-button" (click)="toggleStartSchedule(schedule)">
                     <mat-icon>play_arrow</mat-icon>
                   </button>
-                }@else {
-                  <button class="edit-button">
-                    <mat-icon>visibility</mat-icon>
-                  </button>
-                }
               </div>
             </div>
           </div>

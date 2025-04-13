@@ -3,6 +3,7 @@ package com.example.biosyncapi.user;
 import com.example.biosyncapi.schedule.Schedule;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,14 @@ public interface UserService {
 
   HashMap<User, String> processCSV(MultipartFile file, Optional<Schedule> schedule) throws Exception;
 
-  User mapToUser(String[] csvRow, String password);
+  List<User> processCSVForEditing(MultipartFile file) throws Exception;
 
+  User mapToUser(String[] csvRow, String password) throws Exception;
+
+  String detectEncoding(MultipartFile file) throws IOException;
+
+  void encodeToUtf8TempFile(
+      MultipartFile file,
+      String detectedEncoding,
+      File tempFile) throws IOException;
 }

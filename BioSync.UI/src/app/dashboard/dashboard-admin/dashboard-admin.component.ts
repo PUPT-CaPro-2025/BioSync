@@ -21,6 +21,11 @@ import {Semester} from "../../../model/semester.model";
 import {SchoolYear} from "../../../model/school.year.model";
 import {Laboratory} from "../../../model/laboratory.model";
 import {LaboratoryService} from "../../../services/laboratory.service";
+import {PromptSyncComponent} from "../../prompt/prompt-sync/prompt-sync.component";
+import {IntegrationService} from "../../../services/integration.service";
+import {
+  CalendarExportComponent
+} from "../../prompt/calendar-export/calendar-export.component";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -31,6 +36,7 @@ import {LaboratoryService} from "../../../services/laboratory.service";
     SubjectService,
     UserService,
     LaboratoryService,
+    IntegrationService
   ],
   templateUrl: './dashboard-admin.component.html',
   styleUrl: './dashboard-admin.component.css',
@@ -48,13 +54,16 @@ export class DashboardAdminComponent implements OnInit {
   currentSemester!: Semester;
   currentSchoolYear!: SchoolYear;
   labs: Laboratory[] = [];
+  schoolLogo!: string;
+  bioSyncLogo!: string;
 
   constructor(
     private scheduleService : ScheduleService,
     private userService: UserService,
     private subjectService: SubjectService,
     private dialog: MatDialog,
-    private laboratoryService: LaboratoryService
+    private laboratoryService: LaboratoryService,
+    private integrationService: IntegrationService
   ) {
   }
 
@@ -65,6 +74,15 @@ export class DashboardAdminComponent implements OnInit {
     this.loadUpcomingSchedules();
     this.loadDashboardNumbers();
     this.getLaboratories();
+
+    this.loadImageToBase64('../../assets/BioSync Logo - with text' +
+        ' orange.svg', (base64Image) => {
+      this.bioSyncLogo = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
+    });
   }
 
   loadSchedules(): void {
@@ -126,22 +144,29 @@ export class DashboardAdminComponent implements OnInit {
 
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
+    hiddenDays: [0],
     plugins: [dayGridPlugin, interactionPlugin],
     customButtons: {
-      printCalendarButton: {  // Define the custom button
+      printCalendarButton: {
         text: 'Export',
         click: () => {
-          this.printEvent();  // Call the addEvent function when clicked
+          this.printEvent();
+        }
+      },
+      SyncSchedules: {
+        text: 'Sync',
+        click: () => {
+          this.syncSchedules();
         }
       }
     },
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'printCalendarButton'
+      right: 'SyncSchedules printCalendarButton'
     },
     dateClick: (arg: DateClickArg) => this.openDateSchedule(arg),
-    eventClick: (info) => this.handleEventClick(info),
+    eventClick: (info : EventClickArg) => this.handleEventClick(info),
     eventTextColor: '#FFF',
     eventDidMount: function(info) {
       info.el.style.background = '#AB3130';
@@ -162,7 +187,14 @@ export class DashboardAdminComponent implements OnInit {
   };
 
   printEvent(): void {
-    this.generatePDF()
+    this.dialog.open(CalendarExportComponent, {
+      width: '400px',
+      data: {
+        generateFirstSemester: () => this.generatePDF(1),
+        generateSecondSemester: () =>  this.generatePDF(2),
+        generateSummerSemester: () => this.generatePDF(3)
+      }
+    })
   }
 
   openDateSchedule(arg: DateClickArg) {
@@ -176,6 +208,38 @@ export class DashboardAdminComponent implements OnInit {
       data: {
         title: "Events",
         schedules: schedule,
+      }
+    })
+  }
+
+  private syncSchedules() {
+    const ref = this.dialog.open(PromptSyncComponent, {
+      width: '250px',
+      disableClose: true,
+    })
+
+    setTimeout(() => {
+      this.integrationService.getSchedulesToSync().subscribe({
+        next: value => {
+          this.createScheduleIntegration(value);
+          ref.close()
+        }
+      })
+    }, 1500)
+
+  }
+
+  private createScheduleIntegration(computer_laboratory_schedules: any) {
+    this.integrationService.syncSchedules(computer_laboratory_schedules).subscribe({
+      next: () => {
+        this.loadSchedules();
+        this.loadUpcomingSchedules();
+        this.loadDashboardNumbers();
+      },
+      error: () => {
+        this.loadSchedules();
+        this.loadUpcomingSchedules();
+        this.loadDashboardNumbers();
       }
     })
   }
@@ -246,18 +310,24 @@ export class DashboardAdminComponent implements OnInit {
     });
   }
 
-  generatePDF() {
+  generatePDF(semesterNumber: number): void  {
     // Create a new PDF document in landscape mode
-    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const doc = new jsPDF('landscape', 'mm', 'a3');
     const pageWidth = doc.internal.pageSize.getWidth();
-
 
     // Loop through each laboratory in `this.upcomingSchedules`
     this.labs.forEach((lab, index) => {
       // Initialize selected data for each laboratory
       this.selectedLaboratory = lab;
-      this.currentSemester = this.upcomingSchedules[1].semester!;
       this.currentSchoolYear = this.upcomingSchedules[1].schoolYear!;
+
+      if(semesterNumber == 1){
+        this.currentSemester = this.currentSchoolYear.firstSemester;
+      } else if(semesterNumber == 2){
+        this.currentSemester = this.currentSchoolYear.secondSemester;
+      } else {
+        this.currentSemester = this.currentSchoolYear.summerSemester;
+      }
 
       // Add a new page for each laboratory (skip adding a new page for the first lab)
       if (index > 0) {
@@ -274,14 +344,33 @@ export class DashboardAdminComponent implements OnInit {
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(40, 40, 40);
-      doc.text(this.currentSemester.name, 14, 28);
+      doc.text(`${this.currentSemester.name} • SY ${this.currentSchoolYear.startYear} - ${this.currentSchoolYear.endYear}`
+          , 14, 28);
 
-      doc.setFontSize(16);
-      doc.text(
-          `${this.currentSchoolYear.startYear} - ${this.currentSchoolYear.endYear}`,
-          pageWidth - 60,
-          20,
-          { align: 'right' }
+      const imageWidth = 20;
+      const imageHeight = 20;
+
+      const rightMargin = 14;
+      const xPos = pageWidth - imageWidth - rightMargin;
+      const uniLogoXPos = pageWidth - imageWidth - (rightMargin + 20);
+      const yPos = 10;
+
+      doc.addImage(
+          this.bioSyncLogo,
+          'PNG',
+          xPos,
+          yPos,
+          imageWidth,
+          imageHeight
+      );
+
+      doc.addImage(
+          this.schoolLogo,
+          'PNG',
+          uniLogoXPos,
+          yPos + 1,
+          imageWidth - 3,
+          imageHeight - 3
       );
 
       // Draw Room Assignment Header Box
@@ -385,14 +474,10 @@ export class DashboardAdminComponent implements OnInit {
       });
     });
 
-    // Generate and open the PDF
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const newWindow = window.open(pdfUrl, '_blank');
-
-    if (newWindow) {
-      newWindow.onload = () => URL.revokeObjectURL(pdfUrl);
-    }
+    // download the PDF
+    const semesterName = this.currentSemester.name.replace(" ", "-");
+    const schoolYear = `${this.currentSchoolYear.startYear}-${this.currentSchoolYear.endYear}`;
+    doc.save(`${semesterName}-Calendar-SY-${schoolYear}.pdf`)
   }
 
   scheduleFitsInSlot(startTime: string, endTime: string, timeSlot: string): boolean {
@@ -441,5 +526,24 @@ export class DashboardAdminComponent implements OnInit {
     const period = hours >= 12 ? 'pm' : 'am';
     const formattedHours = hours % 12 || 12;
     return `${formattedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  }
+
+
+  loadImageToBase64(
+      url: string,
+      callback: (base64Image: string) => void,
+  ): void {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.src = url;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0);
+      const base64Image = canvas.toDataURL('image/png');
+      callback(base64Image);
+    };
   }
 }

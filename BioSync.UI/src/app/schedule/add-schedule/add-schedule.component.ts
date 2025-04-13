@@ -7,6 +7,7 @@ import {
   FormGroup,
   ReactiveFormsModule,
   Validators,
+  AbstractControl
 } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { SubjectService } from '../../../services/subject.service';
@@ -38,6 +39,10 @@ import { ScheduleService } from '../../../services/schedule.service';
 import { CryptoService } from '../../../services/crypto.service';
 import { CookieService } from '../../../services/cookie.service';
 import { Router } from '@angular/router';
+import { 
+  belowStartTimeValidator, aboveStartTimeValidator, 
+  aboveEndTimeValidator, belowEndTimeValidator
+} from '../../../services/validators/customScheduleValidator';
 
 @Component({
   selector: 'app-add-schedule',
@@ -146,8 +151,13 @@ export class AddScheduleComponent implements OnInit {
     this.scheduleForm = this.formBuilder.group({
       subject: ['', [Validators.required]],
       section: ['', [Validators.required]],
-      startTime: ['', Validators.required],
-      endTime: ['', [Validators.required]],
+      startTime: ['', [Validators.required, 
+        belowStartTimeValidator(), aboveStartTimeValidator()
+      ]],
+      endTime: ['', [Validators.required, 
+        aboveEndTimeValidator(() => this.scheduleForm.get('startTime')?.value),
+        belowEndTimeValidator()
+      ]],
       scheduleDate: ['', [Validators.required]],
       laboratory: ['', [Validators.required]],
       professor: ['', [Validators.required]],
@@ -493,16 +503,11 @@ export class AddScheduleComponent implements OnInit {
   }
 
   toggleDaySelection(day: string) {
-    const index = this.customRecurrence.days.indexOf(day);
-    if (index === -1) {
-      this.customRecurrence.days.push(day);
+    if (this.customRecurrence.days.includes(day)) {
+      this.customRecurrence.days = [];
     } else {
-      this.customRecurrence.days.splice(index, 1);
+      this.customRecurrence.days = [day];
     }
-
-    this.customRecurrence.days.sort(
-      (a, b) => this.weekDays.indexOf(a) - this.weekDays.indexOf(b),
-    );
   }
 
   getDayAbbreviation(day: string): string {
@@ -602,6 +607,7 @@ export class AddScheduleComponent implements OnInit {
       formValues.startTime &&
       formValues.endTime &&
       formValues.schoolYear &&
+      formValues.semester &&
       formValues.laboratory
     );
   }
@@ -611,7 +617,7 @@ export class AddScheduleComponent implements OnInit {
     formValues.section = null;
     formValues.professor = null;
     formValues.remarks = null;
-    formValues.semester = null;
+    formValues.semester = this.semesters.find(semester => semester.id === this.scheduleForm.get('semester')?.value);
     formValues.schoolYear = this.selectedSY;
     formValues.startTime = `${formValues.startTime}:00`;
     formValues.endTime = `${formValues.endTime}:00`;
@@ -626,5 +632,49 @@ export class AddScheduleComponent implements OnInit {
 
   private toPendingSchedules() {
     this.router.navigate(['/my-requests']).then();
+  }
+
+  get subjectControl(): AbstractControl {
+    return this.scheduleForm.get('subject')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.scheduleForm.get('section')!;
+  }
+
+  get startTimeeControl(): AbstractControl {
+    return this.scheduleForm.get('startTime')!;
+  }
+
+  get endTimeControl(): AbstractControl {
+    return this.scheduleForm.get('endTime')!;
+  }
+
+  get scheduleDateControl(): AbstractControl {
+    return this.scheduleForm.get('scheduleDate')!;
+  }
+
+  get laboratoryControl(): AbstractControl {
+    return this.scheduleForm.get('laboratory')!;
+  }
+
+  get professorControl(): AbstractControl {
+    return this.scheduleForm.get('professor')!;
+  }
+
+  get semesterControl(): AbstractControl {
+    return this.scheduleForm.get('semester')!;
+  }
+
+  get remarksControl(): AbstractControl {
+    return this.scheduleForm.get('remarks')!;
+  }
+
+  get recurrenceControl(): AbstractControl {
+    return this.scheduleForm.get('recurrence')!;
+  }
+
+  get schoolYearControl(): AbstractControl {
+    return this.scheduleForm.get('schoolYear')!;
   }
 }

@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { Schedule } from '../../../model/schedule.model';
 import {ActivatedRoute, Router} from '@angular/router';
 import { ScheduleService } from '../../../services/schedule.service';
@@ -9,6 +16,7 @@ import { User } from '../../../model/user.model';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { PromptConfirmComponent } from '../../prompt/prompt-confirm/prompt-confirm.component';
+import { PromptContinueComponent } from '../../prompt/prompt-continue/prompt-continue.component';
 import { PromptOkayComponent } from '../../prompt/prompt-okay/prompt-okay.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +24,11 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { AttendanceService } from '../../../services/attendance.service';
 import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {CryptoService} from "../../../services/crypto.service";
+import {
+  LogAttendanceComponent
+} from "../../prompt/log-attendance/log-attendance.component";
 
 @Component({
   selector: 'app-start-attendance',
@@ -27,6 +40,7 @@ import { UserService } from '../../../services/user.service';
     MatIconModule,
     NgOptimizedImage,
     CommonModule,
+    MatProgressSpinner,
   ],
   providers: [
     ScheduleService,
@@ -39,13 +53,13 @@ import { UserService } from '../../../services/user.service';
   styleUrl: './start-attendance.component.css',
 })
 export class StartAttendanceComponent implements OnInit {
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   currentTime!: string;
   currentDate!: string;
   selectedProfessorId!: number;
   hasProfessorVerified = false;
   selectedSchedule!: Schedule;
   fingerprintImageSrc!: Blob;
-  instructions = 'Scan Professors Fingerprint to Start Attendance';
   reminder = 'Scanning In-Charge Fingerprint...';
   loggedProfessor!: User | null;
   loggedStudent!: User | null;
@@ -55,10 +69,20 @@ export class StartAttendanceComponent implements OnInit {
   hasCamera = false;
   hasDevice = false;
   studentsLogged: User[] = [];
+  studentsLoggedOut: User [] = [];
   isError: boolean = false;
   isSuccess: boolean = false;
   isAlreadyLogged: boolean = false;
   id!: number;
+  loading = false;
+  private buffer: string = '';
+  private scanTimeout: any;
+  private readonly debounceTime = 50;
+  scannedCode: string = '';
+  isBarcode = false;
+  isTimeOut = false;
+  adminDetails!: User;
+  isCustomDialogOpen = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -69,11 +93,14 @@ export class StartAttendanceComponent implements OnInit {
     private router: Router,
     private attendanceService: AttendanceService,
     private cookieService: CookieService,
+    private cdr: ChangeDetectorRef,
+    private cryptoService: CryptoService,
     private userService: UserService,
   ) {}
 
   async ngOnInit() {
     this.updateTimeAndDate();
+    this.getAdminDetails();
     setInterval(() => this.updateTimeAndDate(), 1000);
     this.activatedRoute.paramMap.subscribe({
       next: (params) => {
@@ -93,7 +120,11 @@ export class StartAttendanceComponent implements OnInit {
           if (!this.hasProfessorVerified) {
             this.submitProfessor();
           } else {
-            this.submitStudent();
+            if(this.isTimeOut){
+              this.submitStudentTimeOut()
+            } else {
+              this.submitStudentTimeIn();
+            }
           }
         }
       },
@@ -142,6 +173,7 @@ export class StartAttendanceComponent implements OnInit {
   }
 
   submitProfessor() {
+    this.setLoadingProf();
     const formData = new FormData();
 
     formData.append('userId', this.selectedProfessorId.toString());
@@ -152,31 +184,22 @@ export class StartAttendanceComponent implements OnInit {
       .subscribe({
         next: (value) => {
           if (value)
-            this.userService.getUserById(this.selectedProfessorId).subscribe({
-              next: (professor) => {
-                this.loggedProfessor = professor;
-              },
-            });
-          const actualTimeStart =
-            this.cookieService.getCookie('actualTimeStart');
-          if (!actualTimeStart) {
-            this.cookieService.setCookie(
-              'actualTimeStart',
-              Date.now().toString(),
-            );
-          }
+            this.loggedProfessor = value;
+            this.getUserProfileImage(value.id);
           this.reminder = 'Fingerprint verified, Starting Attendance...';
           this.isSuccess = true;
+          this.loading = false;
           setTimeout(() => {
             this.reminder = 'Scan Student Fingerprint';
             this.hasProfessorVerified = true;
             this.loggedProfessor = null;
+            this.profileImageUrl = '';
             this.isSuccess = false;
           }, 3000);
         },
-        error: (err) => {
-          console.log(err);
+        error: () => {
           this.isError = true;
+          this.loading = false;
           setTimeout(() => {
             this.reminder = 'Scanning In-Charge Fingerprint...';
             this.isError = false;
@@ -185,29 +208,32 @@ export class StartAttendanceComponent implements OnInit {
       });
   }
 
-  submitStudent() {
-    const formData = new FormData();
+  private setLoadingProf(){
+    this.loading = true;
+    this.loggedProfessor = null;
+    this.profileImageUrl = '';
+    this.isSuccess = false;
+    this.isError = false;
+  }
 
-    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
-    formData.append('scheduleId', `${this.selectedSchedule.id}`);
-    formData.append('fingerprint', this.fingerprintImageSrc, 'fingerprint.png');
+  submitStudentTimeIn() {
+    this.setLoadingStudent();
+    const formData = this.setFormData();
 
-    const actualTimeStart = parseInt(
-      <string>this.cookieService.getCookie('actualTimeStart'),
-    );
-    const currentTime = Date.now();
-    const timeDifferenceInMinutes =
-      (currentTime - actualTimeStart) / (1000 * 60);
-    const isStudentLate = timeDifferenceInMinutes > 30;
-    formData.append('status', isStudentLate ? 'LATE' : 'PRESENT');
+    formData.append('status',
+        this.isStudentLate() ? 'LATE' : 'PRESENT');
 
     this.fingerprintService.verifyStudentTimeInAttendance(formData).subscribe({
       next: (value) => {
+        this.setActualTimeStart();
         this.loggedStudent = value.student;
         this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
         this.reminder = 'Attendance Recorded';
         this.isSuccess = true;
         this.getUserProfileImage(value.student.id);
+        this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
           this.studentVerified = true;
@@ -227,6 +253,7 @@ export class StartAttendanceComponent implements OnInit {
           this.isError = true;
           this.reminder = '';
         }
+        this.loading = false;
         setTimeout(() => {
           this.loggedStudent = null;
           this.reminder = 'Scan Student Fingerprint';
@@ -234,19 +261,125 @@ export class StartAttendanceComponent implements OnInit {
           this.isError = false;
         }, 3000);
       },
+
     });
+
+  }
+
+  private setActualTimeStart() {
+    if (this.studentsLogged.length < 1) {
+      this.cookieService.setCookie(
+          'actualTimeStart',
+          Date.now().toString(),
+      );
+    }
+  }
+
+  private getActualTimeStart() {
+      return this.cookieService.getCookie(
+          'actualTimeStart'
+      )!;
+  }
+
+  private isStudentLate() {
+    if(this.studentsLogged.length < 1) return false;
+
+    const currentTime = Date.now();
+    const timeDifferenceInMinutes =
+        (currentTime - +this.getActualTimeStart()) / (1000 * 60);
+    return timeDifferenceInMinutes > 30;
+  }
+
+  submitStudentTimeOut() {
+    this.setLoadingStudent();
+    const formData = this.setFormData();
+
+    this.fingerprintService.verifyStudentTimeOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.loggedStudent = value.student;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(this.loggedStudent.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+        }, 3000);
+      },
+      error: (error) => {
+        if (error.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == error.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      },
+
+    });
+
+  }
+
+  private setFormData() {
+    const formData = new FormData();
+
+    formData.append('sectionId', `${this.selectedSchedule.section?.id}`);
+    formData.append('scheduleId', `${this.selectedSchedule.id}`);
+    formData.append('fingerprint', this.fingerprintImageSrc,
+        'fingerprint.png');
+    return formData;
+  }
+
+  private setLoadingStudent(){
+    this.loading = true;
+    this.loggedStudent = null;
+    this.profileImageUrl = '';
+    this.isSuccess = false;
+    this.isAlreadyLogged = false;
+    this.isError = false;
+    this.reminder = 'Scan Student Fingerprint';
   }
 
   getUserProfileImage(userId: number) {
     this.fingerprintService.getProfileImageUrl(userId).subscribe({
       next: (value: { profileImageUrl: string }) => {
         this.profileImageUrl = value.profileImageUrl;
-        console.log(this.profileImageUrl);
       },
     });
   }
 
-  openConfirmationDialog(schedule: Schedule) {
+  getUserId() {
+    const encryptedUserId = decodeURIComponent(
+        this.cookieService.getCookie('user_id')!,
+    );
+    return +this.cryptoService.decrypt(encryptedUserId);
+  }
+
+  getAdminDetails(){
+    const adminId = this.getUserId();
+
+    this.userService.getUserById(adminId).subscribe({
+      next: (user: User) => {
+        this.adminDetails = user;
+      }
+    })
+  }
+
+  openConfirmationDialogStop(schedule: Schedule) {
     const ref = this.dialog.open(PromptConfirmComponent, {
       width: '400px',
       data: {
@@ -261,6 +394,46 @@ export class StartAttendanceComponent implements OnInit {
       next: (result) => {
         if (!result) return;
         this.stopAttendance(schedule);
+      },
+    });
+  }
+
+  openLogAttendanceDialog(schedule: Schedule) {
+    const ref = this.dialog.open(LogAttendanceComponent, {
+      width: '400px',
+      data: {
+        title: 'Log Student',
+        scheduleId: schedule.id,
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if(this.isTimeOut) {
+          this.sendBarcodeTimeOut(result);
+        } else {
+          this.sendBarcodeTimeIn(result);
+        }
+      },
+    });
+  }
+
+  openConfirmationDialogTimeOut() {
+    const ref = this.dialog.open(PromptConfirmComponent, {
+      width: '400px',
+      data: {
+        title: 'Start Individual Time Out',
+        message:
+            "Are you sure you want to start individual time out?",
+        action: 'Start',
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if (!result) return;
+        this.isTimeOut = true;
+        this.reminder = 'Time Out Student'
       },
     });
   }
@@ -295,16 +468,218 @@ export class StartAttendanceComponent implements OnInit {
         this.studentsLogged = value;
       },
     });
+
+    this.attendanceService.getStudentsLoggedOut(scheduleId).subscribe({
+      next: (value) => {
+        this.studentsLoggedOut = value;
+      },
+    });
   }
 
-  goToManualAttendance() {
-    const url = this.router.serializeUrl(this.router.createUrlTree([`attendance/manual/start/`, this.id]));
-    window.open(url, '_blank');
+  sendBarcodeTimeIn(usercode: string){
+    this.loading = true;
+    const formData = new FormData();
+    formData.append('usercode', usercode);
+    formData.append('scheduleId', this.id.toString());
+
+    formData.append('attendanceStatus',
+        this.isStudentLate() ? "LATE" : "PRESENT");
+
+    this.attendanceService.logAttendance(formData).subscribe({
+      next: (value) => {
+        this.setActualTimeStart();
+        this.isError = false;
+        this.loggedStudent = value;
+        this.studentsLogged.push(this.loggedStudent);
+        this.cdr.detectChanges();
+        this.scrollToBottom();
+        this.reminder = 'Attendance Recorded';
+        this.isSuccess = true;
+        this.getUserProfileImage(value.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Scan Student Fingerprint';
+          this.isSuccess = false;
+          this.isAlreadyLogged = false;
+        }, 3000);
+      },
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Attendance has already been recorded';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.isBarcode = true;
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Scan Student Fingerprint';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      }
+    });
   }
 
-  handleBackEvent(){
-    this.router.navigate(['/schedule']).then();
+  sendBarcodeTimeOut(usercode: string){
+    this.loading = true;
+
+    const formData = new FormData();
+    formData.append('usercode', usercode);
+    formData.append('scheduleId', this.id.toString());
+
+    this.attendanceService.logOutAttendance(formData).subscribe({
+      next: (value) => {
+        this.isError = false;
+        this.loggedStudent = value;
+        this.studentsLoggedOut.push(this.loggedStudent);
+        this.reminder = 'Timed Out, Good Bye!';
+        this.isSuccess = true;
+        this.getUserProfileImage(value.id);
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.studentVerified = true;
+          this.profileImageUrl = '';
+          this.reminder = 'Time Out Student';
+          this.isSuccess = false;
+          this.isAlreadyLogged = false;
+        }, 3000);
+      },
+      error: (err) => {
+        if (err.status == 409) {
+          this.reminder = 'Already timed out';
+          this.loggedStudent = this.studentsLogged.find(
+              (student) => student.id == err.error,
+          )!;
+          this.isAlreadyLogged = true;
+        } else {
+          this.isError = true;
+          this.reminder = '';
+        }
+        this.isBarcode = true;
+        this.loading = false;
+        setTimeout(() => {
+          this.loggedStudent = null;
+          this.reminder = 'Time Out Student';
+          this.isAlreadyLogged = false;
+          this.isError = false;
+        }, 3000);
+      }
+    });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (this.scanTimeout) {
+      clearTimeout(this.scanTimeout);
+    }
+
+    if (event.key === 'Enter') {
+      if(this.buffer === '') return;
+
+      this.scannedCode = this.buffer;
+
+      const cleanedCode = this.scannedCode.replace(/Shift/g, '');
+
+      if (!this.hasProfessorVerified) {
+        this.verifyProfessorCode(cleanedCode);
+      } else {
+        if(this.isTimeOut){
+          this.sendBarcodeTimeOut(cleanedCode)
+        } else {
+          this.sendBarcodeTimeIn(cleanedCode)
+        }
+      }
+      this.buffer = '';
+    } else if (!event.ctrlKey && !event.altKey && !event.metaKey) {
+      this.buffer += event.key;
+
+      this.scanTimeout = setTimeout(() => {
+        this.buffer = '';
+      }, this.debounceTime);
+    }
   }
 
   protected readonly history = history;
+
+  private verifyProfessorCode(usercode: string) {
+    this.loading = true;
+    this.isBarcode = true;
+    const professor = this.selectedSchedule.professor!;
+
+    if(usercode === professor.usercode || usercode === this.adminDetails.usercode) {
+
+      if(usercode === professor.usercode) {
+        this.loggedProfessor = professor;
+        this.getUserProfileImage(professor.id);
+      } else {
+        this.loggedProfessor = this.adminDetails;
+        this.getUserProfileImage(this.adminDetails.id);
+      }
+
+      this.reminder = 'Usercode Verified, Starting Attendance...';
+      this.isSuccess = true;
+      this.loading = false;
+      setTimeout(() => {
+        this.reminder = 'Scan Student Fingerprint';
+        this.hasProfessorVerified = true;
+        this.loggedProfessor = null;
+        this.profileImageUrl = '';
+        this.isSuccess = false;
+      }, 3000);
+    } else {
+      this.isError = true;
+      this.loading = false;
+      setTimeout(() => {
+        this.reminder = 'Scanning In-Charge Fingerprint...';
+        this.isError = false;
+      }, 3000);
+    }
+  }
+
+  isStudentLoggedOut(student: User): boolean {
+    return this.studentsLoggedOut.some(loggedOutStudent => loggedOutStudent.id === student.id) && this.isTimeOut;
+  }
+
+  private scrollToBottom(): void {
+    setTimeout(() => {
+      if (this.scrollContainer) {
+        this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
+      }
+    }, 0);
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  handleBeforeUnload(event: BeforeUnloadEvent): void {
+    if (!this.isCustomDialogOpen) {
+      event.preventDefault();
+    }
+  }
+
+  openContinueDialog(){
+      const ref = this.dialog.open(PromptContinueComponent, {
+        width: '350px',
+        data: {
+          title: "Go back to Schedule List",
+          message: "Are you sure you want to go back?",
+        }
+      })
+
+      ref.afterClosed().subscribe({
+        next: result => {
+          if (!result) return
+
+          this.router.navigate(['/schedule']).then();
+        }
+      })
+  }
 }

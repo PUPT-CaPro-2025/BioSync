@@ -16,6 +16,11 @@ import { CookieService } from '../../services/cookie.service';
 import { User } from '../../model/user.model';
 import { UserService } from '../../services/user.service';
 import jsPDF from 'jspdf';
+import { Program } from '../../model/program.model';
+import { ProgramService } from '../../services/program.service';
+import { Section } from '../../model/section.model';
+import { SectionService } from '../../services/section.service';
+import {Semester} from "../../model/semester.model";
 
 @Component({
   selector: 'app-faculty-my-request',
@@ -30,6 +35,8 @@ import jsPDF from 'jspdf';
   providers: [
     ScheduleService,
     SchoolYearService,
+    ProgramService,
+    SectionService,
     UserService,
     CookieService,
     CryptoService,
@@ -48,12 +55,15 @@ export class FacultyMyRequestComponent implements OnInit {
   academicYears: SchoolYear[] = [];
   selectedAcademicYear: number | undefined;
 
-  semesters: string[] = [
-    'First Semester',
-    'Second Semester',
-    'Summer Semester',
-  ];
+  semesters: Semester[] = [];
   selectedSemester = 1;
+
+  programs: Program[] = [];
+  selectedProgram!: number;
+  prevSelectedProgram = -1;
+
+  sections: Section[] = [];
+  selectedYearAndSection = -1;
 
   schedules: Schedule[] = [];
   scheduleContainer: Schedule[] = [];
@@ -72,13 +82,17 @@ export class FacultyMyRequestComponent implements OnInit {
   isDropdownOpenAddSchedule: boolean = false;
   isDropdownOpenRequestSchedule: boolean = false;
   userId!: number;
-  headerImage!: string;
+  bagongPilipinas!: string;
+  stamp!: string;
+  schoolLogo!: string;  
   activeDropdownId: number | null = null;
 
   constructor(
     private scheduleService: ScheduleService,
     private dialog: MatDialog,
     private schoolYearService: SchoolYearService,
+    private sectionService: SectionService,
+    private programService: ProgramService,
     private router: Router,
     private cryptoService: CryptoService,
     private cookieService: CookieService,
@@ -96,9 +110,18 @@ export class FacultyMyRequestComponent implements OnInit {
       this.getSectionId(this.userId);
     }
     this.getAcademicYears();
+    this.getAllPrograms();
+    this.getSections();
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
 
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -111,6 +134,9 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -141,6 +167,9 @@ export class FacultyMyRequestComponent implements OnInit {
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.getSemester();
+        this.setLatestProgram();
+        this.getSections();
         this.totalItems = this.schedules.length;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
       },
@@ -151,6 +180,13 @@ export class FacultyMyRequestComponent implements OnInit {
     if (this.schedules && this.schedules.length > 0) {
       const latestSchedule = this.schedules[this.schedules.length - 1];
       this.selectedAcademicYear = latestSchedule.schoolYear?.id;
+    }
+  }
+
+  setLatestProgram() {
+    if (this.schedules && this.schedules.length > 0) {
+      const latestSchedule = this.schedules[this.schedules.length - 1];
+      this.selectedProgram = latestSchedule.section?.program.id!;
     }
   }
 
@@ -172,14 +208,28 @@ export class FacultyMyRequestComponent implements OnInit {
     return [];
   }
 
-  onScheduleCreation(schedule: Schedule[]) {
-    schedule.forEach((schedule: Schedule) => {
-      this.schedules.push(schedule);
-    });
-    this.groupSchedulesByRecurrenceId();
-    this.filteredRepeatedSchedules();
-    this.sortSchedulesById(this.schedules);
-    this.updatePagination();
+  getSemester() {
+    this.semesters = [];
+
+    if (!this.schedules || this.schedules.length === 0) return;
+
+    const lastSchedule = this.schedules[this.schedules.length - 1];
+    const lastSchoolYear = lastSchedule.schoolYear;
+    if (!lastSchoolYear) return;
+
+    if (lastSchoolYear.firstSemester) {
+      this.semesters.push(lastSchoolYear.firstSemester);
+    }
+    if (lastSchoolYear.secondSemester) {
+      this.semesters.push(lastSchoolYear.secondSemester);
+    }
+    if (lastSchoolYear.summerSemester) {
+      this.semesters.push(lastSchoolYear.summerSemester);
+    }
+
+    if (lastSchedule.semester) {
+      this.selectedSemester = lastSchedule.semester.id!;
+    }
   }
 
   updatePagination(): void {
@@ -188,15 +238,6 @@ export class FacultyMyRequestComponent implements OnInit {
     if (this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;
     }
-  }
-
-  onScheduleUpdate(updatedSchedule: Schedule) {
-    const index = this.schedules.findIndex(
-      (schedule) => schedule.id === updatedSchedule.id,
-    );
-
-    this.schedules[index] = updatedSchedule;
-    this.getAllSchedules();
   }
 
   convertTimeFormat(time: string): string {
@@ -240,6 +281,22 @@ export class FacultyMyRequestComponent implements OnInit {
         this.academicYears = academicYears;
       },
     });
+  }
+
+  getAllPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programs: Program[]) => {
+        this.programs = programs;
+      }
+    })
+  }
+
+  getSections() {
+    this.sectionService.getSectionByProgramId(this.selectedProgram).subscribe({
+      next: (sections: Section[]) => {
+        this.sections = sections;
+      }
+    })
   }
 
   get pages(): number[] {
@@ -379,20 +436,22 @@ export class FacultyMyRequestComponent implements OnInit {
     );
   }
 
-  onAddScheduleClick() {
-    this.isDropdownOpenAddSchedule = !this.isDropdownOpenAddSchedule;
-  }
-
-  onRequestScheduleClick() {
-    this.isDropdownOpenRequestSchedule = !this.isDropdownOpenRequestSchedule;
-  }
-
   onFilterChange() {
+    const isProgramDiff = this.prevSelectedProgram != this.selectedProgram
+
+    if(isProgramDiff) {
+      this.sections = [];
+      this.selectedYearAndSection = -1;
+      this.getSections();
+      this.prevSelectedProgram = this.selectedProgram;
+    }
+
     this.schedules = this.scheduleContainer.filter(
-      (schedule) =>
-        schedule.schoolYear?.id === this.selectedAcademicYear &&
-        schedule.semester?.id === this.selectedSemester,
+      schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+        && schedule.semester?.id === this.selectedSemester
+        && schedule.section?.program.id === this.selectedProgram
     );
+
     this.groupSchedulesByRecurrenceId();
     this.filteredRepeatedSchedules();
     this.sortSchedulesById(this.schedules);
@@ -414,13 +473,14 @@ export class FacultyMyRequestComponent implements OnInit {
   getStudentSchedules(sectionId: number) {
     this.scheduleService.getAllSchedulesBySectionId(sectionId).subscribe({
       next: (schedules: Schedule[]) => {
-        console.log(schedules);
         this.schedules = schedules;
         this.scheduleContainer = schedules;
         this.groupSchedulesByRecurrenceId();
         this.filteredRepeatedSchedules();
         this.sortSchedulesById(this.schedules);
         this.setLatestSchoolYear();
+        this.setLatestProgram();
+        this.getSections();
       },
     });
   }
@@ -429,24 +489,12 @@ export class FacultyMyRequestComponent implements OnInit {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'SCHEDULE LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
+    //Headers and Rows
     const columns = [
       'Subject Code',
       'Subject Name',
@@ -466,26 +514,100 @@ export class FacultyMyRequestComponent implements OnInit {
       schedule.laboratory?.name,
     ]);
 
-    doc.autoTable({
-      head: [columns],
-      body: rows,
-      startY: 40,
-      theme: 'grid',
-      styles: {
-        fontSize: 10,
-        halign: 'center',
-      },
-      headStyles: {
-        fillColor: [255, 255, 255],
-        textColor: [0, 0, 0],
-        lineWidth: 0.4,
-        lineColor: [0, 0, 0],
-      },
-      bodyStyles: {
-        lineColor: [0, 0, 0],
-        textColor: [0, 0, 0],
-      },
-    });
+    const renderHeader = (currentPage: number, pageCount: number) => {
+      //Add header image
+     const margin = 10;
+     const imgWidth = 20; 
+     const imgHeight = 20;
+
+     doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+     const textStartX = margin + imgWidth + 5;
+     const textStartY = 15;
+     doc.setFontSize(10);
+     doc.text('Republic of the Philippines', textStartX, textStartY);
+
+     doc.setFontSize(12);
+     doc.setFont('times', 'bold');
+     doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+     doc.setFontSize(10);
+     doc.setFont('times', 'normal');
+     doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+     doc.setFontSize(11);
+     doc.setFont('times', 'bold');
+     doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+     doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+
+     // Add title
+     const title = 'SCHEDULE LIST';
+     doc.setFontSize(20);
+     doc.setFont('helvetica', 'bold');
+     doc.text(title, pageWidth / 2, 45, { align: 'center' });
+
+     // Add print date and time below the title, centered
+     doc.setFontSize(10);
+     doc.setFont('helvetica', 'bold');
+     doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+     doc.setFont('helvetica', 'normal');
+     const currentDate = new Date().toLocaleString();
+     doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+
+       // Add footer
+     const footerY = doc.internal.pageSize.height - 15;
+     const textLeftX = 10;  
+
+     doc.setFont('helvetica', 'normal');
+     doc.setFontSize(8);
+     doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+     doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+
+     doc.setTextColor(0, 0, 0); 
+     doc.text('Website: ', textLeftX, footerY + 0.5);
+     doc.setTextColor(0, 0, 255); 
+     doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+     doc.setTextColor(0, 0, 0);
+     doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+     doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+     doc.setTextColor(0);
+
+     doc.setFont('times', 'normal');
+     doc.setFontSize(15);
+     doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+     const stampRightX = doc.internal.pageSize.width - 80;
+     const stampWidth = 65;
+     const stampHeight = 30; 
+     doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+   }
+
+  //Table
+  doc.autoTable({
+    head: [columns],
+    body: rows,
+    startY: 55,
+    theme: 'grid',
+    margin: { top: 55, bottom: 40 },
+    styles: {
+      fontSize: 10,
+      halign: 'center',
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      lineWidth: 0.4,
+      lineColor: [0, 0, 0],
+    },
+    bodyStyles: {
+      lineColor: [0, 0, 0],
+      textColor: [0, 0, 0],
+    },
+    didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+      renderHeader(data.pageNumber, data.pageCount);
+    },
+  });
 
     doc.save('schedule-list.pdf');
   }
@@ -506,5 +628,28 @@ export class FacultyMyRequestComponent implements OnInit {
       const base64Image = canvas.toDataURL('image/png');
       callback(base64Image);
     };
+  }
+
+  onSectionChange(){
+    if(this.selectedYearAndSection == -1){
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+      )
+    } else {
+      this.schedules = this.scheduleContainer.filter(
+          schedule => schedule.schoolYear?.id === this.selectedAcademicYear
+              && schedule.semester?.id === this.selectedSemester
+              && schedule.section?.program.id === this.selectedProgram
+              && schedule.section?.id === this.selectedYearAndSection
+      )
+    }
+
+    this.groupSchedulesByRecurrenceId();
+    this.filteredRepeatedSchedules();
+    this.sortSchedulesById(this.schedules);
+    this.totalItems = this.schedules.length;
+    this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
   }
 }

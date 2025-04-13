@@ -2,13 +2,19 @@ import {Component, Output, EventEmitter, OnInit} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import {SchoolYear} from "../../../model/school.year.model";
 import {SchoolYearService} from "../../../services/school.year.service";
 import {MatDialog} from "@angular/material/dialog";
 import {PromptOkayComponent} from "../../prompt/prompt-okay/prompt-okay.component";
+import {
+  startYearValidator, endYearValidator, oneMonthGapDateValidator
+} from '../../../services/validators/customSchoolYearValidator';
 
 @Component({
   selector: 'app-add-school-year',
@@ -42,19 +48,50 @@ export class AddSchoolYearComponent implements OnInit {
 
   initAddSchoolYearForm(){
     this.addSchoolYearForm = this.formBuilder.group({
-      startYear: ['', [Validators.required]],
-      endYear: ['', [Validators.required]],
+      startYear: ['', [Validators.required, startYearValidator()]],
+      endYear: ['', [Validators.required, endYearValidator()]],
       oneStartDate: ['', Validators.required],
-      oneEndDate: ['', [Validators.required]],
+      oneEndDate: ['', [Validators.required, oneMonthGapDateValidator('oneStartDate')]],
       twoStartDate: ['', [Validators.required]],
-      twoEndDate: ['', [Validators.required]],
+      twoEndDate: ['', [Validators.required, oneMonthGapDateValidator('twoStartDate')]],
       summerStartDate: ['', [Validators.required]],
-      summerEndDate: ['', [Validators.required]],
+      summerEndDate: ['', [Validators.required, oneMonthGapDateValidator('summerStartDate')]],
     });
   }
 
   returnToSchoolYearView(): void {
     this.backToSchoolYear.emit();
+  }
+
+  get startYearControl(): AbstractControl {
+    return this.addSchoolYearForm.get('startYear')!;
+  }
+  get endYearControl(): AbstractControl {
+    return this.addSchoolYearForm.get('endYear')!;
+  }
+
+  get oneStartDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('oneStartDate')!;
+  }
+
+  get oneEndDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('oneEndDate')!;
+  }
+
+  get twoStartDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('twoStartDate')!;
+  }
+
+  get twoEndDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('twoEndDate')!;
+  }
+
+  get summerStartDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('summerStartDate')!;
+  }
+
+  get summerEndDateControl(): AbstractControl {
+    return this.addSchoolYearForm.get('summerEndDate')!;
   }
 
   submit(){

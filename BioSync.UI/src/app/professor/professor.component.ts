@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, HostListener} from '@angular/core';
+import {Component, OnInit, HostListener} from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -24,7 +24,8 @@ import jsPDF from "jspdf";
     EditProfessorComponent],
   providers: [UserService],
   templateUrl: './professor.component.html',
-  styleUrls: ['./professor.component.css', '../schedule/schedule.component.css']
+  styleUrls: ['./professor.component.css',
+    '../schedule/schedule.component.css', '../subject/subject.component.css']
 })
 export class ProfessorComponent implements OnInit{
   professors: User[] = [];
@@ -32,11 +33,6 @@ export class ProfessorComponent implements OnInit{
   entries: string[] = [
     '10', '20', '30', '40', '50'
   ];
-
-  sorting: string[] = [
-    'Subject Code', 'Alphabetical', 'Date'
-  ];
-
   totalItems!: number;
   itemsPerPage: number = 10;
   currentPage: number = 1;
@@ -44,8 +40,11 @@ export class ProfessorComponent implements OnInit{
   isAddProfessor: boolean = false;
   isEditProfessor: boolean = false;
   professorToUpdate!: User
-  headerImage!: string;
+  bagongPilipinas!: string;
+  stamp!: string;
+  schoolLogo!: string;  
   activeDropdownId: number | null = null;
+  reportDropdown = false;
 
   constructor(
     private userService: UserService,
@@ -55,8 +54,16 @@ export class ProfessorComponent implements OnInit{
   ngOnInit() {
     this.getProfessors()
 
-    this.loadImageToBase64('../../assets/header.png', (base64Image) => {
-      this.headerImage = base64Image;
+    this.loadImageToBase64('../../assets/BagongPilipinas.png', (base64Image) => {
+      this.bagongPilipinas = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/stamp.jpg', (base64Image) => {
+      this.stamp = base64Image;
+    });
+
+    this.loadImageToBase64('../../assets/PUPLogo.png', (base64Image) => {
+      this.schoolLogo = base64Image;
     });
   }
 
@@ -209,28 +216,18 @@ export class ProfessorComponent implements OnInit{
     })
   }
 
+  toggleDropdown(){
+    this.reportDropdown = !this.reportDropdown;
+  }
+
   generatePdf() {
     const doc = new jsPDF('landscape', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-
-    const imgWidth = 115;
-    const imgHeight = 15;
-    const xOffset = (pageWidth - imgWidth) / 2;
-    doc.addImage(this.headerImage, 'PNG', xOffset, 5, imgWidth, imgHeight);
-
-    const title = 'PROFESSOR LIST';
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(title, pageWidth / 2, 30, { align: 'center' });
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Date/Time Printed:', pageWidth / 2.1, 35, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    const currentDate = new Date().toLocaleString();
-    doc.text(currentDate, pageWidth / 2, 35);
-
+    const leftX = 10;
+    const rightX = pageWidth - 10;
+    const lineHeight = 7;
+    let currentY = 60; // Start position for content
 
     const columns = ['Faculty Code', 'First Name', 'Middle Name', 'Last Name', 'Suffix'];
     const rows = this.professors.map(professor =>
@@ -242,11 +239,80 @@ export class ProfessorComponent implements OnInit{
         professor.suffix
       ]);
 
+    const renderHeader = (currentPage: number, pageCount: number) => {
+      //Add header image
+     const margin = 10;
+     const imgWidth = 20; 
+     const imgHeight = 20;
+
+     doc.addImage(this.schoolLogo, 'PNG', margin, 10, imgWidth, imgHeight);
+
+     const textStartX = margin + imgWidth + 5;
+     const textStartY = 15;
+     doc.setFontSize(10);
+     doc.text('Republic of the Philippines', textStartX, textStartY);
+
+     doc.setFontSize(12);
+     doc.setFont('times', 'bold');
+     doc.text('POLYTECHNIC UNIVERSITY OF THE PHILIPPINES', textStartX, textStartY + 5);
+
+     doc.setFontSize(10);
+     doc.setFont('times', 'normal');
+     doc.text('Office of the Vice President for Branches and Campuses', textStartX, textStartY + 10);
+
+     doc.setFontSize(11);
+     doc.setFont('times', 'bold');
+     doc.text('TAGUIG CAMPUS', textStartX, textStartY + 15);
+
+     doc.addImage(this.bagongPilipinas, 'PNG', pageWidth - margin - imgWidth, 10, imgWidth, imgHeight);
+
+     const title = 'PROFESSOR LIST';
+     doc.setFontSize(20);
+     doc.setFont('helvetica', 'bold');
+     doc.text(title, pageWidth / 2, 45, { align: 'center' });
+ 
+     doc.setFontSize(10);
+     doc.setFont('helvetica', 'bold');
+     doc.text('Date/Time Printed:', pageWidth / 2 - 20, 50, { align: 'center' });
+     doc.setFont('helvetica', 'normal');
+     const currentDate = new Date().toLocaleString();
+     doc.text(currentDate, pageWidth / 2 + 20, 50, { align: 'center' });
+
+      // Add footer
+     const footerY = doc.internal.pageSize.height - 15;
+     const textLeftX = 10;  
+
+     doc.setFont('helvetica', 'normal');
+     doc.setFontSize(8);
+     doc.text('General Santos Ave., Lower Bicutan, Taguig City, Philippines 1632', textLeftX, footerY - 10);
+     doc.text('Direct Line: (02) 8837 5858 to 60', textLeftX, footerY - 5);
+
+     doc.setTextColor(0, 0, 0); 
+     doc.text('Website: ', textLeftX, footerY + 0.5);
+     doc.setTextColor(0, 0, 255); 
+     doc.textWithLink('www.pup.edu.ph', textLeftX + 12, footerY + 0.5, { url: 'http://www.pup.edu.ph' });
+     doc.setTextColor(0, 0, 0);
+     doc.text(' | Email: ', textLeftX + 33, footerY + 0.5);
+     doc.text('taguig@pup.edu.ph', textLeftX + 44, footerY + 0.5);
+     doc.setTextColor(0);
+
+     doc.setFont('times', 'normal');
+     doc.setFontSize(15);
+     doc.text('THE COUNTRY\'S 1st POLYTECHNICU', textLeftX, footerY + 8);
+
+     const stampRightX = doc.internal.pageSize.width - 80;
+     const stampWidth = 65;
+     const stampHeight = 30; 
+     doc.addImage(this.stamp, 'JPEG', stampRightX, footerY - 15, stampWidth, stampHeight);
+    }
+    
+    //Table
     doc.autoTable({
       head: [columns],
       body: rows,
-      startY: 40,
+      startY: 55,
       theme: 'grid',
+      margin: { top: 55, bottom: 40 },
       styles: {
         fontSize: 10,
         halign: 'center',
@@ -260,10 +326,43 @@ export class ProfessorComponent implements OnInit{
       bodyStyles: {
         lineColor: [0, 0, 0],
         textColor: [0, 0, 0],
-      }
+      },
+      didDrawPage: (data: { pageNumber: number; pageCount: number }) => {
+        renderHeader(data.pageNumber, data.pageCount);
+      },
     });
 
     doc.save('professor-list.pdf');
+  }
+
+  generateCSV() {
+    const columns = ['Faculty Code', 'First Name', 'Middle Name', 'Last Name', 'Suffix'];
+
+    let csvContent = columns.join(',') + '\n';
+
+    this.professors.forEach(professor => {
+      const row = [
+        professor.usercode,
+        professor.firstName,
+        professor.middleName,
+        professor.lastName,
+        professor.suffix
+      ];
+      csvContent += row.join(',') + '\n';
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = 'professor-list.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
   }
 
   loadImageToBase64(url: string, callback: (base64Image: string) => void): void {

@@ -2,7 +2,10 @@ import {Component, Output, EventEmitter, OnInit, ViewEncapsulation, ViewChild, O
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
+} from '@angular/forms';
 import {MatButtonModule} from "@angular/material/button";
 import { MatSelectModule } from '@angular/material/select';
 import {UserService} from "../../../services/user.service";
@@ -15,11 +18,18 @@ import {SdkService} from "../../../services/sdk.service";
 import {FingerprintService} from "../../../services/fingerprint.service";
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import {Mail} from "../../../model/mail.model";
 import {MailService} from "../../../services/mail.service";
 import {
   FaceRecognitionService
 } from "../../../services/face.recognition.service";
+import {Suffix} from "../../../model/suffix.model";
+import {SuffixService} from "../../../services/suffix.service";
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
+import { 
+  facultyNameValidator, usercodeValidator 
+} from '../../../services/validators/customProfessorValidator';
 
 @Component({
   selector: 'app-add-professor',
@@ -39,7 +49,7 @@ import {
     MatIconModule,
     CommonModule
   ],
-  providers: [UserService, SdkService, FingerprintService, MailService],
+  providers: [UserService, SdkService, FingerprintService, MailService, SuffixService],
   templateUrl: './add-professor.component.html',
   styleUrls: ['./add-professor.component.css', '../../student/add-student/add-student.component.css'],
   encapsulation: ViewEncapsulation.None,
@@ -50,20 +60,7 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
   @ViewChild('videoElement') videoElementRef!: any;
   private stream: MediaStream | null = null;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd'
-  ];
-
+  allSuffix: Suffix[] = [];
   professorForm!: FormGroup;
   currentStepLabel: string = 'Set Up Information';
   imageForm!: FormGroup;
@@ -71,10 +68,10 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
   imageSrc: string | ArrayBuffer | null = null;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint';
   isRightIndex = false;
   imageButtonLabel = 'Skip';
   disableReset = false;
@@ -91,11 +88,12 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
     private fingerprintService: FingerprintService,
     private mailService: MailService,
     private faceRecognitionService: FaceRecognitionService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
     this.initForm();
-
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -106,28 +104,38 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
           } else {
             this.rightIndexFingerprintImageSrc = this.base64ToBlob(src, 'image/png');
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       }
     });
   }
 
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
+  }
+
   initForm(){
     this.professorForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, facultyNameValidator()]],
+      lastName: ['', [Validators.required, facultyNameValidator()]],
+      middleName: ['', [facultyNameValidator()]],
       suffix: ['', [Validators.required]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()
+      ]],
     });
 
     this.imageForm = this.formBuilder.group({
@@ -161,25 +169,12 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
         }
         this.displayMessage(true);
         this.professorAdded.emit(userCreated);
-        this.mailCredentials(professorToCreate, generatedPassword);
+        this.mailService.mailCredentials(professorToCreate, generatedPassword);
       },
       error: error => {
         this.displayMessage(false, error.error);
       }
     });
-  }
-
-  private mailCredentials(professorToCreate: User, generatedPassword: string) {
-    const mailContent: Mail = {
-      to: professorToCreate.email,
-      subject: `BioSync Account Credentials`,
-      text: `
-        Hello! Welcome to BioSync. Please save your account credentials below\n\n
-        Usercode: ${professorToCreate.usercode} \n
-        Password: ${generatedPassword}`
-    }
-
-    this.mailService.sendMail(mailContent).subscribe();
   }
 
   processProfileImage(professor: User) {
@@ -211,8 +206,8 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
   }
 
@@ -326,5 +321,29 @@ export class AddProfessorComponent implements OnInit, OnDestroy{
 
   private base64ToBlob(src: string, imagePng: string) {
     return this.sdkService.base64ToBlob(src, imagePng);
+  }
+
+  get userCodeControl(): AbstractControl {
+    return this.professorForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.professorForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.professorForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.professorForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.professorForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.professorForm.get('email')!;
   }
 }

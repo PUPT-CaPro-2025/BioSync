@@ -7,6 +7,7 @@ import com.example.biosyncapi.semester.Semester;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,7 +17,8 @@ public interface ScheduleService {
     List<Schedule> getAllSchedulesBySectionId(Long sectionId);
     List<Schedule> getSchedulesByRecurrenceId(UUID recurrenceId);
     List<Schedule> findConflictingSchedules(Date scheduleDate,
-        Time startTime, Time endTime, Laboratory laboratory, SchoolYear schoolYear);
+        Time startTime, Time endTime, Laboratory laboratory,
+        SchoolYear schoolYear, Semester semester);
     Optional<Schedule> getScheduleById(Long id);
     List<Schedule> createSchedule(Schedule schedule);
     List<Schedule> getAllRequestedSchedules(Long requesterId);
@@ -24,4 +26,5 @@ public interface ScheduleService {
     Schedule updateSchedule(Schedule schedule);
     Schedule updatePartialSchedule(Long id, Status updates);
     void deleteSchedule(Long id);
+    List<Schedule> syncSchedulesFromApi(Map<String, Object> apiData);
 }

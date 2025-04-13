@@ -13,6 +13,7 @@ import {PromptConfirmComponent} from '../prompt/prompt-confirm/prompt-confirm.co
 import {MatDialog} from '@angular/material/dialog';
 import {filter} from 'rxjs/operators';
 import { CryptoService } from '../../services/crypto.service';
+import {environment} from "../../../environment/app.setting";
 
 @Component({
   selector: 'app-sidenav',
@@ -199,8 +200,12 @@ export class SidenavComponent implements OnInit {
         localStorage.removeItem('activeButton');
         this.router.navigate(['/login']).then();
       },
-      error: (err) => {
-        console.log(err);
+      error: () => {
+        this.cookieService.deleteCookie('authToken');
+        this.cookieService.deleteCookie('role');
+        this.cookieService.deleteCookie('user_id');
+        localStorage.removeItem('activeButton');
+        this.router.navigate(['/login']).then();
       },
     });
   }
@@ -209,4 +214,6 @@ export class SidenavComponent implements OnInit {
     const encryptedRole = <string>decodeURIComponent(this.cookieService.getCookie("role")!);
     return this.cryptoService.decrypt(encryptedRole);
   }
+
+    protected readonly environment = environment;
 }

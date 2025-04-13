@@ -6,33 +6,55 @@
 <div class="flex justify-center items-center">
     <form class="mt-8 flex justify-between w-[90%] bg-transparent form-content" [formGroup]="suffixForm">
         <div class="w-[55%] flex flex-col gap-4 row-block">
-            <div class="group flex flex-col gap-1">
-                <label for="suffix-name" class="text-custom-16
+            <div class="group flex flex-col gap-1 relative">
+                <label for="name" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Suffix Name
                 </label>
-                <input matInput id="suffix_name"
-                    name="suffix-name"
+                <input matInput id="name"
+                    name="name"
                     placeholder="Enter suffix name"
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="suffixName">
+                    formControlName="name"
+                    [class.input-error]="suffixNameControl.invalid && suffixNameControl.touched">
+                @if(suffixNameControl.touched && suffixNameControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( suffixNameControl.errors?.['required']) {
+                            Suffix name is required.
+                        } @else if(suffixNameControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        }
+                    </div>
+                }
             </div>
-            <div class="group flex flex-col gap-1">
-                <label for="suffix-abbreviation" class="text-custom-16
+            <div class="group flex flex-col gap-1 relative">
+                <label for="abbreviation" class="text-custom-16
                         text-darkGray transition-colors duration-300
                         group-focus-within:text-brightRed">
                         Suffix Abbreviation
                 </label>
-                <input matInput id="suffix_abbreviation"
-                    name="suffix-abbreviation"
+                <input matInput id="abbreviation"
+                    name="abbreviation"
                     placeholder="Enter abbreviation of the suffix"
                     class="bg-transparent border-b-2 border-darkGray
                     focus:border-brightRed focus:outline-none
                     transition-colors duration-300 w-full py-2 px-1"
-                    formControlName="suffixAbbreviation">
+                    formControlName="abbreviation"
+                    [class.input-error]="suffixAbbreviationControl.invalid && suffixAbbreviationControl.touched">
+                @if(suffixAbbreviationControl.touched && suffixAbbreviationControl.invalid) {
+                    <div class="text-brightRed text-custom-16 absolute right-0 bottom-[-2rem]">
+                        @if( suffixAbbreviationControl.errors?.['required']) {
+                            Laboratory Abbreviation is required.
+                        } @else if(suffixAbbreviationControl.errors?.['invalidName']) {
+                            Only letters are allowed.
+                        } @else if (suffixAbbreviationControl.errors?.['maxlength']) {
+                            Abrreviation too long.
+                        }
+                    </div>
+                }
             </div>
             <div class="flex flex-col justify-end gap-4 mt-10">
                 <div class="flex gap-[40px] justify-end button-content">
@@ -44,7 +66,7 @@
                     <button class="text-custom-14 text-white py-2 px-19
                         bg-gradient-red rounded-full
                         hover:bg-gradient-dark-red hover:text-f4White add-button"
-                        (click)="submit()">
+                        (click)="submit()" [disabled]="!suffixForm.valid">
                         Add Suffix
                     </button>
                 </div>

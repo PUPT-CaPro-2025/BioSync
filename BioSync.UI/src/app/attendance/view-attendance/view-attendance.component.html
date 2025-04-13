@@ -2,9 +2,29 @@
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">View Schedule Attendance</span>
     <div class="toolbar-button">
-      <button class="header-button" (click)="generatePdf()">
-        Print Attendance Report
-      </button>
+      <div class="flex flex-col items-center select-none">
+          @if(getRole() != 'STUDENT'){
+              <div class="header-button" (click)="toggleDropdown()">
+                  Print Attendance Report
+              </div>
+          }
+        @if (reportDropdown) {
+          <div class="add-schedule-content flex flex-col">
+            <div
+              class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+              (click)="generatePdf()"
+            >
+              Print PDF
+            </div>
+            <div
+              class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+              (click)="generateCSV()"
+            >
+              Print CSV
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </mat-toolbar>
 </div>
@@ -16,7 +36,7 @@
           Subject:
         </p>
         <p class="text-darkGray text-custom-16 w-[80%] data">
-          {{ schedule.subject?.name }}
+          {{ schedule.subject?.description }}
         </p>
       </div>
       <div class="flex justify-start items-start row-content">
@@ -59,7 +79,7 @@
 </div>
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
-    <span class="text-custom-32 text-brightRed">Students</span>
+    <span class="text-custom-32 text-brightRed">{{getRole() == 'STUDENT' ? 'Status' : 'Students'}}</span>
   </mat-toolbar>
 </div>
 <div class="table-container">
@@ -71,13 +91,24 @@
       <div class="cell">Status</div>
     </div>
     <div class="row-container text-custom-12">
-      @for (attendance of class; track attendance) {
-        <div class="row">
-          <div class="cell">{{ attendance.user.usercode }}</div>
-          <div class="cell">{{ attendance.user.lastName }}</div>
-          <div class="cell">{{ attendance.user.firstName }}</div>
-          <div class="cell">{{ attendance.status }}</div>
-        </div>
+      @if(getRole() === "STUDENT") {
+        @if(student){
+          <div class="row">
+            <div class="cell">{{ student.user.usercode }}</div>
+            <div class="cell">{{ student.user.lastName }}</div>
+            <div class="cell">{{ student.user.firstName }}</div>
+            <div class="cell">{{ student.status }}</div>
+          </div>
+        }
+      } @else {
+          @for (attendance of class; track attendance) {
+            <div class="row">
+              <div class="cell">{{ attendance.user.usercode }}</div>
+              <div class="cell">{{ attendance.user.lastName }}</div>
+              <div class="cell">{{ attendance.user.firstName }}</div>
+              <div class="cell">{{ attendance.status }}</div>
+            </div>
+          }
       }
     </div>
   </div>

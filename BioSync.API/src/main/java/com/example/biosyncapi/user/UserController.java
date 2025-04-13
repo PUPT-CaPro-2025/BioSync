@@ -49,7 +49,7 @@ public class UserController {
   }
 
   @GetMapping("students/{id}")
-  public List<User> getAllStudentsFilteredByScheduleId(@PathVariable Long id) {
+  public List<User> getStudentsNotInSchedule(@PathVariable Long id) {
     List<User> students = this.userService.getUsersByRole(Role.STUDENT);
 
     List<User> studentsAlreadyAdded =
@@ -143,6 +143,25 @@ public class UserController {
   @PutMapping("/edit-user")
   public User updateUser(@RequestBody User user) {
     return this.userService.updateUser(user);
+  }
+
+  @PutMapping("/edit/bulk/students")
+  public ResponseEntity<Map<String, Object>> updateStudents(
+          @RequestParam("file") MultipartFile file)
+  {
+    try {
+      List<User> updatedUsers = this.userService.processCSVForEditing(file);
+
+      return ResponseEntity.ok().body(Map.ofEntries(
+              Map.entry("success", true),
+              Map.entry("students", updatedUsers)
+      ));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(Map.ofEntries(
+              Map.entry("success", false),
+              Map.entry("error", e.getMessage())
+      ));
+    }
   }
 
   @PutMapping("/edit-profile-image")

@@ -6,7 +6,27 @@
                         <span>List of Programs - ALL</span>
                         <div class="toolbar-button">
                             <button class="header-button" (click)="toggleAddProgram()">Add New Program</button>
-                            <button class="header-button" (click)="generatePdf()">Print Program Reports</button>
+                            <div class="toolbar-button select-none">
+                                <div class="header-button flex" (click)="toggleDropdown()">
+                                    Print Program Report
+                                </div>
+                                @if (reportDropdown) {
+                                    <div class="subject-print-content flex flex-col">
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generatePdf()"
+                                        >
+                                            Print PDF
+                                        </div>
+                                        <div
+                                                class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                                (click)="generateCSV()"
+                                        >
+                                            Print CSV
+                                        </div>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </mat-toolbar>
                 </div>
@@ -15,27 +35,6 @@
                         <div class="search-container">
                             <mat-icon class="search-icon">search</mat-icon>
                             <input type="text" placeholder="SEARCH">
-                        </div>
-                        <div class="dropdown-container">
-                            <div class="dropdown-content">
-                                <div class="entry-container">
-                                    <span>Show</span>
-                                    <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                                        @for(entry of entries; track entry) {
-                                            <option [value]="entry" [selected]="entry === '10'">{{entry}}</option>
-                                        }
-                                    </select>
-                                    <span>Entries</span>
-                                </div>
-                                <div class="sort-container">
-                                    <select>
-                                        <option>Sort by</option>
-                                        @for(sort of sorting; track sort) {
-                                            <option [value]="sort">{{sort}}</option>
-                                        }
-                                    </select>
-                                </div>
-                            </div>
                         </div>
                     </mat-toolbar>
                 </div>
@@ -56,7 +55,7 @@
                                             <button (click)="toggleDropdownAction(program.id)" class="dropdown-toggle"><mat-icon>more_horiz</mat-icon></button>
                                             @if(activeDropdownId === program.id) {
                                                 <div class="action-container" [ngClass]="{
-                                                    'bottom-action': filteredPrograms.length >= 4 && (filteredPrograms[filteredPrograms.length - 1] === program || filteredPrograms[filteredPrograms.length - 2] === program)}">>
+                                                    'bottom-action': filteredPrograms.length >= 4 && (filteredPrograms[filteredPrograms.length - 1] === program || filteredPrograms[filteredPrograms.length - 2] === program)}">
                                                     <button class="action-button" (click)="toggleEditProgram(program)">Edit</button>
                                                     <button class="action-button" (click)="openDeleteDialog(program)">Delete</button>
                                                 </div>
@@ -76,12 +75,25 @@
                               {{ getDisplayRange() }} of {{ totalItems }}
                             </div>
                             <div class="paginator-controls">
-                              <span>Page</span>
-                              <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                                @for (page of pages; track page) {
-                                    <option [value]="page">{{ page }}</option>
-                                }
-                              </select>
+                              <div>
+                                <span>Show Entries</span>
+                                <select [(ngModel)]="itemsPerPage"
+                                    (change)="onItemsPerPageChange()">
+                                  @for (entry of entries; track entry) {
+                                    <option [value]="entry" [selected]="entry === '10'">
+                                      {{ entry }}
+                                    </option>
+                                  }
+                                </select>
+                              </div>
+                              <div>
+                                <span>Page</span>
+                                <select [(ngModel)]="currentPage" (change)="onPageChange()">
+                                  @for (page of pages; track page) {
+                                      <option [value]="page">{{ page }}</option>
+                                  }
+                                </select>
+                              </div>
                               <div class="paginator-button-container">
                                 <button (click)="previousPage()"
                                         [disabled]="currentPage === 1"
@@ -116,5 +128,5 @@
         }
     } @else {
         <app-add-program (programAdded)="onProgramAdded($event)" (backToProgram)="handleBackToProgram()"/>
-    }    
+    }
 </div>

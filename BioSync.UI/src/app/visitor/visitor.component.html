@@ -1,143 +1,184 @@
 <div class="background-container">
-    @if(!isEditVisitor) {
-        <div class="header">
-            <mat-toolbar class="toolbar-container">
-                <span>Visitor Logs</span>
-                <div class="toolbar-button">
-                    <button (click)="generatePdf()" 
-                        class="header-button">
-                        Print Visitor Report
-                    </button>
-                </div>
-            </mat-toolbar>
-        </div>
-        <div class="filter-container">
-            <mat-toolbar class="filter-content">
-                <div class="search-container">
-                    <mat-icon class="search-icon">search</mat-icon>
-                    <input type="text" placeholder="SEARCH">
-                </div>
-                <div class="dropdown-container">
-                    <div class="dropdown-content">
-                        <div class="entry-container">
-                            <span>Show</span>
-                            <select [(ngModel)]="itemsPerPage" 
-                                    (change)="onItemsPerPageChange()">
-                                @for(entry of entries; track entry) {
-                                    <option [value]="entry" 
-                                        [selected]="entry === '10'">
-                                        {{entry}}
-                                    </option>
-                                }
-                            </select>
-                            <span>Entries</span>
-                        </div>
-                        <div class="sort-container">
-                            <select>
-                                <option>Sort by</option>
-                                @for(sort of sorting; track sort) {
-                                    <option [value]="sort">{{sort}}</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </mat-toolbar>
-        </div>
-        @if(filteredVisitors.length > 0) {
-        <div class="table-container">
-                <div class="subject-table">
-                    <div class="attributes">
-                        <div class="cell">VISITOR'S NAME</div>
-                        <div class="cell">PURPOSE OF VISIT</div>
-                        <div class="cell">DATE</div>
-                        <div class="cell">TIME</div>
-                        <DIV class="cell">DESTINATION</DIV>
-                        <div class="cell">ACTION</div>
-                    </div>
-                    <div class="row-container">
-                        @for (visitor of filteredVisitors; track visitor) {
-                            <div class="row">
-                                <div class="cell">{{visitor.name}}</div>
-                                <div class="cell">
-                                    {{visitor.purposeOfVisit}}
-                                </div>
-                                <div class="cell">
-                                    {{getDate(visitor.visitDate)}}
-                                </div>
-                                <div class="cell">
-                                    {{getTime(visitor.visitDate)}}
-                                </div>
-                                <div class="cell">{{visitor.destination}}</div>
-                                <div class="cell">
-                                    <button (click)="toggleDropdownAction(visitor.id)" 
-                                        class="dropdown-toggle">
-                                        <mat-icon>more_horiz</mat-icon>
-                                    </button>
-                                    @if(activeDropdownId === visitor.id) {
-                                        <div class="action-container" [ngClass]="{
-                                            'bottom-action': filteredVisitors.length >= 4 && (filteredVisitors[filteredVisitors.length - 1] === visitor || filteredVisitors[filteredVisitors.length - 2] === visitor)}">
-                                            <button class="action-button" 
-                                                (click)="toggleEditVisitor(visitor)">
-                                                Edit
-                                            </button>
-                                            <button class="action-button" 
-                                                (click)="openDeleteDialog(visitor)">
-                                                Delete
-                                            </button>
-                                        </div>
-                                    }
-                                </div>
+    @if(!isAddVisitor) {
+        @if (!isEditVisitor) {
+            <div class="header">
+                <mat-toolbar class="toolbar-container">
+                    <span>Visitor Logs</span>
+                    <div class="toolbar-button">
+                        <button mat-button [matMenuTriggerFor]="menu">
+                            Log Visitors
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item (click)="toggleSingleLogVisitor()">
+                                Log Single Visitor
+                            </button>
+                            <button mat-menu-item (click)="toggleMultipleVisitors()">
+                                Log Multiple Visitors
+                            </button>
+                        </mat-menu>
+                        <div class="toolbar-button select-none">
+                            <div class="header-button flex"
+                                 (click)="toggleDropdown()">
+                                Print Visitor Reports
                             </div>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="line-container">
-                <img src="../../assets/black-line.svg">
-            </div>
-            <div class="bottom-container">
-                <div class="paginator">
-                    <div class="paginator-info">
-                      {{ getDisplayRange() }} of {{ totalItems }}
-                    </div>
-                    <div class="paginator-controls">
-                      <span>Page</span>
-                      <select [(ngModel)]="currentPage" (change)="onPageChange()">
-                            @for (page of pages; track page) {
-                                <option [value]="page">{{ page }}</option>
+                            @if (reportDropdown) {
+                                <div class="subject-print-content flex flex-col">
+                                    <div
+                                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                            (click)="generatePdf()"
+                                    >
+                                        Print PDF
+                                    </div>
+                                    <div
+                                            class="hover:bg-lightGray hover:text-f4White hover:rounded-2xl w-full"
+                                            (click)="generateCSV()"
+                                    >
+                                        Print CSV
+                                    </div>
+                                </div>
                             }
-                      </select>
-                      <div class="paginator-button-container">
-                        <button (click)="previousPage()"
-                                [disabled]="currentPage === 1"
-                                [ngClass]="{'active-button': currentPage > 1}">
-                            <img src="../../assets/previous.svg"
-                                alt="Previous Icon"
-                                [ngClass]="{'active-icon': currentPage > 1}">
-                            Previous
-                        </button>
-                        <button (click)="nextPage()"
-                                [disabled]="currentPage === totalPages"
-                                [ngClass]="{'active-button': currentPage < totalPages}">
-                            Next
-                            <img src="../../assets/next.svg"
-                                    alt="Next Icon"
-                                    [ngClass]="{'active-icon': currentPage < totalPages}">
-                        </button>
-                      </div>
+                        </div>
+                    </div>
+                </mat-toolbar>
+            </div>
+            <div class="filter-container">
+                <mat-toolbar class="filter-content">
+                    <div class="search-container">
+                        <mat-icon class="search-icon">search</mat-icon>
+                        <input type="text" placeholder="SEARCH">
+                    </div>
+                </mat-toolbar>
+            </div>
+            @if (filteredVisitors.length > 0) {
+                <div class="table-container">
+                    <div class="subject-table">
+                        <div class="attributes">
+                            <div class="cell">VISITOR'S NAME</div>
+                            <div class="cell">PURPOSE OF VISIT</div>
+                            <div class="cell">DATE</div>
+                            <div class="cell">TIME</div>
+                            <DIV class="cell">DESTINATION</DIV>
+                            <div class="cell">ACTION</div>
+                        </div>
+                        <div class="row-container">
+                            @for (visitor of filteredVisitors; track visitor) {
+                                <div class="row">
+                                    <div class="cell">{{ visitor.name }}</div>
+                                    <div class="cell">
+                                        @if (visitor.purposeOfVisit === 'Others') {
+                                            {{ visitor.otherDetails }}
+                                        } @else {
+                                            {{ visitor.purposeOfVisit }}
+                                        }
+                                    </div>
+                                    <div class="cell">
+                                        {{ getDate(visitor.visitDate) }}
+                                    </div>
+                                    <div class="cell">
+                                        {{ getTime(visitor.visitDate) }}
+                                    </div>
+                                    <div class="cell">{{
+                                            visitor.destination
+                                        }}
+                                    </div>
+                                    <div class="cell">
+                                        <button (click)="toggleDropdownAction(visitor.id)"
+                                                class="dropdown-toggle">
+                                            <mat-icon>more_horiz</mat-icon>
+                                        </button>
+                                        @if (activeDropdownId === visitor.id) {
+                                            <div class="action-container"
+                                                 [ngClass]="{
+                                                'bottom-action': filteredVisitors.length >= 4 && (filteredVisitors[filteredVisitors.length - 1] === visitor || filteredVisitors[filteredVisitors.length - 2] === visitor)}">
+                                                <button class="action-button"
+                                                        (click)="toggleEditVisitor(visitor)">
+                                                    Edit
+                                                </button>
+                                                <button class="action-button"
+                                                        (click)="openDeleteDialog(visitor)">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="line-container">
+                    <img src="../../assets/black-line.svg">
+                </div>
+                <div class="bottom-container">
+                    <div class="paginator">
+                        <div class="paginator-info">
+                            {{ getDisplayRange() }} of {{ totalItems }}
+                        </div>
+                        <div class="paginator-controls">
+                            <div>
+                                <span>Sort By</span>
+                                <select>
+                                    @for (sort of sorting; track sort) {
+                                        <option [value]="sort">{{ sort }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <span>Show Entries</span>
+                                <select [(ngModel)]="itemsPerPage"
+                                        (change)="onItemsPerPageChange()">
+                                    @for (entry of entries; track entry) {
+                                        <option [value]="entry"
+                                                [selected]="entry === '10'">
+                                            {{ entry }}
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <span>Page</span>
+                                <select [(ngModel)]="currentPage"
+                                        (change)="onPageChange()">
+                                    @for (page of pages; track page) {
+                                        <option [value]="page">{{ page }}</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="paginator-button-container">
+                                <button (click)="previousPage()"
+                                        [disabled]="currentPage === 1"
+                                        [ngClass]="{'active-button': currentPage > 1}">
+                                    <img src="../../assets/previous.svg"
+                                         alt="Previous Icon"
+                                         [ngClass]="{'active-icon': currentPage > 1}">
+                                    Previous
+                                </button>
+                                <button (click)="nextPage()"
+                                        [disabled]="currentPage === totalPages"
+                                        [ngClass]="{'active-button': currentPage < totalPages}">
+                                    Next
+                                    <img src="../../assets/next.svg"
+                                         alt="Next Icon"
+                                         [ngClass]="{'active-icon': currentPage < totalPages}">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            } @else {
+                <div class="flex justify-center items-center h-[50vh]">
+                    No Visitors Yet.
+                </div>
+            }
         } @else {
-        <div class="flex justify-center items-center h-[50vh]">
-            No Visitors Yet.
-          </div>
-    }
-} @else {
             <app-edit-visitor
-              [visitor]="visitorToEdit"
-              (editedVisitor)="onVisitorUpdate($event)"
-              (backToEditVisitor)="handleBackToEditVisitor()"/>
-        }    
+                    [visitor]="visitorToEdit"
+                    (editedVisitor)="onVisitorUpdate($event)"
+                    (backToEditVisitor)="handleBackToEditVisitor()"/>
+        }
+    } @else {
+        <app-add-visitor
+                (addedVisitor)="onVisitorAdded($event)"
+                (backToVisitor)="handleBackToVisitor()"></app-add-visitor>
+    }
 </div>

@@ -1,10 +1,9 @@
 @if(!submitted && !success && !error){
-  <h2 mat-dialog-title>Add Multiple Students</h2>
+  <h2 mat-dialog-title>{{ data.heading }}</h2>
   <mat-dialog-content class="mat-typography">
     <input type="file" (change)="handleFileInput($event)" accept=".csv" />
-    <p class="mt-4">Follow the
-      <a [href]="templateLink" class="text-blue-500" target="_blank">CSV Template</a>
-      for adding multiple students.</p>
+    <p class="mt-4">Follow the <a [href]="templateLink" class="text-blue-500" target="_blank">CSV Template</a>
+      for {{ data.subheading }}.</p>
   </mat-dialog-content>
   <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
@@ -24,10 +23,16 @@
   </mat-dialog-actions>
 }
 @else {
-  <h2 mat-dialog-title>Students Added</h2>
-  <mat-dialog-content class="mat-typography">
-    <p>Student has been added successfully</p>
-  </mat-dialog-content>
+  <h2 mat-dialog-title>{{ userTypeToAdd }} Added</h2>
+    @if(data.scheduleId){
+        <mat-dialog-content class="mat-typography">
+            <p>{{ userTypeToAdd }} has been added successfully</p>
+        </mat-dialog-content>
+    } @else {
+        <mat-dialog-content class="mat-typography">
+            <p>{{count}} {{ userTypeToAdd }} has been added successfully</p>
+        </mat-dialog-content>
+    }
   <mat-dialog-actions align="end">
     <button mat-button [mat-dialog-close]="true">Okay</button>
   </mat-dialog-actions>

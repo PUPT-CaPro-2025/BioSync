@@ -321,6 +321,10 @@ export class FaceRecognitionAttendanceComponent
 
     this.attendanceService.logAttendance(formData).subscribe({
       next: (value) => {
+        //overwrite actual time start with the first student that logs
+        if (this.studentsLogged.length < 1) {
+          this.cookieService.setCookie('actualTimeStart', Date.now().toString());
+        }
         this.studentsLogged.push(value);
       },
     });

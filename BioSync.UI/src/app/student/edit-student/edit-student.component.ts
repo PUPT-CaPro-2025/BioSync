@@ -12,11 +12,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
+  FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, 
+  Validators, AbstractControl
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -41,6 +38,14 @@ import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { MailService } from '../../../services/mail.service';
+import {SuffixService} from "../../../services/suffix.service";
+import {Suffix} from "../../../model/suffix.model";
+import { 
+  usercodeValidator, studentNameValidator 
+} from '../../../services/validators/customStudentValidator'; 
+import { 
+  customEmailValidator 
+} from '../../../services/validators/customEmailValidator';
 
 @Component({
   selector: 'app-edit-student',
@@ -61,7 +66,7 @@ import { MailService } from '../../../services/mail.service';
     MatIconModule,
     CommonModule,
   ],
-  providers: [ProgramService, UserService, SectionService, MailService],
+  providers: [ProgramService, UserService, SectionService, MailService, SuffixService],
   templateUrl: './edit-student.component.html',
   styleUrls: [
     './edit-student.component.css',
@@ -75,33 +80,19 @@ export class EditStudentComponent implements OnInit, OnDestroy {
   @Input() selectedStudent!: User;
   @ViewChild('videoElement') videoElementRef!: any;
 
-  allSuffix: string[] = [
-    'N/A',
-    'Ph.D.',
-    'Ed.D.',
-    'D.Phil.',
-    'D.Sc.',
-    'M.D.',
-    'Sr.',
-    'Jr.',
-    '1st',
-    '2nd',
-    '3rd',
-  ];
-
+  allSuffix: Suffix[] = [];
   allPrograms: Program[] = [];
   sections: Section[] = [];
   filteredSections: Section[] = [];
   editStudentForm!: FormGroup;
-  studentForm!: FormGroup;
   imageForm!: FormGroup;
   selectedProfileImage!: Blob;
   rightThumbFingerprintImageSrc: Blob | null = null;
   rightIndexFingerprintImageSrc: Blob | null = null;
-  rightThumbState = 'Scan Left Index';
+  rightThumbState = 'Scan Fingerprint';
   hasRightThumb = false;
   isRightThumb = false;
-  rightIndexState = 'Scan Right Index';
+  rightIndexState = 'Scan Fingerprint Again';
   isRightIndex = false;
   imageSrc: string | ArrayBuffer | null = null;
   photoButtonLabel = 'Skip';
@@ -118,7 +109,8 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private sectionService: SectionService,
     private sdkService: SdkService,
-    private fingerprintService: FingerprintService
+    private fingerprintService: FingerprintService,
+    private suffixService: SuffixService
   ) {}
 
   ngOnInit() {
@@ -126,6 +118,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.getAllPrograms();
     this.setFormValues();
     this.getAllSections();
+    this.getSuffixes();
     this.sdkService.loadSDK();
 
     this.sdkService.getImageSrc().subscribe({
@@ -139,7 +132,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
             this.isRightThumb = true;
             this.disableReset = true;
             setTimeout(() => {
-              this.rightThumbState = 'Left Index Captured';
+              this.rightThumbState = 'Fingerprint Captured';
               this.hasRightThumb = true;
               this.disableReset = false;
             }, 2000);
@@ -149,7 +142,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
               'image/png'
             );
             this.isRightIndex = true;
-            this.rightIndexState = 'Right Index Captured';
+            this.rightIndexState = 'Fingerprint Captured';
           }
         }
       },
@@ -158,14 +151,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.editStudentForm = this.formBuilder.group({
-      usercode: ['', [Validators.required]],
-      firstName: ['', [Validators.required]],
-      lastName: ['', [Validators.required]],
-      middleName: [''],
+      usercode: ['', [Validators.required, usercodeValidator()]],
+      firstName: ['', [Validators.required, studentNameValidator()]],
+      lastName: ['', [Validators.required, studentNameValidator()]],
+      middleName: ['', [studentNameValidator()]],
       suffix: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, 
+        Validators.email, customEmailValidator()]],
       program: ['', [Validators.required]],
-      section: [0, [Validators.required]],
+      section: ['', Validators.required],
     });
   }
 
@@ -177,8 +171,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     });
   }
 
+  getSuffixes(){
+    this.suffixService.getSuffixes().subscribe({
+      next: suffixes => {
+        this.allSuffix = suffixes;
+      }
+    })
+  }
+
   setFormValues() {
-    console.log(this.selectedStudent.suffix)
     this.editStudentForm.patchValue({
       usercode: this.selectedStudent.usercode,
       firstName: this.selectedStudent.firstName,
@@ -223,6 +224,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     );
 
     const studentToUpdate = {
+      ...this.selectedStudent,
       ...updatedValues,
       program: selectedProgram,
       section: selectedSection,
@@ -238,7 +240,9 @@ export class EditStudentComponent implements OnInit, OnDestroy {
           this.processProfileImage(updatedUser.id);
         }
         if (this.isRightIndex && this.isRightThumb) {
-          this.registerFingerprintData(updatedUser);
+          if(this.registerFingerprintData(updatedUser)){
+            updatedUser.biometrics = true;
+          }
         }
         this.editedStudent.emit(updatedUser);
         this.openSuccessDialog();
@@ -291,15 +295,15 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       this.selectedProfileImage,
       `user-${studentId}-img.png`
     );
-    this.userService.editProfileImage(formData).subscribe({
-      next: (value) => {
-        console.log(value);
-      },
+
+    this.userService.processProfileImage(formData).subscribe({
+      next: () => {},
       error: (err) => console.error(err),
     });
   }
 
   registerFingerprintData(student: User) {
+    let flag = false;
     const formData = new FormData();
     formData.append('userId', `${student.id}`);
     formData.append(
@@ -313,11 +317,13 @@ export class EditStudentComponent implements OnInit, OnDestroy {
       `right-thumb-${student.lastName}.png`
     );
 
-    this.fingerprintService.registerFingerprint(formData).subscribe({
-      next: (value) => {
-        console.log(value);
+    this.fingerprintService.updateFingerprint(student.id ,formData).subscribe({
+      next: () => {
+        flag = true;
       },
     });
+
+    return flag;
   }
 
   openCamera() {
@@ -331,7 +337,7 @@ export class EditStudentComponent implements OnInit, OnDestroy {
         this.videoElement.srcObject = stream;
         this.videoElement.play();
       })
-      .catch((err) => {
+      .catch(() => {
         // Handle error silently
       });
   }
@@ -412,8 +418,40 @@ export class EditStudentComponent implements OnInit, OnDestroy {
     this.isRightIndex = false;
     this.rightIndexFingerprintImageSrc = null;
     this.rightThumbFingerprintImageSrc = null;
-    this.rightThumbState = 'Scan Left Index';
-    this.rightIndexState = 'Scan Right Index';
+    this.rightThumbState = 'Scan Fingerprint';
+    this.rightIndexState = 'Scan Fingerprint Again';
     this.hasRightThumb = false;
+  }
+  
+  get userCodeControl(): AbstractControl {
+    return this.editStudentForm.get('usercode')!;
+  }
+
+  get firstNameControl(): AbstractControl {
+    return this.editStudentForm.get('firstName')!;
+  }
+
+  get lastNameControl(): AbstractControl {
+    return this.editStudentForm.get('lastName')!;
+  }
+
+  get middleNameControl(): AbstractControl {
+    return this.editStudentForm.get('middleName')!;
+  }
+
+  get suffixControl(): AbstractControl {
+    return this.editStudentForm.get('suffix')!;
+  }
+
+  get emailControl(): AbstractControl {
+    return this.editStudentForm.get('email')!;
+  }
+
+  get programControl(): AbstractControl {
+    return this.editStudentForm.get('program')!;
+  }
+
+  get sectionControl(): AbstractControl {
+    return this.editStudentForm.get('section')!;
   }
 }

@@ -1,7 +1,6 @@
 <div class="flex justify-center items-center">
   <mat-toolbar class="toolbar-container">
     <span class="text-custom-32 text-brightRed">View Schedule</span>
-    <button class="header-button">Print Schedule Report</button>
   </mat-toolbar>
 </div>
 <div class="flex justify-center items-center">
@@ -54,6 +53,14 @@
           {{ schedule.professor?.firstName }} {{ schedule.professor?.lastName }}
         </p>
       </div>
+        <div class="flex justify-start items-start row-content">
+            <p class="text-brightRed text-custom-16 font-medium w-[20%] label">
+                Total Students:
+            </p>
+            <p class="text-darkGray text-custom-16 w-[80%] data">
+                {{ class.length }}
+            </p>
+        </div>
     </div>
   </div>
 </div>
@@ -80,14 +87,19 @@
 <div class="table-container">
   <div class="subject-table">
     <div class="attributes text-custom-16">
+        <div class="cell">Number</div>
       <div class="cell">Student Number</div>
       <div class="cell">Student Name</div>
       <div class="cell">Assigned PC</div>
-      <div class="cell">Actions</div>
+      @if(getRole() !== "STUDENT") {
+        <div class="cell">Actions</div>
+
+      }
     </div>
     <div class="row-container text-custom-12">
-      @for (student of class; track student) {
+      @for (student of class; track student; let idx = $index) {
         <div class="row">
+            <div class="cell w-4 text-center">{{ idx + 1 }}</div>
           <div class="cell">{{ student.student.usercode }}</div>
           <div class="cell">
             {{ student.student.lastName }} {{ student.student.firstName }}
@@ -95,27 +107,29 @@
           <div class="cell">
             {{ student.computerNumber ? student.computerNumber : "Unassigned" }}
           </div>
-          <div class="cell">
-            <button
-              (click)="toggleDropdownAction(student.id)"
-              class="dropdown-toggle"
-            >
-              <mat-icon>more_horiz</mat-icon>
-            </button>
-            @if (activeDropdownId === student.id) {
-              <div class="action-container">
-                <button
-                  class="action-button"
-                  (click)="toggleAssignedComputer(student)"
-                >
-                  Assign PC
-                </button>
-                <button class="action-button" (click)="removeStudent(student)">
-                  Remove
-                </button>
-              </div>
-            }
-          </div>
+          @if(getRole() !== "STUDENT") {
+            <div class="cell">
+              <button
+                (click)="toggleDropdownAction(student.id)"
+                class="dropdown-toggle"
+              >
+                <mat-icon>more_horiz</mat-icon>
+              </button>
+              @if (activeDropdownId === student.id) {
+                <div class="action-container">
+                  <button
+                    class="action-button"
+                    (click)="toggleAssignedComputer(student)"
+                  >
+                    Assign PC
+                  </button>
+                  <button class="action-button" (click)="removeStudent(student)">
+                    Remove
+                  </button>
+                </div>
+              }
+            </div>
+          }
         </div>
       }
     </div>
