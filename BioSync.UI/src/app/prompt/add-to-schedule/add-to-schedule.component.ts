@@ -68,7 +68,7 @@ export class AddToScheduleComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userService.getAllStudentsFilteredByScheduleId(
+    this.userService.getStudentsNotInSchedule(
       this.data.scheduleId).subscribe({
       next: (event: User[]) => {
         this.options = event;

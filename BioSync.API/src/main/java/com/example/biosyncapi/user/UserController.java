@@ -49,7 +49,7 @@ public class UserController {
   }
 
   @GetMapping("students/{id}")
-  public List<User> getAllStudentsFilteredByScheduleId(@PathVariable Long id) {
+  public List<User> getStudentsNotInSchedule(@PathVariable Long id) {
     List<User> students = this.userService.getUsersByRole(Role.STUDENT);
 
     List<User> studentsAlreadyAdded =
