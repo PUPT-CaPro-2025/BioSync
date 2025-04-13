@@ -232,6 +232,8 @@ export class VisitorComponent implements OnInit{
       width: '450px',
       height: '210px',
       data: {
+        heading: "Add Multiple Visitors",
+        subheading: "adding multiple visitors",
         scheduleId: null,
       }
     })

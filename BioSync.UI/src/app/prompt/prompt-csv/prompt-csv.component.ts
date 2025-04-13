@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -33,8 +33,8 @@ import {UserService} from "../../../services/user.service";
   templateUrl: './prompt-csv.component.html',
   styleUrl: './prompt-csv.component.css'
 })
-export class PromptCsvComponent {
-  templateLink = environment.templateLink;
+export class PromptCsvComponent implements OnInit {
+  templateLink!:string;
   csvFile!: File;
   submitted = false;
   success = false;
@@ -43,9 +43,15 @@ export class PromptCsvComponent {
 
   constructor(
     public dialogRef: MatDialogRef<PromptCsvComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { scheduleId : number },
+    @Inject(MAT_DIALOG_DATA) public data: { scheduleId : number, heading : string, subheading: string },
     private userService: UserService,
   ) {}
+
+  ngOnInit() {
+    this.templateLink = this.data.heading.includes("Visitors")
+        ? environment.visitorTemplateLink
+        : environment.templateLink;
+  }
 
   handleFileInput(event: any) {
     this.csvFile = event.target.files[0];

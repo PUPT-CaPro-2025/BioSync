@@ -127,6 +127,8 @@ export class ViewScheduleComponent implements OnInit {
       width: '450px',
       height: '210px',
       data: {
+        heading: "Add Multiple Students",
+        subheading: "adding multiple students",
         scheduleId: this.schedule.id,
       },
     });
