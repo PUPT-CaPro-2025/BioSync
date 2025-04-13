@@ -26,6 +26,9 @@ import { CookieService } from '../../../services/cookie.service';
 import { UserService } from '../../../services/user.service';
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {CryptoService} from "../../../services/crypto.service";
+import {
+  LogAttendanceComponent
+} from "../../prompt/log-attendance/log-attendance.component";
 
 @Component({
   selector: 'app-start-attendance',
@@ -391,6 +394,26 @@ export class StartAttendanceComponent implements OnInit {
       next: (result) => {
         if (!result) return;
         this.stopAttendance(schedule);
+      },
+    });
+  }
+
+  openLogAttendanceDialog(schedule: Schedule) {
+    const ref = this.dialog.open(LogAttendanceComponent, {
+      width: '400px',
+      data: {
+        title: 'Log Student',
+        scheduleId: schedule.id,
+      },
+    });
+
+    ref.afterClosed().subscribe({
+      next: (result) => {
+        if(this.isTimeOut) {
+          this.sendBarcodeTimeOut(result);
+        } else {
+          this.sendBarcodeTimeIn(result);
+        }
       },
     });
   }

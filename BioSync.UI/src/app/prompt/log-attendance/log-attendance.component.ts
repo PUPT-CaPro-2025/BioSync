@@ -1,19 +1,19 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {
-    MAT_DIALOG_DATA,
-    MatDialogActions,
-    MatDialogClose,
-    MatDialogContent,
-    MatDialogRef,
-    MatDialogTitle
+  MAT_DIALOG_DATA,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle
 } from '@angular/material/dialog';
 import {
-    MatAutocomplete,
-    MatAutocompleteModule,
-    MatAutocompleteSelectedEvent,
-    MatAutocompleteTrigger,
-    MatOption
+  MatAutocomplete,
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent,
+  MatAutocompleteTrigger,
+  MatOption
 } from '@angular/material/autocomplete';
 import {MatFormField, MatInput, MatInputModule} from "@angular/material/input";
 import {MatButton, MatButtonModule} from "@angular/material/button";
@@ -23,34 +23,35 @@ import {User} from "../../../model/user.model";
 import {ScheduleService} from "../../../services/schedule.service";
 import {map, Observable, startWith} from "rxjs";
 import {AsyncPipe} from "@angular/common";
+import {ClassResponse} from "../../../model/class.model";
 
 @Component({
-    selector: 'app-add-to-schedule',
-    templateUrl: './add-to-schedule.component.html',
-    styleUrls: ['./add-to-schedule.component.css'],
-    standalone: true,
-    imports: [
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatAutocompleteModule,
-        MatButtonModule,
-        MatAutocompleteTrigger,
-        ReactiveFormsModule,
-        MatInput,
-        MatFormField,
-        MatDialogContent,
-        MatAutocomplete,
-        MatOption,
-        MatDialogActions,
-        MatButton,
-        MatDialogClose,
-        MatDialogTitle,
-        AsyncPipe,
-    ],
-    providers: [ScheduleService, UserService],
+  selector: 'app-log-attendance',
+  standalone: true,
+  templateUrl: './log-attendance.component.html',
+  styleUrls: ['./log-attendance.component.css', '../add-to-schedule/add-to-schedule.component.css'],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatAutocompleteTrigger,
+    ReactiveFormsModule,
+    MatInput,
+    MatFormField,
+    MatDialogContent,
+    MatAutocomplete,
+    MatOption,
+    MatDialogActions,
+    MatButton,
+    MatDialogClose,
+    MatDialogTitle,
+    AsyncPipe,
+  ],
+  providers: [ScheduleService, UserService],
 })
-export class AddToScheduleComponent implements OnInit {
+export class LogAttendanceComponent implements OnInit {
   @ViewChild('input') input!: ElementRef<HTMLInputElement>;
   myControl = new FormControl<string>('');
   options: User[] = [];
@@ -58,27 +59,29 @@ export class AddToScheduleComponent implements OnInit {
   selectedUser!: User;
 
   constructor(
-    public dialogRef: MatDialogRef<AddToScheduleComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: {
-      title: string,
-      scheduleId: number
-    },
-    private userService: UserService,
+      public dialogRef: MatDialogRef<LogAttendanceComponent>,
+      @Inject(MAT_DIALOG_DATA) public data: {
+        title: string,
+        scheduleId: number
+      },
+      private userService: UserService,
   ) {
   }
 
   ngOnInit(): void {
-    this.userService.getStudentsNotInSchedule(
-      this.data.scheduleId).subscribe({
-      next: (event: User[]) => {
-        this.options = event;
+    this.userService.getUsersByScheduleId(
+        this.data.scheduleId).subscribe({
+      next: (classResponses: ClassResponse[]) => {
+        classResponses.forEach((response) => {
+          this.options.push(response.student)
+        })
 
         this.filteredOptions = this.myControl.valueChanges.pipe(
-          startWith(''),
-          map(value => {
-            const searchValue = (value || '').toLowerCase();
-            return this._filterUsers(searchValue);
-          })
+            startWith(''),
+            map(value => {
+              const searchValue = (value || '').toLowerCase();
+              return this._filterUsers(searchValue);
+            })
         );
       }
 
@@ -92,8 +95,8 @@ export class AddToScheduleComponent implements OnInit {
       const middleName = user.middleName?.toLowerCase() || '';
 
       return fullName.includes(filterValue) ||
-        usercode.includes(filterValue) ||
-        middleName.includes(filterValue);
+          usercode.includes(filterValue) ||
+          middleName.includes(filterValue);
     });
   }
 
@@ -106,17 +109,17 @@ export class AddToScheduleComponent implements OnInit {
     if(this.selectedUser.id == null) return;
 
     this.dialogRef.close(this.myControl.value);
-
-    this.userService.addUserToSchedule(+this.data.scheduleId,
-      this.selectedUser.id).subscribe({
-      next: (event: User) => {
-        console.log(event);
-      }
-    })
   }
 
   displayFn = (usercode: string): string => {
     const user = this.options.find(user => user.usercode === usercode);
     return user ? `${user.usercode} | ${user.firstName} ${user.lastName}` : '';
   };
+
+  get isValidSelection(): boolean {
+    const inputValue = this.myControl.value?.toLowerCase() ?? '';
+    return this.options.some(user =>
+        user.usercode.toLowerCase() === inputValue
+    );
+  }
 }

@@ -99,7 +99,7 @@ export class UserService {
     });
   }
 
-  getAllStudentsFilteredByScheduleId(scheduleId: number): Observable<User[]> {
+  getStudentsNotInSchedule(scheduleId: number): Observable<User[]> {
     return this.http.get<User[]>(`${this.url}/users/students/${scheduleId}`, {
       headers: this.headers,
       withCredentials: true,

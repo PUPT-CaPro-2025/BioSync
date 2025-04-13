@@ -42,10 +42,17 @@
           @if (hasProfessorVerified) {
             <div class="flex-grow"></div>
             <div class="flex justify-center items-center flex-col gap-4 p-2 mt-4">
+                <button
+                        mat-flat-button
+                        (click)="openLogAttendanceDialog(selectedSchedule)"
+                        class="stop-attendance"
+                >
+                    Log Attendance
+                </button>
                 @if(!isTimeOut){
                     <button mat-flat-button
                             (click)="openConfirmationDialogTimeOut()"
-                            class="start-timeout-attendance">
+                            class="stop-attendance">
                         Start Time Out
                     </button>
                 }
