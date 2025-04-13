@@ -2,7 +2,6 @@ package com.example.biosyncapi.visitor;
 
 import jakarta.persistence.*;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Entity
