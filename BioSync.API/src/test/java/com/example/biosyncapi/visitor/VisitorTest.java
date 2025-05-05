@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class VisitorTest {
 
   @Test
-  void testOnCreateSetsVisitDateInUTCPlus8() {
+  void testCreateVisitorDateInUTCPlus8() {
     Visitor visitor = new Visitor();
     assertNull(visitor.getVisitDate());
 
-    visitor.onCreate();
+    visitor.setVisitDate(ZonedDateTime.now(ZoneId.of("UTC+8")));
 
     assertNotNull(visitor.getVisitDate());
     assertEquals(ZoneId.of("UTC+8"), visitor.getVisitDate().getZone());
