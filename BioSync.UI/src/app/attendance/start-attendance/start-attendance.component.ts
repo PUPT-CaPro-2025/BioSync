@@ -482,6 +482,11 @@ export class StartAttendanceComponent implements OnInit {
 
   sendBarcodeTimeIn(usercode: string){
     this.loading = true;
+
+    if (usercode.startsWith('CapsLock')) {
+      usercode = usercode.slice('CapsLock'.length);
+    }
+
     const formData = new FormData();
     formData.append('usercode', usercode);
     formData.append('scheduleId', this.id.toString());
@@ -533,8 +538,12 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  sendBarcodeTimeOut(usercode: string){
-    this.loading = true;
+    sendBarcodeTimeOut(usercode: string){
+      this.loading = true;
+
+      if (usercode.startsWith('CapsLock')) {
+        usercode = usercode.slice('CapsLock'.length);
+      }
 
     const formData = new FormData();
     formData.append('usercode', usercode);
