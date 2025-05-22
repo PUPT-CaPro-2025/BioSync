@@ -398,7 +398,9 @@ export class StartAttendanceComponent implements OnInit {
     });
   }
 
-  openLogAttendanceDialog(schedule: Schedule) {
+  openLogAttendanceDialog(schedule: Schedule, click = false) {
+    if (!click) return;
+
     const ref = this.dialog.open(LogAttendanceComponent, {
       width: '400px',
       data: {
@@ -409,6 +411,8 @@ export class StartAttendanceComponent implements OnInit {
 
     ref.afterClosed().subscribe({
       next: (result) => {
+        if (!result) return;
+
         if(this.isTimeOut) {
           this.sendBarcodeTimeOut(result);
         } else {
