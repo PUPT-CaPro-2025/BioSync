@@ -626,6 +626,11 @@ export class StartAttendanceComponent implements OnInit {
 
   private verifyProfessorCode(usercode: string) {
     this.loading = true;
+
+    if (usercode.startsWith('CapsLock')) {
+      usercode = usercode.slice('CapsLock'.length);
+    }
+
     this.isBarcode = true;
     const professor = this.selectedSchedule.professor!;
 
