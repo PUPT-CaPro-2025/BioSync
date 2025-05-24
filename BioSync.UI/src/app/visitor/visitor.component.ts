@@ -13,6 +13,7 @@ import {MatButton} from "@angular/material/button";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import { AddVisitorComponent } from './add-visitor/add-visitor.component';
 import { PromptCsvComponent } from '../prompt/prompt-csv/prompt-csv.component';
+import {visit} from "@angular/compiler-cli/src/ngtsc/util/src/visitor";
 
 @Component({
   selector: 'app-visitor',
@@ -168,7 +169,10 @@ export class VisitorComponent implements OnInit{
   get filteredVisitors(): Visitor[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.visitors.slice(startIndex, endIndex);
+    return this.visitors
+        .slice(startIndex, endIndex)
+        .sort((a, b) => new Date(b.id).getTime() - new Date(a.id).getTime());
+
   }
 
   onPageChange(): void {
