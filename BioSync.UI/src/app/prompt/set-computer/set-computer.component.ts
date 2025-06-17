@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {
   MAT_DIALOG_DATA, MatDialog,
   MatDialogActions,
@@ -46,7 +46,12 @@ export class SetComputerComponent {
     private scheduleService: ScheduleService,
     private dialog: MatDialog
   ) {
-    this.newComputerNumber = data.computerNumber.toString() || null;
+    if(data.computerNumber < 0){
+      this.isLaptop = true;
+      this.newComputerNumber = "Laptop"
+    } else {
+      this.newComputerNumber = data.computerNumber.toString() || null;
+    }
   }
 
   onLaptopToggle() {
