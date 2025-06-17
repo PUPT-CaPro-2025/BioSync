@@ -22,6 +22,9 @@ public class ScheduleStudent {
 
   private boolean hasLogged;
 
+  // hack: negative number means student has own laptop
+  // ideally this should be changed to a string
+  // to cater computer id changes in the future
   private Long computerNumber;
 
   public ScheduleStudent() {}

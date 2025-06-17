@@ -15,6 +15,7 @@ import {FormsModule} from "@angular/forms";
 import {ScheduleService} from "../../../services/schedule.service";
 import {PromptOkayComponent} from "../prompt-okay/prompt-okay.component";
 import {UserService} from "../../../services/user.service";
+import {MatCheckbox} from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-set-computer',
@@ -28,6 +29,7 @@ import {UserService} from "../../../services/user.service";
     MatFormField,
     MatInput,
     FormsModule,
+    MatCheckbox,
   ],
   providers: [ScheduleService, UserService],
   templateUrl: './set-computer.component.html',
@@ -35,6 +37,7 @@ import {UserService} from "../../../services/user.service";
 })
 export class SetComputerComponent {
   newComputerNumber: string | null = null;
+  isLaptop = false;
 
   constructor(
     public dialogRef: MatDialogRef<SetComputerComponent>,
@@ -46,9 +49,38 @@ export class SetComputerComponent {
     this.newComputerNumber = data.computerNumber.toString() || null;
   }
 
+  onLaptopToggle() {
+    if (this.isLaptop) {
+      this.newComputerNumber = 'Laptop';
+    } else {
+      this.newComputerNumber = '';
+    }
+  }
+
+  openInvalid() {
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title: 'Value maybe invalid',
+        message: 'Please double check and try again.'
+      }
+    })
+  }
+
   onSubmit(){
     const newData = this.data;
+
+    if( +this.newComputerNumber! < 1 ) {
+      this.openInvalid();
+      return;
+    }
+
     newData.computerNumber = +this.newComputerNumber!;
+
+    if(this.isLaptop){
+      newData.computerNumber = -1;
+    }
+
     this.scheduleService.setComputerNumber(newData).subscribe({
       next: () => {
         this.dialog.open(PromptOkayComponent, {

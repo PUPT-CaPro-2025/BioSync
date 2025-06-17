@@ -116,7 +116,7 @@ export class ViewScheduleComponent implements OnInit {
   toggleAssignedComputer(data: ClassResponse) {
     this.dialog.open(SetComputerComponent, {
       width: '450px',
-      height: '280px',
+      height: '330px',
       data: data,
       autoFocus: false,
     });

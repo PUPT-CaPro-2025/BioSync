@@ -105,7 +105,13 @@
             {{ student.student.lastName }} {{ student.student.firstName }}
           </div>
           <div class="cell">
-            {{ student.computerNumber ? student.computerNumber : "Unassigned" }}
+              {{
+                  student.computerNumber == 0
+                      ? 'Unassigned'
+                      : student.computerNumber < 0
+                          ? 'Laptop'
+                          : student.computerNumber
+              }}
           </div>
           @if(getRole() !== "STUDENT") {
             <div class="cell">
