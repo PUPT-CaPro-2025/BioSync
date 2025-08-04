@@ -69,7 +69,13 @@ export class ViewScheduleComponent implements OnInit {
     this.userService.getUsersByScheduleId(scheduleId).subscribe({
       next: (value: ClassResponse[]) => {
         this.class = value;
-        console.log(this.class);
+        this.class.sort((a, b) => {
+          const nameA = a.student.lastName.toLowerCase();
+          const nameB = b.student.lastName.toLowerCase();
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+          return 0;
+        });
       },
       error: (err) => {
         console.error('Error fetching users by schedule ID:', err);
@@ -116,7 +122,7 @@ export class ViewScheduleComponent implements OnInit {
   toggleAssignedComputer(data: ClassResponse) {
     this.dialog.open(SetComputerComponent, {
       width: '450px',
-      height: '280px',
+      height: '330px',
       data: data,
       autoFocus: false,
     });

@@ -16,7 +16,9 @@
           <div class="flex flex-col gap-3">
             <p class="text-custom-24 text-brightRed">
               {{ selectedSchedule.subject?.code }} -
-              {{ selectedSchedule.subject?.description }}
+              {{ selectedSchedule.subject?.description }} |
+                {{selectedSchedule.section?.program?.programAbbreviation}}
+                {{selectedSchedule.section?.year}}
             </p>
             <div class="flex flex-col">
               <p class="text-lightGray text-custom-12">Professor</p>
@@ -44,7 +46,7 @@
             <div class="flex justify-center items-center flex-col gap-4 p-2 mt-4">
                 <button
                         mat-flat-button
-                        (click)="openLogAttendanceDialog(selectedSchedule)"
+                        (click)="openLogAttendanceDialog(selectedSchedule, true)"
                         class="stop-attendance"
                 >
                     Log Attendance

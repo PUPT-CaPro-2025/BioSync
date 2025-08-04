@@ -26,6 +26,9 @@ import {IntegrationService} from "../../../services/integration.service";
 import {
   CalendarExportComponent
 } from "../../prompt/calendar-export/calendar-export.component";
+import {
+  PromptOkayComponent
+} from "../../prompt/prompt-okay/prompt-okay.component";
 
 @Component({
   selector: 'app-dashboard-admin',
@@ -223,10 +226,28 @@ export class DashboardAdminComponent implements OnInit {
         next: value => {
           this.createScheduleIntegration(value);
           ref.close()
+          this.openPromptOkayComponent('Synced Successfully', 'Latest schedules have been synced.')
+        },
+        error: () => {
+          // api throws error instead of null when there are no new schedules
+          // to be imported
+          ref.close();
+          this.openPromptOkayComponent('Already Synced', 'Schedules' +
+              ' are already synced.')
         }
       })
     }, 1500)
 
+  }
+
+  private openPromptOkayComponent(title: string, message: string) {
+    this.dialog.open(PromptOkayComponent, {
+      width: '400px',
+      data: {
+        title,
+        message
+      }
+    })
   }
 
   private createScheduleIntegration(computer_laboratory_schedules: any) {

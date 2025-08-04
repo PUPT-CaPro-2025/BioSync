@@ -1,14 +1,30 @@
 <h1 mat-dialog-title>Set Computer</h1>
 <div mat-dialog-content>
-  <p>
-    Current Assigned PC:
-    {{ data.computerNumber ? data.computerNumber : "Unassigned" }}
-  </p>
-  <mat-form-field class="example-full-width mt-4">
-    <label>Assigned PC Number</label>
-    <input matInput [(ngModel)]="newComputerNumber" />
-  </mat-form-field>
+    <p>
+        Current Assigned PC:
+        {{
+            data.computerNumber == 0
+                ? 'Unassigned'
+                : data.computerNumber < 0
+                    ? 'Laptop'
+                    : data.computerNumber
+        }}
+    </p>
+    <div class="flex-col">
+        <div>
+            <mat-form-field appearance="fill" class="mt-4" style="width: 100%">
+                <label>Assigned PC Number</label>
+                <input matInput [(ngModel)]="newComputerNumber" [disabled]="isLaptop" class="full-width"/>
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-checkbox [(ngModel)]="isLaptop" (change)="onLaptopToggle()" >
+                Use Laptop
+            </mat-checkbox>
+        </div>
+    </div>
 </div>
+
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="true" (click)="onSubmit()">Set</button>
